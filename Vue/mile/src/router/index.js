@@ -4,8 +4,9 @@ import userRoutes from './user';
 
 const routes = [
   ...userRoutes,
+
   //여기에 모듈추가.
-  
+
   {
     path: '/',
     name: 'Home',
@@ -16,6 +17,11 @@ const routes = [
     name: 'About',
     component: () => import('../views/AboutView.vue')
   },
+  {
+    path: '/login',
+    name: 'LoginView',
+    component: () => import('../views/LoginView.vue')
+  } 
 
 ];
 
