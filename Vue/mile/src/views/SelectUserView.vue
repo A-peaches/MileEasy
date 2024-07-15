@@ -55,7 +55,7 @@
         console.log(this.objectUser); // user.js의 objectUser라는 데이터가 담겨있는 변수를 콘솔에 출력한다. 
       }
     },
-    computed: { // '감시자'역할
+    computed: { // '감시자'역할...
       ...mapGetters("user", ["getObjectUser"]), // store 하위 user.js에서 getObjectUser 메서드를 호출한다. 
       objectUser() { // objectUser 변수의 데이터 값이 변경되면 감시자 작동
         return this.getObjectUser; // objectUser의 getter 메서드로 데이터 값을 가져온다. 
