@@ -6,7 +6,7 @@
           <input
             type="text"
             class="form-control"
-            v-model="user_id"
+            v-model="user_id" 
             placeholder="사번 입력"
           />
           <button class="btn btn-success" @click="selectUser">검색</button>
@@ -49,16 +49,16 @@
       }
     },
     methods: {
-      ...mapActions('user', ['getUserById']),
-      selectUser() {
-        this.getUserById(this.user_id);
-        console.log(this.objectUser);
+      ...mapActions('user', ['getUserById']), // store 하위 user.js에서 getUserById 메서드를 호출한다. 
+      selectUser() { // '검색'버튼 클릭했을 때 실행되는 메서드 
+        this.getUserById(this.user_id); // user_id를 매개변수로 받고, getUserById 메서드를 호출한다. 
+        console.log(this.objectUser); // user.js의 objectUser라는 데이터가 담겨있는 변수를 콘솔에 출력한다. 
       }
     },
-    computed: {
-      ...mapGetters("user", ["getObjectUser"]),
-      objectUser() {
-        return this.getObjectUser;
+    computed: { // '감시자'역할
+      ...mapGetters("user", ["getObjectUser"]), // store 하위 user.js에서 getObjectUser 메서드를 호출한다. 
+      objectUser() { // objectUser 변수의 데이터 값이 변경되면 감시자 작동
+        return this.getObjectUser; // objectUser의 getter 메서드로 데이터 값을 가져온다. 
       }
     }
   };
