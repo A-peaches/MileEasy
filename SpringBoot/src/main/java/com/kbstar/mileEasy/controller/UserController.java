@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user") // 'http://localhost:8090/user/allUser'  /user 부분!
 public class UserController {
 
     @Autowired
@@ -30,10 +30,10 @@ public class UserController {
         return user;
     }
 
-    @GetMapping("/allUser")
+    @GetMapping("/allUser")   //'http://localhost:8090/user/allUser'  /allUser 부분!
     public ArrayList<User> allUser() {
-        ArrayList<User> users = userService.getAllUser();
+        ArrayList<User> users = userService.getAllUser(); //UserService의 getAllUser 실행
         System.out.println(users);
-        return users;
+        return users; //호출된 곳으로 다시 돌아감!!!
     }
 }
