@@ -1,12 +1,8 @@
 plugins {
     id 'java'
-<<<<<<< HEAD
     id 'org.springframework.boot' version '2.7.5'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-=======
-    id 'org.springframework.boot' version '3.3.1'
-    id 'io.spring.dependency-management' version '1.1.5'
->>>>>>> 63e203a (start)
+
 }
 
 group = 'com.kbstar'
@@ -14,11 +10,8 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-<<<<<<< HEAD
         languageVersion = JavaLanguageVersion.of(11)
-=======
-        languageVersion = JavaLanguageVersion.of(17)
->>>>>>> 63e203a (start)
+
     }
 }
 
@@ -29,7 +22,6 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
-<<<<<<< HEAD
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -48,10 +40,6 @@ configurations.all {
             details.useVersion '9.0.90'
         }
     }
-=======
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
->>>>>>> 63e203a (start)
 }
 
 tasks.named('test') {

@@ -1,13 +1,9 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-<<<<<<< HEAD
     <router-link to="/about">About</router-link> |
     <router-link to="/allUser">AllUser</router-link> |
     <router-link to="/selectUser">selectUser</router-link>
-=======
-    <router-link to="/about">About</router-link>
->>>>>>> 63e203a (start)
   </nav>
   <router-view/>
 </template>
