@@ -23,10 +23,9 @@ const mutations = {
 };
 
 const actions = {
-  async getUserById({ commit }, user_id) {
-    // 특정 사용자 데이터를 가져오는 액션 추가
+  async getUserById({ commit }, user_no) { // 특정 사용자 데이터를 가져오는 액션 추가
     try {
-      const response = await axios.get(`http://localhost:8090/user/${user_id}`);
+      const response = await axios.get(`http://localhost:8090/user/${user_no}`);
       commit('setObjectUser', response.data);
     } catch (error) {
       console.error('Error get user data:', error);

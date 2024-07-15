@@ -1,22 +1,29 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import userRoutes from './user';
+import store from '@/store'; // store import 추가
 
 const routes = [
   ...userRoutes,
-  //여기에 모듈추가.
-  
+
+  // 여기에 모듈추가.
+
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/HomeView.vue')
+    component: () => import('../views/HomeView.vue'),
+    meta: { requiresAuth: true } // 인증이 필요한 라우트에 메타 필드 추가
   },
   {
     path: '/about',
     name: 'About',
-    component: () => import('../views/AboutView.vue')
+    component: () => import('../views/AboutView.vue'),
+    meta: { requiresAuth: true } // 인증이 필요한 라우트에 메타 필드 추가
   },
-
+  {
+    path: '/login',
+    name: 'LoginView',
+    component: () => import('../views/LoginView.vue')
+  }
 ];
 
 // 반응형 웹앱 설정을 위함.
@@ -30,6 +37,18 @@ const router = createRouter({
       return { left: 0, top: 0 };
     }
   },
+});
+
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  await store.dispatch('login/checkLogin'); // 로그인 상태 체크
+  const loginInfo = store.state.login.loginInfo;
+
+  if (requiresAuth && !loginInfo) {
+    next({ name: 'LoginView' });
+  } else {
+    next();
+  }
 });
 
 export default router;
