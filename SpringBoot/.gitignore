@@ -1,8 +1,6 @@
 HELP.md
 .gradle
 build/
-logs/
-*.log
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -21,11 +19,6 @@ bin/
 
 ### IntelliJ IDEA ###
 .idea
-/.idea/*
-!/.idea/inspectionProfiles
-.idea/modules.xml
-.idea/*.iml
-.idea/modules
 *.iws
 *.iml
 *.ipr
@@ -42,16 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-###macOS, Windows,Linux ###
-.DS_Store
-.AppleDouble
-.LSOverride
-Thumbs.db
-Desktop.ini
-*~
-
-### IDE ###
-/.metadata
-/.recommenders
-
