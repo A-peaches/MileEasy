@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Node modules
 node_modules/
 dist/
@@ -9,6 +10,16 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+=======
+.DS_Store
+node_modules
+/dist
+
+
+# local env files
+.env.local
+.env.*.local
+>>>>>>> 63e203a (start)
 
 # Log files
 npm-debug.log*
@@ -17,13 +28,19 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Editor directories and files
+<<<<<<< HEAD
 .idea/
 .vscode/
+=======
+.idea
+.vscode
+>>>>>>> 63e203a (start)
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
 
 # IDE specific
 *.iml
@@ -54,3 +71,5 @@ coverage/
 
 # Nuxt.js build output
 .nuxt/
+=======
+>>>>>>> 63e203a (start)

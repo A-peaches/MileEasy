@@ -1,8 +1,11 @@
 HELP.md
 .gradle
 build/
+<<<<<<< HEAD
 logs/
 *.log
+=======
+>>>>>>> 63e203a (start)
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -21,11 +24,14 @@ bin/
 
 ### IntelliJ IDEA ###
 .idea
+<<<<<<< HEAD
 /.idea/*
 !/.idea/inspectionProfiles
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
+=======
+>>>>>>> 63e203a (start)
 *.iws
 *.iml
 *.ipr
@@ -42,6 +48,7 @@ out/
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD
 
 ###macOS, Windows,Linux ###
 .DS_Store
@@ -55,3 +62,5 @@ Desktop.ini
 /.metadata
 /.recommenders
 
+=======
+>>>>>>> 63e203a (start)
