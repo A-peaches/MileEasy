@@ -9,6 +9,21 @@
   <router-view/>
 </template>
 
+<script>
+import { mapActions } from 'vuex';
+
+export default {
+  name: 'App',
+  created() {
+    this.checkLogin();
+  },
+  methods: {
+    ...mapActions('login', ['checkLogin'])
+  }
+};
+</script>
+
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

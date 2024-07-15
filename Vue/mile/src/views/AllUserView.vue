@@ -24,7 +24,7 @@
           </thead>
           <tbody>
             <tr :key="i" v-for="(user, i) in getArrayUsers">
-              <!--getArrayUsers에서 하나씩 꺼내서 보기-->
+              <!--가져와진 getArrayUsers를 한톨한톨 쓴다~-->
               <td>{{ user.user_no }}</td>
               <td>{{ user.user_name }}</td>
               <td>{{ user.user_year }}년</td>
@@ -51,11 +51,17 @@ export default {
   },
   computed: {
     // 감시자, 문법임(감시자여도 새로고침 해야됨. 문법적으로 있는 코드임)
+
     ...mapGetters('user', ['getArrayUsers']),
+    //arrayUsers가 this.$store.dispatch('user/getAllUser');로 인해 변경됨!!
+    //-> 변경됨을 감지하여 가져옴(store에 user에 있는 getArrayUsers 실행)
+    // -> getArrayUsers에 정의된거 무조건 끌어와짐 getArrayUsers가 변수명이자 가져온것 그 자체임!! ↑↑↑↑↑↑↑ v-for
   },
   created() {
     //페이지 로드시 실행
     this.$store.dispatch('user/getAllUser'); //store -> user/getAllUser 실행
+
+    // 실행하고 나면 arrayUsers에 값이 생겨짐!! 이 생겨진 것을 감시자(computed)가 감지!!
   },
 };
 </script>

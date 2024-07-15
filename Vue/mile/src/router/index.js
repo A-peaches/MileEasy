@@ -1,11 +1,12 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import userRoutes from './user';
+import store from '@/store'; // store import 추가
 
 const routes = [
   ...userRoutes,
 
-  //여기에 모듈추가.
+  // 여기에 모듈추가.
 
   {
     path: '/',
@@ -19,10 +20,9 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'LoginView',
+    name: 'LoginView', // LoginPage 대신 LoginView 사용
     component: () => import('../views/LoginView.vue')
-  } 
-
+  }
 ];
 
 // 반응형 웹앱 설정을 위함.
@@ -36,6 +36,17 @@ const router = createRouter({
       return { left: 0, top: 0 };
     }
   },
+});
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const loginInfo = store.state.login.loginInfo;
+
+  if (requiresAuth && !loginInfo) {
+    next({ name: 'LoginView' }); // LoginPage 대신 LoginView 사용
+  } else {
+    next();
+  }
 });
 
 export default router;

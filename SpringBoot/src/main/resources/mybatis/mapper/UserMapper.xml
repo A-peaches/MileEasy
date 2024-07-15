@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+
+
 <mapper namespace="com.kbstar.mileEasy.mapper.UserDao">
+    <!--UserDao랑 연결되어있음-->
+    <!--my batis 사용하기
+    1. UserDao 만들어서 인터페이스 만들기! (리턴형태와 매개변수까지만!!  User selectUserById(String user_no); )
+    2. Mapper에서 내용물 만들기 -> dao 인터페이스 이름과 동일하게 id설정해야됨!!!)
+    3. 아래와 같이 쿼리문 작성하기
+
+    -->
     <select id="selectUserById" parameterType="String" resultType="com.kbstar.mileEasy.dto.User">
         SELECT * FROM user WHERE user_no = #{user_no}
     </select>
 
-    <select id ="selectAllUser" resultType="com.kbstar.mileEasy.dto.User">
+    <select id ="selectAllUser" resultType="com.kbstar.mileEasy.dto.User"> <!--selectAllUser 실행 -->
         SELECT * FROM user;
     </select>
 </mapper>
