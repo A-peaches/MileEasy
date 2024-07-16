@@ -2,27 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router';
 import userRoutes from './user';
 import MileageRoutes from './mileage';
 import DocumentsRoutes from './documents';
+import Test from './test';
+import store from '@/store'; // store import 추가
+
 
 const routes = [
   ...userRoutes,
   ...MileageRoutes,
   ...DocumentsRoutes,
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('../views/HomeView.vue'),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/AboutView.vue'),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
+  ...Test,
   {
     path: '/login',
     name: 'LoginView',
-    component: () => import('../views/LoginView.vue'),
+    component: () => import('../views/user/login/LoginView.vue'),
   },
 ];
 
@@ -39,16 +31,18 @@ const router = createRouter({
   },
 });
 
-// router.beforeEach(async (to, from, next) => {
-//   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-//   await store.dispatch('login/checkLogin'); // 로그인 상태 체크
-//   const loginInfo = store.state.login.loginInfo;
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  await store.dispatch('login/checkLogin');
+  const loginInfo = store.state.login.loginInfo;
 
-//   if (requiresAuth && !loginInfo) {
-//     next({ name: 'LoginView' });
-//   } else {
-//     next();
-//   }
-// });
+  console.log('Login Info:', loginInfo); // 로그인 정보 확인
+
+  if (requiresAuth && !loginInfo) {
+    next({ name: 'LoginView' });
+  } else {
+    next();
+  }
+});
 
 export default router;

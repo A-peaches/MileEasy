@@ -3,13 +3,13 @@ export default [
   {
     path: '/allUser',
     name: 'AllUser',
-    component: () => import('../views/AllUserView.vue'),
+    component: () => import('../views/test/AllUserView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
   {
-    path: '/SelectUser',
+    path: '/selectUser',
     name: 'SelectUser',
-    component: () => import('../views/SelectUserView.vue'),
+    component: () => import('../views/test/SelectUserView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
 

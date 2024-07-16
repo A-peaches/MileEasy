@@ -5,5 +5,6 @@ export default [
     path: '/documentsView',
     name: 'documentsView',
     component: () => import('../views/user/documents/DocumentsView.vue'),
+    meta: { requiresAuth: true }
   },
 ];
