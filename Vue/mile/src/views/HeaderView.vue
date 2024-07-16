@@ -1,6 +1,11 @@
 <template>
   <div>
     <ul class="nav justify-content-end">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="/main"
+          >메인-허접</a
+        >
+      </li>
       <li class="nav-item dropdown">
         <a
           class="nav-link dropdown-toggle"
@@ -11,11 +16,42 @@
           >나의 마일리지</a
         >
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="/hrd_detail">연수</a></li>
+          <li>
+            <a class="dropdown-item" href="/myMileageView">나의 마일리지</a>
+          </li>
+          <li><a class="dropdown-item" href="/hrdView">HRD 마일리지</a></li>
+          <li>
+            <a class="dropdown-item" href="/monthlyBestView"
+              >MonthlyBest 마일리지</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/monthlyBaseView"
+              >MonthlyBase 마일리지</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/bestBranchView">Best PG 마일리지</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/leagueTableView"
+              >리그테이블 마일리지</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/hotTipView">HOT Tip 마일리지</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/consumerSupportView"
+              >소비자 지원 마일리지</a
+            >
+          </li>
         </ul>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">문서모아</a>
+        <a class="nav-link active" aria-current="page" href="/documentsView"
+          >문서모아</a
+        >
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">M-Tip</a>
