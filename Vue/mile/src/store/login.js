@@ -27,6 +27,7 @@ const actions = {
         };
         localStorage.setItem('loginInfo', JSON.stringify(storageData));
         commit('setLoginInfo', data.user);
+        
         return true; // 로그인 성공
       }else{
         // 로그인 실패 처리
