@@ -3,13 +3,15 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> |
     <router-link to="/allUser">AllUser</router-link> |
-    <router-link to="/selectUser">selectUser</router-link>|
+    <router-link to="/selectUser">selectUser</router-link> |
+    <router-link to="/login">Login</router-link>
   </nav>
   <Header />
   <router-view />
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import Header from './views/HeaderView.vue';
 
 export default {
@@ -17,28 +19,15 @@ export default {
   components: {
     Header,
   },
+  created() {
+    this.checkLogin();
+  },
+  methods: {
+    ...mapActions('login', ['checkLogin']),
+  },
 };
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
+@import url('./assets/css/css.css');
 </style>

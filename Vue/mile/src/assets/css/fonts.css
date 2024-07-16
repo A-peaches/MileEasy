@@ -1,0 +1,48 @@
+/* C는 본문체, S는 제목체이며 숫자가 작은게 가장 큽니다. ex)h1 */
+/* src/assets/css/fonts.css */
+
+@font-face {
+    font-family: 'KB_S1';
+    src: url('@/assets/fonts/KB_S1.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_S2';
+    src: url('@/assets/fonts/KB_S2.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_S3';
+    src: url('@/assets/fonts/KB_S3.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_S4';
+    src: url('@/assets/fonts/KB_S4.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_S5';
+    src: url('@/assets/fonts/KB_S5.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_S6';
+    src: url('@/assets/fonts/KB_S6.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_C1';
+    src: url('@/assets/fonts/KB_C1.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_C2';
+    src: url('@/assets/fonts/KB_C2.TTF') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'KB_C3';
+    src: url('@/assets/fonts/KB_C3.TTF') format('truetype');
+  }
+  
