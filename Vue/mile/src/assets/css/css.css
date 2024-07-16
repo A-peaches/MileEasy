@@ -1,0 +1,56 @@
+@import url('./fonts.css');
+
+/* default font */
+* {
+    font-family: 'KB_S5', sans-serif;
+    text-align: center;
+}
+
+
+/* 초록색 버튼 */
+.btn-green {
+    background-color: #19C99B;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .btn-green:hover {
+    background-color: #32AB8B;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+  }
+  
+
+  /* 노란색 버튼 */
+  .btn-yellow {
+    background-color: #FFCA05;
+    color: #4B4A4A;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .btn-yellow:hover {
+    background-color: #FFE06D;
+    color: #868686;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+  }
+  
