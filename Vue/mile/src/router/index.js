@@ -3,6 +3,7 @@ import userRoutes from './user';
 import MileageRoutes from './mileage';
 import DocumentsRoutes from './documents';
 import Test from './test';
+
 //import store from '@/store'; // store import 추가
 import M_TipRoutes from './m_Tip';
 import NoticeRoutes from './notice';
@@ -39,7 +40,9 @@ const router = createRouter({
 });
 
 // router.beforeEach(async (to, from, next) => {
-//   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
 //   await store.dispatch('login/checkLogin');
 //   const loginInfo = store.state.login.loginInfo;
 

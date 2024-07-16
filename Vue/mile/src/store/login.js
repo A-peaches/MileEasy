@@ -1,7 +1,7 @@
 // import axios from 'axios';
 
 const state = {
-  loginInfo: null,
+  loginInfo: true,
 };
 
 const mutations = {
@@ -10,7 +10,7 @@ const mutations = {
   },
   clearLoginInfo(state) {
     state.loginInfo = null;
-  }
+  },
 };
 
 const actions = {
@@ -18,7 +18,7 @@ const actions = {
     const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1시간 후 만료
     const data = {
       loginInfo: loginInfo,
-      expirationTime: expirationTime
+      expirationTime: expirationTime,
     };
     localStorage.setItem('loginInfo', JSON.stringify(data));
     commit('setLoginInfo', loginInfo);
@@ -38,11 +38,11 @@ const actions = {
         commit('clearLoginInfo');
       }
     }
-  }
+  },
 };
 
 const getters = {
-  getLoginInfo: state => state.loginInfo
+  getLoginInfo: (state) => state.loginInfo,
 };
 
 export default {
@@ -50,5 +50,5 @@ export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
 };
