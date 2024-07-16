@@ -2,9 +2,57 @@
 
 /* default font */
 * {
+    font-family: 'KB_C3', sans-serif;
+    text-align: center;
+}
+
+
+/* 폰트 */
+.KB_S1 {
+    font-family: 'KB_S1', sans-serif;
+    text-align: center;
+}
+
+.KB_S2 {
+    font-family: 'KB_S2', sans-serif;
+    text-align: center;
+}
+
+.KB_S3 {
+    font-family: 'KB_S3', sans-serif;
+    text-align: center;
+}
+
+.KB_S4 {
+    font-family: 'KB_S4', sans-serif;
+    text-align: center;
+}
+
+.KB_S5 {
     font-family: 'KB_S5', sans-serif;
     text-align: center;
 }
+
+.KB_S6 {
+    font-family: 'KB_S6', sans-serif;
+    text-align: center;
+}
+
+.KB_C1 {
+    font-family: 'KB_C1', sans-serif;
+    text-align: center;
+}
+
+.KB_C2 {
+    font-family: 'KB_C2', sans-serif;
+    text-align: center;
+}
+
+.KB_C3 {
+    font-family: 'KB_C3', sans-serif;
+    text-align: center;
+}
+
 
 
 /* 초록색 버튼 */
@@ -17,9 +65,10 @@
     cursor: pointer;
     border-radius: 10px;
     transition: background-color 0.3s;
-  }
+    margin: 5px 5px 5px 5px;
+}
 
-  .btn-green:hover {
+.btn-green:hover {
     background-color: #32AB8B;
     color: #FFFFFF;
     border: none;
@@ -28,11 +77,11 @@
     cursor: pointer;
     border-radius: 10px;
     transition: background-color 0.3s;
-  }
-  
+    margin: 5px 5px 5px 5px;
+}
 
-  /* 노란색 버튼 */
-  .btn-yellow {
+/* 노란색 버튼 */
+.btn-yellow {
     background-color: #FFCA05;
     color: #4B4A4A;
     border: none;
@@ -41,16 +90,312 @@
     cursor: pointer;
     border-radius: 10px;
     transition: background-color 0.3s;
-  }
+    margin: 5px 5px 5px 5px;
+}
 
-  .btn-yellow:hover {
-    background-color: #FFE06D;
-    color: #868686;
+.btn-yellow:hover {
+    background-color: #EDBB00;
+    color: #4B4A4A;
     border: none;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     border-radius: 10px;
     transition: background-color 0.3s;
-  }
-  
+    margin: 5px 5px 5px 5px;
+}
+
+/* 회색 버튼*/
+.btn-gray {
+    background-color: #D9D9D9;
+    color: #1D1B20;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    margin: 5px 5px 5px 5px;
+}
+
+.btn-gray:hover {
+    background-color: #A1A1A1;
+    color: #1D1B20;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    margin: 5px 5px 5px 5px;
+}
+
+/* 빨간색 버튼*/
+.btn-red {
+    background-color: #DC3545;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    margin: 5px 5px 5px 5px;
+}
+
+.btn-red:hover {
+    background-color: #BD2C3A;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    margin: 5px 5px 5px 5px;
+}
+
+/* 분홍색 버튼*/
+.btn-pink {
+    background-color: #F4ADA4;
+    color: #1D1B20;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    margin: 5px 5px 5px 5px;
+}
+
+.btn-pink:hover {
+    background-color: #E19085;
+    color: #1D1B20;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    margin: 5px 5px 5px 5px;
+}
+
+/* 작은 프로필 이미지 스타일 */
+.profile-small {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    /* 원형으로 만들기 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* 그림자 효과 */
+    object-fit: cover;
+    /* 이미지가 컨테이너를 채우도록 */
+    margin: 5px 5px 5px 5px;
+}
+
+/* 큰 프로필 이미지 스타일 */
+.profile-large {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    /* 원형으로 만들기 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* 그림자 효과 */
+    object-fit: cover;
+    /* 이미지가 컨테이너를 채우도록 */
+    margin: 5px 5px 5px 5px;
+}
+
+
+
+/* 강조큰글씨 (ex. 페이지별 제목) */
+.bold-x-lg {
+    font-family: 'KB_C1';
+    font-size: 28pt;
+    font-weight: bold;
+    color: #4B4A4A;
+}
+
+/* 큰글씨 (ex. 프로필 이름) */
+.lg {
+    font-size: 22pt;
+    color: #4B4A4A;
+}
+
+/* 큰글씨2 (ex. 메뉴 이름) */
+.lg2 {
+    font-size: 16pt;
+    color: #4B4A4A;
+}
+
+/* 중간글씨 (ex. 추천멘트) */
+.md {
+    font-size: 12pt;
+    color: #4B4A4A;
+}
+
+/* 작은 글씨 (ex. 그래프 내용) */
+.sm {
+    font-size: 9pt;
+    color: #4B4A4A;
+}
+
+/* 기타 글씨 색상
+빨간색 강조: CF2222,
+ 회색 강조: AEAEB2, 
+ 초록색 강조: 32AB8B,
+  갈색 강조: 9C8480 */
+.red {
+    color: #CF2222
+}
+
+.gray {
+    color: #AEAEB2
+}
+
+.green {
+    color: #32AB8B
+}
+
+.brown {
+    color: #9C8480
+}
+
+/* 공통 스타일 */
+.input-base {
+    width: 50%;
+    height: 50px;
+    border-radius: 16px;
+    padding: 0 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* 그림자 효과 */
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    margin: 5px 5px 5px 5px;
+}
+
+/* 흰색 text-input */
+.input-white {
+    background-color: #FFFFFF;
+}
+
+/* 회색 text-input */
+.input-gray {
+    background-color: #F6F6F6;
+}
+
+/* 검색 input */
+.input-search {
+    background-color: #FFFFFF;
+    border-radius: 30px;
+    padding-right: 50px;
+    /* 아이콘 공간 확보 */
+    position: relative;
+    /* 아이콘 배치를 위해 */
+}
+
+/* 공통 스타일 */
+.tab-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 50px;
+    padding: 10px 30px 10px 30px;
+    margin: 5px 5px 5px 5px;
+}
+
+.tab {
+    color: #1E1E1E;
+    background-color: #D3D3D3;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+
+/* 공통 스타일 */
+.dropdown {
+    padding: 10px;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* 그림자 효과 */
+    margin: 10px 0;
+
+}
+
+/* 알람 메시지 드롭다운 스타일 */
+.dropdown-alert {
+    background-color: rgba(247, 247, 247, 0.88);
+    /* 배경색상: F7F7F7, 투명도 88% */
+    border-radius: 25px;
+    /* 모서리 25px */
+}
+
+/* 카테고리 드롭다운 스타일 */
+.dropdown-category {
+    background-color: rgba(255, 255, 255, 0.69);
+    /* 배경색상: FFFFFF, 투명도 69% */
+    border-radius: 30px;
+    /* 모서리 30px */
+    cursor: pointer;
+    
+}
+
+/* 선택된 카테고리 스타일 */
+.dropdown-category .selected {
+    background-color: #D9D9D9;
+    /* 선택 카테고리 색상 */
+    height: 46px;
+    /* 높이 증가 */
+    border-radius: 30px;
+    /* 모서리 30px */
+    line-height: 50px;
+    /* 텍스트를 수직 가운데 정렬 */
+    padding: 0 20px;
+    /* 좌우 여백 */
+}
+
+
+/* 공통 스타일 */
+.cards {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 5px 5px 5px 5px
+}
+/* 메인 대시보드 즐겨찾기 in 대시보드 & 나의 마일리지 등 */
+.card-dash {
+    background-color: #FFFFFF;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.card-gray {
+    background-color: #F5F5F5;
+}
+.card-lemon {
+    background-color: #FAF0CC;
+}
+.card-yellow {
+    background-color: #FFE06D;
+}
+
+
+/* 대표 색상 */
+.gray {
+    background-color: #CDCDCD  ;
+}
+.yellow {
+    background-color: #FFCA05;
+}
+.green {
+    background-color: #38CCA5;
+}
+.pink {
+    background-color: #F89F94;
+}
+.navy {
+    background-color: #3B5872;
+}
