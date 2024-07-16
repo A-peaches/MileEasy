@@ -66,9 +66,18 @@
           >Desk</a
         >
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">공지사항</a></li>
-          <li><a class="dropdown-item" href="#">Q&A</a></li>
-          <li><a class="dropdown-item" href="#">업무별 연락처</a></li>
+          <li><a class="dropdown-item" href="/noticeListView">공지사항</a></li>
+          <li><a class="dropdown-item" href="/qnaListView">Q&A</a></li>
+          <li>
+            <a class="dropdown-item" href="/mileEasyContactView"
+              >업무별 연락처</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="/mileageContactView"
+              >마일리지 연락처</a
+            >
+          </li>
         </ul>
       </li>
     </ul>

@@ -5,6 +5,9 @@ import DocumentsRoutes from './documents';
 import Test from './test';
 //import store from '@/store'; // store import 추가
 import M_TipRoutes from './m_Tip';
+import NoticeRoutes from './notice';
+import ContactRoutes from './contact';
+import QnaRoutes from './qna';
 
 const routes = [
   ...userRoutes,
@@ -12,6 +15,9 @@ const routes = [
   ...DocumentsRoutes,
   ...Test,
   ...M_TipRoutes,
+  ...NoticeRoutes,
+  ...ContactRoutes,
+  ...QnaRoutes,
   {
     path: '/login',
     name: 'LoginView',
