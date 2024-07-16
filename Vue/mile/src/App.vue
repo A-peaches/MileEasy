@@ -1,5 +1,5 @@
 <template>
-  <Header />
+  <Header v-if="!$route.meta.hideHeader" /> <!--특정 라우터에서 Header를 숨기는 메타 필드 추가-->
   <router-view />
 </template>
 
