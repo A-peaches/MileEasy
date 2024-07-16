@@ -54,7 +54,7 @@
         >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">M-Tip</a>
+        <a class="nav-link" href="/m_TipMainView">M-Tip</a>
       </li>
       <li class="nav-item dropdown">
         <a
