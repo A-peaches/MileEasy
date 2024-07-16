@@ -3,7 +3,7 @@ import userRoutes from './user';
 import MileageRoutes from './mileage';
 import DocumentsRoutes from './documents';
 import Test from './test';
-import store from '@/store'; // store import 추가
+// import store from '@/store'; // store import 추가
 
 
 const routes = [
@@ -31,18 +31,18 @@ const router = createRouter({
   },
 });
 
-router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  await store.dispatch('login/checkLogin');
-  const loginInfo = store.state.login.loginInfo;
+// router.beforeEach(async (to, from, next) => {
+//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+//   await store.dispatch('login/checkLogin');
+//   const loginInfo = store.state.login.loginInfo;
 
-  console.log('Login Info:', loginInfo); // 로그인 정보 확인
+//   console.log('Login Info:', loginInfo); // 로그인 정보 확인
 
-  if (requiresAuth && !loginInfo) {
-    next({ name: 'LoginView' });
-  } else {
-    next();
-  }
-});
+//   if (requiresAuth && !loginInfo) {
+//     next({ name: 'LoginView' });
+//   } else {
+//     next();
+//   }
+// });
 
 export default router;
