@@ -1,4 +1,4 @@
-package com.kbstar.mileEasy.user.service;
+package com.kbstar.mileEasy.service.user.info;
 
 import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.dto.User;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 @Service
-public class UserService {
+public class GetUserInfoService {
 
     @Autowired
     private UserDao userDao;
