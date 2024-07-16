@@ -12,7 +12,7 @@
             <div>KB국민인증서</div>
             <div>로그인</div>
           </button>
-          <button class="tab-container tab md fw-bold" @click="goLogin">비밀번호 로그인</button>
+          <button class="tab-container tab md fw-bold" >비밀번호 로그인</button>
           </div >
         <div>
           <input type="text" class="input-base input-white" v-model="user_no" placeholder="직원번호를 입력하세요" style="height: 70px; width: 400px; opacity: 75%;">
@@ -21,7 +21,7 @@
           <input type="password" class="input-base input-white" v-model="user_pw" placeholder="비밀번호를 입력하세요" style="height: 70px; width: 400px; opacity: 75%;">
         </div>
         <div>
-          <button class="btn-green lg2" style="height: 70px; width: 400px; color: white;">로그인</button>
+          <button class="btn-green lg2" style="height: 70px; width: 400px; color: white;" @click="goLogin">로그인</button>
         </div>
         <div class="d-flex justify-content-center my-3">
           <div class="mr-8">
@@ -51,10 +51,20 @@ export default {
       
     }
   },
-  method: {
+  methods: {
     ...mapActions('login', ['login']), // store 하위 login.js에서 login 메서드를 호출한다.
-    goLogin(){ // '로그인'버튼 클릭했을 때 실행되는 메서드 
-      this.login()
+    async goLogin(){ // '로그인'버튼 클릭했을 때 실행되는 메서드 
+      const loginInfo = {
+        user_no: this.user_no,
+        user_pw: this.user_pw
+      };
+      const success = await this.login(loginInfo);
+      if(success){
+        this.$router.push('/main');
+      }else{
+        console.error('Login 실패');
+      }
+
     }
   }
 };
