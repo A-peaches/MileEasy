@@ -1,3 +1,4 @@
+<!--🚨관리자 m-tip 메인 화면-->
 <template>
   <div class="about">
     <h1>관리자 M-TIP 메인 화면</h1>

@@ -1,3 +1,4 @@
+<!--🚨관리자 m-tip 가이드 작성화면 -->
 <template>
   <div class="about">
     <h1>관리자 M-TIP 가이드 작성</h1>
@@ -12,6 +13,6 @@
 
 <script>
 export default {
-  name: 'M_TipGuideWriteView',
+  name: 'M_TipGuideWriteAdminView',
 };
 </script>

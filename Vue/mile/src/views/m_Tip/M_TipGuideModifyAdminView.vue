@@ -1,4 +1,4 @@
-<!--🚨 사용자 m-tip 작성 화면-->
+<!--🚨 관리자 m-tip 작성 화면-->
 <template>
   <div class="about">
     <h1>M-TIP 작성하기</h1>
@@ -12,6 +12,6 @@
 
 <script>
 export default {
-  name: 'M-TipWriteView',
+  name: 'M-TipGuideModifyAdminView',
 };
 </script>

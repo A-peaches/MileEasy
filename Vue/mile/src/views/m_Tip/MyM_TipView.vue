@@ -1,3 +1,4 @@
+<!--🚨사용자 나의 m-tip 메인 화면-->
 <template>
   <div class="about">
     <h1>나의 M-TIP</h1>

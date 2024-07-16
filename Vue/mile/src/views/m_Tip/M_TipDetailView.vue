@@ -1,3 +1,4 @@
+<!--🚨사용자 m-tip 상세보기 화면 -->
 <template>
   <div class="about">
     <h1>M-TIP 상세보기</h1>
