@@ -1,4 +1,4 @@
-<template >
+<template>
   <div class="background-video-wrapper">
     <video autoplay muted loop class="background-video">
       <source src="../../../assets/background_login.mp4" type="video/mp4" />
@@ -59,49 +59,48 @@
     </div>
   </div>
 </template>
-  
+
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex';
 
 export default {
-  name: "LoginView",
+  name: 'LoginView',
   components: {},
   data() {
     return {
-      user_no: "",
-      user_pw: "",
+      user_no: '',
+      user_pw: '',
       isChecked: false, // 관리자 로그인 여부
     };
   },
   methods: {
-    ...mapActions("login", ["login"]), // store 하위 login.js에서 login 메서드를 호출한다.
+    ...mapActions('login', ['login']), // store 하위 login.js에서 login 메서드를 호출한다.
     async goLogin() {
       // '로그인'버튼 클릭했을 때 실행되는 메서드
       const loginInfo = {
         user_no: this.user_no,
         user_pw: this.user_pw,
-        user_is_admin: this.isChecked,
-        user_is_manager: this.isChecked,
+        is_checked: this.isChecked,
       };
 
       const response = await this.login(loginInfo);
       if (response) {
         if (response.user_is_admin && this.isChecked) {
-          this.$router.push("/admin");
+          this.$router.push('/admin');
         } else if (response.user_is_manager && this.isChecked) {
-          this.$router.push("/manager");
+          this.$router.push('/manager');
         } else {
-          this.$router.push("/main");
+          this.$router.push('/main');
         }
       } else {
-        console.error("Login 실패");
+        console.error('Login 실패');
         this.showAlert();
       }
     },
     showAlert() {
       this.$swal({
-        title: "유효하지 않은 로그인정보 입니다",
-        icon: "error",
+        title: '유효하지 않은 로그인정보 입니다',
+        icon: 'error',
       });
     },
   },
@@ -109,7 +108,7 @@ export default {
 </script>
 
 <style>
-@import url("../../../assets/css/css.css");
+@import url('../../../assets/css/css.css');
 
 .background-video-wrapper {
   position: fixed;
@@ -147,4 +146,3 @@ export default {
   z-index: 0;
 }
 </style>
-  
