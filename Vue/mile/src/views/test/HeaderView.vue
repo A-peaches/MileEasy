@@ -1,9 +1,7 @@
 <template>
   <div>
     <!-- 사용자 헤더 -->
-    <div
-      v-if="loginInfo && !loginInfo.user_is_admin && !loginInfo.user_is_manager"
-    >
+    <div v-if="loginInfo && !getIsChecked">
       <ul class="nav justify-content-end">
         <li class="nav-item dropdown">
           <a
@@ -97,7 +95,10 @@
     <!-- 마일리지 당담자 헤더 -->
     <div
       v-else-if="
-        loginInfo && loginInfo.user_is_admin && !loginInfo.user_is_manager
+        loginInfo &&
+        loginInfo.user_is_admin &&
+        !loginInfo.user_is_manager &&
+        getIsChecked
       "
     >
       <ul class="nav justify-content-end">
@@ -163,7 +164,10 @@
     <!-- 운영관리자 헤더  -->
     <div
       v-else-if="
-        loginInfo && !loginInfo.user_is_admin && loginInfo.user_is_manager
+        loginInfo &&
+        !loginInfo.user_is_admin &&
+        loginInfo.user_is_manager &&
+        getIsChecked
       "
     >
       <ul class="nav justify-content-end">
@@ -265,14 +269,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     loginInfo() {
       return this.getLoginInfo;
+    },
+    isChecked() {
+      return this.getIsChecked;
     },
   },
   methods: {
