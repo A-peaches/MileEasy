@@ -5,10 +5,15 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Mapper
 public interface UserDao {
     User selectUserById(String user_no);
     ArrayList<User> selectAllUser();
     User checkedUser(String user_no, String user_pw);
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb36d2d7abb9ece40d1d9b98268b5859864a6e34
 }

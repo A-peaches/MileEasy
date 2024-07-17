@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const state = {
   loginInfo: null,
+  isChecked: false
 };
 
 const mutations = {
@@ -11,36 +12,39 @@ const mutations = {
   clearLoginInfo(state) {
     state.loginInfo = null;
   },
+  setIsChecked(state, isChecked){
+    state.isChecked = isChecked;
+  }
 };
 
-const actions = {
-  async login({ commit }, loginInfo) {
-    try {
-      const response = await axios.post(
-        'http://localhost:8090/user/login',
-        loginInfo
-      );
-      const data = response.data;
+const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동기 작업을 수행할 때 사용된다. 
+  async login({ commit }, loginInfo) { // 로그인. async는 비동기 함수임을 선언한다.  
+    try{
+      const response = await axios.post('http://localhost:8090/user/login', loginInfo); // await는 비동기 작업이 완료될 때까지 기다린다. 
+      const data = response.data; // 서버 응답의 본문 데이터를 추출하여 'data' 변수에 저장한다. 
 
-      if (response.status === 200) {
-        // 서버에서 성공 여부를 반환하는 것으로 가정
+      if(response.status === 200){ // 서버의 응답 상태 코드가 200(ok)인지 확인한다. 
         const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1시간 후 만료
-        const storageData = {
-          loginInfo: data,
-          expirationTime: expirationTime,
+        const storageData = { // 로그인 정보와 만료 시간을 저장한다. 
+          loginInfo: data.user,
+          isChecked: data.isChecked,
+          expirationTime: expirationTime
         };
-        localStorage.setItem('loginInfo', JSON.stringify(storageData));
+        localStorage.setItem('loginInfo', JSON.stringify(storageData)); 
+        // localStorage에 storageData 객체를 JSON문자열로 변환하여 저장한다. 키 이름은 'loginInfo'이다. 
         commit('setLoginInfo', data.user);
+        commit('setIsChecked', data.isChecked);
+        // Vuex의 commit 메서드를 사용하여 setLoginInfo 뮤테이션을 호출하고, data.user를 인자로 전달하여 로그인 정보를 상태에 저장한다. 
 
-        return true; // 로그인 성공
-      } else {
+        return data; // 로그인 성공 시 사용자 데이터를 반환.
+      }else{
         // 로그인 실패 처리
         console.error('Login 실패', data.message);
-        return false; //로그인 실패
+        return null; //로그인 실패 시 null 반환. 
       }
     } catch (error) {
       console.error('error 발생', error);
-      return false; // 에러 발생 시 로그인 실패
+      return null; // 에러 발생 시 로그인 실패 
     }
   },
   logout({ commit }) {
@@ -63,6 +67,7 @@ const actions = {
 
 const getters = {
   getLoginInfo: (state) => state.loginInfo,
+  getIsChecked: (state) => state.isChecked,
 };
 
 export default {

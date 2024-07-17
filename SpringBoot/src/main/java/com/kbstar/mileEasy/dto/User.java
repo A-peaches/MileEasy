@@ -22,6 +22,6 @@ public class User {
     private boolean user_is_admin;
     private String dp_no;
     private String level_no;
-    private String  job_no;
+    private String job_no;
     private String position_no;
 }

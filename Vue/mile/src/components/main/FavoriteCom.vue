@@ -3,7 +3,7 @@
         <p class="text-left lg2 KB_C2">즐겨찾기 마일리지</p>
         <div class="flex">
             <div class="cards favorite-card">
-                <img src="@/assets/img/add.png" class="addImg">
+                <img src="@/assets/img/add.png" class="addImg" >
             </div>
             <div class="cards favorite-card">
                 <img src="@/assets/img/add.png" class="addImg">
