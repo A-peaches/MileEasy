@@ -168,13 +168,7 @@
     >
       <ul class="nav justify-content-end">
         <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            data-bs-toggle="dropdown"
-            href="#"
-            role="button"
-            aria-expanded="false"
-          >
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
             마왕관리
           </a>
           <ul class="dropdown-menu">
