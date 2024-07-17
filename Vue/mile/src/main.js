@@ -15,6 +15,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import VueScreen from 'vue-screen';
 import VueDeviceDetector from 'vue3-device-detector';
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
 // Axios 설정
@@ -36,6 +38,13 @@ app.use(vuetify);
 // BootstrapVue 설정
 app.use(BootstrapVue3);
 app.use(IconsPlugin);
+
+// VueSweetalert2 설정
+const options = {
+  confirmButtonColor: '#41b882',
+  cancelButtonColor: '#ff7674',
+};
+app.use(VueSweetalert2, options);
 
 // Moment 및 Lodash를 Vue 인스턴스에 추가
 app.config.globalProperties.$moment = moment;

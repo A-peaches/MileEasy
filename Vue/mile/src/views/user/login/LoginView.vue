@@ -26,7 +26,7 @@
         <div class="d-flex justify-content-center my-3">
           <div class="mr-8">
             <p style="color: #FFFFFF;">
-              <input type="checkbox" class="form-check-input" />
+              <input type="checkbox" class="form-check-input" v-model="isChecked" />
               &nbsp;관리자 로그인
             </p>
           </div>
@@ -48,6 +48,7 @@ export default {
     return{
       user_no: '',
       user_pw: '',
+      isChecked: false, // 관리자 로그인 여부 
       
     }
   },
@@ -56,15 +57,28 @@ export default {
     async goLogin(){ // '로그인'버튼 클릭했을 때 실행되는 메서드 
       const loginInfo = {
         user_no: this.user_no,
-        user_pw: this.user_pw
+        user_pw: this.user_pw,
+        user_is_admin: this.isChecked,
+        user_is_manager: this.isChecked
       };
-      const success = await this.login(loginInfo);
-      if(success){
-        this.$router.push('/main');
+
+      const response = await this.login(loginInfo);
+      if(response){
+        if(response.user_is_admin && this.isChecked){
+          this.$router.push('/admin'); 
+        }else if(response.user_is_manager && this.isChecked){
+          this.$router.push('/manager'); 
+        }else{
+          this.$router.push('/main'); 
+        }
       }else{
         console.error('Login 실패');
+        this.showAlert();
       }
 
+    }, 
+    showAlert(){
+      this.$swal('유효하지 않은 로그인정보 입니다');
     }
   }
 };
