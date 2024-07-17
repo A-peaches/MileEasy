@@ -25,6 +25,7 @@ const routes = [
     path: '/login',
     name: 'LoginView',
     component: () => import('../views/user/login/LoginView.vue'),
+    meta: {hideHeader: true},
   },
 ];
 

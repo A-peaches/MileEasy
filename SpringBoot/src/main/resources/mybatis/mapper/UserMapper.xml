@@ -20,4 +20,8 @@
     <select id ="selectAllUser" resultType="com.kbstar.mileEasy.dto.User"> <!--selectAllUser 실행 -->
         SELECT * FROM user;
     </select>
+
+    <select id="checkedUser" parameterType="map" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT * FROM user WHERE user_no = #{user_no} AND user_pw = #{user_pw}
+    </select>
 </mapper>
