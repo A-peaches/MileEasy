@@ -22,4 +22,12 @@ export default [
     component: () => import('../views/user/main/UserMainView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
+
+  //비밀번호 찾기
+  {
+    path: '/password',
+    name: 'password',
+    component: () => import('../views/user/login/PasswordReissueView.vue'),
+    meta: { hideHeader: true },
+  },
 ];
