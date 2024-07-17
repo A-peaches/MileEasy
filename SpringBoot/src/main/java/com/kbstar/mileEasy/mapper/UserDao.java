@@ -10,7 +10,8 @@ import java.util.Optional;
 @Mapper
 public interface UserDao {
     User selectUserById(String user_no);
-    ArrayList<User> selectAllUser();
-    User checkedUser(String user_no, String user_pw);
 
+    ArrayList<User> selectAllUser();
+
+    User checkedUser(String user_no, String user_pw);
 }
