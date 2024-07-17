@@ -1,20 +1,22 @@
-<!--🚨 사용자 m-tip 작성 화면-->
+<!--🚨마일리지 관리자 :  마일리지 수정화면-->
 <template>
   <div class="about">
-    <h1>M-TIP 작성하기</h1>
+    <h1>마일리지 관리자 : 마일리지 수정하기</h1>
     <button type="button" class="btn btn-primary" @click="goBack">
       이전버튼
     </button>
+    <hr />
     <h3>제목</h3>
-    <h3>첨부파일</h3>
     <h3>내용</h3>
-    <h3>등록</h3>
+    <h3>상세보기 추가하기</h3>
+
+    <h3>등록하기</h3>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'MTipWriteView',
+  name: 'IntroduceMileageModifyAdminView',
   methods: {
     goBack() {
       this.$router.go(-1);

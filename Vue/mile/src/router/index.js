@@ -4,18 +4,29 @@ import MileageRoutes from './mileage';
 import DocumentsRoutes from './documents';
 import Test from './test';
 import store from '@/store'; // store import 추가
-
+import M_TipRoutes from './m_Tip';
+import NoticeRoutes from './notice';
+import ContactRoutes from './contact';
+import QnaRoutes from './qna';
+import MileEasyAdminRoutes from './mileEasyAdmin';
+import MileageAdminRoutes from './mileageAdmin';
 
 const routes = [
   ...userRoutes,
   ...MileageRoutes,
   ...DocumentsRoutes,
   ...Test,
+  ...M_TipRoutes,
+  ...NoticeRoutes,
+  ...ContactRoutes,
+  ...QnaRoutes,
+  ...MileEasyAdminRoutes,
+  ...MileageAdminRoutes,
   {
     path: '/login',
     name: 'LoginView',
     component: () => import('../views/user/login/LoginView.vue'),
-    meta: {hideHeader: true},
+    meta: { hideHeader: true },
   },
 ];
 
@@ -33,7 +44,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   await store.dispatch('login/checkLogin');
   const loginInfo = store.state.login.loginInfo;
 
@@ -45,5 +56,4 @@ router.beforeEach(async (to, from, next) => {
     next();
   }
 });
-
 export default router;

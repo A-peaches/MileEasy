@@ -17,6 +17,7 @@ import VueScreen from 'vue-screen';
 import VueDeviceDetector from 'vue3-device-detector';
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 // Axios 설정
 const app = createApp(App);

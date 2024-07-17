@@ -36,7 +36,7 @@ const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동�
         console.error('Login 실패', data.message);
         return null; //로그인 실패 시 null 반환. 
       }
-    }catch(error){
+    } catch (error) {
       console.error('error 발생', error);
       return null; // 에러 발생 시 로그인 실패 
     }
@@ -56,11 +56,11 @@ const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동�
         commit('clearLoginInfo');
       }
     }
-  }
+  },
 };
 
 const getters = {
-  getLoginInfo: state => state.loginInfo
+  getLoginInfo: (state) => state.loginInfo,
 };
 
 export default {
@@ -68,5 +68,5 @@ export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
 };
