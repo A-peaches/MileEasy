@@ -2,7 +2,7 @@
   <div class="flex" style="margin-left: 10%; margin-right: 10%;">
     <div class="cards" style="width: 24% ;height : 400px">
       <img
-        src="@/assets/test.png"
+        src="@/assets/img/test.png"
         class="profile-large my-3"
         alt="Profile Picture"
       />

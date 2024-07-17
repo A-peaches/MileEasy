@@ -10,18 +10,6 @@
     style="height: 100vh"
   >
     <div class="d-flex flex-column align-items-center">
-      <div
-        class="input-base input-search d-flex justify-content-center mx-auto"
-        style="height: 70px; width: 370px; background: #ebebeb; padding: 0 20px"
-      >
-        <button
-          class="tab-container md fw-bold d-flex flex-column align-items-center"
-        >
-          <div>KB국민인증서</div>
-          <div>로그인</div>
-        </button>
-        <button class="tab-container tab md fw-bold">비밀번호 로그인</button>
-      </div>
       <div>
         <input
           type="text"
@@ -70,7 +58,6 @@
       </div>
     </div>
   </div>
-  <button @onclick="check">is chekced가있니?</button>
 </template>
 
 <script>
@@ -111,7 +98,10 @@ export default {
       }
     },
     showAlert() {
-      this.$swal('유효하지 않은 로그인정보 입니다');
+      this.$swal({
+        title: '유효하지 않은 로그인정보 입니다',
+        icon: 'error',
+      });
     },
   },
 };

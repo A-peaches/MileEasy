@@ -1,7 +1,7 @@
 <template >
     <div id="back" class="my-5 justify-content-center mx-auto">
-      <img src="../../assets/test.png" class="profile-small" />
-      <img src="../../assets/test.png" class="profile-large" /> <br />
+      <img src="@/assets/img/test.png" class="profile-small" />
+      <img src="@/assets/img/test.png" class="profile-large" /> <br />
       <button class="btn-green">초록색 버튼이지용</button>
       <button class="btn-yellow">노란색 버튼이지용</button>
       <button class="btn-gray">회색 버튼이지용</button>
