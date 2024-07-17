@@ -14,8 +14,6 @@ public class UserController {
 
     @Autowired
     private GetUserInfoService GetUserInfoService;
-    @Autowired
-    private GetUserInfoService getUserInfoService;
 
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
@@ -33,12 +31,19 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        User checkedUser = getUserInfoService.checkedUser(user.getUser_no(), user.getUser_pw());
+        // ResponseEntity는 HTTP 응답의 상태코드, 헤더, 본문을 모두 제어할 수 있는 스프링의 클래스
+        // @RequestBody User user는 클라이언트로부터 JSON 형식의 데이터를 받아서 User 객체로 변환한다.
+        // 클라이언트에서 전송된 데이터가 User 객체의 필드와 매핑된다.
+        User checkedUser = getUserInfoService.checkedUser(user.getUser_no(), user.getUser_pw(), user.isUser_is_admin());
+        // 서비스 계층의 checkedUser 메서드를 호출하여 로그인 정보를 인증한다.
+        // 메서드 결과 일치하는 사용자가 있으면 User 객체를 반환. 없으면 null을 반환.
         System.out.println(checkedUser);
         if(checkedUser != null) {
             return ResponseEntity.ok(checkedUser);
+            // HTTP 상태코드 200(ok)와 함께 checkedUser 객체를 응답 본문으로 반환한다.
         }else{
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body("유효하지 않은 로그인 정보");
+            // HTTP 상태코드 401(Unauthorized)과 함께 메시지를 응답 본문으로 반환한다.
         }
     }
 }

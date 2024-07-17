@@ -14,7 +14,7 @@ const mutations = {
 };
 
 const actions = {
-  async login({ commit }, loginInfo) {
+  async login({ commit }, loginInfo) { // 로그인 
     try{
       const response = await axios.post('http://localhost:8090/user/login', loginInfo);
       const data = response.data;
@@ -27,7 +27,7 @@ const actions = {
         };
         localStorage.setItem('loginInfo', JSON.stringify(storageData));
         commit('setLoginInfo', data.user);
-        
+
         return true; // 로그인 성공
       }else{
         // 로그인 실패 처리

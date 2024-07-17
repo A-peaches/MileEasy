@@ -9,5 +9,5 @@ import java.util.ArrayList;
 public interface UserDao {
     User selectUserById(String user_no);
     ArrayList<User> selectAllUser();
-    User checkedUser(String user_no, String user_pw);
+    User checkedUser(String user_no, String user_pw, boolean user_is_admin);
 }

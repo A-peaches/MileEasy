@@ -26,7 +26,7 @@
         <div class="d-flex justify-content-center my-3">
           <div class="mr-8">
             <p style="color: #FFFFFF;">
-              <input type="checkbox" class="form-check-input" />
+              <input type="checkbox" class="form-check-input" v-model="user_is_admin" />
               &nbsp;관리자 로그인
             </p>
           </div>
@@ -48,6 +48,7 @@ export default {
     return{
       user_no: '',
       user_pw: '',
+      user_is_admin: false, // 관리자 로그인 여부 
       
     }
   },
@@ -56,7 +57,8 @@ export default {
     async goLogin(){ // '로그인'버튼 클릭했을 때 실행되는 메서드 
       const loginInfo = {
         user_no: this.user_no,
-        user_pw: this.user_pw
+        user_pw: this.user_pw,
+        user_is_admin: this.user_is_admin
       };
       const success = await this.login(loginInfo);
       if(success){
