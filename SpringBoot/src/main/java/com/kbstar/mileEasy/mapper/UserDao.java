@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Mapper
 public interface UserDao {
@@ -12,7 +13,4 @@ public interface UserDao {
     ArrayList<User> selectAllUser();
     User checkedUser(String user_no, String user_pw);
 
-    Optional<User> findByEmployeeNumberAndEmail(@Param("employeeNumber") String employeeNumber, @Param("email") String email);
-
-    void updatePassword(@Param("user_no") String user_no, @Param("password") String password);
 }

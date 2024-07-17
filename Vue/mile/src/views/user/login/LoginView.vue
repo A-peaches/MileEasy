@@ -26,7 +26,7 @@
         <div class="d-flex justify-content-center my-3">
           <div class="mr-8">
             <p style="color: #FFFFFF;">
-              <input type="checkbox" class="form-check-input" v-model="isAdmin" />
+              <input type="checkbox" class="form-check-input" v-model="isChecked" />
               &nbsp;관리자 로그인
             </p>
           </div>
@@ -48,7 +48,7 @@ export default {
     return{
       user_no: '',
       user_pw: '',
-      isAdmin: false, // 관리자 로그인 여부 
+      isChecked: false, // 관리자 로그인 여부 
       
     }
   },
@@ -58,15 +58,15 @@ export default {
       const loginInfo = {
         user_no: this.user_no,
         user_pw: this.user_pw,
-        user_is_admin: this.isAdmin,
-        user_is_manager: this.isAdmin
+        user_is_admin: this.isChecked,
+        user_is_manager: this.isChecked
       };
 
       const response = await this.login(loginInfo);
       if(response){
-        if(response.user_is_admin && this.isAdmin){
+        if(response.user_is_admin && this.isChecked){
           this.$router.push('/admin'); 
-        }else if(response.user_is_manager && this.isAdmin){
+        }else if(response.user_is_manager && this.isChecked){
           this.$router.push('/manager'); 
         }else{
           this.$router.push('/main'); 

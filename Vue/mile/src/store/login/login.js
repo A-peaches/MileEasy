@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const state = {
   loginInfo: null,
+  isChecked: false
 };
 
 const mutations = {
@@ -11,6 +12,9 @@ const mutations = {
   clearLoginInfo(state) {
     state.loginInfo = null;
   },
+  setIsChecked(state, isChecked){
+    state.isChecked = isChecked;
+  }
 };
 
 const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동기 작업을 수행할 때 사용된다. 
@@ -23,11 +27,13 @@ const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동�
         const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1시간 후 만료
         const storageData = { // 로그인 정보와 만료 시간을 저장한다. 
           loginInfo: data.user,
+          isChecked: data.isChecked,
           expirationTime: expirationTime
         };
         localStorage.setItem('loginInfo', JSON.stringify(storageData)); 
         // localStorage에 storageData 객체를 JSON문자열로 변환하여 저장한다. 키 이름은 'loginInfo'이다. 
         commit('setLoginInfo', data.user);
+        commit('setIsChecked', data.isChecked);
         // Vuex의 commit 메서드를 사용하여 setLoginInfo 뮤테이션을 호출하고, data.user를 인자로 전달하여 로그인 정보를 상태에 저장한다. 
 
         return data; // 로그인 성공 시 사용자 데이터를 반환.
@@ -61,6 +67,7 @@ const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동�
 
 const getters = {
   getLoginInfo: (state) => state.loginInfo,
+  getIsChecked: (state) => state.isChecked,
 };
 
 export default {
