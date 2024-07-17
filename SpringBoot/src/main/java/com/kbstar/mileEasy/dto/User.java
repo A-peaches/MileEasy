@@ -1,14 +1,12 @@
 package com.kbstar.mileEasy.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.Date;
 
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class User {
@@ -22,8 +20,8 @@ public class User {
     private boolean user_is_delete;
     private boolean user_is_manager;
     private boolean user_is_admin;
-    private int dp_no;
-    private int level_no;
-    private int job_no;
-    private int position_no;
+    private String dp_no;
+    private String level_no;
+    private String  job_no;
+    private String position_no;
 }
