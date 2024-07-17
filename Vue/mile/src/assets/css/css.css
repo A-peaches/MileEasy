@@ -384,8 +384,8 @@ main {
   background: linear-gradient(
     to bottom,
     #5fc9ad 38%,
-    #f0f0f0 38%,
-    #f0f0f0 70%
+    #FBFBFB 38%,
+    #FBFBFB 70%
   ); /* 위쪽은 초록색, 아래쪽은 회색 */
   min-height: 100vh;
   padding: 20px;
