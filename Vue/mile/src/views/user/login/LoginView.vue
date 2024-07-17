@@ -26,7 +26,7 @@
         <div class="d-flex justify-content-center my-3">
           <div class="mr-8">
             <p style="color: #FFFFFF;">
-              <input type="checkbox" class="form-check-input" v-model="user_is_admin" />
+              <input type="checkbox" class="form-check-input" v-model="isAdmin" />
               &nbsp;관리자 로그인
             </p>
           </div>
@@ -48,7 +48,7 @@ export default {
     return{
       user_no: '',
       user_pw: '',
-      user_is_admin: false, // 관리자 로그인 여부 
+      isAdmin: false, // 관리자 로그인 여부 
       
     }
   },
@@ -58,15 +58,27 @@ export default {
       const loginInfo = {
         user_no: this.user_no,
         user_pw: this.user_pw,
-        user_is_admin: this.user_is_admin
+        user_is_admin: this.isAdmin,
+        user_is_manager: this.isAdmin
       };
-      const success = await this.login(loginInfo);
-      if(success){
-        this.$router.push('/main');
+
+      const response = await this.login(loginInfo);
+      if(response){
+        if(response.user_is_admin && this.isAdmin){
+          this.$router.push('/admin'); 
+        }else if(response.user_is_manager && this.isAdmin){
+          this.$router.push('/manager'); 
+        }else{
+          this.$router.push('/main'); 
+        }
       }else{
         console.error('Login 실패');
+        this.showAlert();
       }
 
+    }, 
+    showAlert(){
+      this.$swal('유효하지 않은 로그인정보 입니다');
     }
   }
 };

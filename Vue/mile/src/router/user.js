@@ -22,4 +22,16 @@ export default [
     component: () => import('../views/user/main/UserMainView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('../views/user/main/AdminMainView.vue'),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
+  {
+    path: '/manager',
+    name: 'manager',
+    component: () => import('../views/user/main/ManagerMainView.vue'),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
 ];
