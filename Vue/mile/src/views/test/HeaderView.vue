@@ -160,7 +160,7 @@
       </ul>
     </div>
 
-    <!-- 운영관리자 헤더 -->
+    <!-- 운영관리자 헤더  -->
     <div
       v-else-if="
         loginInfo && !loginInfo.user_is_admin && loginInfo.user_is_manager
