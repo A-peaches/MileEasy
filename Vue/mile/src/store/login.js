@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const state = {
-  loginInfo: { is_admin: true, is_manager: false },
+  loginInfo: null,
 };
 
 const mutations = {

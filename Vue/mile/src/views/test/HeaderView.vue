@@ -1,13 +1,10 @@
 <template>
   <div>
     <!-- 사용자 헤더 -->
-    <div v-if="loginInfo.is_admin">
+    <div
+      v-if="loginInfo && !loginInfo.user_is_admin && !loginInfo.user_is_manager"
+    >
       <ul class="nav justify-content-end">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/main"
-            >메인-허접</a
-          >
-        </li>
         <li class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle"
@@ -88,11 +85,87 @@
             </li>
           </ul>
         </li>
+
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" @click="Logout"
+            >로그아웃</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <!-- 마일리지 당담자 헤더 -->
+    <div
+      v-else-if="
+        loginInfo && loginInfo.user_is_admin && !loginInfo.user_is_manager
+      "
+    >
+      <ul class="nav justify-content-end">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            aria-current="page"
+            href="/introduceMileageAdminView"
+            >마일리지 소개</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            aria-current="page"
+            href="/commentMieageeAdminView"
+            >마일리지 멘트</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            aria-current="page"
+            href="/documentsMileageAdminView"
+            >마일리지 문서</a
+          >
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            data-bs-toggle="dropdown"
+            href="#"
+            role="button"
+            aria-expanded="false"
+          >
+            Desk
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="/noticeListView">공지사항</a>
+            </li>
+            <li><a class="dropdown-item" href="/qnaListView">Q&A</a></li>
+            <li>
+              <a class="dropdown-item" href="/mileEasyContactView"
+                >업무별 연락처</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="/mileageContactView"
+                >마일리지 연락처</a
+              >
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" @click="Logout"
+            >로그아웃</a
+          >
+        </li>
       </ul>
     </div>
 
     <!-- 운영관리자 헤더 -->
-    <div v-else>
+    <div
+      v-else-if="
+        loginInfo && !loginInfo.user_is_admin && loginInfo.user_is_manager
+      "
+    >
       <ul class="nav justify-content-end">
         <li class="nav-item dropdown">
           <a
@@ -151,9 +224,13 @@
           </a>
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" href="/myMileageView">M-Tip 가이드</a>
+              <a class="dropdown-item" href="/m_TipMainAdminView"
+                >M-Tip 가이드</a
+              >
             </li>
-            <li><a class="dropdown-item" href="/hrdView">M-Tip 관리</a></li>
+            <li>
+              <a class="dropdown-item" href="/m_TipListView">M-Tip 관리</a>
+            </li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -183,18 +260,32 @@
             </li>
           </ul>
         </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" @click="Logout"
+            >로그아웃</a
+          >
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
+
 export default {
-  name: 'HeaderView',
   computed: {
+    ...mapGetters('login', ['getLoginInfo']),
     loginInfo() {
-      console.log();
-      return this.$store.state.loginInfo;
+      return this.getLoginInfo;
+    },
+  },
+  methods: {
+    ...mapActions('login', ['logout']),
+    Logout() {
+      this.logout();
+      window.location.href = '/login';
     },
   },
 };
