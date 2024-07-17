@@ -389,3 +389,14 @@
 .navy {
     background-color: #3B5872;
 }
+
+main {
+    background: linear-gradient(to bottom, #5FC9AD 38%,  #F0F0F0 38%,#F0F0F0 70%); /* 위쪽은 초록색, 아래쪽은 회색 */
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.flex {
+    display: flex;
+    margin: 0;
+}

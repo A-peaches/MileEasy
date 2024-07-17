@@ -22,6 +22,28 @@
     </select>
 
     <select id="checkedUser" parameterType="map" resultType="com.kbstar.mileEasy.dto.User">
-        SELECT * FROM user WHERE user_no = #{user_no} AND user_pw = #{user_pw}
+        SELECT
+            u.user_no,
+            u.user_email,
+            u.user_pw,
+            u.user_name,
+            u.user_profile,
+            u.user_year,
+            u.user_birth,
+            d.dp_name AS dp_no,
+            l.level_name AS level_no,
+            j.job_name AS job_no,
+            p.position_name AS position_no,
+            u.user_is_delete,
+            u.user_is_manager,
+            u.user_is_admin
+        FROM
+            user u
+                JOIN department d ON u.dp_no = d.dp_no
+                JOIN level l ON u.level_no = l.level_no
+                JOIN job j ON u.job_no = j.job_no
+                JOIN position p ON u.position_no = p.position_no
+        WHERE
+            u.user_no = #{user_no} AND u.user_pw = #{user_pw};
     </select>
 </mapper>
