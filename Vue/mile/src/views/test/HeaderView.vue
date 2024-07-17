@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 사용자 헤더 -->
-    <div v-if="loginInfo === true">
+    <div v-if="loginInfo.is_admin">
       <ul class="nav justify-content-end">
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/main"
@@ -105,10 +105,12 @@
             마왕관리
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/myMileageView">TOP</a></li>
-            <li><a class="dropdown-item" href="/hrdView">채택하기</a></li>
+            <li><a class="dropdown-item" href="/kingTopAdminView">TOP</a></li>
             <li>
-              <a class="dropdown-item" href="/monthlyBestView"
+              <a class="dropdown-item" href="/kingSelectAdminView">채택하기</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/kingBadgeOptionAdminView"
                 >배지 디자인 변경</a
               >
             </li>
@@ -126,9 +128,15 @@
           </a>
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" href="/myMileageView">마일리지 추가</a>
+              <a class="dropdown-item" href="/mileageAddAdminView"
+                >마일리지 추가</a
+              >
             </li>
-            <li><a class="dropdown-item" href="/hrdView">마일리지 수정</a></li>
+            <li>
+              <a class="dropdown-item" href="/mileageModifyAdminView"
+                >마일리지 수정</a
+              >
+            </li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -185,6 +193,7 @@ export default {
   name: 'HeaderView',
   computed: {
     loginInfo() {
+      console.log();
       return this.$store.state.loginInfo;
     },
   },

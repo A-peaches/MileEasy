@@ -9,8 +9,8 @@
     <h3>등록하기 버튼</h3>
 
     <hr />
-    <a href=""><h3>마일리지 추가</h3></a>
-    <a href=""><h3>마일리지 수정</h3></a>
+    <a href="/mileageAddAdminView"><h3>마일리지 추가</h3></a>
+    <a href="/mileageModifyAdminView"><h3>마일리지 수정</h3></a>
   </div>
 </template>
 

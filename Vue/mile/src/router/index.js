@@ -9,6 +9,7 @@ import M_TipRoutes from './m_Tip';
 import NoticeRoutes from './notice';
 import ContactRoutes from './contact';
 import QnaRoutes from './qna';
+import MileEasyAdminRoutes from './mileEasyAdmin';
 
 const routes = [
   ...userRoutes,
@@ -19,6 +20,7 @@ const routes = [
   ...NoticeRoutes,
   ...ContactRoutes,
   ...QnaRoutes,
+  ...MileEasyAdminRoutes,
   {
     path: '/login',
     name: 'LoginView',

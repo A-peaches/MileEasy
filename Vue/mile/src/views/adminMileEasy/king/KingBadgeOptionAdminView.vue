@@ -11,14 +11,14 @@
     <h3>변경하기 버튼</h3>
 
     <hr />
-    <a href=""><h3>TOP</h3></a>
-    <a href=""><h3>채택하기</h3></a>
-    <a href=""><h3>배지 디자인 변경</h3></a>
+    <a href="/kingTopAdminView"><h3>TOP</h3></a>
+    <a href="/kingSelectAdminView"><h3>채택하기</h3></a>
+    <a href="/kingBadgeOptionAdminView"><h3>배지 디자인 변경</h3></a>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'KingSelectAdminView',
+  name: 'KingBadgeOptionAdminView',
 };
 </script>

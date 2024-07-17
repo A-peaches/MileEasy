@@ -3,12 +3,12 @@
   <div class="about">
     <h1>관리자 마일리지 수정</h1>
     <h3>마일리지 리스트</h3>
-    <a href=""><h3>수정</h3></a>
+    <a href="/mileageModifyDetailAdminView"><h3>수정</h3></a>
     <h3>삭제</h3>
 
     <hr />
-    <a href=""><h3>마일리지 추가</h3></a>
-    <a href=""><h3>마일리지 수정</h3></a>
+    <a href="/mileageAddAdminView"><h3>마일리지 추가</h3></a>
+    <a href="/mileageModifyAdminView"><h3>마일리지 수정</h3></a>
   </div>
 </template>
 
