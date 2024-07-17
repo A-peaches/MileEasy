@@ -18,5 +18,5 @@ public class QnAController {
     private QuesetionService quesetionService;
     @Autowired
     private AnswerService answerService;
-    
+
 }
