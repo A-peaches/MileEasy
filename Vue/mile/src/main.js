@@ -15,6 +15,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import VueScreen from 'vue-screen';
 import VueDeviceDetector from 'vue3-device-detector';
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 // Axios 설정
 const app = createApp(App);
