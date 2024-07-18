@@ -49,7 +49,14 @@
         <div v-if="isModalOpen" class="modals">
       <div class="modals-content">
         <span class="close" @click="closeModal">&times;</span>
-        <p>모달 내용</p>
+        <p>즐겨찾기 추가하기</p>
+        <!-- 즐겨찾기 선택 목록 -->
+        <div class="favorite-options">
+          <div v-for="(item, index) in allFavorites" :key="index" class="favorite-item" :class="{ selected: selectedFavorites.includes(item) }" @click="toggleFavorite(item)">
+            {{ item }}
+          </div>
+        </div>
+        <button @click="updateFavorites">등록</button>
       </div>
     </div>
   </div>
@@ -58,7 +65,7 @@
 
 </template>
   
-  <script>
+<script>
 import { mapGetters } from "vuex";
 
 export default {
@@ -86,7 +93,7 @@ export default {
   methods: {
     getMileageMax(mileNo) {
       const mileage = this.getArrayMileage.find((m) => m.mile_name === mileNo);
-      return mileage.mile_max != 0 ? mileage.mile_max : "-";
+      return mileage?.mile_max ?? "-"; // Optional chaining과 Nullish coalescing operator 사용
     },
     openModal() {
       this.isModalOpen = true;
@@ -110,6 +117,7 @@ export default {
   },
 };
 </script>
+
   
   <style>
 .flex {

@@ -54,26 +54,25 @@
 
 /* SweetAlert2 커스텀 스타일 */
 .swal2-popup {
-    width: 512px;
-    height: 350px;
-    background: #fff !important; /* 배경색 변경 */
-    color: #4b4a4a !important; /* 텍스트 색상 변경 */
-    font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
-    font-size: 12pt !important;
+  width: 512px;
+  height: 350px;
+  background: #fff !important; /* 배경색 변경 */
+  color: #4b4a4a !important; /* 텍스트 색상 변경 */
+  font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
+  font-size: 12pt !important;
 }
 
 .swal2-confirm {
-    background-color: #19c99b !important; /* 확인 버튼 색상 변경 */
-    border-color: #19c99b !important;
-    color: #fff !important;
-    font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
-    
+  background-color: #19c99b !important; /* 확인 버튼 색상 변경 */
+  border-color: #19c99b !important;
+  color: #fff !important;
+  font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
 }
 
 .swal2-cancel {
-    background-color: #f89f94 !important; /* 취소 버튼 색상 변경 */
-    border-color: #f89f94 !important;
-    color: #4b4a4a !important;
+  background-color: #f89f94 !important; /* 취소 버튼 색상 변경 */
+  border-color: #f89f94 !important;
+  color: #4b4a4a !important;
 }
 
 /* 초록색 버튼 */
@@ -408,8 +407,8 @@ main {
   background: linear-gradient(
     to bottom,
     #5fc9ad 38%,
-    #FBFBFB 38%,
-    #FBFBFB 70%
+    #fbfbfb 38%,
+    #fbfbfb 70%
   ); /* 위쪽은 초록색, 아래쪽은 회색 */
   min-height: 100vh;
   padding: 5px;

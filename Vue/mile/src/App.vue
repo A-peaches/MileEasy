@@ -71,5 +71,5 @@ export default {
 </script>
 
 <style>
-@import url('../../mile/src/assets/css/css.css');
+@import url('./assets/css/css.css');
 </style>
