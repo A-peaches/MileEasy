@@ -11,7 +11,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-public class mile_history {
+public class MileHistory {
     private int mile_history_no;
     private String user_no;
     private int mile_no;
