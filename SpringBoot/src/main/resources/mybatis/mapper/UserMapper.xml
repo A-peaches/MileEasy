@@ -36,7 +36,8 @@
             p.position_name AS position_no,
             u.user_is_delete,
             u.user_is_manager,
-            u.user_is_admin
+            u.user_is_admin,
+            u.mile_no
         FROM
             user u
                 JOIN department d ON u.dp_no = d.dp_no
@@ -54,4 +55,20 @@
     <update id="updatePW">
         update user set user_pw = #{tempPw} where user_no = #{user_no};
     </update>
+
+    <select id="selectMileTitle" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT
+            u.user_name,
+            u.user_profile,
+            d.dp_name as dp_name,
+            m.mile_name as mile_no
+        FROM
+            user u
+                JOIN
+            department d ON u.dp_no = d.dp_no
+                LEFT JOIN
+            mileage m ON u.mile_no = m.mile_no
+        WHERE
+            u.user_no = #{user_no};
+    </select>
 </mapper>

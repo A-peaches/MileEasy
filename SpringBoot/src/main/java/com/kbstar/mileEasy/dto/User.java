@@ -18,10 +18,11 @@ public class User {
     private int user_year;
     private Date user_birth;
     private boolean user_is_delete;
-    private String user_is_manager;
+    private boolean user_is_manager;
     private boolean user_is_admin;
     private String dp_no;
     private String level_no;
     private String job_no;
     private String position_no;
+    private int mile_no;
 }

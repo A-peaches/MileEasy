@@ -16,4 +16,6 @@ public interface UserDao {
     User selectUserByEmail(String user_no);
 
     int updatePW(String tempPw, String user_no);
+
+    User selectMileTitle(String user_no);
 }

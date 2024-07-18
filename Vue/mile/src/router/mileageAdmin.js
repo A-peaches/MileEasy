@@ -3,10 +3,10 @@ export default [
 
   {
     //마일리지 담당자 메인 화면
-    path: '/mileageMainAdminViiew',
-    name: 'mileageMainAdminViiew',
+    path: '/manager',
+    name: 'manager',
     component: () =>
-      import('../views/adminMileage/main/MileageMainAdminView.vue'),
+      import('../views/user/main/ManagerMainView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
   {

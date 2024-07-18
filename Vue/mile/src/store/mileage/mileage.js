@@ -1,22 +1,30 @@
 // src/store/modules/mileage.js
-// import axios from 'axios';
+import axios from 'axios';
 
 const state = {
-  objectMileage: null,
+  mileInfo: null,
 };
 
 const mutations = {
-  setObjectMileage(state, payload) {
-    state.objectMileage = payload;
+  setMileInfo(state, mileInfo) {
+    state.mileInfo = mileInfo;
   },
 };
 
 const actions = {
+  async fetchMileInfo({commit}, user_no){
+    try{
+      const response = await axios.get(`http://localhost:8090/mileage/mileIntro/${user_no}`);
+      commit('setMileInfo', response.data);
+    }catch(error){
+      console.error('Error fetching mile info:', error);
+    }
+  }
   
 };
 
 const getters = {
-  getObjectMileage: (state) => state.objectMileage,
+  getMileInfo: (state) => state.mileInfo,
 };
 
 
