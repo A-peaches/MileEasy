@@ -14,20 +14,33 @@
             : ''
         }}
       </p>
+      <p class="md mb-2" style="margin-bottom: 0px">
+        {{
+          loginInfo
+            ? `${loginInfo.dp_no}`
+            : ''
+        }}
+      </p>
       <button class="btn-yellow KB_C2 my-3">나의 마일리지</button>
     </div>
     <favorite style="width: 70%; margin-left: 3%" />
+  </div>
+
+  <!-- 추천 멘트-->
+  <div class="flex" style="margin-left: 10%; margin-right: 10%">
+    <recommand class="my-5"/>
   </div>
 </template>
 
 asw nns dx
 <script>
 import favorite from '@/components/main/FavoriteCom.vue';
+import recommand from '@/components/main/MileRecommand.vue';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'UserMainView',
-  components: { favorite },
+  components: { favorite, recommand },
   methods: {},
   computed: {
     ...mapGetters('login', ['getLoginInfo']),

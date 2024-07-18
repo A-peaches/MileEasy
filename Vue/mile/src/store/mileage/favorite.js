@@ -27,7 +27,7 @@ const actions = {
   async changeFavorite({ commit }, { user_no, favorites }) {
     try {
       //즐겨찾기 변경 요청
-      const response = await axios.post(`http://localhost:8090/favorite/changeFavorite`,{ user_no, favorites });
+      const response = await axios.post(`http://localhost:8090/favorite/changeFavorite/${user_no}`, favorites );
       commit('setArrayFavorite', response.data); //업데이트 된 정보 반환.
     } catch (error) {
       console.error('Error getting Favorite data:', error);
