@@ -1,32 +1,35 @@
-// src/store/modules/mileage.js
 import axios from 'axios';
 
 const state = {
-  mileInfo: null,
+  objectMileage: null,
+  arrayMileage: []
 };
 
 const mutations = {
   setMileInfo(state, mileInfo) {
     state.mileInfo = mileInfo;
   },
+  setArrayMileage(state, payload) {
+    state.arrayMileage = payload; 
+  },
 };
 
 const actions = {
-  async fetchMileInfo({commit}, user_no){
-    try{
-      const response = await axios.get(`http://localhost:8090/mileage/mileIntro/${user_no}`);
-      commit('setMileInfo', response.data);
-    }catch(error){
-      console.error('Error fetching mile info:', error);
+  // 마일리지 정보를 모두 가져오기
+  async getMileage({ commit }) {
+    try {
+      const response = await axios.get('http://localhost:8090/mileage/getMileage');
+      commit('setArrayMileage', response.data);
+    } catch (error) {
+      console.error('Error getting all mileage data:', error);
     }
-  }
-  
+  },
 };
 
 const getters = {
-  getMileInfo: (state) => state.mileInfo,
+  getObjectMileage: (state) => state.objectMileage,
+  getArrayMileage: (state) => state.arrayMileage, 
 };
-
 
 export default {
   namespaced: true, 

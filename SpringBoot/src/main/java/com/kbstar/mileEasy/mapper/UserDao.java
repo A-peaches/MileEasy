@@ -17,5 +17,5 @@ public interface UserDao {
 
     int updatePW(String tempPw, String user_no);
 
-    User selectMileTitle(String user_no);
+
 }

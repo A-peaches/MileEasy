@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.manager;
 
+import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.mapper.AttendanceDao;
 import com.kbstar.mileEasy.mapper.ManagerDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ public class ManagerService {
 
     @Autowired
     private ManagerDao managerDao;
+
+    public User getMileTitle(String user_no) { return managerDao.selectMileTitle(user_no);}
 
 
 }

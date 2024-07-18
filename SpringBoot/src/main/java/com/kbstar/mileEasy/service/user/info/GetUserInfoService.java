@@ -19,8 +19,6 @@ public class GetUserInfoService {
         return userDao.selectUserById(user_no);
     }
 
-    public User getMileTitle(String user_no) { return userDao.selectMileTitle(user_no);}
-
     public ArrayList<User> getAllUser() {
         return userDao.selectAllUser();
     } //getAllUser 실행 -> mapper : userDao.selectAllUser() 실행 ->  ArrayList<User>형태로 내용을 받음 -> 다시 컨트롤러로 돌아감
