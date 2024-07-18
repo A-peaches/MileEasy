@@ -13,7 +13,7 @@
         <img
           v-if="!favoriteList[index - 1]"
           src="@/assets/img/add.png"
-          class="addImg"
+          class="addImg mx-auto"
           @click="openModal"
         />
         <div v-else>
@@ -140,13 +140,11 @@ export default {
 
     getMileageMax(mileNo) {
       const mileage = this.mileageInfo.find((m) => m.mile_name == mileNo);
-      return mileage?.mile_max ?? "-";
+      return mileage?.mile_max ?? "a";
     },
     getMileageScore(mileNo) {
       const mileage = this.mileScores.find((m) => m.mile_no == mileNo);
-      console.log("쀼", mileNo);
-      console.log("쀼쀼", this.mileScores);
-      return mileage?.mile_score_point ?? "-";
+      return mileage?.mile_score_point ?? "0";
     },
     openModal() {
       this.isModalOpen = true;
@@ -181,11 +179,10 @@ export default {
           favorites: this.selectedFavorites, 
           //서버로 접근하여 DB favorite 업데이트 
         }).then(() => {
-        //   this.$store.dispatch("favorite/getFavorite", this.loginInfo.user_no); 
-        // 감시자 존재로 재호출 안해도됨, computed..
+          this.$store.dispatch("favorite/getFavorite", this.loginInfo.user_no); 
+
           this.closeModal();
         });
-      console.log(this.selectedFavorites);
       this.closeModal();
     },
   },

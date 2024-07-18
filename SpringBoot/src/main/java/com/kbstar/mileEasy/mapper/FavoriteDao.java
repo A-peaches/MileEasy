@@ -10,4 +10,8 @@ import java.util.ArrayList;
 public interface FavoriteDao {
 
     ArrayList<Favorite> getFavorite(String userNo);
+
+    void deleteFavorite(String userNo);
+
+    void insertFavorite(String userNo, String favorite);
 }
