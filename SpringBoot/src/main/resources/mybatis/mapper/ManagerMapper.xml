@@ -22,4 +22,8 @@
         SELECT * FROM mile_introduce WHERE mile_no = #{mile_no};
     </select>
 
+    <insert id="insertMile">
+        insert into mile_introduce (mile_no, mile_title, mile_content) values (#{mile_no}, #{mile_title}, #{mile_content});
+    </insert>
+
 </mapper>

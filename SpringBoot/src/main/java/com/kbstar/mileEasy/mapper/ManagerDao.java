@@ -10,4 +10,5 @@ public interface ManagerDao {
 
     User selectMileTitle(String user_no);
     List<MileIntroduce> selectMileDetail(String mile_no);
+    int insertMile(String mile_no, String mile_title, String mile_content);
 }

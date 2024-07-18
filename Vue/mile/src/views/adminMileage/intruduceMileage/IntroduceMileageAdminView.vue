@@ -17,6 +17,9 @@
         </div>
       </div>
     </div>
+    <div class="my-5">
+      <button @click="goModify" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">추가하기</button>
+    </div>
   </div>
 </template>
 
@@ -39,7 +42,10 @@ export default {
   },
   methods: {
     ...mapActions('mile', ['fetchMileInfo']),
-    ...mapActions('mile', ['getMileDetail'])
+    ...mapActions('mile', ['getMileDetail']),
+    goModify(){
+      this.$router.push('/introduceMileageAddAdminView');
+    }
   },
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
@@ -63,8 +69,8 @@ export default {
 <style scope>
 .page-back {
   width: 70%;
-  /* height: 100%; */
-  height: 800px;
+  height: 100%;
+  /* height: 800px; */
   margin-top: 5%;
 }
 </style>

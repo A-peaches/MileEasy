@@ -16,5 +16,5 @@ public class ManagerService {
 
     public User getMileTitle(String user_no) { return managerDao.selectMileTitle(user_no);}
     public List<MileIntroduce> getMileDetail(String mile_no) { return managerDao.selectMileDetail(mile_no);}
-
+    public int addMileage(String mile_no, String mile_title, String mile_content) { return managerDao.insertMile(mile_no, mile_title, mile_content);}
 }

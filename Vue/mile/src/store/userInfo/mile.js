@@ -35,6 +35,14 @@ const actions = {
     }catch(error){
       console.error('Error get mile detail:', error);
     }
+  },
+  async addMile({commit}, mileInfo){
+    try{
+      const response = await axios.post(`http://localhost:8090/manager/mileAdd`, mileInfo)
+      commit('setMileInfo', response.data);
+    }catch(error){
+      console.error('Error add mile:', error);
+    }
   }
   
 };
