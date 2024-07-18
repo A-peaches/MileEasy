@@ -24,4 +24,8 @@ public class GetUserInfoService {
     public User checkedUser(String user_no, String user_pw) {
         return userDao.checkedUser(user_no, user_pw);
     }
+
+    public boolean resetPassword(PasswordResetRequest request){
+        List<User> users = userDao.
+    }
 }
