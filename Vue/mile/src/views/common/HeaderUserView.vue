@@ -8,10 +8,10 @@
         </a>
       </div>
       <div class="menu">
-        <ul class="nav justify-content-end">
-          <li class="nav-item dropdown">
+        <div class="nav justify-content-end">
+          <div class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle no-caret"
               href="#"
               role="button"
               data-bs-toggle="dropdown"
@@ -41,18 +41,18 @@
                 >
               </div>
             </div>
-          </li>
-          <li class="nav-item">
+          </div>
+          <div class="nav-item">
             <a class="nav-link active" aria-current="page" href="/documentsView"
               >문서모아</a
             >
-          </li>
-          <li class="nav-item">
+          </div>
+          <div class="nav-item">
             <a class="nav-link" href="/m_TipMainView">M-Tip</a>
-          </li>
-          <li class="nav-item dropdown">
+          </div>
+          <div class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle no-caret"
               href="#"
               role="button"
               data-bs-toggle="dropdown"
@@ -72,32 +72,45 @@
                 >
               </div>
             </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="Logout"
-              >로그아웃</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="Logout"
-              ><i class="bi bi-bell-fill"></i
-            ></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="Logout"
-              ><i class="bi bi-calendar-check"></i
-            ></a>
-          </li>
-        </ul>
+          </div>
+
+          <div class="nav-item">
+            <a class="nav-link active" aria-current="page" @click="Logout">
+              <i class="bi bi-bell-fill"></i>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link active" aria-current="page" @click="Logout">
+              <i class="bi bi-calendar-check"></i>
+            </a>
+          </div>
+        </div>
       </div>
       <div>
-        <a href="/main">
-          <img
-            src="@/assets/img/test.png"
-            class="profile-small"
-            alt="Profile Picture"
-          />
-        </a>
+        <div class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle no-caret"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              src="@/assets/img/test.png"
+              class="profile-small"
+              alt="Profile Picture"
+            />
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" aria-current="page" @click="Logout"
+              >로그아웃</a
+            >
+            <a class="dropdown-item" href="/passwordChangeView"
+              >비밀번호 변경</a
+            >
+            <a class="dropdown-item" href="/badgeStatusView">배지 취득 현황</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -172,6 +185,7 @@ export default {
   color: #333;
   display: inline-block; /* 인라인 블록 요소로 표시 */
   justify-content: center;
+  text-align: center;
   white-space: nowrap; /* 한 줄에 모두 표시하기 위해 줄 바꿈 방지 */
   margin-right: 10px; /* 각 항목 사이 간격을 위해 마진 추가 */
 }
@@ -194,5 +208,10 @@ export default {
 .a_link {
   color: #fff;
   text-decoration: none;
+}
+
+/* 드롭다운 화살표 숨기기 */
+.no-caret::after {
+  display: none !important;
 }
 </style>
