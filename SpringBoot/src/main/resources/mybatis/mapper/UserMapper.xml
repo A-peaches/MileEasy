@@ -46,4 +46,12 @@
         WHERE
             u.user_no = #{user_no} AND u.user_pw = #{user_pw};
     </select>
+
+    <select id ="selectUserByEmail" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT * FROM user WHERE user_no = #{user_no};
+    </select>
+
+    <update id="updatePW">
+        update user set user_pw = #{tempPw} where user_no = #{user_no};
+    </update>
 </mapper>
