@@ -9,21 +9,21 @@
       <form @submit.prevent="verifyIdentity" class="reset-form">
         <div class="password-reset">
         <div class="form-group mb-3">
-          <label for="employee-number" class="input-label">직원번호</label>
+          <label for="user_no" class="input-label">직원번호</label>
           <input
             type="text"
-            id="employee-number"
-            v-model="employeeNumber"
+            id="user_no"
+            v-model="user_no"
             placeholder="직원번호를 입력하세요"
             required
           />
         </div>
         <div class="form-group">
-          <label for="email" class="input-label">이메일</label>
+          <label for="user_email" class="input-label">이메일</label>
           <input
             type="email"
-            id="email"
-            v-model="email"
+            id="user_email"
+            v-model="user_email"
             placeholder="이메일을 입력하세요"
             required
           />
@@ -43,8 +43,8 @@ export default {
   name: 'PasswordReissueView',
   data() {
     return {
-      employeeNumber: '',
-      email: ''
+      user_no: '',
+      user_email: ''
     };
   },
   methods: {
@@ -54,8 +54,8 @@ export default {
     async verifyIdentity() {
      try{
         const response = await axios.post('/api/password-reset', {
-          employeeNumber : this. employeeNumber,
-          emil : this. email
+          user_no : this.user_no,
+          user_email : this.user_email
         });
         if (response.data.success) {
           alert('임시 비밀번호가 이메일로 전송되었습니다.');

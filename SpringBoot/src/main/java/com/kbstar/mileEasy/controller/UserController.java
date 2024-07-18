@@ -73,4 +73,14 @@ public class UserController {
             // HTTP 상태코드 401(Unauthorized)과 함께 메시지를 응답 본문으로 반환한다.
         }
     }
+
+    @PostMapping("/pw-reset")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request){
+        boolean result = GetUserInfoService.resetPassword(request);
+        if(result){
+            return ResponseEntity.ok().body("인증번호가 발송 되었습니다");
+        }else{
+            return ResponseEntity.status(400).body("인증번호 발송이 실패되었습니다");
+        }
+    }
 }
