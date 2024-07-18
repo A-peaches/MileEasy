@@ -4,4 +4,8 @@
     <select id ="getMileage" resultType="com.kbstar.mileEasy.dto.Mileage"> <!--selectAllUser 실행 -->
         SELECT * FROM mileage;
     </select>
+
+    <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+        select mile_name as mile_no, mile_score_point from mile_score as s join mileage as m on m.mile_no = s.mile_no where user_no = #{userNo};
+    </select>
 </mapper>

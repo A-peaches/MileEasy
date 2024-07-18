@@ -1,5 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.dto.Favorite;
+import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.dto.Mileage;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
@@ -52,5 +54,11 @@ public class MileageController {
         ArrayList<Mileage> mileList = mileService.getMileage();
         System.out.println(mileList);
         return mileList;
+    }
+
+    @GetMapping("/getMileScore/{user_no}")
+    public ArrayList<MileScore> getMileScore(@PathVariable String user_no) {
+        ArrayList<MileScore> mileScoreList = mileScoreService.getMileScore(user_no);
+        return mileScoreList;
     }
 }
