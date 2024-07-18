@@ -13,6 +13,11 @@ import Header from './views/test/HeaderView.vue';
 
 export default {
   name: 'App',
+  data() {
+    return {
+      isModalOpen: false,
+    };
+  },
   components: {
     Header,
   },
@@ -21,6 +26,8 @@ export default {
   },
   methods: {
     ...mapActions('login', ['checkLogin']),
+
+    
   },
 };
 </script>
