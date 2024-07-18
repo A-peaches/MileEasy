@@ -1,4 +1,5 @@
 package com.kbstar.mileEasy.mapper;
+import com.kbstar.mileEasy.dto.HitMile;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.dto.Mileage;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,4 +21,6 @@ public interface MileageDao {
 
     ArrayList<Mileage> getMileage();
     ArrayList<MileScore> getMileScore(String userNo);
+
+    ArrayList<HitMile> getHitMile();
 }

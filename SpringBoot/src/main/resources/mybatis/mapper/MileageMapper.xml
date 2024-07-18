@@ -28,5 +28,16 @@
         WHERE mile_no = #{mile_no} and hit_date = CURRENT_DATE;
     </update>
 
+    <select id="getHitMile" resultType="com.kbstar.mileEasy.dto.HitMile">
+        SELECT m.mile_no, COALESCE(h.hit_count, 0) AS hit_count
+        FROM mileage m
+                 LEFT JOIN (
+            SELECT mile_no, hit_count
+            FROM hit_mile
+            WHERE hit_date = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY)
+        ) h ON m.mile_no = h.mile_no
+        ORDER BY m.mile_no;
+    </select>
+
 
 </mapper>

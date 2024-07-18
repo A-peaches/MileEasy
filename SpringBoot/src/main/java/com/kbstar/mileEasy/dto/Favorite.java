@@ -1,7 +1,6 @@
 package com.kbstar.mileEasy.dto;
 
 import lombok.*;
-
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

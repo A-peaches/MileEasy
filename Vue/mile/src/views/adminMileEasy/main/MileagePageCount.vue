@@ -11,43 +11,61 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import Chart from 'chart.js/auto'; // Chart.js를 import
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 export default {
-  name: 'MileagePageConunt',
+  name: 'MileagePageCount',
   data() {
     return {
-      isModalOpen: false,
-      chart: null, // 차트 인스턴스를 저장할 변수 추가
+      chart: null,
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
-    loginInfo() {
-      return this.getLoginInfo;
+    ...mapGetters('mileage', ['getArrayMileage']),
+    ...mapGetters('hitMile', ['getHitMileChart']),
+    chartLabels() {
+      const labels =
+        this.getArrayMileage && this.getArrayMileage.length
+          ? this.getArrayMileage.map((item) => item.mile_name)
+          : [];
+      console.log('Chart Labels:', labels);
+      return labels;
     },
+    chartData() {
+      const data =
+        this.getHitMileChart && this.getHitMileChart.length
+          ? this.getHitMileChart.map((item) => item.hit_count || item.ht_count) // item.ht_count 추가
+          : [];
+      console.log('Chart Data:', data);
+      return data;
+    },
+  },
+  watch: {
+    getArrayMileage: 'renderChart',
+    getHitMileChart: 'renderChart',
   },
   methods: {
     renderChart() {
-      const ctx = document.getElementById('myChart');
-      if (!ctx) return; // DOM이 아직 준비되지 않았으면 종료
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
+      const ctx = document.getElementById('myChart').getContext('2d');
+      if (!ctx) {
+        console.error('Canvas element not found');
+        return;
+      }
 
       const chartData = {
         type: 'bar',
         data: {
-          labels: [
-            'HRD',
-            'MonthlyBest',
-            'MonthlyBase',
-            'Hot Tip',
-            'BEST PG',
-            'BEST 지점',
-            '소비자 지원',
-            '리그 테이블 ',
-          ],
+          labels: this.chartLabels,
           datasets: [
             {
-              data: [12, 19, 3, 5, 2, 3, 2, 9],
+              label: '방문자 수',
+              data: this.chartData,
               backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -84,13 +102,14 @@ export default {
       this.chart = new Chart(ctx, chartData);
     },
   },
-  watch: {},
   mounted() {
-    this.renderChart(); // 컴포넌트가 마운트될 때 차트를 렌더링합니다.
+    console.log('Component mounted');
+    this.$store.dispatch('mileage/getMileage');
+    this.$store.dispatch('hitMile/hit_mileChart');
   },
-  unmounted() {
+  beforeUnmount() {
     if (this.chart) {
-      this.chart.destroy(); // 컴포넌트가 파괴될 때 차트 인스턴스를 제거합니다.
+      this.chart.destroy();
     }
   },
 };
@@ -101,8 +120,8 @@ export default {
   width: 100%;
   display: flex;
   height: 300px;
-  justify-content: center; /* 가로 중앙 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
 }
 .addImg {
   width: 18%;
