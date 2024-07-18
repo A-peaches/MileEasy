@@ -18,4 +18,8 @@
             u.user_no = #{user_no};
     </select>
 
+    <select id="selectMileDetail" resultType="com.kbstar.mileEasy.dto.MileIntroduce">
+        SELECT * FROM mile_introduce WHERE mile_no = #{mile_no};
+    </select>
+
 </mapper>

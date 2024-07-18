@@ -21,6 +21,7 @@ import monthlyKing from './mileage/monthlyKing';
 import mileExcel from './mileage/mileExcel';
 import mileExcelHistory from './mileage/mileExcelHistory';
 import mileRecommand from './mileage/mileRecommand';
+import mile from './userInfo/mile';
 
 export default createStore({
   modules: {
@@ -44,6 +45,7 @@ export default createStore({
     monthlyKing,
     mileExcel,
     mileExcelHistory,
-    mileRecommand
+    mileRecommand,
+    mile,
   }
 });

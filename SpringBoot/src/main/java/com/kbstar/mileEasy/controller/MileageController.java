@@ -1,22 +1,16 @@
 package com.kbstar.mileEasy.controller;
 
-<<<<<<< HEAD
-=======
+
 import com.kbstar.mileEasy.dto.Favorite;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.dto.Mileage;
->>>>>>> 3db48a63b15d1ec5dc0e83aa27bf298bef936e51
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.mileage.type.*;
-<<<<<<< HEAD
-import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
-=======
 import com.kbstar.mileEasy.service.user.favorite.FavoriteService;
->>>>>>> 3db48a63b15d1ec5dc0e83aa27bf298bef936e51
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

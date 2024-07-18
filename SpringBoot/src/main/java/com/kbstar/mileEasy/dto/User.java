@@ -24,5 +24,5 @@ public class User {
     private String level_no;
     private String job_no;
     private String position_no;
-    private int mile_no;
+    private String mile_no;
 }
