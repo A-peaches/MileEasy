@@ -5,7 +5,28 @@
         SELECT * FROM mileage;
     </select>
 
+
     <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
         select mile_name as mile_no, mile_score_point from mile_score as s join mileage as m on m.mile_no = s.mile_no where user_no = #{userNo};
     </select>
+
+    <select id="getHitMileCount" resultType="int">
+        SELECT COUNT(*)
+        FROM hit_mile
+        WHERE mile_no = #{mile_no}
+          AND hit_date = CURRENT_DATE;
+    </select>
+
+    <insert id="insertHitMile">
+        INSERT INTO hit_mile (mile_no, hit_count, hit_date)
+        VALUES (#{mile_no},1, CURRENT_DATE);
+    </insert>
+
+    <update id="updateMile">
+        UPDATE hit_mile
+        SET hit_count = hit_count + 1
+        WHERE mile_no = #{mile_no} and hit_date = CURRENT_DATE;
+    </update>
+
+
 </mapper>

@@ -56,7 +56,7 @@
               class="KB_C1 mx-auto"
               style="font-size: 30pt; margin-bottom: 40px; margin-top: 5px"
             >
-              {{ getMileageScore(favoriteList[index - 1]?.mile_no) }}pt
+              {{ getMileageScore(favoriteList[index + 1]?.mile_no) }}pt
             </div>
           </div>
         </div>

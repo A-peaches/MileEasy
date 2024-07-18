@@ -9,6 +9,7 @@ import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.mileage.type.*;
+import com.kbstar.mileEasy.service.user.favorite.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,9 +57,18 @@ public class MileageController {
         return mileList;
     }
 
+
     @GetMapping("/getMileScore/{user_no}")
     public ArrayList<MileScore> getMileScore(@PathVariable String user_no) {
         ArrayList<MileScore> mileScoreList = mileScoreService.getMileScore(user_no);
         return mileScoreList;
     }
+
+    //페이지별 방문자수 처리
+    @GetMapping("hit_mile/{mile_no}")
+    public void hit_mile(@PathVariable String mile_no) {
+        hitMileService.hitMile(mile_no);
+    }
+
+
 }

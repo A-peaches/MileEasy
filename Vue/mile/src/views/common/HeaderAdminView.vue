@@ -3,14 +3,17 @@
     <!-- 운영관리자 헤더  -->
     <div class="header">
       <div class="logo lg">
-        <a href="/main" class="a_link">
+        <a href="/admin" class="a_link">
           <span class="logo-text">MileEasy</span>
         </a>
       </div>
       <div class="menu">
         <ul class="nav justify-content-end">
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+            <a
+              class="nav-link dropdown-toggle no-caret"
+              data-bs-toggle="dropdown"
+            >
               마왕관리
             </a>
             <ul class="dropdown-menu">
@@ -29,7 +32,7 @@
           </li>
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle no-caret"
               data-bs-toggle="dropdown"
               href="#"
               role="button"
@@ -52,7 +55,7 @@
           </li>
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle no-caret"
               data-bs-toggle="dropdown"
               href="#"
               role="button"
@@ -73,7 +76,7 @@
           </li>
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              class="nav-link dropdown-toggle no-caret"
               data-bs-toggle="dropdown"
               href="#"
               role="button"
@@ -91,28 +94,34 @@
                   >업무별 연락처</a
                 >
               </li>
-              <li>
-                <a class="dropdown-item" href="/mileageContactView"
-                  >마일리지 연락처</a
-                >
-              </li>
             </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="Logout"
-              >로그아웃</a
-            >
           </li>
         </ul>
       </div>
       <div>
-        <a href="/main">
-          <img
-            src="@/assets/img/test.png"
-            class="profile-small"
-            alt="Profile Picture"
-          />
-        </a>
+        <div class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle no-caret"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              src="@/assets/img/test.png"
+              class="profile-small"
+              alt="Profile Picture"
+            />
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" aria-current="page" @click="Logout"
+              >로그아웃</a
+            >
+            <a class="dropdown-item" href="/passwordChangeView"
+              >비밀번호 변경</a
+            >
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -177,6 +186,7 @@ export default {
 }
 
 .dropdown-menu {
+  text-align: center;
   background-color: #fff6;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -209,5 +219,28 @@ export default {
 .a_link {
   color: #fff;
   text-decoration: none;
+}
+
+/* 드롭다운 화살표 숨기기 */
+.no-caret::after {
+  display: none !important;
+  content: '' !important;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+  content: '' !important;
+}
+
+.nav-link.no-caret {
+  appearance: none;
+}
+
+.profile-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 }
 </style>
