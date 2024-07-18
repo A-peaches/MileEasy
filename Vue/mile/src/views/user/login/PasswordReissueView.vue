@@ -6,69 +6,72 @@
       </button>
     </div>
       <h2>비밀번호 재발급</h2>
-      <form @submit.prevent="verifyIdentity" class="reset-form">
+      <form @submit.prevent="sendEmailHandler" class="reset-form">
         <div class="password-reset">
         <div class="form-group mb-3">
-          <label for="employee-number" class="input-label">직원번호</label>
+          <label for="user_no" class="input-label">직원번호</label>
           <input
             type="text"
-            id="employee-number"
-            v-model="employeeNumber"
+            id="user_no"
+            v-model="user_no"
             placeholder="직원번호를 입력하세요"
             required
           />
         </div>
         <div class="form-group">
-          <label for="email" class="input-label">이메일</label>
+          <label for="user_email" class="input-label">이메일</label>
           <input
             type="email"
-            id="email"
-            v-model="email"
+            id="user_email"
+            v-model="user_email"
             placeholder="이메일을 입력하세요"
             required
           />
               </div>
             </div>
-          
-
+            <div class="button-container d-flex mx-auto justify-content-center my-5">
+              <button type="submit" class="btn-green" style="margin-right:100px;">인증번호 발송</button>
+            </div>
       </form>
-    </div>
-    <div class="button-container d-flex mx-auto justify-content-center my-5">
-          <button type="submit" class="btn-green"  style="margin-right:100px;">본인확인</button>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'PasswordReissueView',
   data() {
     return {
-      employeeNumber: '',
-      email: ''
+      user_no: '',
+      user_email: ''
     };
   },
   methods: {
     goBack() {
       this.$router.push({ name: 'LoginView' }); // 로그인 페이지로 이동
     },
-    async verifyIdentity() {
-     try{
-        const response = await axios.post('/api/password-reset', {
-          employeeNumber : this. employeeNumber,
-          emil : this. email
-        });
-        if (response.data.success) {
-          alert('임시 비밀번호가 이메일로 전송되었습니다.');
-        } else{
-          alert('비밀번호 재발급 중 오류가 발생했습니다.');
-        }
-      } catch (error) {
-        console.error('Error durin password reset:', error);
-        alert('비밀번호 재발급 중 오류가 발생했습니다.');
+    ...mapActions('login', ['sendEmail']), 
+    async sendEmailHandler() {
+      const inputInfo = {
+        user_no: this.user_no,
+        user_email: this.user_email
+      };
+
+
+      const response = await this.sendEmail(inputInfo);
+      if(response && response.success){
+        this.showAlert('이메일로 임시 비밀번호가 발급되었습니다.', 'success');
+      }else{
+        this.showAlert('비밀번호 재발급 중 오류가 발생했습니다', 'error');
       }
-    }
+    },
+    showAlert(message, icon) {
+      this.$swal({
+        title: message,
+        icon: icon,
+      });
+    },
   }
 };
 </script>

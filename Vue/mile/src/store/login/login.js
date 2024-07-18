@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const state = {
   loginInfo: null,
-  isChecked: false
+  isChecked: null,
 };
 
 const mutations = {
@@ -11,40 +11,37 @@ const mutations = {
   },
   clearLoginInfo(state) {
     state.loginInfo = null;
+    state.isChecked = null; // isChecked도 초기화
   },
-  setIsChecked(state, isChecked){
+  setIsChecked(state, isChecked) {
     state.isChecked = isChecked;
-  }
+  },
 };
 
-const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동기 작업을 수행할 때 사용된다. 
-  async login({ commit }, loginInfo) { // 로그인. async는 비동기 함수임을 선언한다.  
-    try{
-      const response = await axios.post('http://localhost:8090/user/login', loginInfo); // await는 비동기 작업이 완료될 때까지 기다린다. 
-      const data = response.data; // 서버 응답의 본문 데이터를 추출하여 'data' 변수에 저장한다. 
+const actions = {
+  async login({ commit }, loginInfo) {
+    try {
 
-      if(response.status === 200){ // 서버의 응답 상태 코드가 200(ok)인지 확인한다. 
-        const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1시간 후 만료
-        const storageData = { // 로그인 정보와 만료 시간을 저장한다. 
+      const response = await axios.post('http://localhost:8090/user/login', loginInfo); // await는 비동기 작업이 완료될 때까지 기다린다.
+      const data = response.data; // 서버 응답의 본문 데이터를 추출하여 'data' 변수에 저장한다.
+      commit('setIsChecked', loginInfo.is_checked);
+      if (response.status === 200) {
+        const expirationTime = new Date().getTime() + 60 * 60 * 1000;
+        const storageData = {
           loginInfo: data.user,
-          isChecked: data.isChecked,
-          expirationTime: expirationTime
+          isChecked: loginInfo.is_checked, // isChecked도 저장
+          expirationTime: expirationTime,
         };
-        localStorage.setItem('loginInfo', JSON.stringify(storageData)); 
-        // localStorage에 storageData 객체를 JSON문자열로 변환하여 저장한다. 키 이름은 'loginInfo'이다. 
+        localStorage.setItem('loginInfo', JSON.stringify(storageData));
         commit('setLoginInfo', data.user);
-        commit('setIsChecked', data.isChecked);
-        // Vuex의 commit 메서드를 사용하여 setLoginInfo 뮤테이션을 호출하고, data.user를 인자로 전달하여 로그인 정보를 상태에 저장한다. 
-
-        return data; // 로그인 성공 시 사용자 데이터를 반환.
-      }else{
-        // 로그인 실패 처리
+        return data;
+      } else {
         console.error('Login 실패', data.message);
-        return null; //로그인 실패 시 null 반환. 
+        return null;
       }
     } catch (error) {
       console.error('error 발생', error);
-      return null; // 에러 발생 시 로그인 실패 
+      return null;
     }
   },
   logout({ commit }) {
@@ -57,12 +54,23 @@ const actions = { // Vuex 액션을 정의하는 객체. Vuex 액션은 비동�
       const currentTime = new Date().getTime();
       if (currentTime < data.expirationTime) {
         commit('setLoginInfo', data.loginInfo);
+        commit('setIsChecked', data.isChecked); // isChecked도 로드
       } else {
         localStorage.removeItem('loginInfo');
         commit('clearLoginInfo');
       }
     }
   },
+  async sendEmail(context, inputInfo) { // 비밀번호 변경 시 이메일 발송하는 액션 
+    console.log('Input Info to send:', inputInfo);
+    try {
+      const response = await axios.post('http://localhost:8090/user/pwreset', inputInfo);
+      return response.data; // 성공 시 서버 응답 데이터 반환
+    } catch (error) {
+      console.error('메일 전송 중 오류 발생', error);
+      return null;
+    }
+  }
 };
 
 const getters = {

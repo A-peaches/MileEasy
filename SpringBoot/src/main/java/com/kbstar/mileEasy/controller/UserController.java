@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.User;
+import com.kbstar.mileEasy.service.user.info.EmailService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,16 @@ public class UserController {
         } else {
             return ResponseEntity.status(401).body("유효하지 않은 로그인 정보");
             // HTTP 상태코드 401(Unauthorized)과 함께 메시지를 응답 본문으로 반환한다.
+        }
+    }
+
+    @PostMapping("/pwreset")
+    public ResponseEntity<?> resetPassword(@RequestBody User user){
+        boolean result = GetUserInfoService.resetPassword(user.getUser_no(), user.getUser_email());
+        if(result){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
     }
 }

@@ -2,10 +2,8 @@ package com.kbstar.mileEasy.mapper;
 
 import com.kbstar.mileEasy.dto.User;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 @Mapper
 public interface UserDao {
@@ -14,4 +12,8 @@ public interface UserDao {
     ArrayList<User> selectAllUser();
 
     User checkedUser(String user_no, String user_pw);
+
+    User selectUserByEmail(String user_no);
+
+    int updatePW(String tempPw, String user_no);
 }
