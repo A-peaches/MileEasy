@@ -4,4 +4,23 @@
     <select id ="getMileage" resultType="com.kbstar.mileEasy.dto.Mileage"> <!--selectAllUser 실행 -->
         SELECT * FROM mileage;
     </select>
+
+    <select id="getHitMileCount" resultType="int">
+        SELECT COUNT(*)
+        FROM hit_mile
+        WHERE mile_no = #{mile_no}
+          AND hit_date = CURRENT_DATE;
+    </select>
+
+    <insert id="insertHitMile">
+        INSERT INTO hit_mile (mile_no, hit_count, hit_date)
+        VALUES (#{mile_no},1, CURRENT_DATE);
+    </insert>
+
+    <update id="updateMile">
+        UPDATE hit_mile
+        SET hit_count = hit_count + 1
+        WHERE mile_no = #{mile_no} and hit_date = CURRENT_DATE;
+    </update>
+
 </mapper>
