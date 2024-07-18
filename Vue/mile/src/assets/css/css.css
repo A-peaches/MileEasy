@@ -59,7 +59,7 @@
     background: #fff !important; /* 배경색 변경 */
     color: #4b4a4a !important; /* 텍스트 색상 변경 */
     font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
-    font-size: 12pt !important;
+    font-size: 12pt;
 }
 
 .swal2-confirm {
