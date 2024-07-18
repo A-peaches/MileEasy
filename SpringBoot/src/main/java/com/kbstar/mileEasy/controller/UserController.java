@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.User;
+import com.kbstar.mileEasy.service.user.info.EmailService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -74,13 +75,13 @@ public class UserController {
         }
     }
 
-    @PostMapping("/pw-reset")
-    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetRequest request){
-        boolean result = GetUserInfoService.resetPassword(request);
+    @PostMapping("/pwreset")
+    public ResponseEntity<?> resetPassword(@RequestBody User user){
+        boolean result = GetUserInfoService.resetPassword(user.getUser_no(), user.getUser_email());
         if(result){
-            return ResponseEntity.ok().body("인증번호가 발송 되었습니다");
+            return ResponseEntity.ok().body("{\"success\":true}");
         }else{
-            return ResponseEntity.status(400).body("인증번호 발송이 실패되었습니다");
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
     }
 }
