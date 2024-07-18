@@ -1,11 +1,12 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 430px">
-    <div class="chartTitle">
-      <p class="text-left lg2 KB_C2">페이지 방문자 수</p>
-    </div>
-
-    <div class="notice">
-      <p class="text-right md KB_C2 brown">최근 일주일간 방문자 수</p>
+  <div class="cards" style="background-color: #f9f9f9; height: 400px">
+    <p class="text-left lg2 KB_C2">페이지 방문자 수</p>
+    <div class="flex">
+      <div class="cards favorite-card">
+        <div>
+          <p class="text-right brown md KB_C2">최근 일주일 간 방문자 수</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -32,4 +33,13 @@ export default {
 };
 </script>
 
-<style scope></style>
+<style scoped>
+.favorite-card {
+  width: 100%;
+  display: flex;
+  height: 300px;
+}
+.addImg {
+  width: 18%;
+}
+</style>

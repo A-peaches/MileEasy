@@ -52,11 +52,6 @@
                 >업무별 연락처</a
               >
             </li>
-            <li>
-              <a class="dropdown-item" href="/mileageContactView"
-                >마일리지 연락처</a
-              >
-            </li>
           </ul>
         </li>
       </ul>
