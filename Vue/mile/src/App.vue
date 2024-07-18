@@ -64,3 +64,7 @@ export default {
   },
 };
 </script>
+
+<style>
+@import url('../src/assets/css/css.css');
+</style>

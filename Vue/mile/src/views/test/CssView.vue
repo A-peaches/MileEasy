@@ -69,6 +69,8 @@
   </script>
   
     <style>
+    @import url('../../assets/css/css.css');
+
   #back {
     background-color: gray;
   }

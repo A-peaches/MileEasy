@@ -28,13 +28,11 @@
             required
           />
               </div>
-            </div>
-          
-
-      </form>
-    </div>
+        </div>
     <div class="button-container d-flex mx-auto justify-content-center my-5">
           <button type="submit" class="btn-green"  style="margin-right:100px;">본인확인</button>
+        </div>
+      </form>
     </div>
 </template>
 
