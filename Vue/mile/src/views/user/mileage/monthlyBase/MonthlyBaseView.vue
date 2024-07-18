@@ -8,7 +8,19 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 export default {
   name: 'MonthlyBaseView',
+  data() {
+    return {
+      mile_no: 3,
+    };
+  },
+  created() {
+    this.hit_mile(this.mile_no);
+  },
+  methods: {
+    ...mapActions('hitMile', ['hit_mile']),
+  },
 };
 </script>

@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.dto.Favorite;
 import com.kbstar.mileEasy.dto.Mileage;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
@@ -7,6 +8,7 @@ import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.mileage.type.*;
+import com.kbstar.mileEasy.service.user.favorite.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,4 +55,14 @@ public class MileageController {
         System.out.println(mileList);
         return mileList;
     }
+
+    //페이지별 방문자수 처리
+    @GetMapping("hit_mile/{mile_no}")
+    public void hit_mile(@PathVariable String mile_no) {
+        hitMileService.hitMile(mile_no);
+    }
+
+
+
+
 }

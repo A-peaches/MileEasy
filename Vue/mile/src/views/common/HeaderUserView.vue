@@ -29,8 +29,9 @@
                 <a class="dropdown-item" href="/monthlyBaseView"
                   >MonthlyBase 마일리지</a
                 >
+                <a class="dropdown-item" href="/bestPgView">Best PG 마일리지</a>
                 <a class="dropdown-item" href="/bestBranchView"
-                  >Best PG 마일리지</a
+                  >Best 지점 마일리지</a
                 >
                 <a class="dropdown-item" href="/leagueTableView"
                   >리그테이블 마일리지</a
