@@ -6,6 +6,7 @@ export default [
     name: 'noticeListView',
     component: () => import('../views/desk/notice/NoticeListView.vue'),
     meta: { requiresAuth: true },
+    props: true // props를 NoticeListView에 전달하도록 설정
   },
   {
     // 공지사항 상세보기
