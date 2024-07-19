@@ -82,7 +82,7 @@ export default {
         user_pw: this.user_pw,
         is_checked: this.isChecked,
       };
-
+      
       const response = await this.login(loginInfo);
       if (response) {
         if (response.user_is_admin && this.isChecked) {

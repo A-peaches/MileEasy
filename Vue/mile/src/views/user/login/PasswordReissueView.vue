@@ -68,8 +68,10 @@ export default {
     },
     showAlert(message, icon) {
       this.$swal({
-        title: message,
+        title: "발송완료!",
+        text: message,
         icon: icon,
+        
       });
     },
   }

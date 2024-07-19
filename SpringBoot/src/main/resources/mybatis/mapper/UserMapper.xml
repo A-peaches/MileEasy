@@ -36,7 +36,8 @@
             p.position_name AS position_no,
             u.user_is_delete,
             u.user_is_manager,
-            u.user_is_admin
+            u.user_is_admin,
+            u.mile_no
         FROM
             user u
                 JOIN department d ON u.dp_no = d.dp_no
@@ -54,4 +55,5 @@
     <update id="updatePW">
         update user set user_pw = #{tempPw} where user_no = #{user_no};
     </update>
+
 </mapper>
