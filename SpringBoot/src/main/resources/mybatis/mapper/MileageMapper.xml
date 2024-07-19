@@ -28,5 +28,12 @@
         WHERE mile_no = #{mile_no} and hit_date = CURRENT_DATE;
     </update>
 
+    <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
+        select * from mile_recommand where mile_no = (
+            select mile_no
+            from mile_score
+            where user_no=#{user_no}
+            order by mile_score_point ASC LIMIT 1);
+    </select>
 
 </mapper>
