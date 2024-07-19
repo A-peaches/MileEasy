@@ -50,12 +50,12 @@ export default {
     download(mile_route){
       this.downloadFile({ mile_route });
     },
-    deleteMileDetail(mile_introduce_no){
-      const response = this.deleteMile({ mile_introduce_no });
-      if(response && response.success){
+    async deleteMileDetail(mile_introduce_no){
+      const response = await this.deleteMile({ mile_introduce_no });
+      if(response && response.data.success){
         this.showAlert('삭제 완료', 'success', '#');
       }else{
-        this.showAlert('삭제 오류', 'fail', '#');
+        this.showAlert('삭제 오류', 'error', '#');
       }
     },
     showAlert(t, i, r) {
@@ -63,8 +63,12 @@ export default {
         title: t,
         icon: i,
       }).then((result) => {
-        if(result.isConfirmed && r !== '#'){
-          this.$router.push(r);
+        if(result.isConfirmed){
+          if(r == '#'){
+            location.reload(); // 현재 페이지 새로고침
+          }else{
+            this.$router.push(r);
+          }
         }
       })
     },
