@@ -12,8 +12,9 @@
             <button class="brown">삭제</button>
           </div>
         </div>
-        <div class="input-gray p-4">
+        <div class="d-flex justify-content-between align-items-center input-gray p-4">
           <p><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></p>
+          <button @click="download(detail.mile_route)"><p class="md" v-if="detail.mile_route" style="text-align: right;">상세보기 〉</p></button>
         </div>
       </div>
     </div>
@@ -41,10 +42,17 @@ export default {
     }
   },
   methods: {
-    ...mapActions('mile', ['fetchMileInfo']),
-    ...mapActions('mile', ['getMileDetail']),
+    ...mapActions('mile', ['fetchMileInfo','getMileDetail', 'downloadFile']),
+    
     goModify(){
       this.$router.push('/introduceMileageAddAdminView');
+    },
+    download(mile_route){
+      this.downloadFile({ mile_route });
+      // if(mile_route){
+      //   const url = `/manager/downloadFile?mile_route=${encodeURIComponent(mile_route)}`;
+      //   window.location.href = url;
+      // }
     }
   },
   created(){
