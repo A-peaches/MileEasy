@@ -7,10 +7,12 @@
             <span class="arrow">❮</span> 이전
           </button>
         </div>
+        <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
         <div class="actions">
           <button class="edit-button" @click="goToModifyView">수정</button>
           <button class="delete-button">삭제</button>
         </div>
+      </div>
       </div>
       <div class="content">
         <h1 class="title">연수 마일리지 문의</h1>
@@ -18,7 +20,6 @@
           <span class="author">김근미</span>
           <span class="date">2024.05.02</span>
         </div>
-        <div class="status">처리완료</div>
         <div class="main-content">
         <div class="body">
           <p>[KB스타뱅크 앱 설치방법 안내]</p>
@@ -47,6 +48,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   methods: {
     goBack() {
@@ -55,6 +58,18 @@ export default {
     goToModifyView() {
       this.$router.push({ name: 'noticeModifyAdminView' }); // noticeModifyAdminView 경로로 이동
     },
+  },
+  computed: {
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+    loginInfo() {
+      return this.getLoginInfo;
+    },
+    isChecked() {
+      return this.getIsChecked;
+    },
+    isLoggedIn() {
+      return !!this.loginInfo; // loginInfo가 null이 아니면 로그인 상태로 판단합니다.
+    }
   }
 };
 </script>
@@ -167,15 +182,8 @@ export default {
   text-align: center;
   font-size: 14px;
   color: #888;
-  margin-bottom: 15px;
+  margin-bottom: 95px;
   font-family: 'KB_S5', sans-serif;
-}
-
-.status {
-  text-align: center;
-  font-size: 23px;
-  color: #f8c704;
-  margin-bottom: 10%;
 }
 
 .main-content {
@@ -195,7 +203,7 @@ export default {
 }
 
 .body p {
-  margin-bottom: 20px; /* 개별 p 태그의 아래 여백을 설정 */
+  margin-bottom: 10px; /* 개별 p 태그의 아래 여백을 설정 */
 }
 
 .file.cards{

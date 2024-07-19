@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="content cards" @click="handleClick">
       <div>
-      <h2>공지사항</h2>
+        <h2>공지사항</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button">카테고리</div>
@@ -20,7 +20,9 @@
         </div>
       </div>
       <div class="notice-count">총 {{ notices.length }}건</div>
-      <button v-if="loginInfo?.user_is_admin" class="write-button" @click="goToWritePage">글쓰기</button>
+      <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+        <button class="write-button" @click="goToWritePage">글쓰기</button>
+      </div>
       <div class="search-container">
         <input type="text" placeholder="검색어를 입력하세요" class="input-search">
         <button class="search-button">
@@ -47,7 +49,6 @@
   </div>
 </template>
 
-
 <script>
 import { mapGetters } from 'vuex';
 
@@ -66,8 +67,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('loginHistory', ['loginInfo']), // loginHistory 모듈에서 loginInfo getter 사용
-
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+    loginInfo() {
+      return this.getLoginInfo;
+    },
+    isChecked() {
+      return this.getIsChecked;
+    },
+    isLoggedIn() {
+      return !!this.loginInfo; // loginInfo가 null이 아니면 로그인 상태로 판단합니다.
+    },
     totalPages() {
       return Math.ceil(this.notices.length / this.itemsPerPage);
     },
@@ -75,7 +84,7 @@ export default {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
       return this.notices.slice(start, end);
-    }
+    },
   },
   methods: {
     toggleCategory() {
@@ -110,11 +119,15 @@ export default {
         this.currentPage--;
       }
     },
-    goToWritePage(){
-      this.$router.push({name : 'noticeWriteAdminView'});
+    goToWritePage() {
+      this.$router.push({ name: 'noticeWriteAdminView' });
     },
   },
   mounted() {
+    console.log('loginInfo:', this.loginInfo);
+    console.log('isLoggedIn:', this.isLoggedIn);
+    console.log('isChecked:', this.isChecked);
+
     document.addEventListener('click', this.handleClickOutside);
   },
   beforeUnmount() {
@@ -122,7 +135,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 html, body {
@@ -137,12 +149,12 @@ body {
   overflow-y: scroll; /* 수직 스크롤바 유지 */
 }
 
-h2{
- font-family: 'KB_S4', sans-serif;
- font-size: 40px;
- margin-top: 30px;
- display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
- position: relative;
+h2 {
+  font-family: 'KB_S4', sans-serif;
+  font-size: 40px;
+  margin-top: 30px;
+  display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
+  position: relative;
 }
 
 h2::after {
@@ -163,7 +175,6 @@ h2::after {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .content {
@@ -197,6 +208,7 @@ h2::after {
   font-family: 'KB_S5', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
 }
+
 .write-button {
   background-color: #ffca05;
   color: #4b4a4a;
@@ -210,12 +222,13 @@ h2::after {
   width: 10%;
   float: right; /* 버튼을 오른쪽으로 이동 */
   margin-top: -80px; /* 위치 조정을 위해 추가 */
-  margin-right:30px;
+  margin-right: 30px;
 }
 
 .write-button:hover {
   background-color: #edbb00;
 }
+
 .search-container {
   display: flex;
   align-items: center;
@@ -250,6 +263,7 @@ h2::after {
   height: 80px; /* 높이를 조금 높여줌 */
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
 }
+
 .search-button .bi-search {
   font-size: 25px; /* 아이콘 크기 조정 */
 }
@@ -268,13 +282,12 @@ h2::after {
   padding-left: 3%;
 }
 
-.input-base{
+.input-base {
   width: 100%;
   height: 65px;
-  background-color:#FBFBFB;
+  background-color: #FBFBFB;
   text-align: center; /* 가로 정렬 */
   line-height: 65px; /* 세로 정렬 */
-  text-align: center; /* 가로 정렬 */
   font-size: 20px;
   font-family: 'KB_S5', sans-serif;
 }
@@ -289,22 +302,18 @@ h2::after {
   flex: 1 1 180%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
-
 }
 
 .notice-num {
-  flex: 1 ;
+  flex: 1;
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
-
-  
 }
 
 .notice-date {
   flex: 1 1 60%;
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
-
 }
 
 .notice-views {
@@ -341,8 +350,8 @@ h2::after {
   background-color: rgba(255, 255, 255, 0.69);
   border-radius: 30px;
   cursor: pointer;
-  width: 230px;/* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
-  transform:  translate(-50%, -16%); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
+  width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
+  transform: translate(-50%, -16%); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
 }
 
 .QnA:hover .dropdown-menu,
@@ -371,6 +380,7 @@ h2::after {
   border-radius: 25px;
   width: auto; /* 너비를 자동으로 설정 */
 }
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -395,5 +405,4 @@ h2::after {
   background-color: #8d8d8d;
   color: white;
 }
-
 </style>
