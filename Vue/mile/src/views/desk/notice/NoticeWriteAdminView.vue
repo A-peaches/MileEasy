@@ -42,6 +42,9 @@
 
 
 <script>
+import axios from 'axios'; // axios를 정의합니다.
+import { mapActions } from 'vuex';
+
 export default {
   data() {
     return {
@@ -54,6 +57,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['addNotice']),
     goBack() {
       this.$router.go(-1);
     },
@@ -61,28 +65,33 @@ export default {
       this.form.file = event.target.files[0];
     },
     async submitForm() {
-    const postData = {
-      title: this.form.title,
-      category: this.form.category,
-      file: this.form.file,
-      content: this.form.content,
-    };
+      const formData = new FormData(); // formData 변수를 올바르게 정의합니다.
+      formData.append('title', this.form.title);
+      formData.append('category', this.form.category);
+      formData.append('file', this.form.file);
+      formData.append('content', this.form.content);
 
-    try {
-      // 여기에 글 작성 API 호출 로직 추가
-      // 예시: const response = await this.createPost(postData);
-      const response = await this.createPost(postData);
 
-      if (response && response.success) {
-        this.showAlert('공지사항이 등록되었습니다.', 'success');
-        this.$router.push('/noticeList'); // 공지사항 목록 페이지로 이동
-      } else {
+      try {
+        console.log('Submitting form:', formData); // 디버깅용 콘솔 로그
+        const response = await axios.post('http://localhost:8090/notice/write', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        console.log('Server response:', response); // 디버깅용 콘솔 로그
+        if (response.status === 200) {
+          this.showAlert('공지사항이 등록되었습니다.', 'success');
+          this.$router.push('/noticeList'); // 공지사항 목록 페이지로 이동
+        } else {
+          this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error); // 디버깅용 콘솔 로그
         this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
       }
-    } catch (error) {
-      this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
-    }
-  },
+    },
   showAlert(message, icon) {
   this.$swal({
     title: message,

@@ -2,6 +2,14 @@ export default [
   //🚨마일리지 담당자 관련 라우터
 
   {
+    //마일리지 담당자 메인 화면
+    path: '/manager',
+    name: 'manager',
+    component: () =>
+      import('../views/user/main/ManagerMainView.vue'),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
+  {
     // 마일리지 소개 수정 화면
     path: '/introduceMileageModifyAdminView',
     name: 'introduceMileageModifyAdminView',

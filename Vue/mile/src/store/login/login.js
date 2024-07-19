@@ -70,7 +70,7 @@ const actions = {
       console.error('메일 전송 중 오류 발생', error);
       return null;
     }
-  }
+  },
 };
 
 const getters = {
