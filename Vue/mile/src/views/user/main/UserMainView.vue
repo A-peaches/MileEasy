@@ -15,11 +15,7 @@
         }}
       </p>
       <p class="md mb-2" style="margin-bottom: 0px">
-        {{
-          loginInfo
-            ? `${loginInfo.dp_no}`
-            : ''
-        }}
+        {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
       </p>
       <button class="btn-yellow KB_C2 my-3">나의 마일리지</button>
     </div>
@@ -28,11 +24,10 @@
 
   <!-- 추천 멘트-->
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
-    <recommand class="my-5"/>
+    <recommand class="my-5" />
   </div>
 </template>
 
-asw nns dx
 <script>
 import favorite from '@/components/main/FavoriteCom.vue';
 import recommand from '@/components/main/MileRecommand.vue';

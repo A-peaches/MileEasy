@@ -65,20 +65,22 @@ public class MileageController {
         hitMileService.hitMile(mile_no);
     }
 
-<<<<<<< HEAD
+
     //페이지별 방문자수 : hit mile가져오기
     @GetMapping("hit_mileChart")
     public ArrayList<HitMile> hit_mileChart(){
         return hitMileService.getHitMile();
     }
 
-=======
-    //마일리지 추천멘트!
-    @GetMapping("getRecommand/{user_no}")
-    public List<MileRecommand> getRecommand(@PathVariable String user_no) {
-        List<MileRecommand> recommandsList = mileService.getRecommand(user_no);
-        
-    }
->>>>>>> ea48d20ac883b69b84e307ee2947756f34fc5ab4
+
+
+
+//    //마일리지 추천멘트!
+//    @GetMapping("getRecommand/{user_no}")
+//    public List<MileRecommand> getRecommand(@PathVariable String user_no) {
+//        List<MileRecommand> recommandsList = mileService.getRecommand(user_no);
+//
+//    }
+
 
 }

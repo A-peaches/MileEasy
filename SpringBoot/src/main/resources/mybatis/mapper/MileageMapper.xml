@@ -29,7 +29,7 @@
     </update>
 
     <select id="getHitMile" resultType="com.kbstar.mileEasy.dto.HitMile">
-        SELECT m.mile_no, COALESCE(h.hit_count, 0) AS hit_count
+        SELECT m.mile_no, m.mile_name, COALESCE(h.hit_count, 0) AS hit_count
         FROM mileage m
                  LEFT JOIN (
             SELECT mile_no, hit_count

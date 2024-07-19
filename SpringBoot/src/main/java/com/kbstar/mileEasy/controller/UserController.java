@@ -1,11 +1,14 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.dto.LoginHistory;
 import com.kbstar.mileEasy.dto.User;
-import com.kbstar.mileEasy.service.user.info.EmailService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
+import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
@@ -15,6 +18,8 @@ public class UserController {
 
     @Autowired
     private GetUserInfoService GetUserInfoService;
+    @Autowired
+    private LoginHistoryService loginHistoryService;
 
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
@@ -63,6 +68,7 @@ public class UserController {
             }
 
             Map<String, Object> response = new HashMap<>();
+            loginHistoryService.loginHistory(user.getUser_no());
             response.put("user", checkedUser);
             response.put("user_is_admin", checkedUser.isUser_is_admin());
             response.put("user_is_manager", checkedUser.isUser_is_manager());
@@ -83,5 +89,24 @@ public class UserController {
         }else{
             return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
+    }
+    @PostMapping("/loginHistory/{user_no}")
+    public void loginHistory(@PathVariable String user_no){
+        loginHistoryService.loginHistory(user_no);
+    }
+
+    @PostMapping("/loginHistoryCountArray")
+    public ArrayList<LoginHistory> loginHistoryCountArray(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+
+        String start = String.valueOf(startDate);
+        String end = String.valueOf(endDate);
+        System.out.println(start);
+        System.out.println(end);
+
+        return loginHistoryService.loginHistoryCountArray(start, end);
+
+
     }
 }
