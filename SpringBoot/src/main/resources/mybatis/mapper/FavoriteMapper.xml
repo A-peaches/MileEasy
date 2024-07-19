@@ -2,4 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kbstar.mileEasy.mapper.FavoriteDao">
 
+    <select id="getFavorite" parameterType="String" resultType="com.kbstar.mileEasy.dto.Favorite">
+        SELECT favorite_no, user_no, mile_name as mile_no
+        FROM favorite f
+                 JOIN mileage m ON f.mile_no = m.mile_no
+        WHERE user_no = #{user_no};
+    </select>
+    <delete id="deleteFavorite">
+        delete from favorite where user_no = #{user_no}
+    </delete>
+
+    <insert id="insertFavorite">
+        INSERT INTO favorite (user_no, mile_no)
+        SELECT #{userNo}, mile_no
+        FROM mileage
+        WHERE mile_name = #{favorite};
+
+    </insert>
 </mapper>

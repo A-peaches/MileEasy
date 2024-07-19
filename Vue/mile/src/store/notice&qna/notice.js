@@ -1,34 +1,36 @@
-// src/store/modules/mtipBoard.js
+// src/store/modules/loginHistory.js
 // import axios from 'axios';
 
 const state = {
-  arrayNotice: [],
-  objectNotice: null,
+  objectLoginHistory: null,
+  loginInfo: {
+    user_is_admin: false, // 기본값 설정
+  }
 };
 
 const mutations = {
-
-  setArrayNotice(state, payload) {
-    state.arrayNotice = payload;
+  setObjectLoginHistory(state, payload) {
+    state.objectLoginHistory = payload;
   },
-  setObjectNotice(state, payload) {
-    state.objectNotice = payload;
+  SET_USER_IS_ADMIN(state, isAdmin) {
+    state.loginInfo.user_is_admin = isAdmin;
   },
 };
 
 const actions = {
- 
+  setUserIsAdmin({ commit }, isAdmin) {
+    commit('SET_USER_IS_ADMIN', isAdmin);
+  },
 };
 
 const getters = {
-  //게터 선언하는 장소
-  getArrayNotice: (state) => state.arrayNotice,
-  getObjectNotice: (state) => state.objectNotice,
+  getObjectLoginHistory: (state) => state.objectLoginHistory,
+  loginInfo: (state) => state.loginInfo,
 };
 
-//index.js로 내보낼 정보들
+
 export default {
-  namespaced: true, //쓸거라서 true
+  namespaced: true, 
   state,
   mutations,
   actions,

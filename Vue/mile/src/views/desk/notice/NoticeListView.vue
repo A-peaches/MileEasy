@@ -1,13 +1,11 @@
 <template>
   <div class="app-container">
     <div class="content cards" @click="handleClick">
+      <div>
       <h2>공지사항</h2>
-      <div @click.stop="toggleCategory" class="QnA">
-        <div class="category-button">카테고리
-          <!--<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-          </svg> 카테고리 화살표 -->
-        </div>
+      </div>
+      <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
+        <div class="category-button">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" href="/hrdView">HRD 마일리지</a>
@@ -22,6 +20,7 @@
         </div>
       </div>
       <div class="notice-count">총 {{ notices.length }}건</div>
+      <button v-if="loginInfo?.user_is_admin" class="write-button" @click="goToWritePage">글쓰기</button>
       <div class="search-container">
         <input type="text" placeholder="검색어를 입력하세요" class="input-search">
         <button class="search-button">
@@ -29,7 +28,7 @@
         </button>
       </div>
       <div class="notice-list">
-        <div class="input-base" v-for="(item, index) in notices" :key="index" @click="goToDetailView(item.num)">
+        <div class="input-base" v-for="(item, index) in paginatedNotices" :key="index" @click="goToDetailView(item.num)">
           <div class="notice-details">
             <div class="notice-num">{{ item.num }}</div>
             <div class="notice-title">{{ item.title }}</div>
@@ -39,12 +38,19 @@
           </div>
         </div>
       </div>
+      <div class="pagination">
+        <button @click="prevPage" :disabled="currentPage === 1">«</button>
+        <button @click="goToPage(page)" :class="{ active: currentPage === page }" v-for="page in totalPages" :key="page">{{ page }}</button>
+        <button @click="nextPage" :disabled="currentPage === totalPages">»</button>
+      </div>
     </div>
   </div>
 </template>
 
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   data() {
     return {
@@ -53,17 +59,23 @@ export default {
         { num: "2", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
         { num: "3", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
         { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
       ],
-      showCategory: false
+      showCategory: false,
+      currentPage: 1,
+      itemsPerPage: 10,
     };
+  },
+  computed: {
+    ...mapGetters('loginHistory', ['loginInfo']), // loginHistory 모듈에서 loginInfo getter 사용
+
+    totalPages() {
+      return Math.ceil(this.notices.length / this.itemsPerPage);
+    },
+    paginatedNotices() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.notices.slice(start, end);
+    }
   },
   methods: {
     toggleCategory() {
@@ -76,19 +88,41 @@ export default {
       this.$router.push({ name: 'noticeDetailView', params: { id: noticeId } });
     },
     handleClickOutside(event) {
-      if (!this.$refs.dropdownMenu.contains(event.target) && !this.$refs.categoryButton.contains(event.target)) {
+      if (
+        this.$refs.dropdownMenu &&
+        !this.$refs.dropdownMenu.contains(event.target) &&
+        this.$refs.categoryButton &&
+        !this.$refs.categoryButton.contains(event.target)
+      ) {
         this.closeDropdown();
       }
-    }
+    },
+    goToPage(page) {
+      this.currentPage = page;
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    goToWritePage(){
+      this.$router.push({name : 'noticeWriteAdminView'});
+    },
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
   }
 };
 </script>
+
 
 <style scoped>
 html, body {
@@ -121,7 +155,6 @@ h2::after {
   bottom: -5px; /* 텍스트와 밑줄 사이의 간격을 위해 조정 */
   left: -10%; /* 중앙 정렬을 위해 조정 */
 }
-
 
 .app-container {
   width: 100%;
@@ -164,7 +197,25 @@ h2::after {
   font-family: 'KB_S5', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
 }
+.write-button {
+  background-color: #ffca05;
+  color: #4b4a4a;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size: 19px;
+  font-family: 'KB_S5', sans-serif;
+  transition: background-color 0.3s;
+  width: 10%;
+  float: right; /* 버튼을 오른쪽으로 이동 */
+  margin-top: -80px; /* 위치 조정을 위해 추가 */
+  margin-right:30px;
+}
 
+.write-button:hover {
+  background-color: #edbb00;
+}
 .search-container {
   display: flex;
   align-items: center;
@@ -320,4 +371,29 @@ h2::after {
   border-radius: 25px;
   width: auto; /* 너비를 자동으로 설정 */
 }
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 0 5px;
+  border-radius: 5px;
+}
+
+.pagination button:disabled {
+  background-color: #f1f1f1;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background-color: #8d8d8d;
+  color: white;
+}
+
 </style>

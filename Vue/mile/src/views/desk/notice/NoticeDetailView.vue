@@ -201,7 +201,7 @@ export default {
 .file.cards{
   background-color: hsl(0, 0%, 95%);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border-radius: 25px;
+  border-radius: 20px;
   padding: 20px; /* 패딩을 추가하여 내부 여백 설정 */
   position: relative; /* 상대 위치를 설정 */
   left: 50%; /* 부모 요소의 왼쪽으로부터 50% */

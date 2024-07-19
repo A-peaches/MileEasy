@@ -9,7 +9,7 @@ import loginHistory from './login/loginHistory';
 import attendance from './userInfo/attendance';
 import favorite from './mileage/favorite';
 import hitMile from './mileage/hitMile';
-import mileage from '@/router/mileage';
+import mileage from './mileage/mileage';
 import mileHistory from './mileage/mileHistory';
 import mileScore from './mileage/mileScore';
 import mtipBoard from './mtip/mtipBoard';

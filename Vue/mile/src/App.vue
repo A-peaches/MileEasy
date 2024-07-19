@@ -32,6 +32,11 @@ import HeaderManager from './views/common/HeaderManagerView.vue';
 
 export default {
   name: 'App',
+  data() {
+    return {
+      isModalOpen: false,
+    };
+  },
   components: {
     HeaderAdmin,
     HeaderUser,
@@ -66,5 +71,5 @@ export default {
 </script>
 
 <style>
-@import url('../src/assets/css/css.css');
+@import url('./assets/css/css.css');
 </style>
