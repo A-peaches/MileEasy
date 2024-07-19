@@ -1,21 +1,23 @@
 <template>
-  <div class="cards card-white" style="width: 24%; height: 220px">
+  <div class="cards card-white" >
     <p class="lg2 KB_S4" style="margin-right: 90px; margin-bottom: 10px;">
-      <i class="bi bi-award-fill" style="color: #ffca05; "></i>&nbsp;오늘의 추천
+      <i class="bi bi-award-fill" style="color: #ffca05;"></i>&nbsp;오늘의 추천
     </p>
-    <div class="flex" v-if="recommand" style="margin-left: 15px;
-    margin-top:30px; width:65%;">
-      <div>
+    <div class="flex" style="margin-left: 15px; margin-top:30px; width:65%;">
+      <div v-if="recommand">
         <div class="KB_S5">
           {{ recommand.mile_mention }}
         </div>
         <br />
         <div>
-          <router-link :to="recommand.mile_link" style="color:#3C2511 ; 
-          text-decoration: none;" class="fw-bold">바로가기 ></router-link>
+          <router-link :to="recommand.mile_link" style="color:#3C2511; text-decoration: none;" class="fw-bold">바로가기 ></router-link>
         </div>
       </div>
-
+      <div v-else>
+        <div class="KB_S5">
+          마일리지 점수가 하나 이상 있어야 멘트가 활성화됩니다.
+        </div>
+      </div>
       <img :src="randomImg" alt="randomImg" class="card-image" />
     </div>
   </div>
