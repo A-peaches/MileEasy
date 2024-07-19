@@ -36,6 +36,14 @@ const actions = {
       console.error('Error get mile detail:', error);
     }
   },
+  async getMileModify({commit}, mile_introduce_no){
+    try{
+      const response = await axios.get(`http://localhost:8090/manager/mileModifyDetail/${mile_introduce_no}`)
+      commit('setMileDetail', response.data);
+    }catch(error){
+      console.error('Error get modify mile detail:', error);
+    }
+  },
   async addMile(context, mileInfo){
     try{
       const response = await axios.post(`http://localhost:8090/manager/mileAdd`, mileInfo,{
@@ -70,6 +78,20 @@ const actions = {
       return response;
     }catch(error){
       console.error('Error delete mile:', error);
+      throw error;
+    }
+  },
+  
+  async updateMile(context, mileInfo){
+    try{
+      const response = await axios.post(`http://localhost:8090/manager/updateDetail`, mileInfo,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response;
+    }catch(error){
+      console.error('Error update mile:', error);
       throw error;
     }
   }

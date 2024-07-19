@@ -27,6 +27,7 @@ public class ManagerController {
 
     @Autowired
     private ManagerService managerService;
+
     @Value("${project.uploadpath.miledetail}")
     private String miledetailUploadPath;
 
@@ -45,7 +46,7 @@ public class ManagerController {
     }
 
     @PostMapping("/mileAdd")
-    public ResponseEntity<?> resetPassword( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
+    public ResponseEntity<?> addMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
             @RequestParam("mile_no") String mile_no,
             @RequestParam("mile_title") String mile_title,
             @RequestParam("mile_content") String mile_content,
@@ -104,12 +105,52 @@ public class ManagerController {
     }
 
     @GetMapping("/deleteMile/{mile_introduce_no}")
-    public ResponseEntity<?> resetPassword(@PathVariable String mile_introduce_no){
-        int result = managerService.deleteMileDetail(mile_introduce_no);
+    public ResponseEntity<?> deleteMileDetail(@PathVariable String mile_introduce_no){
+        int result = managerService.deleteMile(mile_introduce_no);
         if(result>0){
             return ResponseEntity.ok().body("{\"success\":true}");
         }else{
             return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
+    }
+
+    @GetMapping("/mileModifyDetail/{mile_introduce_no}")
+    public MileIntroduce mileModifyDetail(@PathVariable String mile_introduce_no){
+        MileIntroduce mileModify = managerService.mileModifyDetail(mile_introduce_no);
+        System.out.println(mileModify);
+        return mileModify;
+    }
+
+    @PostMapping("/updateDetail")
+    public ResponseEntity<?> updateMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
+                                            @RequestParam("mile_introduce_no") String mile_introduce_no,
+                                            @RequestParam("mile_title") String mile_title,
+                                            @RequestParam("mile_content") String mile_content,
+                                            @RequestParam(value="file", required = false) MultipartFile file
+    ){
+        try {
+            String mile_route = null; // 파일 경로를 저장할 변수를 선언
+//            String uploadPath; // 파일 업로드 경로를 저장할 변수를 선언
+            if (file != null && !file.isEmpty()) { // 파일이 존재하고 비어있지 않을 때만 파일을 저장
+                String uploadPath = miledetailUploadPath;
+
+                // 파일 저장
+                mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
+                Path path = Paths.get(uploadPath, mile_route); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+                Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
+                Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
+            }
+
+            int result = managerService.updateMileage(mile_title, mile_content, mile_route, mile_introduce_no);
+            if (result > 0) {
+                return ResponseEntity.ok().body(Map.of("success", true));
+            } else {
+                return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "파일 업로드 실패"));
+        }
+
     }
 }

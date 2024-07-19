@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center justify-content-between">
           <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }}</h3>
           <div>
-            <a href="/introduceMileageModifyAdminView" style="text-decoration: none;" class="brown">수정</a>
+            <a :href="'/introduceMileageModifyAdminView?mile_introduce_no=' + detail.mile_introduce_no" style="text-decoration: none;" class="brown">수정</a>
             <span class="mx-2">|</span>   
             <button @click="deleteMileDetail(detail.mile_introduce_no)" class="brown">삭제</button>
           </div>
