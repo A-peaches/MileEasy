@@ -1,6 +1,5 @@
 package com.kbstar.mileEasy.controller;
 
-
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
@@ -66,13 +65,12 @@ public class MileageController {
         hitMileService.hitMile(mile_no);
     }
 
-
     //마일리지 추천멘트!
     @GetMapping("getRecommand/{user_no}")
-    public List<MileRecommand> getRecommand(@PathVariable String user_no) {
-        List<MileRecommand> recommandsList = mileService.getRecommand(user_no);
-        
-    }
+    public MileRecommand getRecommand(@PathVariable String user_no) {
+        MileRecommand recommands = mileService.getRecommand(user_no);
 
+        return recommands;
+    }
 
 }
