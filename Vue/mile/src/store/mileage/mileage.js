@@ -6,8 +6,8 @@ const state = {
 };
 
 const mutations = {
-  setObjectMileage(state, payload) {
-    state.objectMileage = payload;
+  setMileInfo(state, mileInfo) {
+    state.mileInfo = mileInfo;
   },
   setArrayMileage(state, payload) {
     state.arrayMileage = payload; 
