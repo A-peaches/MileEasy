@@ -104,4 +104,14 @@ public class ManagerController {
             return ResponseEntity.status(500).build(); // 예외가 발생하면 500응답 반환
         }
     }
+
+//    @GetMapping("/deleteMile/{mile_introduce_no}")
+//    public ResponseEntity<?> resetPassword(@PathVariable String mile_introduce_no){
+//        boolean result = GetUserInfoService.resetPassword(user.getUser_no(), user.getUser_email());
+//        if(result){
+//            return ResponseEntity.ok().body("{\"success\":true}");
+//        }else{
+//            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+//        }
+//    }
 }

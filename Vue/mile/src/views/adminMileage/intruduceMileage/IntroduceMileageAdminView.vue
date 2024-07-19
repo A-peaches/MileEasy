@@ -51,8 +51,23 @@ export default {
       this.downloadFile({ mile_route });
     },
     deleteMileDetail(mile_introduce_no){
-      this.deleteMile({ mile_introduce_no });
-    }
+      const response = this.deleteMile({ mile_introduce_no });
+      if(response && response.success){
+        this.showAlert('삭제 완료', 'success', '#');
+      }else{
+        this.showAlert('삭제 오류', 'fail', '#');
+      }
+    },
+    showAlert(t, i, r) {
+      this.$swal({
+        title: t,
+        icon: i,
+      }).then((result) => {
+        if(result.isConfirmed && r !== '#'){
+          this.$router.push(r);
+        }
+      })
+    },
   },
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;

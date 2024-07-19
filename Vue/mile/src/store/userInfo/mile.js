@@ -64,9 +64,15 @@ const actions = {
       console.error('파일 다운로드 실패', error);
     }
   },
-  // async deleteMile(context, {mile_introduce_no}){
-
-  // }
+  async deleteMile(context, {mile_introduce_no}){
+    try{
+      const response = await axios.get(`http://localhost:8090/manager/deleteMile/${mile_introduce_no}`)
+      return response;
+    }catch(error){
+      console.error('Error delete mile:', error);
+      throw error;
+    }
+  }
   
 };
 
