@@ -63,7 +63,10 @@ const actions = {
     }catch(error){
       console.error('파일 다운로드 실패', error);
     }
-  }
+  },
+  // async deleteMile(context, {mile_introduce_no}){
+
+  // }
   
 };
 

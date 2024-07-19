@@ -9,7 +9,7 @@
           <div>
             <a href="/introduceMileageModifyAdminView" style="text-decoration: none;" class="brown">수정</a>
             <span class="mx-2">|</span>   
-            <button class="brown">삭제</button>
+            <button @click="deleteMileDetail(detail.mile_introduce_no)" class="brown">삭제</button>
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center input-gray p-4">
@@ -42,17 +42,16 @@ export default {
     }
   },
   methods: {
-    ...mapActions('mile', ['fetchMileInfo','getMileDetail', 'downloadFile']),
+    ...mapActions('mile', ['fetchMileInfo','getMileDetail', 'downloadFile', 'deleteMile']),
     
     goModify(){
       this.$router.push('/introduceMileageAddAdminView');
     },
     download(mile_route){
       this.downloadFile({ mile_route });
-      // if(mile_route){
-      //   const url = `/manager/downloadFile?mile_route=${encodeURIComponent(mile_route)}`;
-      //   window.location.href = url;
-      // }
+    },
+    deleteMileDetail(mile_introduce_no){
+      this.deleteMile({ mile_introduce_no });
     }
   },
   created(){
