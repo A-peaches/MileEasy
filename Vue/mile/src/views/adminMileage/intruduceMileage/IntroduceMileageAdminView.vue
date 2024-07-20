@@ -13,7 +13,7 @@
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center input-gray p-4">
-          <p><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></p>
+          <span><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></span>
           <button @click="download(detail.mile_route)"><p class="md" v-if="detail.mile_route" style="text-align: right;">상세보기 〉</p></button>
         </div>
       </div>
