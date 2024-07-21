@@ -4,12 +4,19 @@
       <p class="text-left lg2 KB_C2">마일리지 방문자 수</p>
       <div class="cards favorite-card">
         <div class="text-right">
-          <input type="date" class="date" id="date" />
+          <input
+            type="date"
+            class="date"
+            id="date"
+            v-model="date"
+            :max="maxDate"
+            @change="updateCharts2"
+          />
         </div>
         <br />
         <div class="sub">
           <div class="chart-container">
-            <canvas id="myChart"></canvas>
+            <canvas :id="mileChartId[0]" class="chartMile"></canvas>
           </div>
           <div class="best">
             <img
@@ -20,7 +27,7 @@
               <i class="bi bi-trophy-fill"></i> 1위
             </div>
             <p class="lg2 KB_C2" style="font-weight: bold">
-              <mark>{{ chartBest }}</mark>
+              <mark>-</mark>
             </p>
           </div>
         </div>
@@ -32,6 +39,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
+import axios from 'axios';
 
 Chart.register(...registerables);
 
@@ -39,120 +47,149 @@ export default {
   name: 'MileagePageCount',
   data() {
     return {
-      chart: null,
+      mileChart: {}, // 차트 객체를 저장할 객체
+      date: '', // 날짜 값을 저장할 변수
+      mileChartId: ['MileChart'], // 랜덤 문자열로 유니크 ID 생성
+      todayDate: new Date().toISOString().split('T')[0], // 오늘 날짜를 ISO 문자열로 저장
     };
   },
   computed: {
+    maxDate() {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      return yesterday.toISOString().split('T')[0]; // 하루 전 날짜를 ISO 문자열로 반환
+    },
     ...mapGetters('login', ['getLoginInfo']),
-    ...mapGetters('mileage', ['getArrayMileage']),
-    ...mapGetters('hitMile', ['getHitMileChart']),
-    chartLabels() {
-      const labels =
-        this.getArrayMileage && this.getArrayMileage.length
-          ? this.getArrayMileage.map((item) => item.mile_name)
-          : [];
-      console.log('Chart Labels:', labels);
-      return labels;
-    },
-    chartData() {
-      const data =
-        this.getHitMileChart && this.getHitMileChart.length
-          ? this.getHitMileChart.map((item) => item.hit_count || item.ht_count)
-          : [];
-      console.log('Chart Data:', data);
-      return data;
-    },
-    chartBest() {
-      if (this.chartData.length === 0) return -1; // 빈 배열이면 -1 반환
-
-      let maxIndex = 0;
-      for (let i = 0; i < this.chartData.length; i++) {
-        if (this.chartData[i] > this.chartData[maxIndex]) {
-          maxIndex = i;
-        }
-      }
-
-      console.log('Index of max value:', maxIndex);
-      return this.getArrayMileage[maxIndex].mile_name;
+    loginInfo() {
+      return this.getLoginInfo;
     },
   },
-  watch: {
-    getArrayMileage: 'renderChart',
-    getHitMileChart: 'renderChart',
-  },
+
   methods: {
-    renderChart() {
-      if (this.chart) {
-        this.chart.destroy();
+    async updateCharts2() {
+      try {
+        const counts = await this.realChartData();
+        const mileageLabel = await this.label(); // 라벨 데이터 비동기 호출
+        this.renderChart2(counts, mileageLabel); // 라벨 데이터를 전달하여 차트 렌더링
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
       }
+    },
 
-      const ctx = document.getElementById('myChart').getContext('2d');
+    async label() {
+      try {
+        const response = await axios.get(
+          'http://localhost:8090/mileage/getMileage'
+        );
+        const mileageLabel = response.data.map((item) => item.mile_name);
+        return mileageLabel;
+      } catch (error) {
+        console.error('Error fetching mileage labels:', error);
+        return []; // 에러 발생 시 빈 배열 반환
+      }
+    },
+
+    async realChartData() {
+      try {
+        const response = await axios.post(
+          'http://localhost:8090/mileage/hit_mileChartDATE',
+          { date: this.date } // POST 본문에 데이터 포함
+        );
+
+        // Check if response.data is valid and an array
+        if (!response.data || !Array.isArray(response.data)) {
+          throw new Error('Invalid response data format');
+        }
+
+        const hitCounts = response.data.map((item) => item.hit_count);
+        console.log('마일리지 결과', hitCounts);
+        return hitCounts;
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+        return []; // 에러 발생 시 빈 배열 반환
+      }
+    },
+
+    renderChart2(counts, mileageLabel) {
+      const chartId = this.mileChartId[0]; // chartIds 배열에서 첫 번째 chartId를 가져옴
+      const ctx = document.getElementById(chartId);
+
       if (!ctx) {
-        console.error('Canvas element not found');
+        console.error(`Canvas element with id '${chartId}' not found.`);
         return;
       }
 
-      const chartData = {
-        type: 'bar',
-        data: {
-          labels: this.chartLabels,
-          datasets: [
-            {
-              data: this.chartData,
-              backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(20, 159, 64, 0.2)',
-                'rgba(200, 70, 64, 0.2)',
-                'rgba(255, 159, 8, 0.2)',
-              ],
-              borderWidth: 1,
-              barThickness: 40, // 막대 두께 설정 (픽셀 단위)
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                display: false,
-              },
-              grid: {
-                drawBorder: false,
-                display: false,
-              },
-            },
-            x: {
-              grid: {
-                drawBorder: false,
-                display: false,
-              },
-            },
-          },
-          layout: {
-            padding: {
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-            },
-          },
-          maintainAspectRatio: false,
-          responsive: true,
-        },
-      };
+      // 이전에 생성된 차트 객체가 있다면 파괴
+      if (this.mileChart[chartId]) {
+        this.mileChart[chartId].destroy();
+      }
 
-      this.chart = new Chart(ctx, chartData);
+      try {
+        this.mileChart[chartId] = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: mileageLabel,
+            datasets: [
+              {
+                label: '방문자 수',
+                data: counts,
+                backgroundColor: [
+                  '#FF93E1',
+                  '#64EDBC',
+                  '#FF93E1',
+                  '#64EDBC',
+                  '#FF93E1',
+                  '#64EDBC',
+                  '#FF93E1',
+                  '#64EDBC',
+                ],
+                borderWidth: 1,
+                barThickness: 40,
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  display: false,
+                },
+                grid: {
+                  drawBorder: false,
+                  display: false,
+                },
+              },
+              x: {
+                grid: {
+                  drawBorder: false,
+                  display: false,
+                },
+              },
+            },
+            layout: {
+              padding: {
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+              },
+            },
+            maintainAspectRatio: false,
+            responsive: true,
+          },
+        });
+      } catch (error) {
+        console.error('Error rendering chart:', error);
+      }
     },
+
     setInitialDate() {
       const today = new Date();
       const yesterday = new Date(today);
@@ -160,21 +197,13 @@ export default {
 
       const formattedDate = yesterday.toISOString().split('T')[0];
 
-      const dateInput = document.getElementById('date');
-      dateInput.value = formattedDate;
-      dateInput.setAttribute('max', formattedDate); // 최대 날짜를 오늘의 전날로 설정
+      this.date = formattedDate; // 날짜 초기화
     },
   },
+
   mounted() {
-    console.log('Component mounted');
     this.setInitialDate(); // 날짜 입력 필드 초기화
-    this.$store.dispatch('mileage/getMileage');
-    this.$store.dispatch('hitMile/hit_mileChart');
-  },
-  beforeUnmount() {
-    if (this.chart) {
-      this.chart.destroy();
-    }
+    this.updateCharts2(); // 초기 차트 렌더링
   },
 };
 </script>
@@ -204,8 +233,8 @@ export default {
 
 .best {
   width: 25%;
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
   margin-top: 35px;
 }
 

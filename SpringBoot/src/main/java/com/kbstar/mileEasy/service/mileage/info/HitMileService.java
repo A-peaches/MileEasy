@@ -32,4 +32,8 @@ public class HitMileService {
         System.out.println(a);
         return mileageDao.getHitMile();
     }
+
+    public ArrayList<HitMile> getHitMileDATE(String date) {
+        return mileageDao.getHitMileDATE(date);
+    }
 }

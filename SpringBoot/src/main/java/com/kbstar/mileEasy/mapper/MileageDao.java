@@ -23,4 +23,6 @@ public interface MileageDao {
     ArrayList<MileScore> getMileScore(String userNo);
 
     ArrayList<HitMile> getHitMile();
+
+    ArrayList<HitMile> getHitMileDATE(String date);
 }

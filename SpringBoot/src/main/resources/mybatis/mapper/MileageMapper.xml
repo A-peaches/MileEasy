@@ -39,5 +39,17 @@
         ORDER BY m.mile_no;
     </select>
 
+    <select id="getHitMileDATE" resultType="com.kbstar.mileEasy.dto.HitMile">
+        SELECT m.mile_no, m.mile_name, COALESCE(h.hit_count, 0) AS hit_count
+        FROM mileage m
+                 LEFT JOIN (
+            SELECT mile_no, hit_count
+            FROM hit_mile
+            WHERE hit_date = #{date}
+        ) h ON m.mile_no = h.mile_no
+        ORDER BY m.mile_no;
+    </select>
+
+
 
 </mapper>

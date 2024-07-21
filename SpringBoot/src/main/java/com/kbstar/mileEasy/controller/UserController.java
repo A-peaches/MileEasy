@@ -102,8 +102,7 @@ public class UserController {
 
         String start = String.valueOf(startDate);
         String end = String.valueOf(endDate);
-        System.out.println(start);
-        System.out.println(end);
+
 
         return loginHistoryService.loginHistoryCountArray(start, end);
 

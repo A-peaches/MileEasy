@@ -55,13 +55,15 @@ export default {
       startDate: '',
       endDate: '',
       charts: {}, // 차트 인스턴스를 저장할 객체
-      chartIds: ['Chart1', 'Chart2'], // 각 차트에 대한 고유 ID
+      chartIds: ['Chart1'], // 각 차트에 대한 고유 ID
     };
   },
+
   mounted() {
     this.setDefaultDates();
     this.updateCharts(); // Ensure chart rendering happens after setting dates
   },
+
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     ...mapActions('loginHistory', ['loginHistoryCountArray']),
@@ -132,7 +134,12 @@ export default {
     renderCharts(counts) {
       // 차트 ID 배열을 순회하여 각 차트를 렌더링
       this.chartIds.forEach((chartId, index) => {
-        const ctx = document.getElementById(chartId).getContext('2d');
+        const ctx = document.getElementById(chartId)?.getContext('2d');
+
+        if (!ctx) {
+          console.error(`Canvas element with id '${chartId}' not found.`);
+          return;
+        }
 
         // 기존 차트 인스턴스가 있는 경우 제거
         if (this.charts[chartId]) {
