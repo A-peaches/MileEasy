@@ -82,8 +82,8 @@ public class MileageController {
     }
 
 
-    @PostMapping("/hit_mileChartDATE")
-    public ArrayList<HitMile> hit_mileChartDATE(@RequestBody Map<String, String> requestBody) {
+    @PostMapping("/levelChartData")
+    public ArrayList<HitMile> levelChartData(@RequestBody Map<String, String> requestBody) {
         String date = requestBody.get("date");
         System.out.println(date);
         return hitMileService.getHitMileDATE(date);

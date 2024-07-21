@@ -3,7 +3,6 @@
     <div>
       <p class="text-left lg2 KB_C2">직급별 방문자 수</p>
       <div class="cards favorite-card">
-<<<<<<< HEAD
         <div class="text-right">
           <input
             type="date"
@@ -30,11 +29,6 @@
             <p class="lg2 KB_C2" style="font-weight: bold">
               <mark>{{ best }}</mark>
             </p>
-=======
-        <div class="sub">
-          <div class="chart-container">
-            <canvas :id="chartId"></canvas>
->>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
           </div>
         </div>
       </div>
@@ -43,17 +37,13 @@
 </template>
 
 <script>
-<<<<<<< HEAD
 import { mapGetters } from 'vuex';
-=======
->>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
 import { Chart, registerables } from 'chart.js';
 import axios from 'axios';
 
 Chart.register(...registerables);
 
 export default {
-<<<<<<< HEAD
   name: 'PositionChart',
   data() {
     return {
@@ -164,111 +154,21 @@ export default {
   mounted() {
     this.setInitialDate(); // 초기 날짜 설정
     this.updateCharts3(); // 초기 차트 렌더링
-=======
-  name: 'PieChartComponent',
-  data() {
-    return {
-      chart: null,
-      chartId: 'pieChart-' + Math.random().toString(36).substr(2, 9), // Unique ID for the chart
-    };
-  },
-  mounted() {
-    this.renderChart();
-  },
-  beforeUnmount() {
-    if (this.chart) {
-      this.chart.destroy(); // Destroy the chart when component is unmounted
-    }
-  },
-  methods: {
-    async fetchChartData() {
-      try {
-        const response = await axios.get(
-          'http://localhost:8090/api/chart-data'
-        );
-        // Ensure response data is in the expected format
-        return response.data;
-      } catch (error) {
-        console.error('Error fetching chart data:', error);
-        return { labels: [], values: [] }; // Return empty data structure on error
-      }
-    },
-    async renderChart() {
-      const chartData = await this.fetchChartData();
-      const ctx = document.getElementById(this.chartId).getContext('2d');
-
-      if (this.chart) {
-        this.chart.destroy(); // Destroy the existing chart
-      }
-
-      this.chart = new Chart(ctx, {
-        type: 'pie', // Pie chart type
-        data: {
-          labels: chartData.labels, // Pie chart labels
-          datasets: [
-            {
-              data: chartData.values, // Pie chart data
-              backgroundColor: [
-                '#FF6384', // Red
-                '#36A2EB', // Blue
-                '#FFCE56', // Yellow
-                '#FF5733', // Orange
-                '#33FF57', // Green
-                '#5733FF', // Purple
-              ],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: true,
-            },
-            tooltip: {
-              callbacks: {
-                label: function (tooltipItem) {
-                  return `${tooltipItem.label}: ${tooltipItem.raw}`;
-                },
-              },
-            },
-          },
-        },
-      });
-    },
->>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
   },
 };
 </script>
 
 <style scoped>
-<<<<<<< HEAD
 .favorite-card {
   width: 100%;
   height: 300px;
   justify-content: center;
   align-items: center;
   position: relative;
-=======
-.chart-container {
-  position: relative;
-  width: 80%;
-  height: 400px;
-}
-
-.favorite-card {
-  width: 100%;
-  height: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
->>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
 }
 
 .sub {
   display: flex;
-<<<<<<< HEAD
   position: relative;
 }
 
@@ -304,10 +204,5 @@ export default {
 .positionchart {
   margin-bottom: 50px;
   width: 200px;
-=======
-  justify-content: center;
-  align-items: center;
-  height: 100%;
->>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
 }
 </style>
