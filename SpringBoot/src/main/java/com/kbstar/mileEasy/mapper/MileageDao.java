@@ -28,7 +28,10 @@ public interface MileageDao {
     ArrayList<HitMile> getHitMile();
 
     ArrayList<HitMile> getHitMileDATE(String date);
+<<<<<<< HEAD
 
     List<MileRecommand> getRecommand(String userNo);
 
+=======
+>>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
 }

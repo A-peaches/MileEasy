@@ -86,11 +86,16 @@
   </div>
   <br />
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
+<<<<<<< HEAD
     <div
       class="hiddencards"
       style="width: 24%; height: 400px; padding: 3% 3% 4% 3%"
     ></div>
     <PositionChart style="width: 70%; margin-left: 3%" />
+=======
+    <div style="width: 24%; height: 400px; padding: 3% 3% 4% 3%"></div>
+    <PositionChart style="width: 70%; margin-left: 4%" />
+>>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
   </div>
 </template>
 
@@ -100,6 +105,10 @@ import { mapGetters } from 'vuex';
 import PageCount from '@/views/adminMileEasy/main/PageCount.vue';
 import MileagePageCount from '@/views/adminMileEasy/main/MileagePageCount.vue';
 import PositionChart from '@/views/adminMileEasy/main/PositionChart.vue';
+<<<<<<< HEAD
+=======
+
+>>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
 export default {
   name: 'AdminMainView',
   components: { PageCount, MileagePageCount, PositionChart },
