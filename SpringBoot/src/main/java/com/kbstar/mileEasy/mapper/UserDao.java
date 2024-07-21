@@ -23,4 +23,5 @@ public interface UserDao {
 
 
     ArrayList<LoginHistory> loginHistoryCountArray(String startDate, String endDate);
+
 }

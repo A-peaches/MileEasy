@@ -28,10 +28,10 @@
             required
           />
               </div>
-            </div>
-            <div class="button-container d-flex mx-auto justify-content-center my-5">
-              <button type="submit" class="btn-green" style="margin-right:100px;">인증번호 발송</button>
-            </div>
+        </div>
+    <div class="button-container d-flex mx-auto justify-content-center my-5">
+          <button type="submit" class="btn-green"  style="margin-right:100px;">인증번호 발송</button>
+        </div>
       </form>
     </div>
 </template>
@@ -68,8 +68,10 @@ export default {
     },
     showAlert(message, icon) {
       this.$swal({
-        title: message,
+        title: "발송완료!",
+        text: message,
         icon: icon,
+        
       });
     },
   }
@@ -162,8 +164,8 @@ input {
 }
 /* 초록색 버튼 */
 .btn-green {
-  width: 13%;
-  padding: 20px;
+  width: 11%;
+  padding: 16px;
   background-color: #19C99B;
   color: #FFFFFF;
   border: none;
@@ -176,8 +178,8 @@ input {
 }
 
 .btn-green:hover {
-  width: 13%;
-  padding: 20px;
+  width: 11%;
+  padding: 16px;
   background-color: #32AB8B;
   color: #FFFFFF;
   border: none;

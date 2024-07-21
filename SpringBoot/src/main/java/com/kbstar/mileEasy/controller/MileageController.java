@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/mileage")
@@ -48,7 +47,6 @@ public class MileageController {
     //마일리지 테이블 가지고오기
     @GetMapping("/getMileage")
     public ArrayList<Mileage> getMileage() {
-        System.out.println("겟마일");
         ArrayList<Mileage> mileList = mileService.getMileage();
         System.out.println(mileList);
         return mileList;
