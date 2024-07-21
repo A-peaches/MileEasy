@@ -9,9 +9,12 @@ import com.kbstar.mileEasy.service.mileage.type.*;
 import com.kbstar.mileEasy.service.user.favorite.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mileage")
@@ -71,6 +74,15 @@ public class MileageController {
     public ArrayList<HitMile> hit_mileChart(){
         return hitMileService.getHitMile();
     }
+
+
+    @PostMapping("/hit_mileChartDATE")
+    public ArrayList<HitMile> hit_mileChartDATE(@RequestBody Map<String, String> requestBody) {
+        String date = requestBody.get("date");
+        System.out.println(date);
+        return hitMileService.getHitMileDATE(date);
+    }
+
 
 
 
