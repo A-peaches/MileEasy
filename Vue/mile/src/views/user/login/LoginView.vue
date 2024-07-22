@@ -26,6 +26,7 @@
           v-model="user_pw"
           placeholder="비밀번호를 입력하세요"
           style="height: 70px; width: 400px; opacity: 75%"
+          @keyup.enter="goLogin"
         />
       </div>
       <div>
@@ -36,6 +37,7 @@
         >
           로그인
         </button>
+        <input type="text" style="display: none" @keyup.enter="goLogin" ref="loginInput"/>
       </div>
       <div class="d-flex justify-content-center my-3">
         <div class="mr-8">
@@ -104,6 +106,11 @@ export default {
       });
     },
   },
+  mounted() {
+    if (this.$refs.loginInput) {
+      this.$refs.loginInput.focus();
+    }
+  }
 };
 </script>
 
