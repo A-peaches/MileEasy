@@ -1,10 +1,10 @@
 <template>
-  <div class="cards card-white" >
+  <div class="cards card-white" v-if="dataLoaded">
     <p class="lg2 KB_S4" style="margin-right: 90px; margin-bottom: 10px;">
       <i class="bi bi-award-fill" style="color: #ffca05;"></i>&nbsp;오늘의 추천
     </p>
     <div class="flex" style="margin-left: 15px; margin-top:30px; width:65%;">
-      <div v-if="recommand">
+      <div v-if="recommand && recommand.mile_mention">
         <div class="KB_S5">
           {{ recommand.mile_mention }}
         </div>
@@ -22,7 +22,7 @@
     </div>
   </div>
 </template>
-    
+
 <script>
 import { mapGetters } from "vuex";
 import axios from "axios";
@@ -44,6 +44,7 @@ export default {
       ],
       randomImg: null,
       recommand: null,
+      dataLoaded: false,
       checkLoginInfoInterval: null,
     };
   },
@@ -53,33 +54,35 @@ export default {
       return this.images[randomIndex];
     },
     async getRecommand() {
+      console.log('Fetching recommand data...');
       try {
-        console.log("Fetching recommendation data...");
         const response = await axios.get(
           `http://localhost:8090/mileage/getRecommand/${this.loginInfo.user_no}`
         );
         this.recommand = response.data;
-        console.log("Fetched recommendation data:", this.recommand);
+        console.log('Recommand data:', this.recommand);
+        this.dataLoaded = true;
       } catch (error) {
-        console.error("Error getRecommand data:", error);
+        console.error("Error fetching recommand data:", error);
+        this.dataLoaded = true;
       }
     },
     checkLoginInfo() {
+      console.log('Checking login info...');
       if (this.loginInfo) {
-        console.log("loginInfo available:", this.loginInfo);
         clearInterval(this.checkLoginInfoInterval);
+        console.log('Login info found:', this.loginInfo);
         this.getRecommand();
       }
     },
   },
-  created() {
-    console.log("Created lifecycle hook");
+  mounted() {
     this.randomImg = this.getRandomImg();
+    console.log('Component mounted, random image set:', this.randomImg);
 
     this.checkLoginInfoInterval = setInterval(() => {
-      console.log("Checking loginInfo...");
       this.checkLoginInfo();
-    }, 1000); // 1초마다 확인
+    }, 1000);
   },
   beforeUnmount() {
     if (this.checkLoginInfoInterval) {
@@ -102,12 +105,12 @@ export default {
 }
 
 .card-image {
-  width: 80px; /* 원하는 크기로 조정 */
+  width: 80px;
   height: auto;
   object-fit: cover;
   position: absolute;
-  top: 40px; /* 원하는 위치로 조정 */
-  right: 30px; /* 원하는 위치로 조정 */
+  top: 40px;
+  right: 30px;
   z-index: 0;
 }
 </style>
