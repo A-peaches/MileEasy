@@ -2,19 +2,56 @@
   <div class="cards" style="background-color: #f9f9f9; height: 430px">
     <p class="text-left lg2 KB_C2">
       즐겨찾기 마일리지&nbsp;&nbsp;
-      <i class="bi bi-plus-circle-fill" style="color: #ffca05; cursor: pointer" @click="openModal"></i>
+      <i
+        class="bi bi-plus-circle-fill"
+        style="color: #ffca05; cursor: pointer"
+        @click="openModal"
+      ></i>
     </p>
     <div class="flex">
-      <div v-for="(item, index) in 4" :key="index" class="cards favorite-card">
-        <img v-if="!favoriteList[index]" src="@/assets/img/add.png" class="addImg mx-auto" @click="openModal" />
-        <div v-else>
-          <p class="favorite-text KB_C2">{{ favoriteList[index].mile_no }} 마일리지</p>
+      <div v-for="(item, index) in 4" :key="index" class="cards favorite-card"
+      @click="favoriteList[index] && navigateToLink(favoriteList[index].mile_no)"
+      style="cursor: pointer;">
+      <img
+          v-if="!favoriteList[index]"
+          src="@/assets/img/add.png"
+          class="addImg mx-auto"
+          @click.stop="openModal"
+        />
+        <div  v-else>
+          <p class="favorite-text KB_C2 mt-5">
+            {{ favoriteList[index].mile_no }} 마일리지 
+          </p>
           <div class="flex">
-            <div class="KB_C1 mx-auto" style="font-size: 30pt; margin-bottom: 40px; margin-top: 5px">
+            <div
+              class="KB_C1 mileage-score"
+              style="margin-left: 80px; margin-right: 80px"
+            >
               {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
             </div>
-            <div v-if="hasMileageData(favoriteList[index].mile_no)" class="chart-container">
-              <canvas :id="'chart' + index" :ref="'chart' + index"></canvas>
+            <div
+              class="chart-wrapper mx-auto"
+              style="width: 100%; position: relative"
+            >
+              <div v-if="hasMileageData(favoriteList[index].mile_no)" class="chart-container">
+                <canvas
+                  :id="'chart' + index"
+                  :ref="'chart' + index"
+                  style="
+                    position: absolute;
+                    top: -20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    z-index: 0;
+                    height: 190px;
+                  "
+                ></canvas>
+              </div>
+              <div v-else class="no-data-message chart-container">
+                <div class="mb-3 " style=" position: absolute;  z-index: 0;  top: -10px;">
+                  <span><i class="bi bi-exclamation-circle-fill" style="color:#FFCA05; font-size: 17pt;"></i></span>
+                  <p class="mt-2">마일리지 점수가 없습니다.</p></div>
+              </div>
             </div>
           </div>
         </div>
@@ -23,10 +60,15 @@
 
     <!-- 모달 -->
     <div v-if="isModalOpen" class="modals">
-      <div class="modals-content" style="width: 40%; height: 45%; background-color: #f9f9f9">
+      <div
+        class="modals-content"
+        style="width: 40%; height: 45%; background-color: #f9f9f9"
+      >
         <span class="close" @click="closeModal">&times;</span>
         <div>
-          <p class="text-left fw-bold mb-3" style="font-size: 19pt">즐겨찾기 추가하기</p>
+          <p class="text-left fw-bold mb-3" style="font-size: 19pt">
+            즐겨찾기 추가하기
+          </p>
           <div class="favorite-options">
             <div
               v-for="(item, index) in mileageInfo"
@@ -39,7 +81,15 @@
             </div>
           </div>
           <div class="d-flex justify-content-end">
-            <button class="btn-gray mt-3 KB_C2" @click="updateFavorites" style="font-size: 16pt; width: 20%; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <button
+              class="btn-gray mt-3 KB_C2"
+              @click="updateFavorites"
+              style="
+                font-size: 16pt;
+                width: 20%;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              "
+            >
               등록
             </button>
           </div>
@@ -91,7 +141,16 @@ export default {
       return mileage?.mile_score_point ?? "0";
     },
     hasMileageData(mileNo) {
-      return this.mileScores.some((m) => m.mile_no === mileNo);
+      const score = this.mileScores.find((m) => m.mile_no === mileNo);
+      return score && (score.mile_prev_score !== 0 || score.mile_score_point !== 0);
+    },
+    navigateToLink(mileNo) {
+      const scoreObj = this.mileScores.find(score => score.mile_no === mileNo);
+      const link = scoreObj ? scoreObj.mile_link : null;
+      if (link) {
+        window.location.href = link;
+      }
+  
     },
     openModal() {
       this.isModalOpen = true;
@@ -102,7 +161,9 @@ export default {
     },
     toggleFavorite(mileName) {
       if (this.selectedFavorites.includes(mileName)) {
-        this.selectedFavorites = this.selectedFavorites.filter((name) => name !== mileName);
+        this.selectedFavorites = this.selectedFavorites.filter(
+          (name) => name !== mileName
+        );
       } else {
         if (this.selectedFavorites.length < 4) {
           this.selectedFavorites.push(mileName);
@@ -138,6 +199,7 @@ export default {
         if (this.charts[index]) {
           this.charts[index].destroy();
         }
+
         const ctx = canvas.getContext("2d");
         this.charts[index] = new Chart(ctx, {
           type: "bar",
@@ -146,7 +208,7 @@ export default {
             datasets: [
               {
                 label: `마일리지 ${mileNo}`,
-                data: [score - 10, score],
+                data: [score.mile_prev_score, score.mile_score_point],
                 backgroundColor: ["#FF93E1", "#64EDBC"],
                 borderWidth: 1,
               },
@@ -157,13 +219,22 @@ export default {
             scales: {
               y: {
                 beginAtZero: true,
+                suggestedMin: 0,
+                suggestedMax: 10, // y축의 최대값을 설정하여 형태를 유지
+              },
+            },
+            plugins: {
+              legend: {
+                display: false, // 범례 제거
               },
             },
           },
         });
         console.log("Chart created for index:", index);
       } else {
-        console.warn(`Canvas element with id ${chartId} not found or does not support getContext.`);
+        console.warn(
+          `Canvas element with id ${chartId} not found or does not support getContext.`
+        );
       }
     },
     async renderCharts() {
@@ -172,10 +243,10 @@ export default {
         const fav = this.favoriteList[index];
         const scoreObj = this.mileScores.find((m) => m.mile_no === fav.mile_no);
         if (scoreObj) {
-          await this.createChart(index, fav.mile_no, scoreObj.mile_score_point);
+          await this.createChart(index, fav.mile_no, scoreObj);
         }
       }
-    },
+    }
   },
   watch: {
     mileScores(newMileScores) {
@@ -191,8 +262,14 @@ export default {
     console.log("FavoriteCom mounted");
     if (this.loginInfo) {
       await this.$store.dispatch("mileage/getMileage");
-      await this.$store.dispatch("favorite/getFavorite", this.loginInfo.user_no);
-      await this.$store.dispatch("mileScore/getMileScore", this.loginInfo.user_no);
+      await this.$store.dispatch(
+        "favorite/getFavorite",
+        this.loginInfo.user_no
+      );
+      await this.$store.dispatch(
+        "mileScore/getMileScore",
+        this.loginInfo.user_no
+      );
       console.log("mileScores after fetch:", this.mileScores);
       await this.renderCharts();
     }
@@ -206,22 +283,22 @@ export default {
 <style>
 .flex {
   display: flex;
-  justify-content: space-between; /* 자식 요소들 간의 공간을 균등하게 배치 */
-  flex-wrap: wrap; /* 줄바꿈을 허용 */
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .favorite-card {
-  width: 48%; /* 두 개의 카드가 한 줄에 표시되도록 50% 이하로 설정 */
+  width: 48%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: left;
+  align-items: flex-start;
   height: 160px;
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px;
-  margin-bottom: 10px; /* 카드 간격 조절 */
+  margin-bottom: 10px;
 }
 
 .addImg {
@@ -234,16 +311,33 @@ export default {
 }
 
 .favorite-text {
-  text-align: left !important;
+  text-align: left;
   padding: 10px;
-  margin: 0; /* 기본 여백 제거 */
-  width: 100%; /* 필요에 따라 추가 */
-  align-self: flex-start; /* 부모가 flex 컨테이너일 때 왼쪽 정렬 */
+  margin: 0;
+  width: 100%;
+  align-self: flex-start;
+}
+
+.mileage-score {
+  font-size: 30pt;
+  margin-bottom: 40px;
+  margin-top: 5px;
+  text-align: center;
+  flex: 1;
+}
+
+.chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 
 .chart-container {
   position: relative;
-  height: 100px; /* 원하는 높이로 조절 */
+  height: 150px;
+  width: 190px;
+  z-index: 0;
 }
 
 .favorite-options {

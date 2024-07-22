@@ -56,6 +56,7 @@ public class MileageController {
     @GetMapping("/getMileScore/{user_no}")
     public ArrayList<MileScore> getMileScore(@PathVariable String user_no) {
         ArrayList<MileScore> mileScoreList = mileScoreService.getMileScore(user_no);
+        System.out.println(mileScoreList);
         return mileScoreList;
     }
 
