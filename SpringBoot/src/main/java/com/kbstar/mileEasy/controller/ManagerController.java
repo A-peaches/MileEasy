@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.MileIntroduce;
+import com.kbstar.mileEasy.dto.MileRecommand;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.manager.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,11 @@ public class ManagerController {
     @Autowired
     private ManagerService managerService;
 
+    // 파일 업로드 경로
     @Value("${project.uploadpath.miledetail}")
     private String miledetailUploadPath;
 
+    // 마일리지 이름 가져오기
     @GetMapping("/mileIntro/{user_no}")
     public User getMileTitle(@PathVariable String user_no) {
         User user = managerService.getMileTitle(user_no);
@@ -38,6 +41,49 @@ public class ManagerController {
         return user;
     }
 
+    // 마일리지 추천멘트 가져오기
+    @GetMapping("/mileRecommand/{mile_no}")
+    public List<MileRecommand> getMileRecommand(@PathVariable String mile_no) {
+        List<MileRecommand> mileRecommands = managerService.getRecommand(mile_no);
+        System.out.println(mileRecommands);
+        return mileRecommands;
+    }
+
+    // 마일리지 추천멘트 수정하기
+    @PostMapping("/updateRecommand")
+    public ResponseEntity<?> updateRecommand(@RequestBody MileRecommand mileRecommand){
+        System.out.println("지금 이건 업데이트 할 멘트~~"+mileRecommand);
+        int result = managerService.updateMileRecommand(mileRecommand.getMile_mention(), mileRecommand.getMile_recommand_no());
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 추천멘트 추가하기
+    @PostMapping("/addRecommand")
+    public ResponseEntity<?> addRecommand(@RequestBody MileRecommand mileRecommand){
+        int result = managerService.addMileRecommand(mileRecommand.getMile_no(), mileRecommand.getMile_mention());
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 추천멘트 삭제하기
+    @GetMapping("/deleteRecommand/{mile_recommand_no}")
+    public ResponseEntity<?> deleteRecommand(@PathVariable String mile_recommand_no){
+        int result = managerService.deleteMileRecommand(mile_recommand_no);
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 상세내용 가져오기
     @GetMapping("/mileDetail/{mile_no}")
     public List<MileIntroduce> getMileDetail(@PathVariable String mile_no){
         List<MileIntroduce> mileIntroduceList = managerService.getMileDetail(mile_no);
@@ -45,6 +91,7 @@ public class ManagerController {
         return mileIntroduceList;
     }
 
+    // 마일리지 상세내용 추가하기
     @PostMapping("/mileAdd")
     public ResponseEntity<?> addMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
             @RequestParam("mile_no") String mile_no,
@@ -78,6 +125,7 @@ public class ManagerController {
 
     }
 
+    // 마일리지 상세내용 중 파일 다운로드하기
     @GetMapping("/downloadFile/{mile_route}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String mile_route){ // ResponseEntity<Resource> : HTTP 응답으로 리소스를 반환
         try{
@@ -104,6 +152,7 @@ public class ManagerController {
         }
     }
 
+    // 마일리지 상세보기 삭제하기
     @GetMapping("/deleteMile/{mile_introduce_no}")
     public ResponseEntity<?> deleteMileDetail(@PathVariable String mile_introduce_no){
         int result = managerService.deleteMile(mile_introduce_no);
@@ -114,6 +163,7 @@ public class ManagerController {
         }
     }
 
+    // 마일리지 상세보기 수정 시 기존 정보 가져오기
     @GetMapping("/mileModifyDetail/{mile_introduce_no}")
     public MileIntroduce mileModifyDetail(@PathVariable String mile_introduce_no){
         MileIntroduce mileModify = managerService.mileModifyDetail(mile_introduce_no);
@@ -121,6 +171,7 @@ public class ManagerController {
         return mileModify;
     }
 
+    // 마일리지 상세보기 수정 등록하기
     @PostMapping("/updateDetail")
     public ResponseEntity<?> updateMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
                                             @RequestParam("mile_introduce_no") String mile_introduce_no,

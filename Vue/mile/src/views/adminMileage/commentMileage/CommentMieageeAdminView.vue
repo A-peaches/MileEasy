@@ -18,9 +18,9 @@
             <span class="lg2 mr-5 brown" style="text-align:right;"><i class="bi bi-plus-lg"></i>&nbsp;추가하기</span>
           </button>
         </div>
-        <div v-for="(mention, index) in mentions" :key="index" class="p-2 d-flex justify-content-between align-items-center">
+        <div v-for="(recommand, index) in mileRecommands" :key="index" class="p-2 d-flex justify-content-between align-items-center">
           <div class="input-gray p-3" style="width: 95%; text-align:left;">
-            <input v-model="mentions[index]" class="lg2" placeholder="추천 멘트를 입력하세요" style="text-align: left; width: 100%;"/>
+            <input v-model="recommand.mile_mention" class="lg2" placeholder="추천 멘트를 입력하세요" style="text-align: left; width: 100%;"/>
           </div>
           <button @click="deleteComment(index)">
             <span class="lg brown"><i class="bi bi-dash-lg"></i></span>
@@ -42,15 +42,15 @@ export default {
     return {
       mile_no: '',
       mile_name: '',
-      mentions: ['', ''], // mentions 배열 추가
       baseHeight: 80,
       increment: 10,
-      mileRecommand: {}
+      mileRecommands: []
     }
   },
   computed :{
     ...mapGetters('mile', ['getMileInfo']),
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('mileRecommand', ['getMileRecommandInfo']),
     loginInfo(){
       return this.getLoginInfo;
     },
@@ -58,21 +58,70 @@ export default {
       return this.getMileInfo;
     },
     computedHeight(){
-      return `${this.baseHeight + this.mentions.length * this.increment}vh`;
+      return `${this.baseHeight + this.mileRecommands.length * this.increment}vh`;
+    },
+    mileRecommandInfo(){
+      return this.getMileRecommandInfo;
     }
   },
   methods: {
     ...mapActions('mile', ['fetchMileInfo']),
+    ...mapActions('mileRecommand', ['getMileRecommand','updateRecommands', 'addRecommands', 'deleteRecommands']),
     addComment(){
-      this.mentions.push('');
+      const newRecommand = {
+        mile_mention: '', 
+        mile_no: this.mileRecommands.length > 0 ? this.mileRecommands[0].mile_no : null, 
+        mile_link: this.mileRecommands.length > 0 ? this.mileRecommands[0].mile_link : null, 
+        mile_recommand_no: null
+      };
+      this.mileRecommands.push(newRecommand);
     },
-    deleteComment(index){
-      this.mentions.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
+    async deleteComment(index){
+      const recommand = this.mileRecommands[index];
+      if(recommand.mile_recommand_no){
+        // DB에 있는 멘트를 삭제할 경우 
+        const response = await this.deleteRecommands(recommand);
+        if(response && response.data.success){
+          this.mileRecommands.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
+          console.log('삭제 완료');
+        }else{
+          console.log('삭제 실패');
+        }
+      }else{
+        // DB에 없는 멘트를 삭제할 경우
+        this.mileRecommands.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
+      }
     },
-    ...mapActions('mileRecommand', ['addComment']),
-    addCommentAction(){
-
-    }
+    async addCommentAction(){
+      if(this.mileRecommands!=null){
+        for(const recommand of this.mileRecommands){
+          if(recommand.mile_recommand_no){
+            // recommand가 이미 존재하면 업데이트 
+            await this.updateRecommands(recommand);
+          }else{
+            // recommand가 존재하지 않으면 새로 추가 
+            await this.addRecommands(recommand);
+          }
+        }
+        this.showAlert('추천 멘트가 등록되었습니다', 'success', '#');
+      }else{
+        this.showAlert('추천 멘트 등록이 실패했습니다', 'error', '#')
+      }
+    },
+    showAlert(t, i, r) {
+      this.$swal({
+        title: t,
+        icon: i,
+      }).then((result) => {
+        if(result.isConfirmed){
+          if(r == '#'){
+            location.reload(); // 현재 페이지 새로고침
+          }else{
+            this.$router.push(r);
+          }
+        }
+      })
+    },
   },
   async created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
@@ -86,6 +135,17 @@ export default {
       }
     }else{
       console.error('user_no이 유효하지 않습니다.');
+    }
+    const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
+    this.mile_no = mile_no;
+    if(mile_no){
+      await this.getMileRecommand(mile_no);
+      const mileRecommandInfo = this.getMileRecommandInfo;
+      if(mileRecommandInfo){
+        this.mileRecommands = mileRecommandInfo;
+      }else {
+        console.error('추천멘트를 가져올 수 없습니다.');
+      }
     }
   },
 };
