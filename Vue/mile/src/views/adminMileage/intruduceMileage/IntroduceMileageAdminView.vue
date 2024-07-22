@@ -76,7 +76,10 @@ export default {
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
     if(user_no){
-      this.fetchMileInfo(user_no);
+      this.mileInfo = this.fetchMileInfo(user_no);
+      if(this.mileInfo == null){
+        this.showAlert('등록된 마일리지 소개 글이 없습니다', 'warning', '/introduceMileageAddAdminView')
+      }
     }else{
       console.error('user_no이 유효하지 않습니다.');
     }
