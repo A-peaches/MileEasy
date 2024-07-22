@@ -22,24 +22,48 @@
     <favorite style="width: 70%; margin-left: 3%" />
   </div>
 
-  <!-- 추천 멘트-->
-  <div class="flex" style="margin-left: 10%; margin-right: 10%">
-    <recommand class="my-5" />
+  <!-- 추천 멘트 및 마일리지 차트 -->
+  <div
+    class="flex-container"
+    style="
+      margin-left: 10%;
+      margin-right: 10%;
+      display: flex;
+      align-items: flex-start;
+    "
+  >
+    <!-- 오늘의 추천 및 출석체크 -->
+    <div
+      class="left-column"
+      style="
+        width: 24%;
+        display: flex;
+        flex-direction: column;
+        margin-right: 2%;
+      "
+    >
+      <recommand class="my-5" style="height: 210px" v-if="loginInfo" />
+      <attendance style="height: 380px" v-if="loginInfo" />
+    </div>
+    <!-- 뀨! -->
+    <div class="right-column" style="flex: 1; margin-left: 3%; height: 430px">
+      <milageCharts class="my-5" style="height: 100%" v-if="loginInfo" />
+    </div>
   </div>
 </template>
 
 <script>
 import favorite from '@/components/main/FavoriteCom.vue';
 import recommand from '@/components/main/MileRecommand.vue';
+import milageCharts from '@/components/main/MileageChartsCom.vue';
+import attendance from '@/components/main/AttendanceCom.vue';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'UserMainView',
-  components: { favorite, recommand },
-  methods: {},
+  components: { favorite, recommand, milageCharts, attendance },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
-
     loginInfo() {
       return this.getLoginInfo;
     },
