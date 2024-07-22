@@ -87,4 +87,17 @@
         ]]>
   </select>
 
+    <select id="levelChartData" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT  COALESCE(COUNT(DISTINCT lh.user_no), 0) AS visitorCount
+        FROM level l
+                 LEFT JOIN (
+            SELECT lh.user_no, u.level_no
+            FROM login_history lh
+                     JOIN user u ON lh.user_no = u.user_no
+            WHERE lh.login_date = #{date}
+        ) AS lh ON l.level_no = lh.level_no
+        GROUP BY l.level_no
+        ORDER BY l.level_no;
+    </select>
+
 </mapper>

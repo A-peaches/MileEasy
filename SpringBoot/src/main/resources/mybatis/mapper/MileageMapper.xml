@@ -69,7 +69,7 @@
         ORDER BY m.mile_no;
     </select>
 
-<<<<<<< HEAD
+
 
 
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
@@ -80,7 +80,6 @@
             order by mile_score_point ASC LIMIT 1);
     </select>
 
-=======
->>>>>>> a28362d8d91364df0f6ce55a7027fc021a5d9e2e
+
 
 </mapper>

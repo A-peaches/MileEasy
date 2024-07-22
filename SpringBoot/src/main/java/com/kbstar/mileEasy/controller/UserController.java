@@ -2,6 +2,7 @@ package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.LoginHistory;
 import com.kbstar.mileEasy.dto.User;
+import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class UserController {
     private GetUserInfoService GetUserInfoService;
     @Autowired
     private LoginHistoryService loginHistoryService;
+
+    @Autowired
+    private MileService mileService;
 
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
@@ -108,4 +112,12 @@ public class UserController {
 
 
     }
+    @PostMapping("/levelChartData")
+    public ArrayList<User> levelChartData(@RequestBody Map<String, String> requestBody) {
+        String date = requestBody.get("date");
+        System.out.println("들어왔따!");
+        System.out.println(mileService.levelChartData(date));
+        return mileService.levelChartData(date);
+    }
+
 }

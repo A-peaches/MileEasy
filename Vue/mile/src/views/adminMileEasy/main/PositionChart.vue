@@ -3,32 +3,35 @@
     <div>
       <p class="text-left lg2 KB_C2">직급별 방문자 수</p>
       <div class="cards favorite-card">
-        <div class="text-right">
-          <input
-            type="date"
-            class="date"
-            id="date"
-            v-model="date"
-            :max="maxDate"
-            @change="updateCharts3"
-          />
-        </div>
-        <br />
         <div class="sub">
-          <div class="chart-container">
-            <canvas :id="positionChartId[0]" class="positionchart"></canvas>
+          <div class="container2">
+            <table class="table table-sm custom-table">
+              <thead>
+                <tr>
+                  <th>직급</th>
+                  <th>방문자 수</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(count, index) in data" :key="index">
+                  <td>{{ 'L' + index }}</td>
+                  <td>{{ count }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="best">
-            <img
-              src="@/assets/imoji/kolly/콜리얼굴최고.png"
-              style="width: 100px; height: 100px"
-            />
-            <div class="lg2 KB_C2" style="font-weight: bold">
-              <i class="bi bi-trophy-fill"></i> 1위
+          <div class="chart-container">
+            <div class="text-right">
+              <input
+                type="date"
+                class="date"
+                id="date"
+                v-model="date"
+                :max="maxDate"
+                @change="updateCharts3"
+              />
             </div>
-            <p class="lg2 KB_C2" style="font-weight: bold">
-              <mark>{{ best }}</mark>
-            </p>
+            <canvas :id="positionChartId[0]" class="positionchart"></canvas>
           </div>
         </div>
       </div>
@@ -51,7 +54,7 @@ export default {
       date: '', // 날짜 값을 저장할 변수
       positionChartId: ['PositionChart'], // 랜덤 문자열로 유니크 ID 생성
       todayDate: new Date().toISOString().split('T')[0], // 오늘 날짜를 ISO 문자열로 저장
-      best: '-', // 초기값 설정
+      data: Array.from({ length: 5 }, () => '-'), // L0부터 L4까지 초기화된 데이터
     };
   },
   computed: {
@@ -70,8 +73,9 @@ export default {
   methods: {
     async updateCharts3() {
       try {
-        const { hitCounts } = await this.realChartData();
-        this.renderChart3(hitCounts); // renderChart3 메서드 호출
+        const levelChartData = await this.realChartData();
+        this.data = levelChartData; // 데이터 업데이트
+        this.renderChart3(levelChartData); // renderChart3 메서드 호출
       } catch (error) {
         console.error('Error fetching chart data:', error);
       }
@@ -80,7 +84,7 @@ export default {
     async realChartData() {
       try {
         const response = await axios.post(
-          'http://localhost:8090/mileage/levelChartData',
+          'http://localhost:8090/user/levelChartData',
           { date: this.date } // POST 요청에 날짜 데이터 포함
         );
 
@@ -88,13 +92,13 @@ export default {
           throw new Error('Invalid response data format');
         }
 
-        const levelChartData = response.data.map((item) => item.hit_count);
+        const levelChartData = response.data.map((item) => item.visitorCount);
         console.log('원형차트 결과', levelChartData);
 
-        return { levelChartData };
+        return levelChartData;
       } catch (error) {
         console.error('Error fetching chart data:', error);
-        return { levelChartData: [] }; // 에러 발생 시 빈 배열 반환
+        return []; // 에러 발생 시 빈 배열 반환
       }
     },
 
@@ -120,7 +124,13 @@ export default {
             datasets: [
               {
                 data: levelChartData, // 실제 데이터로 변경
-                backgroundColor: ['#FF93E1', '#64EDBC', '#FF93E1', '#64EDBC'],
+                backgroundColor: [
+                  '#20C997',
+                  '#0CC68F',
+                  '#16BA89',
+                  '#198754',
+                  '#177147',
+                ],
                 borderWidth: 1,
               },
             ],
@@ -167,9 +177,9 @@ export default {
   position: relative;
 }
 
-.sub {
-  display: flex;
-  position: relative;
+.container2 {
+  padding-left: 50px;
+  width: 40%;
 }
 
 .chart-container {
@@ -177,15 +187,11 @@ export default {
   height: 100%;
   bottom: 0;
   height: 230px;
-  width: 65%;
-  padding-left: 25px;
+  width: 50%;
 }
 
-.best {
-  width: 25%;
-  justify-content: center;
-  align-items: center;
-  margin-top: 35px;
+.sub {
+  display: flex;
 }
 
 .cards {
@@ -201,8 +207,42 @@ export default {
   border-radius: 8px;
   border-color: #cecece;
 }
+
 .positionchart {
   margin-bottom: 50px;
   width: 200px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 0.55rem; /* 셀 안의 내용과 셀 사이의 여백 조정 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  border: 1px solid #dee2e6; /* 테이블 테두리 스타일 */
+}
+
+.custom-table th {
+  background-color: #e9e9e9; /* 테이블 헤더 배경색 */
+}
+
+.custom-table tbody tr:nth-child(odd) {
+  background-color: #f2f2f2; /* 짝수 번째 행 배경색 */
+}
+
+.custom-table tbody tr:hover {
+  background-color: #e2e2e2; /* 마우스 호버시 배경색 */
+}
+
+.custom-table thead th,
+.custom-table tbody td {
+  vertical-align: middle; /* 셀 내용 수직 가운데 정렬 */
 }
 </style>

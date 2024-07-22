@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.*;
+import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -83,12 +84,7 @@ public class MileageController {
     }
 
 
-    @PostMapping("/levelChartData")
-    public ArrayList<HitMile> levelChartData(@RequestBody Map<String, String> requestBody) {
-        String date = requestBody.get("date");
-        System.out.println(date);
-        return hitMileService.getHitMileDATE(date);
-    }
+
 
 
 
