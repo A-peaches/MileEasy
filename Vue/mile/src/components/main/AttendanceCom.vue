@@ -46,19 +46,32 @@
           });
   
           // 달력의 가로 크기 조정
-          const calendarElement = calendarContainer.value.querySelector('.dp__calendar');
-          if (calendarElement) {
-            calendarElement.style.width = "300px";
-            calendarElement.style.height = "250px";
+          if (calendarContainer.value) {
+            const calendarElement = calendarContainer.value.querySelector('.dp__calendar');
+            if (calendarElement) {
+              calendarElement.style.width = "300px";
+              calendarElement.style.height = "250px";
+            }
+  
+            // 현재 월 표시를 위한 커스터마이징
+            const currentDate = new Date();
+            month.value = currentDate.toLocaleString("default", {
+              month: "long",
+            });
+  
+            const year = currentDate.getFullYear();
+            const calendarHeader = calendarContainer.value.querySelector(".dp__calendar_header");
+            if (calendarHeader) {
+              const monthDisplay = document.createElement("div");
+              monthDisplay.className = "current-month";
+              monthDisplay.innerHTML = `${month.value} ${year}`;
+              calendarHeader.prepend(monthDisplay);
+  
+              // 줄바꿈을 추가
+              const br = document.createElement("br");
+              calendarHeader.insertBefore(br, calendarHeader.children[1]);
+            }
           }
-  
-          // 현재 월 표시를 위한 커스터마이징
-          const currentDate = new Date();
-          month.value = currentDate.toLocaleString("default", {
-            month: "long",
-          });
-  
-        
         });
       });
   
