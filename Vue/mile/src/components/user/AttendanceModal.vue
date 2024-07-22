@@ -18,14 +18,16 @@
             :events="attendanceEvents"
             :time-from="10 * 60"
             :disable-views="['day']"
-             :show-events-on-month-view="true"
+            :show-events-on-month-view="true"
+            :events-on-month-view="true"
+            cells-content="events-count"
           >
-          <template #cell-content="{ events, date }">
-  <div v-if="events.length" class="custom-event">
-    <img src="../../assets/imoji/kolly/콜리얼굴사랑.png" alt="Event Image" class="event-image" />
-  </div>
-  <div v-else>{{ date.getDate() }}</div>
-</template>
+            <template #cell-content="{ events, dayNumber }">
+              <div v-if="events.length" class="custom-event">
+                <img src="../../assets/imoji/kolly/콜리얼굴사랑.png" alt="Event Image" class="event-image" />
+              </div>
+              <div v-else>{{ dayNumber }}</div>
+            </template>
             <template #arrow-prev>
               <i class="bi bi-chevron-left"></i>
             </template>
@@ -68,7 +70,30 @@
   </script>
   
   <style scoped>
-
+  .modals {
+    display: flex;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modals-content {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #888;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+  }
+  
   .calendar-container {
     display: flex;
     justify-content: center;
@@ -77,22 +102,30 @@
     width: 100%;
   }
   
-  .event-image {
-  width: 24px;
-  height: 24px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.vuecal__cell {
-  position: relative;
-}
-  .vuecal__cell-events {
+  .custom-event {
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
   }
+  
+  .event-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .vuecal__cell {
+    position: relative;
+  }
+  
+  .vuecal__cell-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+
   </style>
   
