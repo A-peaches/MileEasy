@@ -87,7 +87,8 @@
               style="
                 font-size: 16pt;
                 width: 20%;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                background-color: #EAEAEA;
               "
             >
               등록

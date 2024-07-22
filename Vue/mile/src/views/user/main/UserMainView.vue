@@ -37,7 +37,7 @@
       style="width: 24%; display: flex; flex-direction: column; margin-right: 2%;"
     >
       <recommand class="my-5" style="height: 210px" v-if="loginInfo" />
-      <attendance style="height: 380px;" v-if="loginInfo" />
+      <attendance style="height: 395px;" v-if="loginInfo" />
     </div>
     <!-- 뀨! -->
     <div
@@ -50,10 +50,10 @@
 </template>
 
 <script>
-import favorite from '@/components/main/FavoriteCom.vue';
-import recommand from '@/components/main/MileRecommand.vue';
-import milageCharts from '@/components/main/MileageChartsCom.vue';
-import attendance from '@/components/main/AttendanceCom.vue';
+import favorite from '@/components/user/FavoriteCom.vue';
+import recommand from '@/components/user/MileRecommand.vue';
+import milageCharts from '@/components/user/MileageChartsCom.vue';
+import attendance from '@/components/user/AttendanceCom.vue';
 import { mapGetters } from 'vuex';
 
 export default {
