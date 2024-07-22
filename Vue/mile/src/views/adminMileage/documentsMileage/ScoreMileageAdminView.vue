@@ -1,16 +1,8 @@
 <!--🚨마일리지 관리자 :  마일리지 문서-->
 <template>
   <div class="cards page-back mx-auto">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 문서</h2>
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="lg2" style="padding: 3em">총 건</div>
-      <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
-        <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
-          <input type="text" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
-          <button><i class="bi bi-search mr-2" style="font-size: 25px; color: #4b4a4a"></i></button>
-        </div>
-      </div>
-    </div>
+    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 점수</h2>
+    
     <!-- <div v-for="detail in arrayMiles" :key="detail.mile_introduce_no" style="padding:0 5%;">
       <div class="border-bottom p-4">
         <div class="d-flex align-items-center justify-content-between">
@@ -47,7 +39,7 @@
         <span class="close" @click="closeModal">&times;</span>
         <div>
           <p class="text-left fw-bold mb-3" style="font-size: 19pt">
-            마일리지 문서 업로드
+            마일리지 점수 업로드
           </p>
           <div class="p-3" style="margin-top: 5vh;">
             <div class="d-flex input-gray mt-3 p-4">

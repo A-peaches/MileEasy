@@ -26,11 +26,21 @@
         </li>
         <li class="nav-item">
           <a
-            class="nav-link active"
+            class="nav-link dropdown-toggle"
             aria-current="page"
             href="/documentsMileageAdminView"
-            >마일리지 문서</a
-          >
+            >
+            마일리지 문서
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link dropdown-toggle"
+            aria-current="page"
+            href="/scoreMileageAdminView"
+            >
+            마일리지 점수
+          </a>
         </li>
         <li class="nav-item dropdown">
           <a
