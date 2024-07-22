@@ -30,7 +30,8 @@
         </button>
       </div>
       <div class="notice-list">
-        <div class="input-base" v-for="(item, index) in paginatedNotices" :key="index" @click="goToDetailView(item.num)">
+        <!-- <div class="input-base" v-for="Notice in Notices" :key="'notice_board_no', 'int', 'NO', 'PRI', NULL, ''
+" @click="goToDetailView(item.num)"> -->
           <div class="notice-details">
             <div class="notice-num">{{ item.num }}</div>
             <div class="notice-title">{{ item.title }}</div>
@@ -46,7 +47,6 @@
         <button @click="nextPage" :disabled="currentPage === totalPages">»</button>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -60,7 +60,8 @@ export default {
         { num: "2", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
         { num: "3", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
         { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-      ],
+      ]
+      ,
       showCategory: false,
       currentPage: 1,
       itemsPerPage: 10,
@@ -68,6 +69,7 @@ export default {
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+
     loginInfo() {
       return this.getLoginInfo;
     },
