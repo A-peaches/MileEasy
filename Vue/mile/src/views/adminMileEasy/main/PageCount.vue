@@ -89,20 +89,18 @@ export default {
       endDateInput.setAttribute('max', endDateFormatted);
     },
     async updateCharts() {
-      // 날짜 유효성 검사
       if (new Date(this.startDate) > new Date(this.endDate)) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: '시작 날짜는 종료 날짜보다 이전이어야 합니다.',
         });
-        return; // 유효성 검사 실패 시 차트 업데이트를 중단합니다.
+        return;
       }
 
-      // 데이터 가져오기
       try {
         const counts = await this.chartDataCount();
-        this.renderCharts(counts); // 데이터가 준비된 후 차트 렌더링
+        this.renderCharts(counts);
       } catch (error) {
         console.error('Error fetching login history:', error);
       }
@@ -128,11 +126,10 @@ export default {
         return counts;
       } catch (error) {
         console.error('Error fetching login history:', error);
-        return []; // 에러 발생 시 빈 배열 반환
+        return [];
       }
     },
     renderCharts(counts) {
-      // 차트 ID 배열을 순회하여 각 차트를 렌더링
       this.chartIds.forEach((chartId, index) => {
         const ctx = document.getElementById(chartId)?.getContext('2d');
 
@@ -141,7 +138,6 @@ export default {
           return;
         }
 
-        // 기존 차트 인스턴스가 있는 경우 제거
         if (this.charts[chartId]) {
           this.charts[chartId].destroy();
         }
@@ -194,14 +190,12 @@ export default {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
 
-      // 두 날짜 사이의 모든 날짜를 배열에 추가
       for (
         let date = new Date(start);
         date <= end;
         date.setDate(date.getDate() + 1)
       ) {
-        // 형식을 MM-DD로 변경
-        const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1
+        const month = date.getMonth() + 1;
         const day = date.getDate();
         daysArray.push(`${month}-${day}`);
       }
@@ -231,8 +225,8 @@ export default {
   flex: 1;
   height: 90% !important;
 }
-.chartBox canvas {
-  width: auto;
+canvas {
+  width: 80%;
   height: auto;
 }
 </style>

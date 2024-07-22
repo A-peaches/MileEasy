@@ -28,8 +28,6 @@ public class HitMileService {
     }
 
     public ArrayList<HitMile> getHitMile() {
-        ArrayList<HitMile> a = mileageDao.getHitMile();
-        System.out.println(a);
         return mileageDao.getHitMile();
     }
 

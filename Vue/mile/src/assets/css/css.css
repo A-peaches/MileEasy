@@ -404,12 +404,9 @@
 }
 
 main {
-  background: linear-gradient(
-    to bottom,
-    #5fc9ad 38%,
-    #fbfbfb 38%,
-    #fbfbfb 70%
-  ); /* 위쪽은 초록색, 아래쪽은 회색 */
+  background: linear-gradient(to bottom, #5fc9ad 38%, #fbfbfb 0%);
+  background-size: 100% 100vh;
+  background-repeat: no-repeat;
   min-height: 100vh;
   padding: 5px;
 }

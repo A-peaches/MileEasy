@@ -27,7 +27,7 @@
               <i class="bi bi-trophy-fill"></i> 1위
             </div>
             <p class="lg2 KB_C2" style="font-weight: bold">
-              <mark>-</mark>
+              <mark>{{ best }}</mark>
             </p>
           </div>
         </div>
@@ -51,6 +51,7 @@ export default {
       date: '', // 날짜 값을 저장할 변수
       mileChartId: ['MileChart'], // 랜덤 문자열로 유니크 ID 생성
       todayDate: new Date().toISOString().split('T')[0], // 오늘 날짜를 ISO 문자열로 저장
+      best: '-', // 초기값 설정
     };
   },
   computed: {
@@ -69,9 +70,14 @@ export default {
   methods: {
     async updateCharts2() {
       try {
-        const counts = await this.realChartData();
+        const { hitCounts } = await this.realChartData();
         const mileageLabel = await this.label(); // 라벨 데이터 비동기 호출
-        this.renderChart2(counts, mileageLabel); // 라벨 데이터를 전달하여 차트 렌더링
+
+        // 최대값을 찾아서 best에 설정
+        this.findMaxAndSetBest(hitCounts, mileageLabel);
+
+        // 차트 렌더링
+        this.renderChart2(hitCounts, mileageLabel);
       } catch (error) {
         console.error('Error fetching chart data:', error);
       }
@@ -104,11 +110,35 @@ export default {
 
         const hitCounts = response.data.map((item) => item.hit_count);
         console.log('마일리지 결과', hitCounts);
-        return hitCounts;
+
+        return { hitCounts };
       } catch (error) {
         console.error('Error fetching chart data:', error);
-        return []; // 에러 발생 시 빈 배열 반환
+        return { hitCounts: [] }; // 에러 발생 시 빈 배열 반환
       }
+    },
+
+    findMaxAndSetBest(hitCounts, mileageLabel) {
+      const maxIndex = this.findMaxIndex(hitCounts);
+      if (maxIndex !== -1 && mileageLabel.length > maxIndex) {
+        this.best = hitCounts[maxIndex] === 0 ? '-' : mileageLabel[maxIndex];
+      } else {
+        this.best = '-';
+      }
+    },
+
+    findMaxIndex(array) {
+      if (array.length === 0) return -1;
+
+      let maxIndex = -1;
+      let maxValue = Number.MIN_SAFE_INTEGER;
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] > maxValue) {
+          maxValue = array[i];
+          maxIndex = i;
+        }
+      }
+      return maxIndex;
     },
 
     renderChart2(counts, mileageLabel) {
@@ -189,7 +219,6 @@ export default {
         console.error('Error rendering chart:', error);
       }
     },
-
     setInitialDate() {
       const today = new Date();
       const yesterday = new Date(today);
