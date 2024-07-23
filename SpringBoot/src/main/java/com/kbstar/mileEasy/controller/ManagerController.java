@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @RestController
@@ -87,7 +88,6 @@ public class ManagerController {
     @GetMapping("/mileDetail/{mile_no}")
     public List<MileIntroduce> getMileDetail(@PathVariable String mile_no){
         List<MileIntroduce> mileIntroduceList = managerService.getMileDetail(mile_no);
-        System.out.println(mileIntroduceList.get(0));
         return mileIntroduceList;
     }
 
@@ -179,11 +179,16 @@ public class ManagerController {
                                             @RequestParam("mile_content") String mile_content,
                                             @RequestParam(value="file", required = false) MultipartFile file
     ){
+        Path tempFilePath = null; // 임시 파일 경로를 저장할 변수를 선언
         try {
             String mile_route = null; // 파일 경로를 저장할 변수를 선언
 //            String uploadPath; // 파일 업로드 경로를 저장할 변수를 선언
             if (file != null && !file.isEmpty()) { // 파일이 존재하고 비어있지 않을 때만 파일을 저장
                 String uploadPath = miledetailUploadPath;
+
+                // 임시 파일 생성
+                tempFilePath = Files.createTempFile("upload_", ".tmp");
+                Files.copy(file.getInputStream(), tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 
                 // 파일 저장
                 mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
@@ -201,6 +206,15 @@ public class ManagerController {
         }catch (IOException e){
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("success", false, "message", "파일 업로드 실패"));
+        }finally {
+            // 임시 파일 삭제
+            if (tempFilePath != null) {
+                try {
+                    Files.deleteIfExists(tempFilePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }

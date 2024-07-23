@@ -48,12 +48,22 @@ export default [
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
   {
-    //마일리지 문서 화면
+    //마일리지 문서 업로드 화면
     path: '/documentsMileageAdminView',
     name: 'documentsMileageAdminView',
     component: () =>
       import(
         '../views/adminMileage/documentsMileage/DocumentsMileageAdminView'
+      ),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
+  {
+    //마일리지 점수 업로드 화면
+    path: '/scoreMileageAdminView',
+    name: 'scoreMileageAdminView',
+    component: () =>
+      import(
+        '../views/adminMileage/documentsMileage/ScoreMileageAdminView'
       ),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
