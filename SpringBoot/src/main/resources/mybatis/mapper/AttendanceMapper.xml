@@ -2,7 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kbstar.mileEasy.mapper.AttendanceDao">
 
-    <select id="getRecommand" resultType="com.kbstar.mileEasy.beans.Attendances">
+    <select id="getAttendance" resultType="com.kbstar.mileEasy.beans.Attendances">
         select attendance_date as start,attendance_date as end  from attendance where user_no=#{userNo};
     </select>
+
+    <select id="addAttendance" >
+        insert into attendance (user_no , attendance_date) values (#{userNo}, #{strToday} );
+    </select>
+
 </mapper>

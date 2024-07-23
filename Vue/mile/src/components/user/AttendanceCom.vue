@@ -110,11 +110,28 @@ export default {
   background-color: rgba(136, 236, 191, 0.25);
 }
 
-/* Dash indicator */
+/* .vuecal__cell-events-count {
+background-image: url('../../assets/imoji/kolly/콜리얼굴최고.png');
+ top : -5px;
+ height: 25px;
+ width: 27px;
+ background-size: 27px 25px;
+ background-color: white;
+ background-repeat: no-repeat;
+ color :#23A07D;
+} */
+
 .vuecal__cell-events-count {
-  width: 18px;
-  height: 2px;
-  color: transparent;
-  top: 20px;
+background-image: url('../../assets/imoji/bb/비비얼굴사랑.png');
+ top : -8px;
+ height: 35px;
+ width: 30px;
+ background-size: 25px 22px;
+ background-color: white;
+ background-repeat: no-repeat;
+ color :white;
+ background-position: 5px 10px;
 }
+
+
 </style>

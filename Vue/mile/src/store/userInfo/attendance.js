@@ -12,9 +12,6 @@ const mutations = {
   setArrayAttendance(state, payload) {
     state.arrayAttendance = payload;
   },
-  addAttendance(state, payload) {
-    state.arrayAttendance.push(payload);
-  }
 };
 
 const actions = {
@@ -24,9 +21,10 @@ const actions = {
     console.log("출석정보 :",attendanceData);
     commit('setArrayAttendance', attendanceData);
   },
-  async addAttendance({ commit }, { user_no, attendance }) {
-    const response = await axios.post(`http://localhost:8090/attendance/addAttendance`, { user_no, ...attendance });
-    commit('addAttendance', response.data);
+  async addAttendance({ dispatch },  user_no ) {
+    await axios.get(`http://localhost:8090/attendance/addAttendance/${user_no}`);
+     // 출석 추가 후 최신 출석 데이터를 다시 가져옴
+     await dispatch('getAttendance', user_no);
   },
 };
 

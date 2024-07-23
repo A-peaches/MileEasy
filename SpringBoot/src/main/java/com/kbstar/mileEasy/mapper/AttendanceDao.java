@@ -8,5 +8,7 @@ import java.util.List;
 @Mapper
 public interface AttendanceDao {
 
-    List<Attendances> getRecommand(String userNo);
+    List<Attendances> getAttendance(String userNo);
+
+    void addAttendance(String userNo, String strToday);
 }
