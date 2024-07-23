@@ -1,7 +1,8 @@
 <template>
 <!-- Footer -->
-<footer style=" padding: 20px; text-align: center; height : 250px;
+<footer style=" padding: 20px; text-align: center; height : 500px;
 background-color : #fbfbfb">
+    <div style="margin-top: 80px;"></div>
     <hr>
     <div style=" margin-top: 50px; margin-bottom: 10px;">
       <img src="footer-logo.png" alt="MileEasy Logo" style="height: 40px;">

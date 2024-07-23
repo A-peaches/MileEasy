@@ -19,7 +19,8 @@
         <p class="md mb-2" style="margin-bottom: 0px">
           {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
         </p>
-        <button class="btn-yellow KB_C2 my-3">나의 마일리지</button>
+        <button class="btn-yellow KB_C2 my-3"
+        @click="goToMyMileageView">나의 마일리지</button>
       </div>
       <recommand class="my-5" style="height: 210px" v-if="loginInfo" />
       <attendance style="height: 395px" v-if="loginInfo" />
@@ -49,5 +50,10 @@ export default {
       return this.getLoginInfo;
     },
   },
+  methods : {
+    goToMyMileageView() {
+      window.location.href = '/myMileageView';
+    }
+  }
 };
 </script>
