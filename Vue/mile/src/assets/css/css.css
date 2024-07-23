@@ -302,7 +302,7 @@
 .input-search {
   background-color: #ffffff;
   border-radius: 30px;
-  padding-right: 50px;
+  /* padding-right: 50px; */
   /* 아이콘 공간 확보 */
   position: relative;
   /* 아이콘 배치를 위해 */
