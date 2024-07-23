@@ -5,7 +5,6 @@
         SELECT * FROM mileage;
     </select>
 
-
     <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
         SELECT
             m.mile_name AS mile_no,
@@ -28,7 +27,6 @@
         GROUP BY
             m.mile_name, r.mile_link;
     </select>
-
 
     <select id="getHitMileCount" resultType="int">
         SELECT COUNT(*)
@@ -70,9 +68,6 @@
         ORDER BY m.mile_no;
     </select>
 
-
-
-
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
         select * from mile_recommand where mile_no = (
             select mile_no
@@ -81,9 +76,25 @@
             order by mile_score_point ASC LIMIT 1);
     </select>
 
-
     <insert id="insertMileExcel">
         insert into mile_excel (mile_no, mile_excel_file) values ( #{mile_no}, #{mile_excel_file});
+    </insert>
+
+    <insert id="moveMileScoreToHistory">
+        insert into mile_history
+            (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
+        select user_no, mile_no, mile_score_date, mile_score_name, mile_score_point
+        from mile_score
+        where mile_no=#{mile_no};
+    </insert>
+
+    <delete id="deleteAllMileScore">
+        delete from mile_score where mile_no = #{mile_no};
+    </delete>
+
+    <insert id="insertDetailMileScore">
+        insert into mile_score (user_no, mile_no, mile_score_date, mile_score_name, mile_score_point)
+        values (#{user_no}, #{mile_no}, #{mile_score_date}, #{mile_score_name}, #{mile_score_point});
     </insert>
 
     <select id="selectMileExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
@@ -93,7 +104,6 @@
     <select id="selectTotalExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
         select * from mile_excel where mile_no = #{mile_no};
     </select>
-
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">
         SELECT user_no, total_score,
@@ -108,4 +118,5 @@
         ORDER BY total_score DESC
             LIMIT 3;
     </select>
+
 </mapper>

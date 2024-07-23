@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
@@ -37,6 +38,9 @@ public interface MileageDao {
 
 
     int insertMileExcel(String mile_no, String mile_excel_file);
+    void moveMileScoreToHistory(String mile_no);
+    void deleteAllMileScore(String mile_no);
+    void insertDetailMileScore(Map<String, Object> detailScore);
     List<MileExcel> selectMileExcel(String selectedDate);
     List<MileExcel> selectTotalExcel(String mile_no);
 

@@ -7,9 +7,7 @@ import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.mileage.type.*;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -30,10 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/mileage")
@@ -117,49 +114,80 @@ public class MileageController {
                 Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
 
                 // 엑셀 파일 데이터 추출
-                FileInputStream fis = new FileInputStream(path.toFile());
+                FileInputStream fis = new FileInputStream(new File(uploadPath, mile_excel_file));
                 Workbook workbook = new XSSFWorkbook(fis);
                 Sheet sheet = workbook.getSheetAt(0); // 첫번째 시트만 처리
 
                 // mile_score_date 추출(A1 셀 값)
-                String mile_score_date = sheet.getRow(0).getCell(0).getStringCellValue();
+                Cell cell = sheet.getRow(0).getCell(0);
+                String mile_score_date="";
+
+                if (cell.getCellType() == CellType.NUMERIC) {
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        // 셀이 날짜 형식인 경우
+                        Date date = cell.getDateCellValue();
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        mile_score_date = dateFormat.format(date);
+                    } else {
+                        // 셀이 숫자 형식인 경우
+                        double numericValue = cell.getNumericCellValue();
+                        mile_score_date = String.valueOf(numericValue);
+                    }
+                } else if (cell.getCellType() == CellType.STRING) {
+                    // 셀이 문자열 형식인 경우
+                    mile_score_date = cell.getStringCellValue();
+                } else {
+                    // 기타 셀 형식 처리
+                    throw new IllegalStateException("Unsupported cell type for mile_score_date");
+                }
 
                 // 제목행 추출(두번째 행)
                 Row titleRow = sheet.getRow(1);
+                if (titleRow == null) {
+                    throw new IllegalStateException("Title row is null");
+                }
+                System.out.println("Title Row Physical Number of Cells: " + titleRow.getPhysicalNumberOfCells());
+                System.out.println("Title Row Last Cell Num: " + titleRow.getLastCellNum());
+
                 List<String> mile_score_names = new ArrayList<>();
-                for(int i=2; i<titleRow.getPhysicalNumberOfCells(); i++){
+                for(int i=2; i<titleRow.getLastCellNum(); i++){
+                    Cell titleCell = titleRow.getCell(i);
+                    if (titleCell == null) {
+                        System.out.println("Title cell is null at index: " + i);
+                        continue;
+                    }
                     mile_score_names.add(titleRow.getCell(i).getStringCellValue());
                 }
                 System.out.println("엑셀 파일 중 상세항목이름"+mile_score_names);
 
                 // 데이터 행 추출
                 List<Map<String, Object>> mile_scores = new ArrayList<>();
-                for(int i=2; i<=sheet.getLastRowNum(); i++){ // 세번째 행부터 데이터 행
-                    Row row = sheet.getRow(i);
-                    if(row != null){
+                for(int i=2; i<=sheet.getLastRowNum(); i++){ // 세번째 행부터 데이터 행부터 엑셀 시트의 마지막 행까지 반복
+                    Row row = sheet.getRow(i); // 인덱스 i에 해당하는 행을 가져온다.
+                    if(row != null){ // 만약 null이면 빈 행이므로 건너뛴다.
                         Map<String, Object> mile_score = new HashMap<>();
-                        mile_score.put("user_no", (int)row.getCell(0).getNumericCellValue());
-                        mile_score.put("total_score", (int)row.getCell(1).getNumericCellValue());
-                        mile_score.put("mile_no", mile_no);
+                        mile_score.put("user_no", (int)row.getCell(0).getNumericCellValue()); // 첫번째 열은 user_no. double을 반환하므로 int로 캐스팅
+                        mile_score.put("total_score", (int)row.getCell(1).getNumericCellValue()); // 두번째 열은 총 점수
+                        mile_score.put("mile_no", mile_no); // 외부에서 전달된 mile_no을 저장
                         mile_score.put("mile_score_date", mile_score_date);
 
-                        List<Integer> scores = new ArrayList<>();
-                        for(int j=2; j<row.getPhysicalNumberOfCells(); j++){
-                            scores.add((int)row.getCell(j).getNumericCellValue());
+                        List<Integer> scores = new ArrayList<>(); // 각 상세항목의 점수를 저장할 리스트를 생성
+                        for(int j=2; j<row.getPhysicalNumberOfCells(); j++){ // 세번째 열부터 현재 행의 마지막 셀까지 반복
+                            scores.add((int)row.getCell(j).getNumericCellValue()); // scores 리스트에 추가한다.
                         }
-                        mile_score.put("scores", scores);
-                        mile_scores.add(mile_score);
+                        mile_score.put("scores", scores); // scores 리스트를 맵에 추가
+                        mile_scores.add(mile_score); // 1개의 행에 대한 데이터가 들어있는 mile_score 맵을 mile_scores 리스트에 저장
                     }
                 }
                 workbook.close();
 
                 // 서비스 계층 호출
                 mileScoreService.addMileExcel(mile_no, mile_excel_file); // 엑셀 파일 insert
-                //mileScoreService.addMileScore(mile_scores, mile_score_names); // 마일리지 점수 insert
+                mileScoreService.addMileScore(mile_scores, mile_score_names, mile_no); // 마일리지 점수 insert
 
                 return ResponseEntity.ok().body(Map.of("success", true));
             } else {
-                return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));
+                return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 점수 등록 실패"));
             }
         }catch (IOException e){
             e.printStackTrace();

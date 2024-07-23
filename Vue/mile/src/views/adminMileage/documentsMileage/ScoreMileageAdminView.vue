@@ -139,10 +139,10 @@ export default {
             'Content-Type':'multipart/form-data',
           },
         });
-        this.showAlert('파일 업로드 성공', 'success', '#');
+        this.showAlert('마일리지 업로드 성공', 'success', '#');
       }catch(error){
         console.error('Error uploading file', error);
-        this.showAlert('파일 업로드 실패', 'error', '#');
+        this.showAlert('마일리지 업로드 실패', 'error', '#');
       }
     },
     async fetchScoresByDate(){
