@@ -18,4 +18,12 @@ public class MileScoreService {
     }
 
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
+
+    public ArrayList<MileScore> jumpData() { return  mileageDao.jumpData();}
+
+    public ArrayList<MileScore> kingDataSelect() {return  mileageDao.kingDataSelect();
+    }
+
+    public ArrayList<MileScore> jumpDataSelect() {return  mileageDao.jumpDataSelect();
+    }
 }

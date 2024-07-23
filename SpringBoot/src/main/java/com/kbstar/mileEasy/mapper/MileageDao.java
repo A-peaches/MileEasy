@@ -34,4 +34,10 @@ public interface MileageDao {
 
 
     ArrayList<MileScore> kingData();
+
+    ArrayList<MileScore> jumpData();
+
+    ArrayList<MileScore> kingDataSelect();
+
+    ArrayList<MileScore> jumpDataSelect();
 }
