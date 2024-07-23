@@ -68,11 +68,15 @@
   color: #fff !important;
   font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
 }
-
 .swal2-cancel {
   background-color: #f89f94 !important; /* 취소 버튼 색상 변경 */
   border-color: #f89f94 !important;
   color: #4b4a4a !important;
+}
+
+/* 페이지가 밀리지 않도록 body의 overflow를 조정 */
+.swal2-shown {
+  overflow: hidden !important;
 }
 
 /* 초록색 버튼 */
@@ -412,15 +416,10 @@ main {
   padding: 5px;
 }
 
-
-
-
 .flex {
   display: flex;
   margin: 0;
 }
-
-
 
 .modals {
   display: flex; /* 숨기려면 none으로 설정 */
@@ -435,9 +434,6 @@ main {
   align-items: center;
 }
 
-
-
-
 .modals-content {
   background-color: #fff;
   padding: 20px;
@@ -448,7 +444,6 @@ main {
   max-width: 600px; /* 최대 너비 설정 */
   position: relative; /* 부모 요소의 중심에 배치 */
 }
-
 
 .close {
   color: #aaa;
@@ -462,4 +457,23 @@ main {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+.top-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #19c99b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-family: 'KB_C3', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.top-button:hover {
+  background-color: #17a589;
 }

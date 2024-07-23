@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.*;
+import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -86,6 +89,7 @@ public class MileageController {
     public void hit_mile(@PathVariable String mile_no) {
         hitMileService.hitMile(mile_no);
     }
+
 
     //마일리지 추천멘트!
     @GetMapping("getRecommand/{user_no}")
@@ -179,4 +183,27 @@ public class MileageController {
             return ResponseEntity.status(500).build(); // 예외가 발생하면 500응답 반환
         }
     }
+
+
+    //페이지별 방문자수 : hit mile가져오기
+    @GetMapping("hit_mileChart")
+    public ArrayList<HitMile> hit_mileChart(){
+        return hitMileService.getHitMile();
+    }
+
+    //페이지별 방문자수 날짜별 데이터 가져오기
+    @PostMapping("/hit_mileChartDATE")
+    public ArrayList<HitMile> hit_mileChartDATE(@RequestBody Map<String, String> requestBody) {
+        String date = requestBody.get("date");
+        return hitMileService.getHitMileDATE(date);
+    }
+
+    //top5 마왕
+    @GetMapping("/kingData")
+    public ArrayList<MileScore> kingData(){
+        return mileScoreService.kingData();
+    }
 }
+
+
+

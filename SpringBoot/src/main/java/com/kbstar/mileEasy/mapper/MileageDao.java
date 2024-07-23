@@ -1,5 +1,7 @@
 package com.kbstar.mileEasy.mapper;
+
 import com.kbstar.mileEasy.dto.MileExcel;
+import com.kbstar.mileEasy.dto.HitMile;
 import com.kbstar.mileEasy.dto.MileRecommand;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.dto.Mileage;
@@ -25,9 +27,20 @@ public interface MileageDao {
     ArrayList<Mileage> getMileage();
     ArrayList<MileScore> getMileScore(String userNo);
 
+
+    ArrayList<HitMile> getHitMile();
+
+    ArrayList<HitMile> getHitMileDATE(String date);
+
+
     List<MileRecommand> getRecommand(String userNo);
+
 
     int insertMileExcel(String mile_no, String mile_excel_file);
     List<MileExcel> selectMileExcel(String selectedDate);
     List<MileExcel> selectTotalExcel(String mile_no);
+
+
+    ArrayList<MileScore> kingData();
+
 }

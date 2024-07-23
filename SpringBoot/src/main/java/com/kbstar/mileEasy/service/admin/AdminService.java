@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdminService {
 
-    @Autowired
-    private AdminDao adminDao;
+   // @Autowired
+    //private AdminDao adminDao;
 
 
 }
