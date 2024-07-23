@@ -32,8 +32,8 @@ const actions = {
       //  user_year: 입사년도
       //  user_birth: 생년월일
       //  user_is_delete: 직원 삭제 여부
-      //  user_is_manager: 직원 마일리지 담당자 여부
-      //  user_is_admin: 직원 운영 관리자 여부
+      //  user_is_manager: 직원 마일리지 담당자 여부 (1~8번)
+      //  user_is_admin: 직원 운영 관리자 여부 (0 or 1)
       //  dp_no: 소속 부서 이름
       //  level_no: 직급레벨(ex. L1)
       //  job_no: 직무명(ex. 개인)

@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,13 +126,37 @@ public class MileageController {
 
                 // 제목행 추출(두번째 행)
                 Row titleRow = sheet.getRow(1);
-                List<String> mile_score_name = new ArrayList<>();
+                List<String> mile_score_names = new ArrayList<>();
+                for(int i=2; i<titleRow.getPhysicalNumberOfCells(); i++){
+                    mile_score_names.add(titleRow.getCell(i).getStringCellValue());
+                }
+                System.out.println("엑셀 파일 중 상세항목이름"+mile_score_names);
 
+                // 데이터 행 추출
+                List<Map<String, Object>> mile_scores = new ArrayList<>();
+                for(int i=2; i<=sheet.getLastRowNum(); i++){ // 세번째 행부터 데이터 행
+                    Row row = sheet.getRow(i);
+                    if(row != null){
+                        Map<String, Object> mile_score = new HashMap<>();
+                        mile_score.put("user_no", (int)row.getCell(0).getNumericCellValue());
+                        mile_score.put("total_score", (int)row.getCell(1).getNumericCellValue());
+                        mile_score.put("mile_no", mile_no);
+                        mile_score.put("mile_score_date", mile_score_date);
 
-            }
-            int result1 = mileScoreService.addMileExcel(mile_no, mile_excel_file);
-            //int result2 = mileScoreService.addMileScore() // 마일리지 점수 추가
-            if (result1 > 0) {
+                        List<Integer> scores = new ArrayList<>();
+                        for(int j=2; j<row.getPhysicalNumberOfCells(); j++){
+                            scores.add((int)row.getCell(j).getNumericCellValue());
+                        }
+                        mile_score.put("scores", scores);
+                        mile_scores.add(mile_score);
+                    }
+                }
+                workbook.close();
+
+                // 서비스 계층 호출
+                mileScoreService.addMileExcel(mile_no, mile_excel_file); // 엑셀 파일 insert
+                //mileScoreService.addMileScore(mile_scores, mile_score_names); // 마일리지 점수 insert
+
                 return ResponseEntity.ok().body(Map.of("success", true));
             } else {
                 return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));
