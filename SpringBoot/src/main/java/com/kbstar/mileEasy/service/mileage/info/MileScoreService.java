@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.mileage.info;
 
+import com.kbstar.mileEasy.beans.MileByAge;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.mapper.MileageDao;
@@ -26,4 +27,7 @@ public class MileScoreService {
 
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
 
+    public MileByAge getMileAge(String userNo) {
+        return mileageDao.mileByAge(userNo);
+    }
 }

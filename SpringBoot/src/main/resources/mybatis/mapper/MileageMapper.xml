@@ -108,4 +108,53 @@
         ORDER BY total_score DESC
             LIMIT 3;
     </select>
+
+    <select id="mileByAge" resultType="com.kbstar.mileEasy.beans.MileByAge">
+        SELECT
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 20 AND 29
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 20 AND 29
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile20,
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 30 AND 39
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 30 AND 39
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile30,
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 40 AND 49
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 40 AND 49
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile40,
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) >= 50
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) >= 50
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile50,
+            TIMESTAMPDIFF(YEAR, u_target.user_birth, CURDATE()) AS user_age,
+            (SELECT SUM(ms_target.mile_score_point)
+             FROM mile_score ms_target
+             WHERE ms_target.user_no = #{user_no}) AS user_sum
+        FROM mile_score ms
+                 JOIN user u ON ms.user_no = u.user_no
+                 JOIN user u_target ON u_target.user_no = #{user_no}
+        GROUP BY u_target.user_no;
+
+    </select>
 </mapper>

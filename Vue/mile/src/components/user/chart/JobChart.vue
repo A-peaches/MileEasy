@@ -1,7 +1,7 @@
 <template>
     <div class="chart-container">
       <!-- 직무별 차트 그리기 -->
-      <h3>직무별</h3>
+  
       <canvas id="jobChart"></canvas>
     </div>
   </template>

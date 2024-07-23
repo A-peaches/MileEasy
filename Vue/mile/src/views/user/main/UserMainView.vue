@@ -4,9 +4,11 @@
     <div class="left-container" style="width: 24%; margin-right: 1%">
       <div class="cards" style="height: 430px">
         <img
-          src="@/assets/img/test.png"
+        v-if="loginInfo && loginInfo.user_no"
+          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
           class="profile-large my-3"
           alt="Profile Picture"
+          @error="setDefaultImage"
         />
         <h2 class="lg KB_S5 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
         <p class="md" style="margin-bottom: 0px">
@@ -53,7 +55,11 @@ export default {
   methods : {
     goToMyMileageView() {
       window.location.href = '/myMileageView';
+    },
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
     }
-  }
+  },
+  
 };
 </script>

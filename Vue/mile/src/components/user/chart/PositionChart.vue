@@ -1,7 +1,6 @@
 <template>
     <div class="chart-container">
       <!-- 직급별 차트 그리기 -->
-      <h3>직급별</h3>
       <canvas id="positionChart"></canvas>
     </div>
   </template>

@@ -2,9 +2,11 @@
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div class="cards" style="width: 24%; height: 400px">
       <img
-        src="@/assets/img/test.png"
-        class="profile-large my-3"
-        alt="Profile Picture"
+      v-if="loginInfo && loginInfo.user_no"
+          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+          class="profile-large my-3"
+          alt="Profile Picture"
+          @error="setDefaultImage"
       />
       <h2 class="lg KB_S5 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
       <p class="md" style="margin-bottom: 0px">
@@ -103,7 +105,11 @@ import PositionChart from '@/views/adminMileEasy/main/PositionChart.vue';
 export default {
   name: 'AdminMainView',
   components: { PageCount, MileagePageCount, PositionChart },
-  methods: {},
+  methods: {
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
+    }
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
 
