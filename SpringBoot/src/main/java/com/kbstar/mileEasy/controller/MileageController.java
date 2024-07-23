@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.*;
+import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -9,9 +10,12 @@ import com.kbstar.mileEasy.service.mileage.type.*;
 import com.kbstar.mileEasy.service.user.favorite.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mileage")
@@ -44,6 +48,7 @@ public class MileageController {
     @Autowired
     private MileService mileService;
 
+
     //마일리지 테이블 가지고오기
     @GetMapping("/getMileage")
     public ArrayList<Mileage> getMileage() {
@@ -51,6 +56,7 @@ public class MileageController {
         System.out.println(mileList);
         return mileList;
     }
+
 
     @GetMapping("/getMileScore/{user_no}")
     public ArrayList<MileScore> getMileScore(@PathVariable String user_no) {
@@ -65,14 +71,44 @@ public class MileageController {
         hitMileService.hitMile(mile_no);
     }
 
-    //마일리지 추천멘트!
-    @GetMapping("getRecommand/{user_no}")
 
-    public MileRecommand getRecommand(@PathVariable String user_no) {
-        MileRecommand recommands = mileService.getRecommand(user_no);
+    //페이지별 방문자수 : hit mile가져오기
+    @GetMapping("hit_mileChart")
+    public ArrayList<HitMile> hit_mileChart(){
+        return hitMileService.getHitMile();
+    }
 
-        return recommands;
+    //페이지별 방문자수 날짜별 데이터 가져오기
+    @PostMapping("/hit_mileChartDATE")
+    public ArrayList<HitMile> hit_mileChartDATE(@RequestBody Map<String, String> requestBody) {
+        String date = requestBody.get("date");
+        return hitMileService.getHitMileDATE(date);
+    }
+
+    //top5 마왕
+    @GetMapping("/kingData")
+    public ArrayList<MileScore> kingData(){
+        return mileScoreService.kingData();
+    }
+
+        //마일리지 추천멘트!
+        @GetMapping("getRecommand/{user_no}")
+        public MileRecommand getRecommand (@PathVariable String user_no){
+            MileRecommand recommands = mileService.getRecommand(user_no);
+
+            return recommands;
+
+        }
+
+
+
+//    //마일리지 추천멘트!
+//    @GetMapping("getRecommand/{user_no}")
+//    public List<MileRecommand> getRecommand(@PathVariable String user_no) {
+//        List<MileRecommand> recommandsList = mileService.getRecommand(user_no);
+//
+//    }
+
 
     }
 
-}

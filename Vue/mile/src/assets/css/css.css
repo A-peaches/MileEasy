@@ -412,15 +412,10 @@ main {
   padding: 5px;
 }
 
-
-
-
 .flex {
   display: flex;
   margin: 0;
 }
-
-
 
 .modals {
   display: flex; /* 숨기려면 none으로 설정 */
@@ -435,9 +430,6 @@ main {
   align-items: center;
 }
 
-
-
-
 .modals-content {
   background-color: #fff;
   padding: 20px;
@@ -448,7 +440,6 @@ main {
   max-width: 600px; /* 최대 너비 설정 */
   position: relative; /* 부모 요소의 중심에 배치 */
 }
-
 
 .close {
   color: #aaa;

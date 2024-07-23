@@ -15,11 +15,7 @@
         }}
       </p>
       <p class="md mb-2" style="margin-bottom: 0px">
-        {{
-          loginInfo
-            ? `${loginInfo.dp_no}`
-            : ''
-        }}
+        {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
       </p>
       <button class="btn-yellow KB_C2 my-3">나의 마일리지</button>
     </div>
@@ -29,22 +25,29 @@
   <!-- 추천 멘트 및 마일리지 차트 -->
   <div
     class="flex-container"
-    style="margin-left: 10%; margin-right: 10%; display: flex; align-items: flex-start;"
+    style="
+      margin-left: 10%;
+      margin-right: 10%;
+      display: flex;
+      align-items: flex-start;
+    "
   >
     <!-- 오늘의 추천 및 출석체크 -->
     <div
       class="left-column"
-      style="width: 24%; display: flex; flex-direction: column; margin-right: 2%;"
+      style="
+        width: 24%;
+        display: flex;
+        flex-direction: column;
+        margin-right: 2%;
+      "
     >
       <recommand class="my-5" style="height: 210px" v-if="loginInfo" />
-      <attendance style="height: 395px;" v-if="loginInfo" />
+      <attendance style="height: 395px" v-if="loginInfo" />
     </div>
     <!-- 뀨! -->
-    <div
-      class="right-column"
-      style="flex: 1; margin-left: 3%; height: 430px;"
-    >
-      <milageCharts class="my-5" style="height: 100%;" v-if="loginInfo" />
+    <div class="right-column" style="flex: 1; margin-left: 3%; height: 430px">
+      <milageCharts class="my-5" style="height: 100%" v-if="loginInfo" />
     </div>
   </div>
 </template>

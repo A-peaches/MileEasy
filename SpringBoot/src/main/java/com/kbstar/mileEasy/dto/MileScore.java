@@ -18,4 +18,6 @@ public class MileScore {
     private int mile_score_point;
     private int mile_prev_score;
     private String mile_link;
+    private int  total_score;
+    private int ranking;
 }
