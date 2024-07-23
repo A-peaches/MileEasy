@@ -7,13 +7,13 @@
         <div class="d-flex align-items-center justify-content-between">
           <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }}</h3>
           <div>
-            <a href="/introduceMileageModifyAdminView" style="text-decoration: none;" class="brown">수정</a>
+            <a :href="'/introduceMileageModifyAdminView?mile_introduce_no=' + detail.mile_introduce_no" style="text-decoration: none;" class="brown">수정</a>
             <span class="mx-2">|</span>   
-            <button class="brown">삭제</button>
+            <button @click="deleteMileDetail(detail.mile_introduce_no)" class="brown">삭제</button>
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center input-gray p-4">
-          <p><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></p>
+          <span><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></span>
           <button @click="download(detail.mile_route)"><p class="md" v-if="detail.mile_route" style="text-align: right;">상세보기 〉</p></button>
         </div>
       </div>
@@ -42,18 +42,36 @@ export default {
     }
   },
   methods: {
-    ...mapActions('mile', ['fetchMileInfo','getMileDetail', 'downloadFile']),
+    ...mapActions('mile', ['fetchMileInfo','getMileDetail', 'downloadFile', 'deleteMile']),
     
     goModify(){
       this.$router.push('/introduceMileageAddAdminView');
     },
     download(mile_route){
       this.downloadFile({ mile_route });
-      // if(mile_route){
-      //   const url = `/manager/downloadFile?mile_route=${encodeURIComponent(mile_route)}`;
-      //   window.location.href = url;
-      // }
-    }
+    },
+    async deleteMileDetail(mile_introduce_no){
+      const response = await this.deleteMile({ mile_introduce_no });
+      if(response && response.data.success){
+        this.showAlert('삭제 완료', 'success', '#');
+      }else{
+        this.showAlert('삭제 오류', 'error', '#');
+      }
+    },
+    showAlert(t, i, r) {
+      this.$swal({
+        title: t,
+        icon: i,
+      }).then((result) => {
+        if(result.isConfirmed){
+          if(r == '#'){
+            location.reload(); // 현재 페이지 새로고침
+          }else{
+            this.$router.push(r);
+          }
+        }
+      })
+    },
   },
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;

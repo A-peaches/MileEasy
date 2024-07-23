@@ -16,4 +16,6 @@ public class MileScore {
     private Date mile_score_date;
     private String mile_score_name;
     private int mile_score_point;
+    private int mile_prev_score;
+    private String mile_link;
 }

@@ -8,6 +8,7 @@
           !loginInfo.user_is_manager &&
           isChecked
         "
+        class="fixed-header"
       />
       <HeaderManager
         v-else-if="
@@ -16,9 +17,12 @@
           loginInfo.user_is_manager &&
           isChecked
         "
+        class="fixed-header"
       />
-      <HeaderUser v-else-if="isLoggedIn && !isChecked" />
-      <router-view />
+      <HeaderUser v-else-if="isLoggedIn && !isChecked" class="fixed-header" />
+
+        <router-view />
+
     </main>
     <router-view v-else />
     <!-- hideHeader가 true일 때는 main과 Header를 숨기고 router-view만 렌더링 -->
@@ -72,4 +76,7 @@ export default {
 
 <style>
 @import url('./assets/css/css.css');
+
+
+
 </style>

@@ -1,0 +1,32 @@
+/* 사용자 정의 색상 테마 예제 */
+.vuecal--custom-theme .vuecal__menu,
+.vuecal--custom-theme .vuecal__cell-events-count {
+  background-color: #ff93e1;
+}
+
+.vuecal--custom-theme .vuecal__title-bar {
+  background-color: #ffe4f2;
+}
+
+.vuecal--custom-theme .vuecal__cell--today,
+.vuecal--custom-theme .vuecal__cell--current {
+  background-color: rgba(240, 240, 255, 0.4);
+}
+
+.vuecal--custom-theme:not(.vuecal--day-view) .vuecal__cell--selected {
+  background-color: rgba(255, 200, 230, 0.4);
+}
+
+.vuecal--custom-theme .vuecal__cell--selected:before {
+  border-color: rgba(255, 147, 225, 0.5);
+}
+
+.vuecal--custom-theme .vuecal__cell--highlighted:not(.vuecal__cell--has-splits),
+.vuecal--custom-theme .vuecal__cell-split--highlighted {
+  background-color: rgba(255, 220, 245, 0.5);
+}
+
+.vuecal--custom-theme .vuecal__arrow.vuecal__arrow--highlighted,
+.vuecal--custom-theme .vuecal__view-button.vuecal__view-button--highlighted {
+  background-color: rgba(255, 180, 220, 0.25);
+}

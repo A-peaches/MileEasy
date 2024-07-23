@@ -55,6 +55,7 @@ public class MileageController {
     @GetMapping("/getMileScore/{user_no}")
     public ArrayList<MileScore> getMileScore(@PathVariable String user_no) {
         ArrayList<MileScore> mileScoreList = mileScoreService.getMileScore(user_no);
+        System.out.println(mileScoreList);
         return mileScoreList;
     }
 
@@ -66,10 +67,12 @@ public class MileageController {
 
     //마일리지 추천멘트!
     @GetMapping("getRecommand/{user_no}")
+
     public MileRecommand getRecommand(@PathVariable String user_no) {
         MileRecommand recommands = mileService.getRecommand(user_no);
 
         return recommands;
+
     }
 
 }
