@@ -121,6 +121,7 @@ public class MileageController {
 
                 // 제목행 추출(두번째 행)
                 Row titleRow = sheet.getRow(1);
+                List<String> mile_score_name = new ArrayList<>();
 
 
             }
