@@ -1,13 +1,16 @@
 <template>
   <div class="cards card-white" v-if="dataLoaded">
-    <p class="lg2 KB_S4" style="margin-bottom: 0px">
+    <p class="lg2 KB_S4 text-center position-relative" style="margin-bottom: 0px">
       <i class="bi bi-calendar-check" style="color: #42b983"></i>&nbsp;&nbsp;
-      출석체크
-    </p>
+  출석체크
+  <span class="expand-icon" @click.stop="openModal" style="cursor: pointer;">
+    <i class="bi bi-chevron-double-right" style="color: gray"></i>
+  </span>
+</p>
     <div
       class="calendar-container"
-      style="cursor: pointer; margin-top:0px"
-      @click.stop="openModal"
+      style=" margin-top:0px"
+      
     >
       <!-- 여기에 달력 -->
       <vue-cal
@@ -133,5 +136,10 @@ background-image: url('../../assets/imoji/bb/비비얼굴사랑.png');
  background-position: 5px 10px;
 }
 
-
+.expand-icon {
+  position: absolute;
+  right: 0;
+  top: 40%;
+  transform: translateY(-50%);
+}
 </style>
