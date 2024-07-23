@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="content cards">
+    <div v-if="notice" class="content cards">
       <div class="header">
         <div class="button-container">
           <button class="back-button" @click="goBack">
@@ -8,55 +8,105 @@
           </button>
         </div>
         <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
-        <div class="actions">
-          <button class="edit-button" @click="goToModifyView">수정</button>
-          <button class="delete-button">삭제</button>
+          <div class="actions">
+            <button class="edit-button" @click="goToModifyView">수정</button>
+            <button class="delete-button">삭제</button>
+          </div>
         </div>
-      </div>
       </div>
       <div class="content">
-        <h1 class="title">연수 마일리지 문의</h1>
+        <h1 class="title">{{ notice.notice_board_title }}</h1>
         <div class="meta">
-          <span class="author">김근미</span>
-          <span class="date">2024.05.02</span>
+          <span class="author">{{ notice.user_name }}</span>
+          <span class="date">{{ formatDate(notice.notice_board_date) }}</span>
         </div>
         <div class="main-content">
-        <div class="body">
-          <p>[KB스타뱅크 앱 설치방법 안내]</p>
-          <p>첫째, [안드로이드OS의 인터넷] / [애플OS의 Safari 접속]</p>
-          <p>둘째, 인터넷 주소창에 <a href="https://kb.star.com">https://kb.star.com</a> 을 입력</p>
-          <p>셋째, 화면 하단의 'App 설치' 버튼을 클릭하여 단순 설치 가능합니다.</p>
-          <p>* 기존 사용 중이던 앱을 업데이트 하시면, 바로 사용 가능합니다.</p>
-          <p>자세한 방법은 첨부파일을 확인해주시기 바랍니다. 감사합니다.</p>
+          <div class="body">
+            <p>{{ notice.notice_board_content }}</p>
+          </div>
+          <div class="file cards" v-if="notice.notice_board_file">
+            <h2>첨부파일</h2>
+            <ul>
+              <li>
+                <a @click.prevent="downloadFile(notice.notice_board_file)" href="#">
+                  {{ notice.notice_board_file }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div class="file cards">
-          <h2>첨부파일</h2>
-          <ul>
-            <li><a href="#">[인재개발부] 문서 1. 연수마일리지 변경 xml</a></li>
-          </ul>
-        </div>
-      </div>
         <div class="icon-container">
           <div class="views-icon">
             <i class="bi bi-eye"></i>
           </div>
-          <div class="views-text">58</div>
+          <div class="views-text">{{ notice.notice_board_hit }}</div>
         </div>
       </div>
+    </div>
+    <div v-else>
+      <p>Loading...</p>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 
 export default {
+  props: ['id'], // id를 props로 받음
+  data(){
+    return{
+      notice: null, //초기 값을 null로 설정
+    }
+  },
   methods: {
     goBack() {
       this.$router.go(-1); // 이전 페이지로 이동
     },
     goToModifyView() {
-      this.$router.push({ name: 'noticeModifyAdminView' }); // noticeModifyAdminView 경로로 이동
+      this.$router.push({ name: 'noticeModifyAdminView', params: { id: this.notice.notice_board_no } }); // noticeModifyAdminView 경로로 이동
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('ko-KR', options);
+    },
+    async fetchNoticeDetail(noticeId) {
+      try {
+        const response = await axios.get(`http://localhost:8090/notice/${noticeId}`);
+        console.log('Fetched notice detail:', response.data); // 응답 데이터를 콘솔에 출력하여 확인합니다.
+        this.notice = response.data;
+      } catch (error) {
+        console.error('Error fetching notice detail:', error.response ? error.response.data : error.message);
+      }
+    },
+    async handleNoticeClick() {
+      try {
+        await axios.post(`http://localhost:8090/notice/increment-views/${this.id}`);
+        console.log('Incremented views for notice:', this.id); // 로그 추가
+        this.notice.notice_board_hit += 1; // 조회수 증가
+      } catch (error) {
+        console.error('Error incrementing views:', error.response ? error.response.data : error.message);
+      }
+    },
+    async downloadFile(fileName) {
+      try {
+        const response = await axios({
+          url: `http://localhost:8090/notice/downloadFile/${fileName}`,
+          method: 'GET',
+          responseType: 'blob', // 중요한 부분입니다. blob 형태로 응답을 받습니다.
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName); // 파일 다운로드 설정
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
     },
   },
   computed: {
@@ -70,7 +120,13 @@ export default {
     isLoggedIn() {
       return !!this.loginInfo; // loginInfo가 null이 아니면 로그인 상태로 판단합니다.
     }
-  }
+  },
+  mounted() {
+    const noticeId = this.$route.params.id;
+    console.log('Notice ID:', noticeId); // Notice ID 값을 콘솔에 출력하여 확인합니다.
+    this.fetchNoticeDetail(noticeId);
+    this.handleNoticeClick(); // 조회수 증가 함수 호출
+  },
 };
 </script>
 
@@ -179,12 +235,20 @@ export default {
 }
 
 .meta {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 가운데 정렬을 위한 설정 */
   text-align: center;
   font-size: 14px;
   color: #888;
   margin-bottom: 95px;
   font-family: 'KB_S5', sans-serif;
 }
+
+.meta .author {
+  margin-right: 5px; /* 이름과 날짜 사이의 간격을 50px로 설정 */
+}
+
 
 .main-content {
   display: flex;

@@ -9,7 +9,7 @@
         </div>
       </div>
         <div class="actions">
-          <h1 class="title">공지사항 글작성</h1>
+          <h1 class="title">공지사항 작성</h1>
         </div>
       <form @submit.prevent="submitForm">
         <div class="form-group">
@@ -25,7 +25,11 @@
         </div>
         <div class="form-group">
           <label for="file">첨부파일</label>
-          <input type="file" id="file" @change="handleFileUpload" />
+            <div class="p-4">
+                <div>
+                  <input type="file" @change="handlerFileUpload" class="md" style="width: 90%; text-align: right;"/>
+                </div>
+            </div>
         </div>
         <div class="form-group">
           <label for="content">내용</label>
@@ -180,7 +184,7 @@ h2 {
   font-size: 35px;
   font-weight: bold;
   margin-bottom: 70px;
-  font-family: 'KB_S2', sans-serif;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .button-container {
@@ -228,7 +232,7 @@ form {
   align-items: center;
   gap: 10px;
   background-color: #f5f5f5; /* 배경색 추가 */
-  padding: 8px;
+  padding: 5px;
   border-radius: 25px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -296,8 +300,8 @@ form {
 }
 
 .btn-yellow {
-  background-color: #ffca05;
-  color: #4b4a4a;
+  background-color: #19c99b;
+  color: #ffff;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -311,8 +315,8 @@ form {
 }
 
 .btn-yellow:hover {
-  background-color: #edbb00;
-  color: #4b4a4a;
+  background-color: #32ab8b;
+  color: #ffff;
   border: none;
   padding: 10px 20px;
   cursor: pointer;

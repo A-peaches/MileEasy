@@ -8,20 +8,15 @@
         <div class="category-button">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
-            <a class="dropdown-item" href="/hrdView">HRD 마일리지</a>
-            <a class="dropdown-item" href="/monthlyBestView">MonthlyBest 마일리지</a>
-            <a class="dropdown-item" href="/monthlyBaseView">MonthlyBase 마일리지</a>
-            <a class="dropdown-item" href="/bestBranchView">Best PG 마일리지</a>
-            <a class="dropdown-item" href="/bestBranchView">Best 지점 마일리지</a>
-            <a class="dropdown-item" href="/leagueTableView">리그테이블 마일리지</a>
-            <a class="dropdown-item" href="/hotTipView">HOT Tip 마일리지</a>
-            <a class="dropdown-item" href="/consumerSupportView">소비자 지원 마일리지</a>
+            <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" :href="mileage.mile_description">
+              {{ mileage.mile_name  }} 마일리지
+            </a>
           </div>
         </div>
       </div>
       <div class="notice-count">총 {{ notices.length }}건</div>
       <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
-        <button class="write-button" @click="goToWritePage">글쓰기</button>
+        <button class="write-button" @click="goToWritePage">글작성</button>
       </div>
       <div class="search-container">
         <input type="text" placeholder="검색어를 입력하세요" class="input-search">
@@ -30,14 +25,14 @@
         </button>
       </div>
       <div class="notice-list">
-        <!-- <div class="input-base" v-for="Notice in Notices" :key="'notice_board_no', 'int', 'NO', 'PRI', NULL, ''
-" @click="goToDetailView(item.num)"> -->
+        <div class="input-base" v-for="notice in notices" :key="notice.notice_board_no" @click="handleNoticeClick(notice.notice_board_no)">
           <div class="notice-details">
-            <div class="notice-num">{{ item.num }}</div>
-            <div class="notice-title">{{ item.title }}</div>
-            <div class="notice-date">{{ item.date }}</div>
+            <div class="notice-num">{{notice.notice_board_no }}</div>
+            <div class="notice-mile">{{ notice.mile_name }} 마일리지 </div>
+            <div class="notice-title">{{ notice.notice_board_title}}</div>
+            <div class="notice-date">{{formatDate(notice.notice_board_date) }}</div>
             <i class="bi bi-eye"></i>
-            <div class="notice-views">{{ item.views }} <i class="fa fa-eye"></i></div>
+            <div class="notice-views">{{notice.notice_board_hit }} <i class="fa fa-eye"></i></div> 
           </div>
         </div>
       </div>
@@ -47,21 +42,17 @@
         <button @click="nextPage" :disabled="currentPage === totalPages">»</button>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      notices: [
-        { num: "1", title: "연수마일리지", date: "2024.05.24", views: 59 },
-        { num: "2", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "3", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-        { num: "4", title: "연수마일리지마일리지마일리지마일리지마일리지마일리지", date: "2024.05.24", views: 59 },
-      ]
-      ,
+      notices: [],
       showCategory: false,
       currentPage: 1,
       itemsPerPage: 10,
@@ -69,7 +60,6 @@ export default {
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
-
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -124,13 +114,55 @@ export default {
     goToWritePage() {
       this.$router.push({ name: 'noticeWriteAdminView' });
     },
+    async fetchNotices() {
+      try {
+        const response = await axios.get('http://localhost:8090/notice/list');
+        console.log('Fetched notices:', response.data); // 응답 데이터를 콘솔에 출력하여 확인합니다.
+        this.notices = response.data;
+    } catch (error) {
+      console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+    }
+},
+    async fetchMileages() {
+      try {
+        const response = await axios.get('http://localhost:8090/notice/mileage');
+        console.log('Fetched mileages:', response.data); // 응답 데이터를 콘솔에 출력하여 확인합니다.
+        this.mileages = response.data;
+      } catch (error) {
+        console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
+      }
+    },
+    async handleNoticeClick(noticeId) {
+      console.log(`Clicked notice with ID: ${noticeId}`); // 로그 추가
+      try {
+        const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
+        console.log('Increment views response:', response); // 응답 로그 추가
+        const notice = this.notices.find(notice => notice.notice_board_no === noticeId);
+        if (notice) {
+          notice.notice_board_hit += 1;
+        }
+        this.goToDetailView(noticeId); // 상세보기 페이지로 이동
+      } catch (error) {
+        console.error('Error incrementing views:', error.response ? error.response.data : error.message);
+      }
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('ko-KR', options);
+    },
   },
+
+
+
   mounted() {
     console.log('loginInfo:', this.loginInfo);
     console.log('isLoggedIn:', this.isLoggedIn);
     console.log('isChecked:', this.isChecked);
 
     document.addEventListener('click', this.handleClickOutside);
+
+    this.fetchNotices();
+    this.fetchMileages();
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
@@ -218,7 +250,7 @@ h2::after {
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 15px;
-  font-size: 19px;
+  font-size: 18px;
   font-family: 'KB_S5', sans-serif;
   transition: background-color 0.3s;
   width: 10%;
@@ -301,21 +333,30 @@ h2::after {
 }
 
 .notice-title {
-  flex: 1 1 180%;
+  flex: 1 1 150%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
 }
 
 .notice-num {
-  flex: 1;
+  flex: 1 1 20%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
+}
+
+.notice-mile{
+  flex: 1 1 50%;
+  text-align: center;
+  letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
+  color: #745F40;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .notice-date {
   flex: 1 1 60%;
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
+  font-size: 17px;
 }
 
 .notice-views {
@@ -324,6 +365,7 @@ h2::after {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 17px;
 }
 
 .views-text {
