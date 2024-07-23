@@ -1,6 +1,6 @@
-<!--🚨운영관리자 마왕 top 화면(kinng 메인화면)-->
 <template>
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
+    <!-- 좌측 카드 -->
     <div class="cards" style="width: 24%; height: 400px">
       <img
         src="@/assets/img/test.png"
@@ -20,16 +20,34 @@
       </p>
       <button class="btn-yellow KB_C2" disabled>운영 관리자</button>
     </div>
+    <!-- 우측 카드 -->
     <div style="width: 70%; margin-left: 3%">
       <div class="cards" style="background-color: #f9f9f9; height: 400px">
         <div>
           <p class="text-left lg2 KB_C2">TOP</p>
           <div class="cards favorite-card" style="display: flex">
-            <div class="king" style="width: 50%">
-              <div Class="KB_C1" style="font-size: 20pt">마왕 TOP 5</div>
+            <div class="king" style="width: 40%">
+              <div Class="KB_C1" style="font-size: 20pt">마왕 TOP 3</div>
+              <br />
+              <div class="text-center mx-auto" style="width: 70%">
+                <table class="table table-borderless KB_S1">
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in kingTop5"
+                      :key="index"
+                      :class="{ top1: index === 0 }"
+                    >
+                      <td>{{ index + 1 }}등</td>
+                      <td>{{ item.user_no }}</td>
+                      <td>{{ item.total_score }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div class="jump" style="width: 50%">
-              <div Class="KB_C1" style="font-size: 20pt">Jump UP TOP 5</div>
+              <div Class="KB_C1" style="font-size: 20pt">Jump UP TOP 3</div>
+              <!-- Jump UP TOP 5의 추가적인 UI 및 데이터 표시 -->
             </div>
           </div>
         </div>
@@ -40,6 +58,7 @@
   <br />
 
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
+    <!-- 하단 메뉴 -->
     <div class="cards" style="width: 24%; height: 215px; padding: 3% 3% 3% 3%">
       <div>
         <a href="/kingTopAdminView" class="mileage-link">
@@ -76,9 +95,28 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 export default {
   name: 'KingTopAdminView',
-  methods: {},
+  data() {
+    return {
+      kingTop5: [], // 마왕 TOP 5 데이터를 담을 배열
+    };
+  },
+  methods: {
+    async kingData() {
+      try {
+        const response = await axios.get(
+          'http://localhost:8090/mileage/kingData'
+        );
+        console.log('마왕 top5:', response.data);
+        this.kingTop5 = response.data; // 받아온 데이터를 kingTop5 배열에 할당
+      } catch (error) {
+        console.error('마왕 top5:', error);
+        this.kingTop5 = []; // 오류 발생 시 빈 배열로 초기화
+      }
+    },
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
 
@@ -86,10 +124,31 @@ export default {
       return this.getLoginInfo;
     },
   },
+  mounted() {
+    this.kingData(); // 컴포넌트가 마운트되면 데이터 요청
+  },
 };
 </script>
 
 <style scoped>
+/* 테이블 스타일링 */
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+  color: #212529;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: none; /* 테이블 선 없애기 */
+}
+
+.top1 {
+  background-color: #ffffcc; /* 첫 번째 등수 배경색 지정 */
+}
 .mileage-link {
   text-decoration: none;
   color: #4b4a4a;

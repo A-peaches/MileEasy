@@ -16,4 +16,6 @@ public class MileScoreService {
     public ArrayList<MileScore> getMileScore(String userNo) {
         return mileageDao.getMileScore(userNo);
     }
+
+    public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
 }

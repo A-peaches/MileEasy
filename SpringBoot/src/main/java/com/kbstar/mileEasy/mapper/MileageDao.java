@@ -33,4 +33,5 @@ public interface MileageDao {
     List<MileRecommand> getRecommand(String userNo);
 
 
+    ArrayList<MileScore> kingData();
 }

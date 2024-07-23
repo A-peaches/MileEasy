@@ -77,13 +77,18 @@ public class MileageController {
         return hitMileService.getHitMile();
     }
 
+    //페이지별 방문자수 날짜별 데이터 가져오기
     @PostMapping("/hit_mileChartDATE")
     public ArrayList<HitMile> hit_mileChartDATE(@RequestBody Map<String, String> requestBody) {
         String date = requestBody.get("date");
         return hitMileService.getHitMileDATE(date);
     }
 
-
+    //top5 마왕
+    @GetMapping("/kingData")
+    public ArrayList<MileScore> kingData(){
+        return mileScoreService.kingData();
+    }
 
 
 

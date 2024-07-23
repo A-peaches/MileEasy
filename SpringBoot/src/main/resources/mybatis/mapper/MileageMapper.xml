@@ -80,6 +80,17 @@
             order by mile_score_point ASC LIMIT 1);
     </select>
 
-
-
+    <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT user_no, total_score,
+               (SELECT COUNT(DISTINCT total_score)
+                FROM (SELECT SUM(mile_score_point) AS total_score
+                      FROM mile_score
+                      GROUP BY user_no) AS scores
+                WHERE total_score >= s.total_score) AS ranking
+        FROM (SELECT user_no, SUM(mile_score_point) AS total_score
+              FROM mile_score
+              GROUP BY user_no) AS s
+        ORDER BY total_score DESC
+            LIMIT 3;
+    </select>
 </mapper>
