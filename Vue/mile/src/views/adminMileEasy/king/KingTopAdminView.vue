@@ -27,17 +27,20 @@
           <p class="text-left lg2 KB_C2">TOP</p>
           <div class="cards favorite-card" style="display: flex">
             <div class="king" style="width: 40%">
-              <div Class="KB_C1" style="font-size: 20pt">마왕 TOP 3</div>
+              <div class="KB_C1" style="font-size: 20pt">마왕 TOP 3</div>
               <br />
               <div class="text-center mx-auto" style="width: 70%">
-                <table class="table table-borderless KB_S1">
-                  <tbody>
+                <table class="table table-borderless KB_S1 text-center">
+                  <tbody class="text-center">
                     <tr
-                      v-for="(item, index) in kingTop5"
+                      v-for="(item, index) in kingTop3"
                       :key="index"
-                      :class="{ top1: index === 0 }"
+                      :style="{
+                        backgroundColor:
+                          index === 0 ? '#FF0000' : 'transparent',
+                      }"
                     >
-                      <td>{{ index + 1 }}등</td>
+                      <td>{{ item.ranking }}등</td>
                       <td>{{ item.user_no }}</td>
                       <td>{{ item.total_score }}</td>
                     </tr>
@@ -46,7 +49,7 @@
               </div>
             </div>
             <div class="jump" style="width: 50%">
-              <div Class="KB_C1" style="font-size: 20pt">Jump UP TOP 3</div>
+              <div class="KB_C1" style="font-size: 20pt">Jump UP TOP 3</div>
               <!-- Jump UP TOP 5의 추가적인 UI 및 데이터 표시 -->
             </div>
           </div>
@@ -96,11 +99,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
+
 export default {
   name: 'KingTopAdminView',
   data() {
     return {
-      kingTop5: [], // 마왕 TOP 5 데이터를 담을 배열
+      kingTop3: [], // 마왕 TOP 3 데이터를 담을 배열
     };
   },
   methods: {
@@ -109,11 +113,11 @@ export default {
         const response = await axios.get(
           'http://localhost:8090/mileage/kingData'
         );
-        console.log('마왕 top5:', response.data);
-        this.kingTop5 = response.data; // 받아온 데이터를 kingTop5 배열에 할당
+        console.log('마왕 top3:', response.data);
+        this.kingTop3 = response.data.slice(0, 3); // 받아온 데이터에서 TOP 3만 가져오기
       } catch (error) {
-        console.error('마왕 top5:', error);
-        this.kingTop5 = []; // 오류 발생 시 빈 배열로 초기화
+        console.error('마왕 top3:', error);
+        this.kingTop3 = []; // 오류 발생 시 빈 배열로 초기화
       }
     },
   },
@@ -146,9 +150,13 @@ export default {
   border-top: none; /* 테이블 선 없애기 */
 }
 
+/* .top1 클래스에 스타일 추가 */
 .top1 {
-  background-color: #ffffcc; /* 첫 번째 등수 배경색 지정 */
+  background-color: #ffff00; /* 첫 번째 등수 배경색 지정 */
+  border-radius: 16px;
+  font: bold;
 }
+
 .mileage-link {
   text-decoration: none;
   color: #4b4a4a;

@@ -76,9 +76,7 @@ export default {
       mileInfo.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
       mileInfo.append('mile_title', this.mile_title);
       mileInfo.append('mile_content', this.mile_content);
-      if(this.file){
-        mileInfo.append('file', this.file);
-      }
+      mileInfo.append('file', this.file || ''); // 파일이 없을 때도 file 필드를  추가한다. 
       
       const response = await this.addMile(mileInfo);
 

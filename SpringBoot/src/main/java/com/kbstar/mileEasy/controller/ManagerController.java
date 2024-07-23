@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.MileIntroduce;
+import com.kbstar.mileEasy.dto.MileRecommand;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.manager.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,12 @@ public class ManagerController {
 
     @Autowired
     private ManagerService managerService;
+
+    // 파일 업로드 경로
     @Value("${project.uploadpath.miledetail}")
     private String miledetailUploadPath;
 
+    // 마일리지 이름 가져오기
     @GetMapping("/mileIntro/{user_no}")
     public User getMileTitle(@PathVariable String user_no) {
         User user = managerService.getMileTitle(user_no);
@@ -37,6 +41,49 @@ public class ManagerController {
         return user;
     }
 
+    // 마일리지 추천멘트 가져오기
+    @GetMapping("/mileRecommand/{mile_no}")
+    public List<MileRecommand> getMileRecommand(@PathVariable String mile_no) {
+        List<MileRecommand> mileRecommands = managerService.getRecommand(mile_no);
+        System.out.println(mileRecommands);
+        return mileRecommands;
+    }
+
+    // 마일리지 추천멘트 수정하기
+    @PostMapping("/updateRecommand")
+    public ResponseEntity<?> updateRecommand(@RequestBody MileRecommand mileRecommand){
+        System.out.println("지금 이건 업데이트 할 멘트~~"+mileRecommand);
+        int result = managerService.updateMileRecommand(mileRecommand.getMile_mention(), mileRecommand.getMile_recommand_no());
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 추천멘트 추가하기
+    @PostMapping("/addRecommand")
+    public ResponseEntity<?> addRecommand(@RequestBody MileRecommand mileRecommand){
+        int result = managerService.addMileRecommand(mileRecommand.getMile_no(), mileRecommand.getMile_mention());
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 추천멘트 삭제하기
+    @GetMapping("/deleteRecommand/{mile_recommand_no}")
+    public ResponseEntity<?> deleteRecommand(@PathVariable String mile_recommand_no){
+        int result = managerService.deleteMileRecommand(mile_recommand_no);
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 상세내용 가져오기
     @GetMapping("/mileDetail/{mile_no}")
     public List<MileIntroduce> getMileDetail(@PathVariable String mile_no){
         List<MileIntroduce> mileIntroduceList = managerService.getMileDetail(mile_no);
@@ -44,8 +91,9 @@ public class ManagerController {
         return mileIntroduceList;
     }
 
+    // 마일리지 상세내용 추가하기
     @PostMapping("/mileAdd")
-    public ResponseEntity<?> resetPassword( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
+    public ResponseEntity<?> addMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
             @RequestParam("mile_no") String mile_no,
             @RequestParam("mile_title") String mile_title,
             @RequestParam("mile_content") String mile_content,
@@ -53,18 +101,16 @@ public class ManagerController {
     ){
         try {
             String mile_route = null; // 파일 경로를 저장할 변수를 선언
-            String uploadPath; // 파일 업로드 경로를 저장할 변수를 선언
-            if (file != null && !file.isEmpty()) {
-                uploadPath = miledetailUploadPath;
-            } else {
-                return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Invalid file"));
-            }
+//            String uploadPath; // 파일 업로드 경로를 저장할 변수를 선언
+            if (file != null && !file.isEmpty()) { // 파일이 존재하고 비어있지 않을 때만 파일을 저장
+                String uploadPath = miledetailUploadPath;
 
-            // 파일 저장
-            mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
-            Path path = Paths.get(uploadPath, mile_route); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
-            Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
-            Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장 
+                // 파일 저장
+                mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
+                Path path = Paths.get(uploadPath, mile_route); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+                Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
+                Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
+            } 
 
             int result = managerService.addMileage(mile_no, mile_title, mile_content, mile_route);
             if (result > 0) {
@@ -79,6 +125,7 @@ public class ManagerController {
 
     }
 
+    // 마일리지 상세내용 중 파일 다운로드하기
     @GetMapping("/downloadFile/{mile_route}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String mile_route){ // ResponseEntity<Resource> : HTTP 응답으로 리소스를 반환
         try{
@@ -103,5 +150,58 @@ public class ManagerController {
             e.printStackTrace();
             return ResponseEntity.status(500).build(); // 예외가 발생하면 500응답 반환
         }
+    }
+
+    // 마일리지 상세보기 삭제하기
+    @GetMapping("/deleteMile/{mile_introduce_no}")
+    public ResponseEntity<?> deleteMileDetail(@PathVariable String mile_introduce_no){
+        int result = managerService.deleteMile(mile_introduce_no);
+        if(result>0){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
+
+    // 마일리지 상세보기 수정 시 기존 정보 가져오기
+    @GetMapping("/mileModifyDetail/{mile_introduce_no}")
+    public MileIntroduce mileModifyDetail(@PathVariable String mile_introduce_no){
+        MileIntroduce mileModify = managerService.mileModifyDetail(mile_introduce_no);
+        System.out.println(mileModify);
+        return mileModify;
+    }
+
+    // 마일리지 상세보기 수정 등록하기
+    @PostMapping("/updateDetail")
+    public ResponseEntity<?> updateMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
+                                            @RequestParam("mile_introduce_no") String mile_introduce_no,
+                                            @RequestParam("mile_title") String mile_title,
+                                            @RequestParam("mile_content") String mile_content,
+                                            @RequestParam(value="file", required = false) MultipartFile file
+    ){
+        try {
+            String mile_route = null; // 파일 경로를 저장할 변수를 선언
+//            String uploadPath; // 파일 업로드 경로를 저장할 변수를 선언
+            if (file != null && !file.isEmpty()) { // 파일이 존재하고 비어있지 않을 때만 파일을 저장
+                String uploadPath = miledetailUploadPath;
+
+                // 파일 저장
+                mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
+                Path path = Paths.get(uploadPath, mile_route); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+                Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
+                Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
+            }
+
+            int result = managerService.updateMileage(mile_title, mile_content, mile_route, mile_introduce_no);
+            if (result > 0) {
+                return ResponseEntity.ok().body(Map.of("success", true));
+            } else {
+                return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "파일 업로드 실패"));
+        }
+
     }
 }

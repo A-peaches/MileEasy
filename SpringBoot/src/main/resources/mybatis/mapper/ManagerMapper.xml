@@ -26,4 +26,33 @@
         insert into mile_introduce (mile_no, mile_title, mile_content, mile_route) values (#{mile_no}, #{mile_title}, #{mile_content}, #{mile_route});
     </insert>
 
+    <delete id="deleteMile">
+        delete from mile_introduce where mile_introduce_no=#{mile_introduce_no};
+    </delete>
+
+    <select id="selectModifyMile" resultType="com.kbstar.mileEasy.dto.MileIntroduce">
+        select * from mile_introduce where mile_introduce_no = #{mile_introduce_no};
+    </select>
+
+    <update id="updateMile">
+        update mile_introduce set mile_title=#{mile_title}, mile_content=#{mile_content}, mile_route=#{mile_route} where mile_introduce_no=#{mile_introduce_no};
+    </update>
+
+    <select id="selectMileRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
+        select * from mile_recommand where mile_no = #{mile_no};
+    </select>
+
+    <update id="updateRecommand">
+        update mile_recommand set mile_mention=#{mile_mention} where mile_recommand_no=#{mile_recommand_no};
+    </update>
+
+    <insert id="insertRecommand">
+        insert into mile_recommand (mile_no, mile_mention, mile_link)
+        values (#{mile_no}, #{mile_mention}, (select m.mile_description from mileage m join mile_recommand r on m.mile_no=r.mile_no where m.mile_no=#{mile_no} group by mile_description));
+    </insert>
+
+    <delete id="deleteRecommand">
+        delete from mile_recommand where mile_recommand_no=#{mile_recommand_no};
+    </delete>
+
 </mapper>

@@ -1,5 +1,5 @@
+// vue.config.js 또는 webpack.config.js
 const webpack = require('webpack');
-
 module.exports = {
   configureWebpack: {
     plugins: [

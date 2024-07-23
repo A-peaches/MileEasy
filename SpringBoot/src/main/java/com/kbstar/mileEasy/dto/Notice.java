@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @AllArgsConstructor
+
 @Getter
 @Setter
 public class Notice {
@@ -17,5 +18,7 @@ public class Notice {
     private String notice_board_file;
     private Timestamp notice_board_date;
     private int notice_board_hit;
-    private boolean notice_board_is_deleted;
+    private boolean notice_board_is_delete;
+    private int mile_no;
+    private String mile_name; // mileage 테이블의 mile_name 필드 추가
 }

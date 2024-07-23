@@ -48,6 +48,7 @@ public class MileageController {
     @Autowired
     private MileService mileService;
 
+
     //마일리지 테이블 가지고오기
     @GetMapping("/getMileage")
     public ArrayList<Mileage> getMileage() {
@@ -90,8 +91,14 @@ public class MileageController {
         return mileScoreService.kingData();
     }
 
+        //마일리지 추천멘트!
+        @GetMapping("getRecommand/{user_no}")
+        public MileRecommand getRecommand (@PathVariable String user_no){
+            MileRecommand recommands = mileService.getRecommand(user_no);
 
+            return recommands;
 
+        }
 
 
 
@@ -103,4 +110,5 @@ public class MileageController {
 //    }
 
 
-}
+    }
+
