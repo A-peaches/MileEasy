@@ -9,25 +9,26 @@
     <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
         SELECT
             m.mile_name AS mile_no,
-            s.mile_score_point,
+            SUM(DISTINCT IFNULL(s.mile_score_point, 0)) AS mile_score_point,
             AVG(h.mile_history_point) AS mile_prev_score,
             r.mile_link
         FROM
             mile_recommand r
-                LEFT JOIN
-            mileage m ON r.mile_no = m.mile_no
-                LEFT JOIN
-            mile_score s ON s.mile_no = r.mile_no AND s.user_no = 1653521
-                LEFT JOIN
-            mile_history h ON h.mile_no = s.mile_no
+                LEFT JOIN mileage m ON r.mile_no = m.mile_no
+                LEFT JOIN (
+                SELECT mile_no, user_no, SUM(mile_score_point) AS mile_score_point
+                FROM mile_score
+                WHERE user_no = #{user_no}
+                GROUP BY mile_no, user_no
+            ) s ON s.mile_no = r.mile_no
+                LEFT JOIN mile_history h ON h.mile_no = r.mile_no
                 AND h.user_no = s.user_no
                 AND h.mile_history_date BETWEEN DATE_SUB(LAST_DAY(CURRENT_DATE) + INTERVAL 1 DAY, INTERVAL 2 MONTH)
-                                  AND LAST_DAY(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
-        WHERE
-            s.user_no = #{user_no} OR s.user_no IS NULL
+                                                AND LAST_DAY(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH))
         GROUP BY
-            r.mile_no, m.mile_name, s.mile_score_point, r.mile_link;
+            m.mile_name, r.mile_link;
     </select>
+
 
     <select id="getHitMileCount" resultType="int">
         SELECT COUNT(*)

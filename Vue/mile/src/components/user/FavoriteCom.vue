@@ -25,13 +25,13 @@
           <div class="flex">
             <div
               class="KB_C1 mileage-score"
-              style="margin-left: 80px; margin-right: 80px"
+              style="margin-left: 10px; margin-right: 10px; width: 200px;"
             >
               {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
             </div>
             <div
               class="chart-wrapper mx-auto"
-              style="width: 100%; position: relative"
+              style="width: 290px; position: relative; margin-left : 0px;"
             >
               <div v-if="hasMileageData(favoriteList[index].mile_no)" class="chart-container">
                 <canvas
@@ -337,7 +337,7 @@ export default {
   position: relative;
   height: 150px;
   width: 190px;
-  z-index: 0;
+  z-index: 1;
 }
 
 .favorite-options {
