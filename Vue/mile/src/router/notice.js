@@ -10,10 +10,11 @@ export default [
   },
   {
     // 공지사항 상세보기
-    path: '/noticeDetailView',
+    path: '/notice/:id',
     name: 'noticeDetailView',
     component: () => import('../views/desk/notice/NoticeDetailView.vue'),
     meta: { requiresAuth: true },
+    props: true, // props를 통해 id를 컴포넌트에 전달
   },
   {
     //관리자 : 공지사항 수정하기
