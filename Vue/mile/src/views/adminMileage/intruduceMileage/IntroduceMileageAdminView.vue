@@ -77,9 +77,6 @@ export default {
     const mile_number = this.loginInfo ? this.loginInfo.mile_no : null;
     if(mile_number){
       this.arrayMiles = await this.getMileDetail(mile_number);
-      if(this.arrayMiles.length==0){
-        this.showAlert('등록된 마일리지 소개 글이 없습니다', 'warning', '/introduceMileageAddAdminView')
-      }
     }else{
       console.error('user_no이 유효하지 않습니다.');
     }

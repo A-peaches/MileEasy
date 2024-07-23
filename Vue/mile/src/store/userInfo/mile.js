@@ -23,6 +23,11 @@ const actions = {
   async fetchMileInfo({commit}, user_no){
     try{
       const response = await axios.get(`http://localhost:8090/manager/mileIntro/${user_no}`);
+      // reponse.data {
+      //  user_name: 사용자 이름
+      //  user_profile: 사용자 프로필 사진 파일명
+      //  mile_no: 마일리지 이름(한글로 가져옴)
+      //}
       commit('setMileInfo', response.data);
     }catch(error){
       console.error('Error fetching mile info:', error);
@@ -31,6 +36,13 @@ const actions = {
   async getMileDetail({commit}, mile_no){
     try{
       const response = await axios.get(`http://localhost:8090/manager/mileDetail/${mile_no}`)
+      // reponse.data {
+      //  mile_introduce_no: 마일리지 소개글 번호
+      //  mile_no: 마일리지 번호
+      //  mile_title: 마일리지 상세항목 타이틀
+      //  mile_content: 마일리지 상세항목별 내용
+      //  mile_route: 마일리지 상세항목별 첨부파일 이름 
+      //}
       commit('setArrayMiles', response.data);
     }catch(error){
       console.error('Error get mile detail:', error);

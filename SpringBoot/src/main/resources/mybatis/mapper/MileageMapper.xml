@@ -55,4 +55,12 @@
             order by mile_score_point ASC LIMIT 1);
     </select>
 
+    <insert id="insertMileExcel">
+        insert into mile_excel (mile_no, mile_excel_file) values ( #{mile_no}, #{mile_excel_file});
+    </insert>
+
+    <select id="selectMileExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
+        select * from mile_excel where date(mile_excel_date) = #{selectedDate};
+    </select>
+
 </mapper>
