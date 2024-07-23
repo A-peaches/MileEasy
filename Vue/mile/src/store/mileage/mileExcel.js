@@ -18,15 +18,15 @@ const mutations = {
 const actions = {
   async fetchMileExcelInfo({ commit }, selectedDate) {
     try{
-      const response = await axios.get(`http://localhost:8090/mileage/mileExcelFiles/${selectedDate}`);
+      const response = await axios.get(`http://localhost:8090/mileage/mileExcelFiles`, {params: {date: selectedDate}});
       commit('setArrayMileExcel', response.data);
     }catch(error){
       console.error('Error fetching mile Excel info:', error);
     }
   },
-  async downloadFile(context, mile_excel_file){
+  async downloadFile(context, {mile_excel_file}){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/downloadExcelFile/${mile_excel_file}`,{
+      const response = await axios.get(`http://localhost:8090/mileage/downloadExcelFile/${mile_excel_file}`,{
         responseType: 'blob' // 바이너리 데이터를 받는다. 
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -39,11 +39,19 @@ const actions = {
       console.error('파일 다운로드 실패', error);
     }
   },
+  async mileExcelLists({ commit }, mile_no){
+    try{
+      const response = await axios.get(`http://localhost:8090/mileage/totalMileExcel/${mile_no}`)
+      commit('setArrayMileExcel', response.data);
+    }catch(error){
+      console.error('Error get mile excel lists:', error);
+    }
+  }
 };
 
 const getters = {
   getObjectMileExcel: (state) => state.objectMileExcel,
-  getArrayMileExcel: (state) => state.ArrayMileExcel,
+  getArrayMileExcel: (state) => state.arrayMileExcel,
 };
 
 

@@ -2,34 +2,30 @@
 <template>
   <div class="cards page-back mx-auto">
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 점수</h2>
-    
-    <!-- <div v-for="detail in arrayMiles" :key="detail.mile_introduce_no" style="padding:0 5%;">
-      <div class="border-bottom p-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }}</h3>
-          <div>
-            <a :href="'/introduceMileageModifyAdminView?mile_introduce_no=' + detail.mile_introduce_no" style="text-decoration: none;" class="brown">수정</a>
-            <span class="mx-2">|</span>   
-            <button @click="deleteMileDetail(detail.mile_introduce_no)" class="brown">삭제</button>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center input-gray p-4">
-          <span><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></span>
-          <button @click="download(detail.mile_route)"><p class="md" v-if="detail.mile_route" style="text-align: right;">상세보기 〉</p></button>
-        </div>
-      </div>
-    </div> -->
 
     <!-- 날짜 선택 -->
     <div class="d-flex justify-content-center align-items-center" style="margin-top: 10vh; padding-left: 3%;">
       <Datepicker  v-model="selectedDate" :format="formatDate" style="width:30%"></Datepicker>
       <button @click="fetchScoresByDate" class="btn-green">날짜 선택</button>
     </div>
-    <!--엑셀 파일 리스트-->
-    <div v-for="score in mileExcelInfo" :key="score.mile_excel_no" class="border-bottom p-4">
-      <div class="d-flex align-items-center justify-content-between">
-        <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</h3>
-        <button @click="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">상세보기 〉</p></button>
+
+    <!-- 엑셀 파일 리스트 (기본) -->
+    <div v-if="!selectedDate" class="p-5" style="margin-top: 10vh;">
+      <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" class="mx-auto mb-4 border-bottom p-4 input-base input-white" style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+        <div class="d-flex align-items-center justify-content-between">
+          <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
+          <button @click="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 엑셀 파일 리스트 (날짜 선택 시) -->
+    <div v-else class="p-5" style="margin-top: 10vh;;">
+      <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" class="mx-auto mb-4 border-bottom p-4 input-base input-white" style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+        <div class="d-flex align-items-center justify-content-between">
+          <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
+          <button @click="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+        </div>
       </div>
     </div>
     <!--버튼-->
@@ -45,9 +41,9 @@
   </div>
 
   <!-- 모달 -->
-  <div v-if="isModalOpen" class="modals">
+  <div v-if="isModalOpen" class="modals" >
       <div
-        class="modals-content"
+        class="modals-content" ref="modal"
         style="width: 40%; height: 45%; background-color: #f9f9f9"
       >
         <span class="close" @click="closeModal">&times;</span>
@@ -113,7 +109,7 @@ export default {
   },
   methods:{
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
-    ...mapActions('mileage', ['fetchMileExcelInfo', 'downloadFile']),
+    ...mapActions('mileExcel', ['fetchMileExcelInfo', 'downloadFile', 'mileExcelLists']),
     openModal() {
       this.isModalOpen = true;
     },
@@ -180,9 +176,11 @@ export default {
     }else{
       console.error('user_no이 유효하지 않습니다.');
     }
+
     const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
     if(mile_no){
       this.getMileDetail(mile_no);
+      this.mileExcelLists(mile_no);
     }else{
       console.error('mile_no이 유효하지 않습니다.');
     }
@@ -194,8 +192,8 @@ export default {
 <style scope>
 .page-back {
   width: 70%;
-  /* height: 140vh; */
-  height: 800px;
+  height: 100vh;
+  /* height: 800px; */
   margin-top: 5%;
 }
 .choice {

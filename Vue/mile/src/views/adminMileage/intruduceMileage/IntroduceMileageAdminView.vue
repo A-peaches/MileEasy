@@ -74,9 +74,24 @@ export default {
     },
   },
   async created(){
+    const user_no = this.loginInfo ? this.loginInfo.user_no : null;
+    if(user_no){
+      await this.fetchMileInfo(user_no);
+      const mileInfo = this.getMileInfo;
+      if(mileInfo){
+        this.mile_name = mileInfo.mile_no;
+      }else{
+        console.error('마일리지 이름을 가져올 수 없습니다.');
+      }
+    }else{
+      console.error('user_no이 유효하지 않습니다.');
+    }
     const mile_number = this.loginInfo ? this.loginInfo.mile_no : null;
     if(mile_number){
       this.arrayMiles = await this.getMileDetail(mile_number);
+      if(this.arrayMiles.length==0){
+        this.showAlert('등록된 마일리지 소개 글이 없습니다', 'warning', '/introduceMileageAddAdminView')
+      }
     }else{
       console.error('user_no이 유효하지 않습니다.');
     }

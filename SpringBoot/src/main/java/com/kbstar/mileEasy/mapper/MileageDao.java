@@ -28,5 +28,6 @@ public interface MileageDao {
     List<MileRecommand> getRecommand(String userNo);
 
     int insertMileExcel(String mile_no, String mile_excel_file);
-    List<MileExcel> selectMileExcel(Timestamp selectedDate);
+    List<MileExcel> selectMileExcel(String selectedDate);
+    List<MileExcel> selectTotalExcel(String mile_no);
 }
