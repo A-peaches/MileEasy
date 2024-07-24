@@ -11,21 +11,34 @@
 
     <!-- 엑셀 파일 리스트 (기본) -->
     <div v-if="!selectedDate" class="p-5" style="margin-top: 10vh;">
-      <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" class="mx-auto mb-4 border-bottom p-4 input-base input-white" style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+      <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" 
+        class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
+        :class="{activeDelete: deleteArray.includes(score)}"
+        @click="addDeleteArray(score)"
+        style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
         <div class="d-flex align-items-center justify-content-between">
           <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
-          <button @click="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+          <button @click.stop="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
         </div>
       </div>
     </div>
 
     <!-- 엑셀 파일 리스트 (날짜 선택 시) -->
-    <div v-else class="p-5" style="margin-top: 10vh;;">
-      <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" class="mx-auto mb-4 border-bottom p-4 input-base input-white" style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
-        <div class="d-flex align-items-center justify-content-between">
-          <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
-          <button @click="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+    <div v-else class="p-5" style="margin-top: 10vh;">
+      <div v-if="arrayMileExcel.length>0">
+        <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" 
+          class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper" 
+          :class="{activeDelete: deleteArray.includes(score)}"
+          @click="addDeleteArray(score)"
+          style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+          <div class="d-flex align-items-center justify-content-between">
+            <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
+            <button @click.stop="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+          </div>
         </div>
+      </div>
+      <div v-else>
+        <p class="lg2" style="text-align: center; color:#aeaeb2; font-family: KB_C2;">해당 날짜에 존재하는 마일리지 엑셀 파일이 없습니다.</p>
       </div>
     </div>
     <!--버튼-->
@@ -34,7 +47,12 @@
         <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
       </div>
       <div class="my-5">
-        <button @click="deleteDocu" class="btn-gray" :class="{choice:isDelete}" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">삭제하기</button>
+        <button @click="deleteDocu" class="btn-gray" 
+          :class="{choice:deleteArray.length>0}" 
+          :style="deleteArray.length>0?{'pointer-events':'auto'} : {'pointer-events':'none'}"
+          style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">
+          삭제하기
+        </button>
       </div>
     </div>
 
@@ -51,19 +69,17 @@
           <p class="text-left fw-bold mb-3" style="font-size: 19pt">
             마일리지 점수 업로드
           </p>
-          <div class="p-3" style="margin-top: 5vh;">
+          <div class="p-4" style="margin-top: 5vh;">
             <div class="d-flex input-gray mt-3 p-4">
               <input type="file" @change="onFileChange" class="lg2" style="width: 90%; text-align: right;"/>
             </div>
           </div>
           <div class="d-flex justify-content-center" style="margin-top: 8vh;">
             <button
-              class="btn-gray mt-3 KB_C2"
+              class="btn-gray mt-2 KB_C2"
               @click="uploadFile"
               style="
-                font-size: 16pt;
-                width: 20%;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;
               "
             >
               등록
@@ -87,10 +103,11 @@ export default {
   },
   data(){
     return{
-      isDelete: false,
+      // isChoice: false,
       isModalOpen: false,
       file: null,
       selectedDate: null,
+      deleteArray: []
     }
   },
   computed:{
@@ -109,19 +126,33 @@ export default {
   },
   methods:{
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
-    ...mapActions('mileExcel', ['fetchMileExcelInfo', 'downloadFile', 'mileExcelLists']),
+    ...mapActions('mileExcel', ['fetchMileExcelInfo', 'downloadFile', 'mileExcelLists', 'deleteMileExcel']),
     openModal() {
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
     },
-    deleteDocu(){
-      if(!this.isDelete) {
-        this.isDelete = true;
-      }else{
-        this.isDelete = false;
+    async deleteDocu(){
+      if(this.deleteArray!=null){
+        const response = await this.deleteMileExcel(this.deleteArray);
+        if(response && response.data.success){
+            console.log('마일리지 엑셀 파일 삭제 완료');
+            this.showAlert('마일리지 파일이 삭제되었습니다', 'success', '#');
+            this.mileExcels = [];
+        }else{
+          console.log('마일리지 엑셀 파일 삭제 실패');
+          this.showAlert('마일리지 파일 삭제가 실패했습니다', 'error', '#');
+        }
       }
+    },
+    addDeleteArray(score){
+      if(!this.deleteArray.includes(score)){
+        this.deleteArray.push(score);
+      }else{
+        this.deleteArray = this.deleteArray.filter(item => item !== score);
+      }
+      console.log("이건 삭제할 대상 배열", this.deleteArray);
     },
     downloadExcel(mile_excel_file){
       this.downloadFile({ mile_excel_file });
@@ -205,6 +236,22 @@ export default {
   border-radius: 10px;
   transition: background-color 0.3s;
   margin: 5px 5px 5px 5px;
+  pointer-events: auto;
 }
-
+.choice:hover {
+  background-color: #bd2c3a;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+  margin: 5px 5px 5px 5px;
+}
+.activeDelete {
+  background-color: #e1e3e4 !important;
+}
+.list-wrapper {
+  cursor: pointer;
+}
 </style>

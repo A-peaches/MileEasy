@@ -119,4 +119,26 @@
             LIMIT 3;
     </select>
 
+    <insert id="moveMileExcelToHistory">
+        insert into mile_excel_history (mile_no, mile_excel_history_file)
+        select mile_no, mile_excel_file
+        from mile_excel
+        where mile_excel_no=#{mile_excel_no};
+    </insert>
+
+    <delete id="deleteAllMileExcel">
+        delete from mile_excel where mile_excel_no=#{mile_excel_no};
+    </delete>
+
+    <insert id="moveScoreToHistory">
+        insert into mile_history (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
+        select user_no, mile_no, mile_score_date, mile_score_name, mile_score_point
+        from mile_score
+        where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
+    </insert>
+
+    <delete id="deleteScore">
+        delete from mile_score where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
+    </delete>
+
 </mapper>

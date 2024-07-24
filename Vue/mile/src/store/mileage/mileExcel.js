@@ -46,7 +46,16 @@ const actions = {
     }catch(error){
       console.error('Error get mile excel lists:', error);
     }
+  },
+ async deleteMileExcel(context, deleteArray){
+  try{
+    const response = await axios.post(`http://localhost:8090/mileage/deleteExcel`, deleteArray);
+    return response;
+  }catch(error){
+    console.error('Error delete mile:', error);
+    throw error;
   }
+}
 };
 
 const getters = {

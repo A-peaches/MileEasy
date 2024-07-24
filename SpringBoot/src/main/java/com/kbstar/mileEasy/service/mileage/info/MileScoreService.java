@@ -19,6 +19,12 @@ public class MileScoreService {
         return mileageDao.getMileScore(userNo);
     }
     public int addMileExcel(String mile_no, String mile_excel_file) { return mileageDao.insertMileExcel(mile_no, mile_excel_file); }
+    public void deleteMileScore(List<String> mile_excel_date_list, String mile_no){
+        for(int i = 0; i < mile_excel_date_list.size(); i++){
+            mileageDao.moveScoreToHistory(mile_excel_date_list.get(i), mile_no);
+            mileageDao.deleteScore(mile_excel_date_list.get(i), mile_no);
+        }
+    }
     public void addMileScore(List<Map<String, Object>> mile_scores, List<String> mile_score_names, String mile_no){
         // 기존 mile_score 데이터를 mile_history로 이동
         mileageDao.moveMileScoreToHistory(mile_no);
@@ -40,6 +46,13 @@ public class MileScoreService {
             }
         }
 
+    }
+    public void deleteMileScoreExcel(List<Map<String, Object>> mileExcels){
+        for(Map<String, Object> mileExcel : mileExcels){
+            String mile_excel_no = (String) mileExcel.get("mile_excel_no");
+            mileageDao.moveMileExcelToHistory(mile_excel_no);
+            mileageDao.deleteAllMileExcel(mile_excel_no);
+        }
     }
     public List<MileExcel> getMileExcel(String selectedDate){ return mileageDao.selectMileExcel(selectedDate);}
     public List<MileExcel> totalExcel(String mile_no){ return mileageDao.selectTotalExcel(mile_no);}

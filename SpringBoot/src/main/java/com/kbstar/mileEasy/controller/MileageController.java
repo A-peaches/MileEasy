@@ -158,7 +158,6 @@ public class MileageController {
                     }
                     mile_score_names.add(titleRow.getCell(i).getStringCellValue());
                 }
-                System.out.println("엑셀 파일 중 상세항목이름"+mile_score_names);
 
                 // 데이터 행 추출
                 List<Map<String, Object>> mile_scores = new ArrayList<>();
@@ -203,7 +202,7 @@ public class MileageController {
         return mileExcelList;
     }
 
-    // totalMileExcel 마일리지 점수 엑셀파일 리스트 가져오기 ( 매개변수: mile_no)
+    // totalMileExcel 마일리지 점수 엑셀파일 리스트 가져오기 (매개변수: mile_no)
     @GetMapping("/totalMileExcel/{mile_no}")
     public List<MileExcel> totalMileExcel(@PathVariable String mile_no){
         List<MileExcel> mileExcelList = mileScoreService.totalExcel(mile_no);
@@ -216,12 +215,14 @@ public class MileageController {
         try{
             // miledetailUploadPath를 기준으로 mile_route 경로를 결합하여 파일의 절대 경로를 만든다.
             Path filePath = Paths.get(mileScoreUploadPath).resolve(mile_excel_file).normalize(); // normalize()는 불필요한 . 및 .. 경로 요소를 제거
+
             // 파일 경로를 URL로 변환. 이를 기반으로 UrlResource 객체를 생성.
             Resource resource = new UrlResource(filePath.toUri()); // UrlResource는 파일 시스템의 파일을 나타내는 리소스
 
             if(resource.exists()){
                 // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
                 String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
+                System.out.println("서버에 저장된 다운로드 할 파일명"+encodedFileName);
                 // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
                 String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
                 // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴
@@ -237,6 +238,30 @@ public class MileageController {
         }
     }
 
+    // 마일리지 점수 엑셀파일 삭제 (매개변수: 삭제할 파일 리스트 배열)
+    @PostMapping("/deleteExcel")
+    public ResponseEntity<?> deleteExcel(@RequestBody List<Map<String, Object>> mileExcels){
+        try{
+            String mile_no = (String) mileExcels.get(0).get("mile_no");
+
+            // 파일명에서 마일리지 점수 날짜 가져오기
+            List<String> mile_excel_date_list = new ArrayList<>();
+            for(Map<String, Object> mileExcel : mileExcels){
+                mile_excel_date_list.add(((String) mileExcel.get("mile_excel_file")).trim().substring(0,8));
+            }
+            System.out.println("마일리지 점수 리스트"+mile_excel_date_list);
+
+            // 마일리지 score 점수 history로 옮기기
+            mileScoreService.deleteMileScore(mile_excel_date_list, mile_no);
+            
+            // 마일리지 excel 파일 history로 옮기기
+            mileScoreService.deleteMileScoreExcel(mileExcels);
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
 
     //페이지별 방문자수 : hit mile가져오기
     @GetMapping("hit_mileChart")
