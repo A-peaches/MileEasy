@@ -181,8 +181,8 @@ public class MileageController {
                 workbook.close();
 
                 // 서비스 계층 호출
-                mileScoreService.addMileExcel(mile_no, mile_excel_file); // 엑셀 파일 insert
                 mileScoreService.addMileScore(mile_scores, mile_score_names, mile_no); // 마일리지 점수 insert
+                mileScoreService.addMileExcel(mile_no, mile_excel_file); // 엑셀 파일 insert
 
                 return ResponseEntity.ok().body(Map.of("success", true));
             } else {
