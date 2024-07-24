@@ -1,7 +1,7 @@
 <template>
   <div class="flex" style="margin-left: 10%; margin-right: 10%  " >
     <!-- 나의 마일리지, 추천 멘트, 출석 체크 묶음 -->
-    <div class="left-container" style="width: 24%; margin-right: 1%">
+    <div class="left-container" style="width: 25%">
       <div class="cards" style="height: 430px">
         <img
         v-if="loginInfo && loginInfo.user_no"
@@ -10,7 +10,7 @@
           alt="Profile Picture"
           @error="setDefaultImage"
         />
-        <h2 class="lg KB_S5 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
+        <h2 class="lg KB_S4 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
         <p class="md" style="margin-bottom: 0px">
           {{
             loginInfo

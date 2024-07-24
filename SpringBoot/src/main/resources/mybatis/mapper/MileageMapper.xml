@@ -74,11 +74,16 @@
 
 
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
-        select * from mile_recommand where mile_no = (
-            select mile_no
-            from mile_score
-            where user_no=#{user_no}
-            order by mile_score_point ASC LIMIT 1);
+        SELECT *
+        FROM mile_recommand
+        WHERE mile_no = (
+            SELECT mile_no
+            FROM mile_score
+            WHERE user_no = #{userNo}
+            GROUP BY mile_no
+            ORDER BY SUM(mile_score_point) ASC
+            LIMIT 1
+            );
     </select>
 
 
@@ -150,11 +155,70 @@
             TIMESTAMPDIFF(YEAR, u_target.user_birth, CURDATE()) AS user_age,
             (SELECT SUM(ms_target.mile_score_point)
              FROM mile_score ms_target
-             WHERE ms_target.user_no = #{user_no}) AS user_sum
+             WHERE ms_target.user_no = #{user_no}) AS user_sum,
+            (SELECT mile_score_date from mile_score order by mile_score_date DESC LIMIT 1) AS mile_date
         FROM mile_score ms
                  JOIN user u ON ms.user_no = u.user_no
                  JOIN user u_target ON u_target.user_no = #{user_no}
         GROUP BY u_target.user_no;
 
+    </select>
+
+    <select id="mileByPosition" resultType="com.kbstar.mileEasy.beans.MileByPosition">
+        SELECT
+            (SUM(CASE
+                     WHEN u.position_no = 1
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 1
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position1,
+            (SUM(CASE
+                     WHEN u.position_no = 2
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 2
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position2,
+            (SUM(CASE
+                     WHEN u.position_no = 3
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 3
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position3,
+            (SUM(CASE
+                     WHEN u.position_no = 4
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 4
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position4,
+            (SUM(CASE
+                     WHEN u.position_no = 5
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 5
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position5,
+            u_target.position_no AS user_position,
+            (SELECT SUM(ms_target.mile_score_point)
+             FROM mile_score ms_target
+             WHERE ms_target.user_no = #{userNo}) AS user_sum,
+            (SELECT mile_score_date from mile_score order by mile_score_date DESC LIMIT 1) AS mile_date
+        FROM mile_score ms
+                 JOIN user u ON ms.user_no = u.user_no
+                 JOIN user u_target ON u_target.user_no = #{userNo}
+        GROUP BY u_target.user_no;
     </select>
 </mapper>
