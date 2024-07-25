@@ -74,4 +74,7 @@ export default {
 .cards {
   overflow: hidden;
 }
+.btn-green {
+  box-shadow: 3px 5px 7px rgba(92, 92, 92, 0.3) !important;
+}
 </style>

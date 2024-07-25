@@ -1,6 +1,6 @@
 <template>
   <div class="modals">
-    <div class="modals-content" style="width: 500px">
+    <div class="modals-content" style="width: 500px; height: 400px">
       <span class="close" @click="$emit('close')">&times;</span>
 
       <span class="KB_S4" style="font-size: 19pt">직원검색</span>
@@ -11,7 +11,8 @@
         value=""
         placeholder="사번 또는 이름을 입력하세요"
         style="width: 300px"
-      /><i class="bi bi-search" style="font-size: 17pt; margin-left: 10px"></i>
+      />
+      <button class="btn-green">검색</button>
       <div style="margin-top: 30px; margin-left: 50px">
         <div style="text-align: left">김근미(1653521) 신현동지점</div>
         <div style="text-align: left">김근미(1653520) 신현동지점</div>
@@ -38,4 +39,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.btn-green {
+  box-shadow: 3px 5px 7px rgba(92, 92, 92, 0.3) !important;
+}
+</style>
