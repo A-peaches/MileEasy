@@ -1,10 +1,6 @@
 package com.kbstar.mileEasy.mapper;
 
-import com.kbstar.mileEasy.dto.MileExcel;
-import com.kbstar.mileEasy.dto.HitMile;
-import com.kbstar.mileEasy.dto.MileRecommand;
-import com.kbstar.mileEasy.dto.MileScore;
-import com.kbstar.mileEasy.dto.Mileage;
+import com.kbstar.mileEasy.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -43,10 +39,12 @@ public interface MileageDao {
     void insertDetailMileScore(Map<String, Object> detailScore);
     List<MileExcel> selectMileExcel(String selectedDate);
     List<MileExcel> selectTotalExcel(String mile_no);
+    List<DocumentMile> selectTotalDocument(String mile_no);
     void moveMileExcelToHistory(String mile_excel_no);
     void deleteAllMileExcel(String mile_excel_no);
     void moveScoreToHistory(String mile_score_date, String mile_no);
     void deleteScore(String mile_score_date, String mile_no);
+    int insertMileDocu(String mile_no, String document_file);
 
     ArrayList<MileScore> kingData();
 

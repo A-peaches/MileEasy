@@ -80,6 +80,10 @@
         insert into mile_excel (mile_no, mile_excel_file) values ( #{mile_no}, #{mile_excel_file});
     </insert>
 
+    <insert id="insertMileDocu">
+        insert into Document_mile (mile_no, document_file) values (#{mile_no}, #{document_file});
+    </insert>
+
     <insert id="moveMileScoreToHistory">
         insert into mile_history
             (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
@@ -103,6 +107,10 @@
 
     <select id="selectTotalExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
         select * from mile_excel where mile_no = #{mile_no};
+    </select>
+
+    <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
+        select mile_no, document_date, document_file from Document_mile where mile_no=#{mile_no};
     </select>
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">

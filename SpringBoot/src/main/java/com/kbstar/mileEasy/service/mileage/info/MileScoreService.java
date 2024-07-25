@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.mileage.info;
 
+import com.kbstar.mileEasy.dto.DocumentMile;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.mapper.MileageDao;
@@ -55,7 +56,10 @@ public class MileScoreService {
         }
     }
     public List<MileExcel> getMileExcel(String selectedDate){ return mileageDao.selectMileExcel(selectedDate);}
+    public List<DocumentMile> totalDocument(String mile_no){ return mileageDao.selectTotalDocument(mile_no);}
     public List<MileExcel> totalExcel(String mile_no){ return mileageDao.selectTotalExcel(mile_no);}
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
-
+    public int addMileageDocument(String mile_no, String document_file) {
+        return mileageDao.insertMileDocu(mile_no, document_file);
+    }
 }

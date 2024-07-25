@@ -1,9 +1,9 @@
 <!--🚨마일리지 관리자 :  마일리지 문서-->
 <template>
-  <div class="cards page-back mx-auto">
+  <div class="cards page-back mx-auto" :style="{height:computedHeight}">
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 문서</h2>
     <div class="d-flex justify-content-between align-items-center">
-      <div class="lg2" style="padding: 3em">총 건</div>
+      <div class="lg2" style="padding: 3em">총 {{ document_sum }}건</div>
       <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
         <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
           <input type="text" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
@@ -11,37 +11,44 @@
         </div>
       </div>
     </div>
-    <!-- <div v-for="detail in arrayMiles" :key="detail.mile_introduce_no" style="padding:0 5%;">
-      <div class="border-bottom p-4">
+    
+    <!-- 마일리지 문서 리스트 -->
+    <div v-if="arrayMileDocument.length>0" class="p-5" style="margin-top: 10vh;">
+      <div v-for="document in arrayMileDocument" :key="document.documnet_mile_no" 
+        class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
+        :class="{activeDelete: deleteArray.includes(document)}"
+        @click="addDeleteArray(document)"
+        style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
         <div class="d-flex align-items-center justify-content-between">
-          <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }}</h3>
-          <div>
-            <a :href="'/introduceMileageModifyAdminView?mile_introduce_no=' + detail.mile_introduce_no" style="text-decoration: none;" class="brown">수정</a>
-            <span class="mx-2">|</span>   
-            <button @click="deleteMileDetail(detail.mile_introduce_no)" class="brown">삭제</button>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center input-gray p-4">
-          <span><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></span>
-          <button @click="download(detail.mile_route)"><p class="md" v-if="detail.mile_route" style="text-align: right;">상세보기 〉</p></button>
+          <button style="width: 100%" @click.stop="downloadDocu(document.document_file)"><p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2;">{{ document.document_file }}</p></button>
+          <p class="md pl-5" style="width:20%; margin-right: 2%; text-align: right; font-family: KB_C3">{{ formatDate(document.document_date) }}</p>
         </div>
       </div>
-    </div> -->
+    </div>
+    <div v-else style="padding-top: 10vh;">
+      <p class="lg2" style="text-align: center; color:#aeaeb2; font-family: KB_C2;">해당 날짜에 존재하는 마일리지 엑셀 파일이 없습니다.</p>
+    </div>
     
-    <div class="d-flex justify-content-evenly mx-auto" style="width: 80%;">
+    <!--버튼-->
+    <div class="d-flex justify-content-evenly mx-auto" style="width: 80%; padding-top: 10%;">
       <div class="my-5">
         <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
       </div>
       <div class="my-5">
-        <button @click="deleteDocu" class="btn-gray" :class="{choice:isDelete}" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">삭제하기</button>
+        <button @click="deleteDocu" class="btn-gray" 
+          :class="{choice:deleteArray.length>0}" 
+          :style="deleteArray.length>0?{'pointer-events':'auto'} : {'pointer-events':'none'}"
+          style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">
+          삭제하기
+        </button>
       </div>
     </div>
   </div>
 
   <!-- 모달 -->
-  <div v-if="isModalOpen" class="modals">
+  <div v-if="isModalOpen" class="modals" >
       <div
-        class="modals-content"
+        class="modals-content" ref="modal"
         style="width: 40%; height: 45%; background-color: #f9f9f9"
       >
         <span class="close" @click="closeModal">&times;</span>
@@ -49,19 +56,17 @@
           <p class="text-left fw-bold mb-3" style="font-size: 19pt">
             마일리지 문서 업로드
           </p>
-          <div class="p-3" style="margin-top: 5vh;">
+          <div class="p-4" style="margin-top: 5vh;">
             <div class="d-flex input-gray mt-3 p-4">
-              <input type="file" @change="handlerFileUpload" class="lg2" style="width: 90%; text-align: right;"/>
+              <input type="file" @change="onFileChange" class="lg2" style="width: 90%; text-align: right;"/>
             </div>
           </div>
           <div class="d-flex justify-content-center" style="margin-top: 8vh;">
             <button
-              class="btn-gray mt-3 KB_C2"
-              @click="updateFavorites"
+              class="btn-gray mt-2 KB_C2"
+              @click="uploadDocument"
               style="
-                font-size: 16pt;
-                width: 20%;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;
               "
             >
               등록
@@ -74,40 +79,107 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import axios from 'axios';
+import moment from 'moment';
 export default {
   name: 'DocumentsMileageAdminView',
   data(){
     return{
-      isDelete: false,
       isModalOpen: false,
+      file: null,
+      deleteArray: [],
+      baseHeight: 90,
+      increment: 10,
+      document_sum: 0
     }
   },
   computed:{
     ...mapGetters('mile', ['getMileInfo']),
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('mileExcel', ['getArrayMileDocument']),
     loginInfo(){
       return this.getLoginInfo;
     },
     mileInfo() {
       return this.getMileInfo;
     },
+    arrayMileDocument(){
+      return this.getArrayMileDocument;
+    },
+    computedHeight(){
+      return `${this.baseHeight + this.arrayMileDocument.length * this.increment}vh`;
+    },
   },
   methods:{
-    ...mapActions('mile', ['fetchMileInfo']),
+    ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
+    ...mapActions('mileExcel', ['mileDocumentLists', 'downloadDocument', 'deleteMileDocument', 'getMileDocumentSum']),
     openModal() {
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
     },
-    deleteDocu(){
-      if(!this.isDelete) {
-        this.isDelete = true;
-      }else{
-        this.isDelete = false;
+    formatDate(dateString){
+      return moment(dateString).format('YYYY-MM-DD');
+    },
+    showAlert(t, i, r) {
+      this.$swal({
+        title: t,
+        icon: i,
+      }).then((result) => {
+        if(result.isConfirmed){
+          if(r == '#'){
+            location.reload(); // 현재 페이지 새로고침
+          }else{
+            this.$router.push(r);
+          }
+        }
+      })
+    },
+    onFileChange(event){
+      this.file = event.target.files[0];
+    },
+    async uploadDocument(){
+      const formData = new FormData();
+      formData.append('file', this.file);
+      formData.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
+      try{
+        await axios.post(`http://localhost:8090/mileage/uploadDocument`, formData, {
+          headers: {
+            'Content-Type':'multipart/form-data',
+          },
+        });
+        this.showAlert('마일리지 문서 업로드 성공', 'success', '#');
+      }catch(error){
+        console.error('Error uploading document', error);
+        this.showAlert('마일리지 문서 업로드 실패', 'error', '#');
       }
     },
-    
+    downloadDocu(document_file){
+      
+      this.downloadDocument({ document_file });
+    },
+    addDeleteArray(document){
+      if(!this.deleteArray.includes(document)){
+        this.deleteArray.push(document);
+      }else{
+        this.deleteArray = this.deleteArray.filter(item => item !== document);
+      }
+      console.log("이건 삭제할 대상 배열", this.deleteArray);
+    },
+    async deleteDocu(){
+      if(this.deleteArray!=null){
+        const response = await this.deleteMileDocument(this.deleteArray);
+        if(response && response.data.success){
+            console.log('마일리지 문서 파일 삭제 완료');
+            this.showAlert('마일리지 문서가 삭제되었습니다', 'success', '#');
+            this.deleteArray = [];
+        }else{
+          console.log('마일리지 문서 파일 삭제 실패');
+          this.showAlert('마일리지 문서 삭제가 실패했습니다', 'error', '#');
+        }
+      }
+    },
   },
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
@@ -117,8 +189,15 @@ export default {
       console.error('user_no이 유효하지 않습니다.');
     }
 
-    // 등록된 마일리지 문서 가져오기 (첨부파일 포함)
-
+    const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
+    if(mile_no){
+      this.getMileDetail(mile_no);
+      this.mileDocumentLists(mile_no);
+      this.getMileDocumentSum(mile_no);
+    }else{
+      console.error('mile_no이 유효하지 않습니다.');
+    }
+    
   }
 };
 </script>
@@ -126,8 +205,8 @@ export default {
 <style scope>
 .page-back {
   width: 70%;
-  /* height: 140vh; */
-  height: 800px;
+  height: 90vh;
+  /* height: 800px; */
   margin-top: 5%;
 }
 .choice {
@@ -139,6 +218,29 @@ export default {
   border-radius: 10px;
   transition: background-color 0.3s;
   margin: 5px 5px 5px 5px;
+  pointer-events: auto;
 }
+.choice:hover {
+  background-color: #bd2c3a;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+  margin: 5px 5px 5px 5px;
+}
+.activeDelete {
+  background-color: #e1e3e4 !important;
+}
+.list-wrapper {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.list-wrapper:hover {
+  cursor: pointer;
+  background-color: #e1e3e4 !important;
+  transition: background-color 0.3s ease;
 
+}
 </style>

@@ -64,6 +64,8 @@ public class MileageController {
     // 파일 업로드 경로
     @Value("${project.uploadpath.mileScore}")
     private String mileScoreUploadPath;
+    @Value("${project.uploadpath.document}")
+    private String documentUploadPath;
 
     //마일리지 테이블 가지고오기
     @GetMapping("/getMileage")
@@ -289,6 +291,76 @@ public class MileageController {
             return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
     }
+
+    //totalMileDocument 마일리지 문서 리스트 형식으로 불러오기 (매개변수: mile_no)
+    @GetMapping("/totalMileDocument/{mile_no}")
+    public List<DocumentMile> totalMileDocument(@PathVariable String mile_no){
+        List<DocumentMile> documentMileList = mileScoreService.totalDocument(mile_no);
+        return documentMileList;
+    }
+
+    //uploadDocument 마일리지 문서 업로드
+    @PostMapping("/uploadDocument")
+    public ResponseEntity<?> addMileage(
+            @RequestParam("mile_no") String mile_no,
+            @RequestParam(value="file", required = false) MultipartFile file
+    ){
+        try {
+            String document_file = null; // 파일 경로를 저장할 변수를 선언
+            if (file != null && !file.isEmpty()) { // 파일이 존재하고 비어있지 않을 때만 파일을 저장
+                String uploadPath = documentUploadPath;
+
+                document_file = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
+                Path path = Paths.get(uploadPath, document_file); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+                Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
+                Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
+
+            }
+            int result = mileScoreService.addMileageDocument(mile_no, document_file);
+            if (result > 0) {
+                return ResponseEntity.ok().body(Map.of("success", true));
+            } else {
+                return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "파일 업로드 실패"));
+        }
+    }
+
+    // downloadDocument 마일리지 문서 다운로드 ( 매개변수: document_file)
+    @GetMapping("/downloadDocument/{document_file}")
+    public ResponseEntity<Resource> downloadDocument(@PathVariable String document_file){ // ResponseEntity<Resource> : HTTP 응답으로 리소스를 반환
+        try{
+            System.out.println("서버로 넘어온 문서파일 이름"+document_file);
+            // miledetailUploadPath를 기준으로 mile_route 경로를 결합하여 파일의 절대 경로를 만든다.
+            Path filePath = Paths.get(documentUploadPath).resolve(document_file).normalize(); // normalize()는 불필요한 . 및 .. 경로 요소를 제거
+
+            // 파일 경로를 URL로 변환. 이를 기반으로 UrlResource 객체를 생성.
+            Resource resource = new UrlResource(filePath.toUri()); // UrlResource는 파일 시스템의 파일을 나타내는 리소스
+
+            if(resource.exists()){
+                // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
+                String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
+                System.out.println("서버에 저장된 다운로드 할 파일명: "+encodedFileName);
+                // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
+                String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
+                // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(resource);
+
+            }else{
+                return ResponseEntity.notFound().build(); // 파일이 존재하지 않으면 404응답 반환
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).build(); // 예외가 발생하면 500응답 반환
+        }
+    }
+
+    // deleteDocument 마일리지 문서 삭제 (매개변수: deleteArray )
+
+    // getDocumentSum 마일리지 총 건수 가져오기 (매개변수: mile_no)
 
     //페이지별 방문자수 : hit mile가져오기
     @GetMapping("hit_mileChart")

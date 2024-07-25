@@ -11,8 +11,8 @@
 
     <!-- 양식 다운로드 -->
     <div class="d-flex justify-content-end align-items-center mt-3">
-      <span class="lg2" style="width:95%; text-align: right; margin-right:3%;">
-        <button @click="downloadSample"><mark>엑셀 양식 다운로드</mark>&nbsp;&nbsp;<i class="bi bi-download lg2"></i></button>
+      <span class="md" style="width:95%; text-align: right; margin-right:3%; font-size: 14pt;">
+        <button @click="downloadSample"><span style="text-decoration: underline;">엑셀 양식 다운로드</span>&nbsp;&nbsp;<i class="bi bi-download lg2"></i></button>
       </span>
     </div>
 
@@ -22,10 +22,13 @@
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
         :class="{activeDelete: deleteArray.includes(score)}"
         @click="addDeleteArray(score)"
-        style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+        style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
         <div class="d-flex align-items-center justify-content-between">
-          <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
-          <button @click.stop="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+          <div class="d-flex justify-content-start align-items-center" style="width:80%;">
+            <span class="lg2 pl-5 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
+            <span class="md">{{ formatting(score.mile_excel_date) }}</span>
+          </div>
+          <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
         </div>
       </div>
     </div>
@@ -37,11 +40,14 @@
           class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper" 
           :class="{activeDelete: deleteArray.includes(score)}"
           @click="addDeleteArray(score)"
-          style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+          style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); background-color: #FBFBFB;">
           <div class="d-flex align-items-center justify-content-between">
-            <p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</p>
-            <button @click.stop="downloadExcel(score.mile_excel_file)"><p class="md" style="text-align: right;">파일 다운로드 〉</p></button>
+          <div class="d-flex justify-content-start align-items-center" style="width:80%;">
+            <span class="lg2 pl-5 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
+            <span class="md">{{ formatting(score.mile_excel_date) }}</span>
           </div>
+          <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
+        </div>
         </div>
       </div>
       <div v-else>
@@ -100,6 +106,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import axios from 'axios';
+import moment from 'moment';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
@@ -144,13 +151,16 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
+    formatting(dateString){
+      return moment(dateString).format('YYYY-MM-DD HH:mm');
+    },
     async deleteDocu(){
       if(this.deleteArray!=null){
         const response = await this.deleteMileExcel(this.deleteArray);
         if(response && response.data.success){
             console.log('마일리지 엑셀 파일 삭제 완료');
             this.showAlert('마일리지 파일이 삭제되었습니다', 'success', '#');
-            this.mileExcels = [];
+            this.deleteArray = [];
         }else{
           console.log('마일리지 엑셀 파일 삭제 실패');
           this.showAlert('마일리지 파일 삭제가 실패했습니다', 'error', '#');
@@ -267,5 +277,12 @@ export default {
 }
 .list-wrapper {
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.list-wrapper:hover {
+  cursor: pointer;
+  background-color: #e1e3e4 !important;
+  transition: background-color 0.3s ease;
+
 }
 </style>
