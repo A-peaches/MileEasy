@@ -2,9 +2,11 @@
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div class="cards" style="width: 24%; height: 400px">
       <img
-        src="@/assets/img/test.png"
+        v-if="loginInfo && loginInfo.user_no"
+        :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
         class="profile-large my-3"
         alt="Profile Picture"
+        @error="setDefaultImage"
       />
       <h2 class="lg KB_S5 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
       <p class="md" style="margin-bottom: 0px">
@@ -23,6 +25,7 @@
   </div>
 
   <br />
+
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div class="cards" style="width: 24%; height: 400px; padding: 3% 3% 4% 3%">
       <div style="padding: 3% 0%">
@@ -84,7 +87,9 @@
     </div>
     <MileagePageCount style="width: 70%; margin-left: 3%" />
   </div>
+
   <br />
+
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div
       class="hiddencards"
@@ -94,21 +99,52 @@
   </div>
 </template>
 
-asw nns dx
 <script>
 import { mapGetters } from 'vuex';
+import moment from 'moment'; // moment.js import
+import Swal from 'sweetalert2';
 import PageCount from '@/views/adminMileEasy/main/PageCount.vue';
 import MileagePageCount from '@/views/adminMileEasy/main/MileagePageCount.vue';
 import PositionChart from '@/views/adminMileEasy/main/PositionChart.vue';
+
 export default {
   name: 'AdminMainView',
   components: { PageCount, MileagePageCount, PositionChart },
-  methods: {},
+
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
-
     loginInfo() {
       return this.getLoginInfo;
+    },
+  },
+  mounted() {
+    this.checkFirstBusinessDay();
+  },
+  methods: {
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
+    },
+    checkFirstBusinessDay() {
+      // 현재 날짜를 moment 객체로 가져오기
+      const currentDate = moment();
+
+      // 이번 달의 첫 번째 영업일을 구하기 위해 반복문 사용
+      let currentDay = currentDate.clone();
+      while (currentDay.month() === currentDate.month()) {
+        // 토요일(6) 또는 일요일(0)이 아닌 경우에만 첫 번째 영업일로 처리
+        if (currentDay.day() !== 0 && currentDay.day() !== 6) {
+          if (currentDay.date() === 1) {
+            // 첫 번째 영업일이면 알림 표시
+            Swal.fire({
+              icon: 'info',
+              title: '알림',
+              text: '마왕 채택일입니다. 채택을 진행해주세요.',
+            });
+            break;
+          }
+        }
+        currentDay.add(1, 'day');
+      }
     },
   },
 };
@@ -120,7 +156,7 @@ export default {
   color: #4b4a4a;
 }
 .mileage-link:hover > p {
-  color: #848282; /* 원하는 색상으로 변경 */
+  color: #848282;
 }
 .link-text {
   display: flex;
@@ -130,10 +166,10 @@ export default {
   width: 100%;
 }
 .icon-right {
-  margin-left: auto; /* 아이콘을 오른쪽 끝으로 밀기 위해 추가 */
+  margin-left: auto;
 }
 .hiddencards {
   padding: 20px;
-  margin: 5px 5px 5px 5px;
+  margin: 5px;
 }
 </style>

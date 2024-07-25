@@ -1,13 +1,15 @@
 package com.kbstar.mileEasy.service.mileage.info;
 
 import com.kbstar.mileEasy.dto.DocumentMile;
+import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
+import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.mapper.MileageDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -60,6 +62,26 @@ public class MileScoreService {
     public List<MileExcel> totalExcel(String mile_no){ return mileageDao.selectTotalExcel(mile_no);}
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
     public int addMileageDocument(String mile_no, String document_file) {
-        return mileageDao.insertMileDocu(mile_no, document_file);
+        return mileageDao.insertMileDocu(mile_no, document_file);}
+
+
+    public ArrayList<MileScore> jumpData() { return  mileageDao.jumpData();}
+
+    public ArrayList<MileScore> kingDataSelect() {return  mileageDao.kingDataSelect();
+    }
+
+    public ArrayList<MileScore> jumpDataSelect() {return  mileageDao.jumpDataSelect();}
+
+    public MileByAge getMileAge(String userNo) {
+        return mileageDao.mileByAge(userNo);
+    }
+
+    public MileByPosition getMilePosition(String userNo) {
+        return mileageDao.mileByPosition(userNo);
+    }
+
+    public MileByJob getMileJob(String userNo) {
+        return mileageDao.mileByJob(userNo);
+
     }
 }

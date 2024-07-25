@@ -1,5 +1,8 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
+import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
@@ -379,6 +382,28 @@ public class MileageController {
     public ArrayList<MileScore> kingData(){
         return mileScoreService.kingData();
     }
+
+    @GetMapping("/getMileAge/{user_no}")
+    public MileByAge getMileAge(@PathVariable String user_no) {
+        MileByAge mileByAge = mileScoreService.getMileAge(user_no);
+        System.out.println("나이별별 차트 " + mileByAge);
+        return mileByAge;
+    }
+
+    @GetMapping("/getMilePosition/{user_no}")
+    public MileByPosition getMilePosition(@PathVariable String user_no) {
+        MileByPosition mileByPosition = mileScoreService.getMilePosition(user_no);
+        System.out.println("직급별 차트 " + mileByPosition);
+        return mileByPosition;
+    }
+
+    @GetMapping("/getMileJob/{user_no}")
+    public MileByJob getMileJob(@PathVariable String user_no) {
+        MileByJob mileByJob = mileScoreService.getMileJob(user_no);
+        System.out.println("직무별 차트 " + mileByJob);
+        return mileByJob;
+    }
+
 }
 
 

@@ -1,8 +1,7 @@
 package com.kbstar.mileEasy.controller;
 
-import com.kbstar.mileEasy.beans.MileByAge;
-import com.kbstar.mileEasy.beans.MileByJob;
-import com.kbstar.mileEasy.beans.MileByPosition;
+
+
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/mileage")
-public class KgmController{
+public class KshController{
 
     @Autowired
     private BestBranchService bestBranchService;
@@ -48,6 +47,22 @@ public class KgmController{
 
     //여기서 컨트롤러 코딩
 
+    //top5 마왕
+    @GetMapping("/jumpData")
+    public ArrayList<MileScore> jumpData(){
+        return mileScoreService.jumpData();
+    }
+    @GetMapping("/kingDataSelect")
+    public ArrayList<MileScore> kingDataSelect(){
+        return mileScoreService.kingDataSelect();
+    }
+
+    @GetMapping("/jumpDataSelect")
+    public ArrayList<MileScore> jumpDataSelect(){
+        return mileScoreService.jumpDataSelect();
+    }
+
+
+
 
 }
-

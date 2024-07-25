@@ -20,4 +20,8 @@ public class MileScore {
     private String mile_link;
     private int  total_score;
     private int ranking;
+    private String user_name;
+    private String score_increase;
+    private String base_date;
+
 }

@@ -59,6 +59,7 @@
     </div>
 
     <!-- 모달 -->
+    <teleport to="body">
     <div v-if="isModalOpen" class="modals">
       <div
         class="modals-content"
@@ -96,6 +97,7 @@
         </div>
       </div>
     </div>
+    </teleport>
   </div>
 </template>
 
