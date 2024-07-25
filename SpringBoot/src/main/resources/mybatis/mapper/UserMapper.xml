@@ -56,4 +56,48 @@
         update user set user_pw = #{tempPw} where user_no = #{user_no};
     </update>
 
+
+    <insert id="loginHistory">
+        INSERT INTO login_history (user_no, login_date)
+        VALUES (#{user_no}, CURRENT_DATE);
+    </insert>
+
+    <select id="loginHistoryCountArray"  resultType="com.kbstar.mileEasy.dto.LoginHistory" >
+    <![CDATA[
+        WITH RECURSIVE DateRange AS (
+            SELECT CAST(#{startDate} AS DATE) AS login_date
+            UNION ALL
+            SELECT login_date + INTERVAL 1 DAY
+        FROM DateRange
+        WHERE login_date + INTERVAL 1 DAY <= #{endDate}
+            )
+        SELECT
+            DateRange.login_date,
+            COALESCE(COUNT(login_history.login_date), 0) AS count
+        FROM
+            DateRange
+            LEFT JOIN
+            login_history
+        ON
+            DateRange.login_date = login_history.login_date
+        GROUP BY
+            DateRange.login_date
+        ORDER BY
+            DateRange.login_date;
+        ]]>
+  </select>
+
+    <select id="levelChartData" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT  COALESCE(COUNT(DISTINCT lh.user_no), 0) AS visitorCount
+        FROM level l
+                 LEFT JOIN (
+            SELECT lh.user_no, u.level_no
+            FROM login_history lh
+                     JOIN user u ON lh.user_no = u.user_no
+            WHERE lh.login_date = #{date}
+        ) AS lh ON l.level_no = lh.level_no
+        GROUP BY l.level_no
+        ORDER BY l.level_no;
+    </select>
+
 </mapper>

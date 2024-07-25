@@ -21,6 +21,7 @@
     </div>
     <PageCount style="width: 70%; margin-left: 3%" />
   </div>
+
   <br />
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div class="cards" style="width: 24%; height: 400px; padding: 3% 3% 4% 3%">
@@ -83,6 +84,14 @@
     </div>
     <MileagePageCount style="width: 70%; margin-left: 3%" />
   </div>
+  <br />
+  <div class="flex" style="margin-left: 10%; margin-right: 10%">
+    <div
+      class="hiddencards"
+      style="width: 24%; height: 400px; padding: 3% 3% 4% 3%"
+    ></div>
+    <PositionChart style="width: 70%; margin-left: 3%" />
+  </div>
 </template>
 
 asw nns dx
@@ -90,9 +99,10 @@ asw nns dx
 import { mapGetters } from 'vuex';
 import PageCount from '@/views/adminMileEasy/main/PageCount.vue';
 import MileagePageCount from '@/views/adminMileEasy/main/MileagePageCount.vue';
+import PositionChart from '@/views/adminMileEasy/main/PositionChart.vue';
 export default {
   name: 'AdminMainView',
-  components: { PageCount, MileagePageCount },
+  components: { PageCount, MileagePageCount, PositionChart },
   methods: {},
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
@@ -121,5 +131,9 @@ export default {
 }
 .icon-right {
   margin-left: auto; /* 아이콘을 오른쪽 끝으로 밀기 위해 추가 */
+}
+.hiddencards {
+  padding: 20px;
+  margin: 5px 5px 5px 5px;
 }
 </style>

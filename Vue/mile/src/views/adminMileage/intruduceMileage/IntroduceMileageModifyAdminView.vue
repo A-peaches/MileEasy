@@ -75,7 +75,6 @@ export default {
       mileInfo.append('mile_title', this.mile_title);
       mileInfo.append('mile_content', this.mile_content);
       mileInfo.append('file', this.file ? this.file : this.before_mile_route); 
-      
       const response = await this.updateMile(mileInfo);
       if(response && response.data.success){
         this.showAlert('마일리지가 수정되었습니다', 'success', '/IntroduceMileageAdminView');

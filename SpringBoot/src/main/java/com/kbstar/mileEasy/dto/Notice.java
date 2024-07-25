@@ -3,10 +3,10 @@ package com.kbstar.mileEasy.dto;
 import lombok.*;
 
 import java.sql.Timestamp;
-
+@NoArgsConstructor
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
+
 @Getter
 @Setter
 public class Notice {

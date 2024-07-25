@@ -23,18 +23,18 @@
             <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
             </p>
           </a>
-          <a href="/documentsMileageAdminView" class="mileage-link">
-            <p class="lg2 link-text" style="text-align: left">마일리지 문서
-            <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
-            </p>
-          </a>
           <a href="/commentMieageeAdminView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">마일리지 멘트
             <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
             </p>
           </a>
-          <a href="/noticeListView" class="mileage-link">
-            <p class="lg2 link-text" style="text-align: left">공지사항
+          <a href="/documentsMileageAdminView" class="mileage-link">
+            <p class="lg2 link-text" style="text-align: left">마일리지 문서
+            <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
+            </p>
+          </a>
+          <a href="/scoreMileageAdminView" class="mileage-link">
+            <p class="lg2 link-text" style="text-align: left">마일리지 점수
             <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
             </p>
           </a>

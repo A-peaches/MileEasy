@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.mileage.info;
 
+import com.kbstar.mileEasy.dto.HitMile;
 import com.kbstar.mileEasy.dto.Mileage;
 import com.kbstar.mileEasy.mapper.MileageDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,13 @@ public class HitMileService {
             mileageDao.insertHitMile(mileNo);
             System.out.println("insert");
         }
+    }
+
+    public ArrayList<HitMile> getHitMile() {
+        return mileageDao.getHitMile();
+    }
+
+    public ArrayList<HitMile> getHitMileDATE(String date) {
+        return mileageDao.getHitMileDATE(date);
     }
 }

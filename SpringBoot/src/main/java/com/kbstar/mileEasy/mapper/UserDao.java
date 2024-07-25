@@ -1,8 +1,10 @@
 package com.kbstar.mileEasy.mapper;
 
+import com.kbstar.mileEasy.dto.LoginHistory;
 import com.kbstar.mileEasy.dto.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 @Mapper
@@ -17,5 +19,10 @@ public interface UserDao {
 
     int updatePW(String tempPw, String user_no);
 
+    void loginHistory(String userNo);
 
+
+    ArrayList<LoginHistory> loginHistoryCountArray(String startDate, String endDate);
+
+    ArrayList<User> levelChartData(String date);
 }

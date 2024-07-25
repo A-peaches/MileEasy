@@ -48,6 +48,31 @@
         WHERE mile_no = #{mile_no} and hit_date = CURRENT_DATE;
     </update>
 
+    <select id="getHitMile" resultType="com.kbstar.mileEasy.dto.HitMile">
+        SELECT m.mile_no, m.mile_name, COALESCE(h.hit_count, 0) AS hit_count
+        FROM mileage m
+                 LEFT JOIN (
+            SELECT mile_no, hit_count
+            FROM hit_mile
+            WHERE hit_date = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY)
+        ) h ON m.mile_no = h.mile_no
+        ORDER BY m.mile_no;
+    </select>
+
+    <select id="getHitMileDATE" resultType="com.kbstar.mileEasy.dto.HitMile">
+        SELECT m.mile_no, m.mile_name, COALESCE(h.hit_count, 0) AS hit_count
+        FROM mileage m
+                 LEFT JOIN (
+            SELECT mile_no, hit_count
+            FROM hit_mile
+            WHERE hit_date = #{date}
+        ) h ON m.mile_no = h.mile_no
+        ORDER BY m.mile_no;
+    </select>
+
+
+
+
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
         select * from mile_recommand where mile_no = (
             select mile_no
@@ -56,4 +81,31 @@
             order by mile_score_point ASC LIMIT 1);
     </select>
 
+
+    <insert id="insertMileExcel">
+        insert into mile_excel (mile_no, mile_excel_file) values ( #{mile_no}, #{mile_excel_file});
+    </insert>
+
+    <select id="selectMileExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
+        select * from mile_excel where date(mile_excel_date) = #{selectedDate};
+    </select>
+
+    <select id="selectTotalExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
+        select * from mile_excel where mile_no = #{mile_no};
+    </select>
+
+
+    <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT user_no, total_score,
+               (SELECT COUNT(DISTINCT total_score)
+                FROM (SELECT SUM(mile_score_point) AS total_score
+                      FROM mile_score
+                      GROUP BY user_no) AS scores
+                WHERE total_score >= s.total_score) AS ranking
+        FROM (SELECT user_no, SUM(mile_score_point) AS total_score
+              FROM mile_score
+              GROUP BY user_no) AS s
+        ORDER BY total_score DESC
+            LIMIT 3;
+    </select>
 </mapper>

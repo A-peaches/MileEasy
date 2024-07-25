@@ -1,12 +1,9 @@
 package com.kbstar.mileEasy.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.sql.Timestamp;
-
+@NoArgsConstructor
 @ToString
 @AllArgsConstructor
 @Getter
@@ -15,4 +12,5 @@ public class LoginHistory {
     private int login_history_no;
     private String user_no;
     private Timestamp login_date;
+    private int count;
 }
