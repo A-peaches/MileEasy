@@ -63,7 +63,11 @@ public class MileScoreService {
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
     public int addMileageDocument(String mile_no, String document_file) {
         return mileageDao.insertMileDocu(mile_no, document_file);}
-
+    public void deleteMileDocument(List<String> mile_document_no_list){
+        for(String num : mile_document_no_list){
+            mileageDao.deleteDocument(num);
+        }
+    }
 
     public ArrayList<MileScore> jumpData() { return  mileageDao.jumpData();}
 

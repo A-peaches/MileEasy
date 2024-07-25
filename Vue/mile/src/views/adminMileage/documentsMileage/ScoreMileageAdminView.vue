@@ -299,6 +299,5 @@ export default {
   cursor: pointer;
   background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
-
 }
 </style>

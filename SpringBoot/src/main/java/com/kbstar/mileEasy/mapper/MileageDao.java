@@ -51,7 +51,7 @@ public interface MileageDao {
     void moveScoreToHistory(String mile_score_date, String mile_no);
     void deleteScore(String mile_score_date, String mile_no);
     int insertMileDocu(String mile_no, String document_file);
-
+    void deleteDocument(String num);
     ArrayList<MileScore> kingData();
 
 

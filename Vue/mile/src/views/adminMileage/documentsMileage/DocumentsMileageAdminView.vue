@@ -17,19 +17,21 @@
       <div v-for="document in arrayMileDocument" :key="document.documnet_mile_no" 
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
         :class="{activeDelete: deleteArray.includes(document)}"
-        @click="addDeleteArray(document)"
+        @click="addDeleteDocuArray(document)"
         style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
         <div class="d-flex align-items-center justify-content-between">
-          <button style="width: 80%; text-align: left;" @click.stop="downloadDocu(document.document_file)">
+          <button style="width: 80%; text-align: left;">
             <div class="d-flex align-items-center justify-content-start">
               <div v-if="isNew(document.document_date)" style="width:5%; padding-left: 3%;">
                 <span class="md" style="color: #edbb00;">NEW</span>
               </div>
-              <span class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2;">{{ document.document_file }}</span>
+              <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
+                <span class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2;">{{ document.document_file }}</span>
+                <span class="md pl-3" style="width:15%; margin-right: 2%; text-align: right; font-family: KB_C3">{{ formatDate(document.document_date) }}</span>
+              </div>
             </div>
           </button>
-          
-          <span class="md pl-3" style="width:15%; margin-right: 2%; text-align: right; font-family: KB_C3">{{ formatDate(document.document_date) }}</span>
+          <button @click.stop="downloadDocu(document.document_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
         </div>
       </div>
     </div>
@@ -174,9 +176,10 @@ export default {
       
       this.downloadDocument({ document_file });
     },
-    addDeleteArray(document){
+    addDeleteDocuArray(document){
       if(!this.deleteArray.includes(document)){
         this.deleteArray.push(document);
+        console.log(this.deleteArray);
       }else{
         this.deleteArray = this.deleteArray.filter(item => item !== document);
       }

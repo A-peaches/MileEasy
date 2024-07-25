@@ -101,6 +101,10 @@
         delete from mile_score where mile_no = #{mile_no};
     </delete>
 
+    <delete id="deleteDocument">
+        delete from Document_mile where document_mile_no = #{num}
+    </delete>
+
     <insert id="insertDetailMileScore">
         insert into mile_score (user_no, mile_no, mile_score_date, mile_score_name, mile_score_point)
         values (#{user_no}, #{mile_no}, #{mile_score_date}, #{mile_score_name}, #{mile_score_point});
@@ -115,7 +119,7 @@
     </select>
 
     <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
-        select mile_no, document_date, document_file from Document_mile where mile_no=#{mile_no};
+        select * from Document_mile where mile_no=#{mile_no};
     </select>
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">

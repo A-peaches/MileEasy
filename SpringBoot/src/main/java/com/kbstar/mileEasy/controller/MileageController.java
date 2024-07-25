@@ -360,9 +360,25 @@ public class MileageController {
     }
 
     // deleteDocument 마일리지 문서 삭제 (매개변수: deleteArray )
+    @PostMapping("/deleteDocument")
+    public ResponseEntity<?> deleteDocument(@RequestBody List<Map<String, Object>> deleteArray){
+        try{
+            List<String> mile_document_no_list = new ArrayList<>();
+            for(Map<String, Object> mileDocument : deleteArray){
+                mile_document_no_list.add(((String) mileDocument.get("document_mile_no")));
+            }
+            System.out.println("마일리지 문서 번호 리스트"+mile_document_no_list);
 
+            mileScoreService.deleteMileDocument(mile_document_no_list);
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+        }
+    }
 
     // getDocumentSum 마일리지 총 건수 가져오기 (매개변수: mile_no)
+
 
     //페이지별 방문자수 : hit mile가져오기
     @GetMapping("hit_mileChart")
