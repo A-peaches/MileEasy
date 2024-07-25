@@ -1,5 +1,8 @@
 package com.kbstar.mileEasy.mapper;
 
+import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
+import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.HitMile;
 import com.kbstar.mileEasy.dto.MileRecommand;
@@ -43,4 +46,9 @@ public interface MileageDao {
 
     ArrayList<MileScore> kingData();
 
+    MileByAge mileByAge(String userNo);
+
+    MileByPosition mileByPosition(String userNo);
+
+    MileByJob mileByJob(String userNo);
 }

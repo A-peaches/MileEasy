@@ -1,5 +1,9 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
+import com.kbstar.mileEasy.beans.MileByPosition;
+import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -8,6 +12,8 @@ import com.kbstar.mileEasy.service.mileage.type.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/mileage")
@@ -41,6 +47,7 @@ public class KgmController{
     private MileService mileService;
 
     //여기서 컨트롤러 코딩
+
 
 }
 

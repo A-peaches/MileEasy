@@ -1,5 +1,5 @@
 <template>
-  <div class="cards card-white" v-if="dataLoaded">
+  <div class="cards card-white" >
     <p class="lg2 KB_S4" style="margin-right: 90px; margin-bottom: 10px;">
       <i class="bi bi-award-fill" style="color: #ffca05;"></i>&nbsp;오늘의 추천
     </p>

@@ -74,11 +74,16 @@
 
 
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
-        select * from mile_recommand where mile_no = (
-            select mile_no
-            from mile_score
-            where user_no=#{user_no}
-            order by mile_score_point ASC LIMIT 1);
+        SELECT *
+        FROM mile_recommand
+        WHERE mile_no = (
+            SELECT mile_no
+            FROM mile_score
+            WHERE user_no = #{userNo}
+            GROUP BY mile_no
+            ORDER BY SUM(mile_score_point) ASC
+            LIMIT 1
+            );
     </select>
 
 
@@ -107,5 +112,154 @@
               GROUP BY user_no) AS s
         ORDER BY total_score DESC
             LIMIT 3;
+    </select>
+
+    <select id="mileByAge" resultType="com.kbstar.mileEasy.beans.MileByAge">
+        SELECT
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 20 AND 29
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 20 AND 29
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile20,
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 30 AND 39
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 30 AND 39
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile30,
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 40 AND 49
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) BETWEEN 40 AND 49
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile40,
+            (SUM(CASE
+                     WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) >= 50
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN TIMESTAMPDIFF(YEAR, u.user_birth, CURDATE()) >= 50
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile50,
+            TIMESTAMPDIFF(YEAR, u_target.user_birth, CURDATE()) AS user_age,
+            (SELECT SUM(ms_target.mile_score_point)
+             FROM mile_score ms_target
+             WHERE ms_target.user_no = #{user_no}) AS user_sum,
+            (SELECT mile_score_date from mile_score order by mile_score_date DESC LIMIT 1) AS mile_date
+        FROM mile_score ms
+                 JOIN user u ON ms.user_no = u.user_no
+                 JOIN user u_target ON u_target.user_no = #{user_no}
+        GROUP BY u_target.user_no;
+
+    </select>
+
+    <select id="mileByPosition" resultType="com.kbstar.mileEasy.beans.MileByPosition">
+        SELECT
+            (SUM(CASE
+                     WHEN u.position_no = 1
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 1
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position1,
+            (SUM(CASE
+                     WHEN u.position_no = 2
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 2
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position2,
+            (SUM(CASE
+                     WHEN u.position_no = 3
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 3
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position3,
+            (SUM(CASE
+                     WHEN u.position_no = 4
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 4
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position4,
+            (SUM(CASE
+                     WHEN u.position_no = 5
+                         THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.position_no = 5
+                                                     THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS mile_position5,
+            u_target.position_no AS user_position,
+            (SELECT SUM(ms_target.mile_score_point)
+             FROM mile_score ms_target
+             WHERE ms_target.user_no = #{userNo}) AS user_sum,
+            (SELECT mile_score_date from mile_score order by mile_score_date DESC LIMIT 1) AS mile_date
+        FROM mile_score ms
+                 JOIN user u ON ms.user_no = u.user_no
+                 JOIN user u_target ON u_target.user_no = #{userNo}
+        GROUP BY u_target.user_no;
+    </select>
+
+    <select id="mileByJob" resultType="com.kbstar.mileEasy.beans.MileByJob">
+        SELECT
+            (SUM(CASE
+                     WHEN u.job_no = 1 THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.job_no = 1 THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS job1,
+            (SUM(CASE
+                     WHEN u.job_no = 2 THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.job_no = 2 THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS job2,
+            (SUM(CASE
+                     WHEN u.job_no = 3 THEN ms.mile_score_point
+                     ELSE 0
+                END) / NULLIF(COUNT(DISTINCT CASE
+                                                 WHEN u.job_no = 3 THEN u.user_no
+                                                 ELSE NULL
+                END), 0)) AS job3,
+            (SELECT SUM(ms_target.mile_score_point)
+             FROM mile_score ms_target
+             WHERE ms_target.user_no = #{userNo}) AS user_sum,
+            (SELECT mile_score_date
+             FROM mile_score
+             ORDER BY mile_score_date DESC
+                LIMIT 1) AS mile_date,
+     (SELECT job_name from user u INNER JOIN job j on u.job_no = j.job_no where user_no=#{userNo})
+     AS user_job
+        FROM mile_score ms
+            JOIN user u ON ms.user_no = u.user_no
+            JOIN user u_target ON u_target.user_no = #{userNo}
+        GROUP BY u_target.user_no;
+
+
+
     </select>
 </mapper>

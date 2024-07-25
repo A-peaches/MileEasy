@@ -1,19 +1,15 @@
 <template>
-  <div class="cards card-white" v-if="dataLoaded">
+  <div class="cards card-white attendance-component">
     <p class="lg2 KB_S4 text-center position-relative" style="margin-bottom: 0px">
       <i class="bi bi-calendar-check" style="color: #42b983"></i>&nbsp;&nbsp;
-  출석체크
-  <span class="expand-icon" @click.stop="openModal" style="cursor: pointer;">
-    <i class="bi bi-chevron-double-right" style="color: gray"></i>
-  </span>
-</p>
-    <div
-      class="calendar-container"
-      style=" margin-top:0px"
-      
-    >
-      <!-- 여기에 달력 -->
+      출석체크
+      <span class="expand-icon" @click.stop="openModal" style="cursor: pointer;">
+        <i class="bi bi-chevron-double-right" style="color: gray"></i>
+      </span>
+    </p>
+    <div class="calendar-container" style="margin-top:13px">
       <vue-cal
+        v-if="dataLoaded"
         class="vuecal--custom-theme vuecal--rounded-theme vuecal--date-picker"
         hide-view-selector
         :time="false"
@@ -32,17 +28,18 @@
           <i class="bi bi-chevron-right"></i>
         </template>
       </vue-cal>
+      <div v-else class="loading-indicator">데이터 로딩 중...</div>
     </div>
-
-    <!-- 모달 컴포넌트 -->
+    <teleport to="body">
     <Modal v-if="isModalOpen" @close="closeModal"  />
+    </teleport>
   </div>
 </template>
 
 <script>
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
-import Modal from '../user/AttendanceModal.vue'; // 모달 컴포넌트 임포트
+import Modal from '../user/AttendanceModal.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -69,10 +66,18 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
+    async loadAttendanceData() {
+      try {
+        await this.getAttendance(this.getLoginInfo.user_no);
+        this.dataLoaded = true;
+      } catch (error) {
+        console.error("출석 데이터 로딩 실패:", error);
+        // 에러 처리 로직 추가
+      }
+    }
   },
-  async created() {
-    await this.getAttendance(this.getLoginInfo.user_no);
-    this.dataLoaded = true;
+  mounted() {
+    this.loadAttendanceData();
   },
 };
 </script>
@@ -141,5 +146,22 @@ background-image: url('../../assets/imoji/bb/비비얼굴사랑.png');
   right: 0;
   top: 40%;
   transform: translateY(-50%);
+}
+
+.attendance-component {
+  min-height: 395px;
+  overflow: visible;
+}
+
+.calendar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
 }
 </style>
