@@ -108,9 +108,11 @@
             aria-expanded="false"
           >
             <img
-              src="@/assets/img/test.png"
-              class="profile-small"
-              alt="Profile Picture"
+            v-if="loginInfo && loginInfo.user_no"
+          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+          class="profile-small my-3"
+          alt="Profile Picture"
+          @error="setDefaultImage"
             />
           </a>
           <div class="dropdown-menu dropdown-menu-end">
@@ -146,7 +148,11 @@ export default {
       this.logout();
       window.location.href = '/login';
     },
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
+    }
   },
+
 };
 </script>
 
