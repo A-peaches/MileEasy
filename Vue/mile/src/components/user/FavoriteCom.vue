@@ -1,7 +1,7 @@
 <template>
   <div class="cards" style="background-color: #f9f9f9; height: 430px">
     <p class="text-left lg2 KB_C2">
-      즐겨찾기 마일리지&nbsp;&nbsp;
+      즐겨찾기 마일리지&nbsp;
       <i
         class="bi bi-plus-circle-fill"
         style="color: #ffca05; cursor: pointer"
