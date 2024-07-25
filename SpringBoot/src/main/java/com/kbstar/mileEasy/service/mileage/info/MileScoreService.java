@@ -29,6 +29,14 @@ public class MileScoreService {
 
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
 
+
+    public ArrayList<MileScore> jumpData() { return  mileageDao.jumpData();}
+
+    public ArrayList<MileScore> kingDataSelect() {return  mileageDao.kingDataSelect();
+    }
+
+    public ArrayList<MileScore> jumpDataSelect() {return  mileageDao.jumpDataSelect();}
+
     public MileByAge getMileAge(String userNo) {
         return mileageDao.mileByAge(userNo);
     }
@@ -39,5 +47,6 @@ public class MileScoreService {
 
     public MileByJob getMileJob(String userNo) {
         return mileageDao.mileByJob(userNo);
+
     }
 }

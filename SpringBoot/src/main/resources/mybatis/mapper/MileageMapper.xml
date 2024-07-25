@@ -101,17 +101,212 @@
 
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">
-        SELECT user_no, total_score,
-               (SELECT COUNT(DISTINCT total_score)
-                FROM (SELECT SUM(mile_score_point) AS total_score
-                      FROM mile_score
-                      GROUP BY user_no) AS scores
-                WHERE total_score >= s.total_score) AS ranking
-        FROM (SELECT user_no, SUM(mile_score_point) AS total_score
-              FROM mile_score
-              GROUP BY user_no) AS s
-        ORDER BY total_score DESC
+        <![CDATA[
+        WITH user_list AS (
+            SELECT user_no FROM user
+        ),
+             attendance_counts AS (
+                 SELECT
+                     u.user_no,
+                     COALESCE(COUNT(a.user_no), 0) AS attendance_count
+                 FROM user_list u
+                          LEFT JOIN attendance a ON u.user_no = a.user_no
+                     AND YEAR(a.attendance_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+            AND MONTH(a.attendance_date) = MONTH(CURDATE() - INTERVAL 1 DAY)
+        GROUP BY u.user_no
+            ),
+            mtip_board_counts AS (
+        SELECT
+            u.user_no,
+            COALESCE(COUNT(m.user_no), 0) AS mtip_board_count
+        FROM user_list u
+            LEFT JOIN mtip_board m ON u.user_no = m.user_no
+            AND YEAR(m.mtip_board_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+            AND MONTH(m.mtip_board_date) = MONTH(CURDATE() - INTERVAL 1 DAY)
+        GROUP BY u.user_no
+            ),
+            ranked_users AS (
+        SELECT
+            u.user_no,
+            COALESCE(a.attendance_count, 0) AS attendance_count,
+            COALESCE(m.mtip_board_count, 0) AS mtip_board_count,
+            (COALESCE(a.attendance_count, 0) + (COALESCE(m.mtip_board_count, 0) * 20)) AS total_score,
+            RANK() OVER (ORDER BY (COALESCE(a.attendance_count, 0) + COALESCE(m.mtip_board_count, 0) * 20) DESC) AS ranking
+        FROM user_list u
+            LEFT JOIN attendance_counts a ON u.user_no = a.user_no
+            LEFT JOIN mtip_board_counts m ON u.user_no = m.user_no
+            )
+        SELECT
+            ranking,
+            COALESCE(u.user_name, 'Unknown User') AS user_name,
+            total_score
+        FROM ranked_users r
+                 LEFT JOIN user u ON r.user_no = u.user_no
+        WHERE ranking <= 3;
+
+
+        ]]>
+    </select>
+
+    <select id="jumpData" resultType="com.kbstar.mileEasy.dto.MileScore">
+        <![CDATA[
+        WITH recent_month_scores AS (
+            SELECT
+                ms.user_no,
+                SUM(ms.mile_score_point) AS recent_month_total_point,
+                MAX(ms.mile_score_date) AS base_date
+            FROM mile_score ms
+            WHERE YEAR(ms.mile_score_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+            AND MONTH(ms.mile_score_date) = MONTH(CURDATE() - INTERVAL 1 DAY)
+        GROUP BY ms.user_no
+            ),
+            recent_previous_month_scores AS (
+        SELECT
+            mh.user_no,
+            SUM(mh.mile_history_point) AS recent_previous_month_total_point,
+            MAX(mh.mile_history_date) AS base_date
+        FROM mile_history mh
+        WHERE YEAR(mh.mile_history_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+          AND MONTH(mh.mile_history_date) = MONTH(CURDATE() - INTERVAL 1 DAY) - 1
+        GROUP BY mh.user_no
+            ),
+            user_scores AS (
+        SELECT
+            COALESCE(rms.user_no, rps.user_no) AS user_no,
+            COALESCE(rms.recent_month_total_point, 0) AS recent_month_total_point,
+            COALESCE(rps.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(rms.base_date, rps.base_date) AS base_date
+        FROM recent_month_scores rms
+            LEFT JOIN recent_previous_month_scores rps ON rms.user_no = rps.user_no
+
+        UNION ALL
+
+        SELECT
+            COALESCE(rms.user_no, rps.user_no) AS user_no,
+            COALESCE(rms.recent_month_total_point, 0) AS recent_month_total_point,
+            COALESCE(rps.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(rms.base_date, rps.base_date) AS base_date
+        FROM recent_month_scores rms
+            RIGHT JOIN recent_previous_month_scores rps ON rms.user_no = rps.user_no
+        WHERE rms.user_no IS NULL
+            )
+        SELECT
+            RANK() OVER (ORDER BY (us.recent_month_total_point - us.recent_previous_month_total_point) DESC) AS ranking,
+                u.user_name,
+            us.recent_month_total_point - us.recent_previous_month_total_point AS score_increase,
+            us.base_date
+        FROM user_scores us
+                 JOIN user u ON us.user_no = u.user_no
+        ORDER BY ranking
             LIMIT 3;
+        ]]>
+    </select>
+
+    <select id="kingDataSelect" resultType="com.kbstar.mileEasy.dto.MileScore">
+        <![CDATA[
+        WITH user_list AS (
+            SELECT user_no FROM user
+        ),
+             attendance_counts AS (
+                 SELECT
+                     u.user_no,
+                     COALESCE(COUNT(a.user_no), 0) AS attendance_count
+                 FROM user_list u
+                          LEFT JOIN attendance a ON u.user_no = a.user_no
+                     AND YEAR(a.attendance_date) = YEAR(CURDATE() - INTERVAL 1 month)
+            AND MONTH(a.attendance_date) = MONTH(CURDATE() - INTERVAL 1 month)
+        GROUP BY u.user_no
+            ),
+            mtip_board_counts AS (
+        SELECT
+            u.user_no,
+            COALESCE(COUNT(m.user_no), 0) AS mtip_board_count
+        FROM user_list u
+            LEFT JOIN mtip_board m ON u.user_no = m.user_no
+            AND YEAR(m.mtip_board_date) = YEAR(CURDATE() - INTERVAL 1 month)
+            AND MONTH(m.mtip_board_date) = MONTH(CURDATE() - INTERVAL 1 month)
+        GROUP BY u.user_no
+            ),
+            ranked_users AS (
+        SELECT
+            u.user_no,
+            COALESCE(a.attendance_count, 0) AS attendance_count,
+            COALESCE(m.mtip_board_count, 0) AS mtip_board_count,
+            (COALESCE(a.attendance_count, 0) + (COALESCE(m.mtip_board_count, 0) * 20)) AS total_score,
+            RANK() OVER (ORDER BY (COALESCE(a.attendance_count, 0) + COALESCE(m.mtip_board_count, 0) * 20) DESC) AS ranking
+        FROM user_list u
+            LEFT JOIN attendance_counts a ON u.user_no = a.user_no
+            LEFT JOIN mtip_board_counts m ON u.user_no = m.user_no
+            )
+        SELECT
+            DATE_FORMAT(CURDATE() - INTERVAL 1 month, '%Y-%m') AS base_date,
+            ranking,
+            COALESCE(u.user_name, 'Unknown User') AS user_name,
+            total_score
+        FROM ranked_users r
+                 LEFT JOIN user u ON r.user_no = u.user_no
+        WHERE ranking <= 3;
+
+
+        ]]>
+    </select>
+
+    <select id="jumpDataSelect" resultType="com.kbstar.mileEasy.dto.MileScore">
+        <![CDATA[
+        WITH recent_previous_month_scores AS (
+            SELECT
+                mh.user_no,
+                SUM(mh.mile_history_point) AS recent_previous_month_total_point,
+                MAX(mh.mile_history_date) AS base_date
+            FROM mile_history mh
+            WHERE YEAR(mh.mile_history_date) = YEAR(CURDATE())
+            AND MONTH(mh.mile_history_date) = MONTH(CURDATE()) - 1
+        GROUP BY mh.user_no
+            ),
+            two_months_ago_scores AS (
+        SELECT
+            mh.user_no,
+            SUM(mh.mile_history_point) AS two_months_ago_total_point,
+            MAX(mh.mile_history_date) AS base_date
+        FROM mile_history mh
+        WHERE YEAR(mh.mile_history_date) = YEAR(CURDATE())
+          AND MONTH(mh.mile_history_date) = MONTH(CURDATE()) - 2
+        GROUP BY mh.user_no
+            ),
+            user_scores AS (
+        SELECT
+            COALESCE(rpm.user_no, tma.user_no) AS user_no,
+            COALESCE(rpm.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(tma.two_months_ago_total_point, 0) AS two_months_ago_total_point,
+            COALESCE(rpm.base_date, tma.base_date) AS base_date
+        FROM recent_previous_month_scores rpm
+            LEFT JOIN two_months_ago_scores tma ON rpm.user_no = tma.user_no
+
+        UNION
+
+        SELECT
+            COALESCE(rpm.user_no, tma.user_no) AS user_no,
+            COALESCE(rpm.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(tma.two_months_ago_total_point, 0) AS two_months_ago_total_point,
+            COALESCE(rpm.base_date, tma.base_date) AS base_date
+        FROM recent_previous_month_scores rpm
+            RIGHT JOIN two_months_ago_scores tma ON rpm.user_no = tma.user_no
+        WHERE rpm.user_no IS NULL
+            )
+        SELECT
+            RANK() OVER (ORDER BY (us.recent_previous_month_total_point - us.two_months_ago_total_point) DESC) AS ranking,
+                u.user_name,
+            us.recent_previous_month_total_point - us.two_months_ago_total_point AS score_increase,
+            us.base_date
+        FROM user_scores us
+                 JOIN user u ON us.user_no = u.user_no
+        ORDER BY ranking
+            LIMIT 3;
+
+
+
+
+        ]]>
     </select>
 
     <select id="mileByAge" resultType="com.kbstar.mileEasy.beans.MileByAge">
