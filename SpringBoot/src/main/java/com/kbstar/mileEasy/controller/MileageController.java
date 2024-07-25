@@ -332,7 +332,6 @@ public class MileageController {
     @GetMapping("/downloadDocument/{document_file}")
     public ResponseEntity<Resource> downloadDocument(@PathVariable String document_file){ // ResponseEntity<Resource> : HTTP 응답으로 리소스를 반환
         try{
-            System.out.println("서버로 넘어온 문서파일 이름"+document_file);
             // miledetailUploadPath를 기준으로 mile_route 경로를 결합하여 파일의 절대 경로를 만든다.
             Path filePath = Paths.get(documentUploadPath).resolve(document_file).normalize(); // normalize()는 불필요한 . 및 .. 경로 요소를 제거
 
@@ -342,7 +341,6 @@ public class MileageController {
             if(resource.exists()){
                 // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
                 String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
-                System.out.println("서버에 저장된 다운로드 할 파일명: "+encodedFileName);
                 // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
                 String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
                 // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴
@@ -359,6 +357,7 @@ public class MileageController {
     }
 
     // deleteDocument 마일리지 문서 삭제 (매개변수: deleteArray )
+
 
     // getDocumentSum 마일리지 총 건수 가져오기 (매개변수: mile_no)
 

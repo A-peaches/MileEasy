@@ -20,8 +20,16 @@
         @click="addDeleteArray(document)"
         style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
         <div class="d-flex align-items-center justify-content-between">
-          <button style="width: 100%" @click.stop="downloadDocu(document.document_file)"><p class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2;">{{ document.document_file }}</p></button>
-          <p class="md pl-5" style="width:20%; margin-right: 2%; text-align: right; font-family: KB_C3">{{ formatDate(document.document_date) }}</p>
+          <button style="width: 80%; text-align: left;" @click.stop="downloadDocu(document.document_file)">
+            <div class="d-flex align-items-center justify-content-start">
+              <div v-if="isNew(document.document_date)" style="width:5%; padding-left: 3%;">
+                <span class="md" style="color: #edbb00;">NEW</span>
+              </div>
+              <span class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2;">{{ document.document_file }}</span>
+            </div>
+          </button>
+          
+          <span class="md pl-3" style="width:15%; margin-right: 2%; text-align: right; font-family: KB_C3">{{ formatDate(document.document_date) }}</span>
         </div>
       </div>
     </div>
@@ -121,6 +129,13 @@ export default {
     },
     formatDate(dateString){
       return moment(dateString).format('YYYY-MM-DD');
+    },
+    isNew(dateString){
+      const date = moment(dateString);
+      const today = moment();
+      const oneWeekAgo = moment().subtract(7, 'days');
+
+      return date.isBetween(oneWeekAgo, today, null, '[]');
     },
     showAlert(t, i, r) {
       this.$swal({

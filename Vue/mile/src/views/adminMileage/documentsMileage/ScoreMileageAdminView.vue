@@ -25,7 +25,10 @@
         style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
         <div class="d-flex align-items-center justify-content-between">
           <div class="d-flex justify-content-start align-items-center" style="width:80%;">
-            <span class="lg2 pl-5 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
+            <div v-if="isNew(score.mile_excel_date)" style="padding-left:3%;">
+              <span class="md" style="color: #edbb00;">NEW</span>
+            </div>
+            <span class="lg2 pl-2 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
             <span class="md">{{ formatting(score.mile_excel_date) }}</span>
           </div>
           <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
@@ -43,6 +46,9 @@
           style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); background-color: #FBFBFB;">
           <div class="d-flex align-items-center justify-content-between">
           <div class="d-flex justify-content-start align-items-center" style="width:80%;">
+            <div v-if="isNew(score.mile_excel_date)">
+              <span class="md" style="color: #edbb00">NEW</span>
+            </div>
             <span class="lg2 pl-5 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
             <span class="md">{{ formatting(score.mile_excel_date) }}</span>
           </div>
@@ -153,6 +159,16 @@ export default {
     },
     formatting(dateString){
       return moment(dateString).format('YYYY-MM-DD HH:mm');
+    },
+    formattingYear(dateString){
+      return moment(dateString).format('YYYY-MM-DD');
+    },
+    isNew(dateString){
+      const date = moment(dateString);
+      const today = moment();
+      const oneWeekAgo = moment().subtract(7, 'days');
+
+      return date.isBetween(oneWeekAgo, today, null, '[]');
     },
     async deleteDocu(){
       if(this.deleteArray!=null){
