@@ -1,5 +1,5 @@
 <template>
-  <div class="modals">
+  <div class="modals " >
     <div class="modals-content">
       <span class="close" @click="$emit('close')">&times;</span>
       <p class="lg2 KB_S4 mb-3" style="margin-bottom: 0px">
@@ -64,30 +64,36 @@ export default {
     ...mapActions("attendance", ["addAttendance"]),
 
     async handleAddAttendance() {
-
       // 오늘 날짜를 문자열 형식으로 생성
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       // getArrayAttendance 배열에서 오늘 날짜가 포함되어 있는지 확인
-      const hasTodayAttendance = this.getArrayAttendance.some(event => 
-      event.start.split(' ')[0] === today);
+      const hasTodayAttendance = this.getArrayAttendance.some(
+        (event) => event.start.split(" ")[0] === today
+      );
 
       if (hasTodayAttendance) {
-        this.showAlert();
+        this.warningAlert();
         return; //함수종료
       }
       try {
         await this.addAttendance(this.getLoginInfo.user_no);
-        console.log("출석 체크 성공");
+        this.succesAlert();
       } catch (error) {
         console.error("출석 체크 실패:", error);
       }
-
     },
-    showAlert() {
+    warningAlert() {
       this.$swal({
         title: "경고",
         text: "출석체크는 하루에 한번만 가능합니다.",
         icon: "warning",
+      });
+    },
+    succesAlert() {
+      this.$swal({
+        title: "성공",
+        text: "출석체크가 완료되었습니다.",
+        icon: "success",
       });
     },
   },

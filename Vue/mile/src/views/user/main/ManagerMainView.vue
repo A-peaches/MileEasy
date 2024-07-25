@@ -2,9 +2,11 @@
   <div class="flex" style="margin-left: 10%; margin-right: 10%;">
     <div class="cards" style="width: 24% ;height : 400px">
       <img
-        src="@/assets/img/test.png"
-        class="profile-large my-3"
-        alt="Profile Picture"
+      v-if="loginInfo && loginInfo.user_no"
+          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+          class="profile-large my-3"
+          alt="Profile Picture"
+          @error="setDefaultImage"
       />
       <h2 class="lg KB_S5 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
       <p class="md" style="margin-bottom: 0px">
@@ -23,18 +25,18 @@
             <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
             </p>
           </a>
-          <a href="/documentsMileageAdminView" class="mileage-link">
-            <p class="lg2 link-text" style="text-align: left">마일리지 문서
-            <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
-            </p>
-          </a>
           <a href="/commentMieageeAdminView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">마일리지 멘트
             <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
             </p>
           </a>
-          <a href="/noticeListView" class="mileage-link">
-            <p class="lg2 link-text" style="text-align: left">공지사항
+          <a href="/documentsMileageAdminView" class="mileage-link">
+            <p class="lg2 link-text" style="text-align: left">마일리지 문서
+            <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
+            </p>
+          </a>
+          <a href="/scoreMileageAdminView" class="mileage-link">
+            <p class="lg2 link-text" style="text-align: left">마일리지 점수
             <i class="bi bi-chevron-compact-right icon-right" style="margin-left: auto;"></i>
             </p>
           </a>
@@ -63,7 +65,9 @@ export default {
   name: "ManagerMainView",
   components: { CardComponent },
   methods :{
-  
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
+    }
   },
   computed :{
     ...mapGetters('login', ['getLoginInfo']),

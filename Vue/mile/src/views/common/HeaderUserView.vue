@@ -76,12 +76,17 @@
           </div>
 
           <div class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="Logout">
+            <a class="nav-link active" aria-current="page" @click="willBeUpdate">
               <i class="bi bi-bell-fill"></i>
             </a>
           </div>
           <div class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="Logout">
+            <a
+              class="nav-link active"
+              aria-current="page"
+              @click.stop="openModal"
+              style="cursor: pointer"
+            >
               <i class="bi bi-calendar-check"></i>
             </a>
           </div>
@@ -97,9 +102,11 @@
             aria-expanded="false"
           >
             <img
-              src="@/assets/img/test.png"
-              class="profile-small"
-              alt="Profile Picture"
+            v-if="loginInfo && loginInfo.user_no"
+          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+          class="profile-small my-3"
+          alt="Profile Picture"
+          @error="setDefaultImage"
             />
           </a>
           <div class="dropdown-menu dropdown-menu-end">
@@ -114,15 +121,25 @@
         </div>
       </div>
     </div>
+    <!-- 모달 컴포넌트 -->
+    <Modal v-if="isModalOpen" @close="closeModal" />
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+
+import Modal from '../../components/user/AttendanceModal.vue';
+import { mapGetters, mapActions } from "vuex";
 
 export default {
+  components: {  Modal },
+  data() {
+    return {
+      isModalOpen: false,
+    };
+  },
   computed: {
-    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+    ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -131,12 +148,32 @@ export default {
     },
   },
   methods: {
-    ...mapActions('login', ['logout']),
+    ...mapActions("login", ["logout"]),
     Logout() {
       this.logout();
-      window.location.href = '/login';
+      window.location.href = "/login";
     },
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+    },
+    warningAlert() {
+      this.$swal({
+        title: "안내",
+        text: "이 기능은 추후 업데이트 예정입니다",
+        icon: "info",
+      });
+    },
+    willBeUpdate() {
+      this.warningAlert();
+    },
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
+    }
   },
+
 };
 </script>
 

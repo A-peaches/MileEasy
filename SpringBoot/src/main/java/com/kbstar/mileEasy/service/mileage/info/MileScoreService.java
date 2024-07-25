@@ -1,11 +1,16 @@
 package com.kbstar.mileEasy.service.mileage.info;
 
+import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
+import com.kbstar.mileEasy.beans.MileByPosition;
+import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.mapper.MileageDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 public class MileScoreService {
@@ -17,13 +22,31 @@ public class MileScoreService {
         return mileageDao.getMileScore(userNo);
     }
 
+    public int addMileExcel(String mile_no, String mile_excel_file) { return mileageDao.insertMileExcel(mile_no, mile_excel_file); }
+    public List<MileExcel> getMileExcel(String selectedDate){ return mileageDao.selectMileExcel(selectedDate);}
+    public List<MileExcel> totalExcel(String mile_no){ return mileageDao.selectTotalExcel(mile_no);}
+
+
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
+
 
     public ArrayList<MileScore> jumpData() { return  mileageDao.jumpData();}
 
     public ArrayList<MileScore> kingDataSelect() {return  mileageDao.kingDataSelect();
     }
 
-    public ArrayList<MileScore> jumpDataSelect() {return  mileageDao.jumpDataSelect();
+    public ArrayList<MileScore> jumpDataSelect() {return  mileageDao.jumpDataSelect();}
+
+    public MileByAge getMileAge(String userNo) {
+        return mileageDao.mileByAge(userNo);
+    }
+
+    public MileByPosition getMilePosition(String userNo) {
+        return mileageDao.mileByPosition(userNo);
+    }
+
+    public MileByJob getMileJob(String userNo) {
+        return mileageDao.mileByJob(userNo);
+
     }
 }

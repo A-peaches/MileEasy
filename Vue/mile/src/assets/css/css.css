@@ -53,6 +53,10 @@
 }
 
 /* SweetAlert2 커스텀 스타일 */
+.swal2-container {
+  z-index: 10000 !important; /* 모달의 z-index보다 높은 값으로 설정 */
+}
+
 .swal2-popup {
   width: 512px;
   height: 350px;
@@ -68,11 +72,15 @@
   color: #fff !important;
   font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
 }
-
 .swal2-cancel {
   background-color: #f89f94 !important; /* 취소 버튼 색상 변경 */
   border-color: #f89f94 !important;
   color: #4b4a4a !important;
+}
+
+/* 페이지가 밀리지 않도록 body의 overflow를 조정 */
+.swal2-shown {
+  overflow: hidden !important;
 }
 
 /* 초록색 버튼 */
@@ -298,7 +306,7 @@
 .input-search {
   background-color: #ffffff;
   border-radius: 30px;
-  padding-right: 50px;
+  /* padding-right: 50px; */
   /* 아이콘 공간 확보 */
   position: relative;
   /* 아이콘 배치를 위해 */
@@ -428,6 +436,7 @@ main {
   background-color: rgba(0, 0, 0, 0.4); /* 모달 배경 */
   justify-content: center;
   align-items: center;
+  z-index: 9999; /* 모달 콘텐츠의 z-index를 높게 설정 */
 }
 
 .modals-content {
@@ -439,6 +448,7 @@ main {
   width: 80%; /* 원하는 크기로 조절 */
   max-width: 600px; /* 최대 너비 설정 */
   position: relative; /* 부모 요소의 중심에 배치 */
+  z-index: 9999; /* 모달 콘텐츠의 z-index를 높게 설정 */
 }
 
 .close {
@@ -454,3 +464,23 @@ main {
   text-decoration: none;
   cursor: pointer;
 }
+
+.top-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #19c99b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-family: 'KB_C3', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.top-button:hover {
+  background-color: #17a589;
+}
+

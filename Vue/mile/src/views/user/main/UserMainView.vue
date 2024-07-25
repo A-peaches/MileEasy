@@ -1,53 +1,14 @@
 <template>
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
-    <div class="cards" style="width: 24%; height: 430px">
-      <img
-        src="@/assets/img/test.png"
-        class="profile-large my-3"
-        alt="Profile Picture"
-      />
-      <h2 class="lg KB_S5 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
-      <p class="md" style="margin-bottom: 0px">
-        {{
-          loginInfo
-            ? `${loginInfo.level_no} ${loginInfo.position_no} | ${loginInfo.job_no} 직무`
-            : ''
-        }}
-      </p>
-      <p class="md mb-2" style="margin-bottom: 0px">
-        {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
-      </p>
-      <button class="btn-yellow KB_C2 my-3">나의 마일리지</button>
+    <div class="left-container" style="width: 25%">
+      <profile class="fade-up-item" />
+      <recommand class="my-5 fade-up-item" style="height: 210px"/>
+      <attendance class="fade-up-item" style="min-height: 395px; overflow: visible;" />
     </div>
-    <favorite style="width: 70%; margin-left: 3%" />
-  </div>
 
-  <!-- 추천 멘트 및 마일리지 차트 -->
-  <div
-    class="flex-container"
-    style="
-      margin-left: 10%;
-      margin-right: 10%;
-      display: flex;
-      align-items: flex-start;
-    "
-  >
-    <!-- 오늘의 추천 및 출석체크 -->
-    <div
-      class="left-column"
-      style="
-        width: 24%;
-        display: flex;
-        flex-direction: column;
-        margin-right: 2%;
-      "
-    >
-      <recommand class="my-5" style="height: 210px" v-if="loginInfo" />
-      <attendance style="height: 395px" v-if="loginInfo" />
-    </div>
-    <!-- 뀨! -->
-    <div class="right-column" style="flex: 1; margin-left: 3%; height: 430px">
-      <milageCharts class="my-5" style="height: 100%" v-if="loginInfo" />
+    <div class="right-container" style="width: 70%; margin-left: 1%; position: sticky; top: 20px; height: 100vh;">
+      <favorite class="fade-up-item" style="width: 100%; margin-bottom: 49px;" />
+      <milageCharts class="fade-up-item" style="width: 100%; height: 430px"  />
     </div>
   </div>
 </template>
@@ -57,16 +18,61 @@ import favorite from '@/components/user/FavoriteCom.vue';
 import recommand from '@/components/user/MileRecommand.vue';
 import milageCharts from '@/components/user/MileageChartsCom.vue';
 import attendance from '@/components/user/AttendanceCom.vue';
+import profile from '@/components/user/ProfileCom.vue';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'UserMainView',
-  components: { favorite, recommand, milageCharts, attendance },
+  components: { favorite, recommand, milageCharts, attendance, profile },
+  data() {
+    return {}
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     loginInfo() {
       return this.getLoginInfo;
     },
   },
+  methods : {
+    goToMyMileageView() {
+      window.location.href = '/myMileageView';
+    },
+
+    setTransitionDelay(el, index) {
+      el.style.setProperty('--index', index);
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      const items = this.$el.querySelectorAll('.fade-up-item');
+      items.forEach((item, index) => {
+        item.style.setProperty('--index', index);
+        item.style.setProperty('z-index', 10 - index); // z-index 설정
+        setTimeout(() => {
+          item.classList.add('fade-up-active');
+        }, 100 * index); // 각 아이템마다 지연 시간을 다르게 설정
+      });
+    });
+  }
 };
 </script>
+
+<style scoped>
+.fade-up-item {
+  opacity: 0;
+  transform: translateY(20px);
+  z-index: 1;
+  transition: all 0.5s ease-out;
+  transition-delay: calc(var(--index) * 100ms);
+  position: relative; /* z-index가 작동하도록 */
+}
+.fade-up-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 출석 체크 컴포넌트에 대한 추가 스타일 */
+.left-container > :last-child {
+  margin-bottom: 20px; /* 하단 여백 추가 */
+}
+</style>
