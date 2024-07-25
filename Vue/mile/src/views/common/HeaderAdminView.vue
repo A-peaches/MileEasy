@@ -34,26 +34,13 @@
           </li>
           <li class="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle no-caret"
-              data-bs-toggle="dropdown"
-              href="#"
+              class="nav-link dropdown"
+              href="/mileageManagementView"
               role="button"
               aria-expanded="false"
             >
               마일리지 관리
             </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="/mileageAddAdminView"
-                  >마일리지 추가</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item" href="/mileageModifyAdminView"
-                  >마일리지 수정</a
-                >
-              </li>
-            </ul>
           </li>
           <li class="nav-item dropdown">
             <a
@@ -110,11 +97,11 @@
             aria-expanded="false"
           >
             <img
-            v-if="loginInfo && loginInfo.user_no"
-          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
-          class="profile-small my-3"
-          alt="Profile Picture"
-          @error="setDefaultImage"
+              v-if="loginInfo && loginInfo.user_no"
+              :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+              class="profile-small my-3"
+              alt="Profile Picture"
+              @error="setDefaultImage"
             />
           </a>
           <div class="dropdown-menu dropdown-menu-end">
@@ -152,9 +139,8 @@ export default {
     },
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
-    }
+    },
   },
-
 };
 </script>
 
