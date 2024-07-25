@@ -110,11 +110,7 @@ import PositionChart from '@/views/adminMileEasy/main/PositionChart.vue';
 export default {
   name: 'AdminMainView',
   components: { PageCount, MileagePageCount, PositionChart },
-  methods: {
-    setDefaultImage(event) {
-      event.target.src = require('@/assets/img/test.png');
-    },
-  },
+
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     loginInfo() {
@@ -125,6 +121,9 @@ export default {
     this.checkFirstBusinessDay();
   },
   methods: {
+    setDefaultImage(event) {
+      event.target.src = require('@/assets/img/test.png');
+    },
     checkFirstBusinessDay() {
       // 현재 날짜를 moment 객체로 가져오기
       const currentDate = moment();
