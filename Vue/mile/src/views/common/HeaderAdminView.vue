@@ -1,14 +1,16 @@
 <template>
-  <div>
+  <div  class="mx-auto" style="width:83%;">
     <!-- 운영관리자 헤더  -->
     <div class="header">
       <div class="logo lg">
-        <a href="/admin" class="a_link">
-          <span class="logo-text">MileEasy</span>
+        <a href="/main" class="a_link">
+          <span class="logo-text" style="font-size:20pt">
+            <i class="bi bi-apple mr-3"></i>MileEasy
+          </span>
         </a>
       </div>
       <div class="menu">
-        <ul class="nav justify-content-end">
+        <ul class="nav justify-content-start" style="margin-left: 80px;">
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle no-caret"
