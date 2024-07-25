@@ -126,10 +126,16 @@ export default {
               display: false,
               min: Math.floor(this.minValue / 100) * 100 - 500,
               max: Math.ceil(this.maxValue / 100) * 100 + 500,
+              ticks: {
+             stepSize: 100, // x축 간격을 100으로 설정
+        },
             },
             y: {
               min: Math.floor(this.minValue / 100) * 100 - 500,
               max: Math.ceil(this.maxValue / 100) * 100 + 500,
+              ticks: {
+            stepSize: 200, // y축 간격을 100으로 설정
+        },
             },
           },
           plugins: {

@@ -1,114 +1,48 @@
 <template>
-  <div>
-    <!-- 운영관리자 헤더  -->
+  <div class="mx-auto" style="width:83%;">
+    <!-- 사용자 헤더 -->
     <div class="header">
       <div class="logo lg">
-        <a href="/admin" class="a_link">
-          <span class="logo-text">MileEasy</span>
+        <a href="/main" class="a_link">
+          <span class="logo-text" style="font-size:20pt">
+            <i class="bi bi-apple mr-3"></i>MileEasy
+          </span>
         </a>
       </div>
       <div class="menu">
-        <ul class="nav justify-content-end">
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle no-caret"
-              data-bs-toggle="dropdown"
-            >
-              마왕관리
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/kingTopAdminView">TOP</a></li>
-              <li>
-                <a class="dropdown-item" href="/kingSelectAdminView"
-                  >채택하기</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item" href="/kingBadgeOptionAdminView"
-                  >배지 디자인 변경</a
-                >
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown"
-              href="/mileageManagementView"
-              role="button"
-              aria-expanded="false"
-            >
-              마일리지 관리
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle no-caret"
-              data-bs-toggle="dropdown"
-              href="#"
-              role="button"
-              aria-expanded="false"
-            >
-              M-Tip
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="/m_TipMainAdminView"
-                  >M-Tip 가이드</a
-                >
-              </li>
-              <li>
-                <a class="dropdown-item" href="/m_TipListView">M-Tip 관리</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle no-caret"
-              data-bs-toggle="dropdown"
-              href="#"
-              role="button"
-              aria-expanded="false"
-            >
-              Desk
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="/noticeListView">공지사항</a>
-              </li>
-              <li><a class="dropdown-item" href="/qnaListView">Q&A 답변</a></li>
-              <li>
-                <a class="dropdown-item" href="/mileEasyContactView"
-                  >업무별 연락처</a
-                >
-              </li>
-            </ul>
-          </li>
-        </ul>
+        <div class="nav justify-content-start" style="margin-left: 80px;">
+          <div class="nav-item">
+            <a class="nav-link hover" href="/kingTopAdminView">마왕 관리</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" aria-current="page" href="/mileageManagementView">마일리지 관리</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" href="/m_TipListView">M-tip관리</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" href="/noticeListView">공지사항</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" href="/qnaListView">Q&A</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
+          </div>
+        </div>
       </div>
-      <div>
-        <div class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle no-caret"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <img
-              v-if="loginInfo && loginInfo.user_no"
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="nav-item dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+          <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
+            <img v-if="loginInfo && loginInfo.user_no"
               :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
               class="profile-small my-3"
               alt="Profile Picture"
-              @error="setDefaultImage"
-            />
+              @error="setDefaultImage"/>
           </a>
-          <div class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" aria-current="page" @click="Logout"
-              >로그아웃</a
-            >
-            <a class="dropdown-item" href="/passwordChangeView"
-              >비밀번호 변경</a
-            >
+          <div class="dropdown-menu dropdown-menu-end profile-dropdown" :class="{ 'show': isHovered }">
+            <a class="dropdown-item" aria-current="page" @click="Logout">로그아웃</a>
+            <a class="dropdown-item" href="/passwordChangeView">비밀번호 변경</a>
           </div>
         </div>
       </div>
@@ -120,8 +54,13 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  data() {
+    return {
+      isHovered: false
+    };
+  },
   computed: {
-    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+    ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -130,15 +69,39 @@ export default {
     },
   },
   methods: {
-    ...mapActions('login', ['logout']),
+    ...mapActions("login", ["logout"]),
     Logout() {
       this.logout();
-      window.location.href = '/login';
+      window.location.href = "/login";
+    },
+
+    willBeUpdate() {
+      this.warningAlert();
     },
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
+    showDropdown() {
+      if (window.innerWidth >= 768) {
+        this.isHovered = true;
+      }
+    },
+    hideDropdown() {
+      if (window.innerWidth >= 768) {
+        this.isHovered = false;
+      }
+    }
   },
+  mounted() {
+    window.addEventListener('resize', () => {
+      if (window.innerWidth < 768) {
+        this.isHovered = false;
+      }
+    });
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.hideDropdown);
+  }
 };
 </script>
 
@@ -147,7 +110,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 20px 60px 30px;
+  padding: 0px 20px 30px 30px;
   color: #fff;
   font-size: 18px;
 }
@@ -175,35 +138,43 @@ export default {
 .nav-link {
   color: #fff;
   text-decoration: none;
+  font-size: 16pt;
+  font-family: 'KB_C2';
 }
 
 .dropdown-menu {
-  text-align: center;
-  background-color: #fff6;
+  background-color: rgb(255, 255, 255);
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   width: auto !important;
+  position: absolute;
+  border : none !important;
+}
+
+.profile-dropdown {
+  left: 10%;
 }
 
 .dropdown-item {
   color: #333;
-  display: inline-block; /* 인라인 블록 요소로 표시 */
+  display: inline-block;
   justify-content: center;
-  white-space: nowrap; /* 한 줄에 모두 표시하기 위해 줄 바꿈 방지 */
-  margin-right: 10px; /* 각 항목 사이 간격을 위해 마진 추가 */
+  text-align: center;
+  white-space: nowrap;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
   color: black;
-  background-color: #fffffffa;
+  background-color: rgb(244, 244, 244);
   border-radius: 10px;
 }
 
 .single-line .menu-items {
-  display: inline; /* 한 줄에 모든 항목 표시 */
+  display: inline;
 }
 
-/* 마우스를 올렸을 때 커서 모양 변경 */
 .nav-link:hover {
   cursor: pointer;
 }
@@ -213,26 +184,43 @@ export default {
   text-decoration: none;
 }
 
-/* 드롭다운 화살표 숨기기 */
 .no-caret::after {
   display: none !important;
-  content: '' !important;
 }
 
-.dropdown-toggle::after {
-  display: none !important;
-  content: '' !important;
+@media (min-width: 768px) {
+  .dropdown-hover:hover > .dropdown-menu {
+    display: block;
+  }
 }
 
-.nav-link.no-caret {
-  appearance: none;
+.nav-link.hover {
+  position: relative;
+  text-decoration: none;
+  color: #fff;
+  transition: color 0.3s ease;
 }
 
-.profile-small {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  object-fit: cover;
+.nav-link.hover::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #ffffffaa;
+  transition: width 0.3s ease;
+}
+
+.nav-link.hover:hover {
+  color: #ffffff;
+}
+
+.nav-link.hover:hover::after {
+  width: 100%;
+}
+
+.hoverI:hover {
+  font-size: 18pt;
 }
 </style>

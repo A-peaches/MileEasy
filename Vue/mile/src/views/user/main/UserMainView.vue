@@ -8,7 +8,7 @@
 
     <div class="right-container" style="width: 70%; margin-left: 1%; position: sticky; top: 20px; height: 100vh;">
       <favorite class="fade-up-item" style="width: 100%; margin-bottom: 49px;" />
-      <milageCharts class="fade-up-item" style="width: 100%; height: 430px"  />
+      <milageCharts class="fade-up-item" style="width: 100%; height: 430px; overflow: visible;"  />
     </div>
   </div>
 </template>
@@ -34,9 +34,7 @@ export default {
     },
   },
   methods : {
-    goToMyMileageView() {
-      window.location.href = '/myMileageView';
-    },
+  
 
     setTransitionDelay(el, index) {
       el.style.setProperty('--index', index);
@@ -61,7 +59,6 @@ export default {
 .fade-up-item {
   opacity: 0;
   transform: translateY(20px);
-  z-index: 1;
   transition: all 0.5s ease-out;
   transition-delay: calc(var(--index) * 100ms);
   position: relative; /* z-index가 작동하도록 */

@@ -61,8 +61,20 @@ const actions = {
     }
   },
   logout({ commit }) {
-    localStorage.removeItem('loginInfo');
-    commit('clearLoginInfo');
+    return new Promise((resolve) => {
+      // 페이드 아웃 애니메이션 시작
+      document.body.classList.add('fade-out');
+      
+      // 애니메이션 완료 후 로그아웃 처리
+      setTimeout(() => {
+        localStorage.removeItem('loginInfo');
+        commit('clearLoginInfo');
+        
+        // 페이드 아웃 클래스 제거
+        document.body.classList.remove('fade-out');
+        resolve();
+      }, 300); // 애니메이션 시간에 맞춰 조절
+    });
   },
   checkLogin({ commit }) {
     const data = JSON.parse(localStorage.getItem('loginInfo'));

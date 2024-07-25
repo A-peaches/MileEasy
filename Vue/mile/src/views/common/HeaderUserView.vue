@@ -1,141 +1,77 @@
 <template>
-  <div>
+  <div class="mx-auto" style="width:83%;">
     <!-- 사용자 헤더 -->
     <div class="header">
       <div class="logo lg">
         <a href="/main" class="a_link">
-          <span class="logo-text">MileEasy</span>
+          <span class="logo-text" style="font-size:20pt">
+            <i class="bi bi-apple mr-3"></i>MileEasy
+          </span>
         </a>
       </div>
       <div class="menu">
-        <div class="nav justify-content-end">
-          <div class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle no-caret"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              나의 마일리지
-            </a>
-            <div class="dropdown-menu dropdown-menu-end single-line">
-              <div class="menu-items">
-                <a class="dropdown-item" href="/myMileageView">나의 마일리지</a>
-                <a class="dropdown-item" href="/hrdView">HRD 마일리지</a>
-                <a class="dropdown-item" href="/monthlyBestView"
-                  >MonthlyBest 마일리지</a
-                >
-                <a class="dropdown-item" href="/monthlyBaseView"
-                  >MonthlyBase 마일리지</a
-                >
-                <a class="dropdown-item" href="/bestPgView">Best PG 마일리지</a>
-                <a class="dropdown-item" href="/bestBranchView"
-                  >Best 지점 마일리지</a
-                >
-                <a class="dropdown-item" href="/leagueTableView"
-                  >리그테이블 마일리지</a
-                >
-                <a class="dropdown-item" href="/hotTipView">HOT Tip 마일리지</a>
-                <a class="dropdown-item" href="/consumerSupportView"
-                  >소비자 지원 마일리지</a
-                >
-              </div>
-            </div>
+        <div class="nav justify-content-start" style="margin-left: 80px;">
+          <div class="nav-item">
+            <a class="nav-link hover" href="/myMileageView">나의 마일리지</a>
           </div>
           <div class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/documentsView"
-              >문서모아</a
-            >
+            <a class="nav-link hover" aria-current="page" href="/documentsView">문서모아</a>
           </div>
           <div class="nav-item">
-            <a class="nav-link" href="/m_TipMainView">M-Tip</a>
-          </div>
-          <div class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle no-caret"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Desk
-            </a>
-            <div class="dropdown-menu dropdown-menu-end single-line">
-              <div class="menu-items">
-                <a class="dropdown-item" href="/noticeListView">공지사항</a>
-                <a class="dropdown-item" href="/qnaListView">Q&A</a>
-                <a class="dropdown-item" href="/mileEasyContactView"
-                  >업무별 연락처</a
-                >
-                <a class="dropdown-item" href="/mileageContactView"
-                  >마일리지 연락처</a
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="nav-item">
-            <a class="nav-link active" aria-current="page" @click="willBeUpdate">
-              <i class="bi bi-bell-fill"></i>
-            </a>
+            <a class="nav-link hover" href="/m_TipMainView">M-Tip</a>
           </div>
           <div class="nav-item">
-            <a
-              class="nav-link active"
-              aria-current="page"
-              @click.stop="openModal"
-              style="cursor: pointer"
-            >
-              <i class="bi bi-calendar-check"></i>
-            </a>
+            <a class="nav-link hover" href="/noticeListView">공지사항</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" href="/qnaListView">Q&A</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
           </div>
         </div>
       </div>
-      <div>
-        <div class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle no-caret"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <img
-            v-if="loginInfo && loginInfo.user_no"
-          :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
-          class="profile-small my-3"
-          alt="Profile Picture"
-          @error="setDefaultImage"
-            />
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="nav-item" style="margin-right: 30px;">
+          <a class="nav-link active hoverI" aria-current="page" @click="willBeUpdate">
+            <i class="bi bi-bell-fill"></i>
           </a>
-          <div class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" aria-current="page" @click="Logout"
-              >로그아웃</a
-            >
-            <a class="dropdown-item" href="/passwordChangeView"
-              >비밀번호 변경</a
-            >
+        </div>
+        <div class="nav-item mr-5">
+          <a class="nav-link active hoverI" aria-current="page" @click.stop="openModal" style="cursor: pointer">
+            <i class="bi bi-calendar-check"></i>
+          </a>
+        </div>
+        <div class="nav-item dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+          <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
+            <img v-if="loginInfo && loginInfo.user_no"
+              :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+              class="profile-small my-3"
+              alt="Profile Picture"
+              @error="setDefaultImage"/>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end profile-dropdown" :class="{ 'show': isHovered }">
+            <a class="dropdown-item" aria-current="page" @click="Logout">로그아웃</a>
+            <a class="dropdown-item" href="/passwordChangeView">비밀번호 변경</a>
             <a class="dropdown-item" href="/badgeStatusView">배지 취득 현황</a>
           </div>
         </div>
       </div>
     </div>
-    <!-- 모달 컴포넌트 -->
-    <Modal v-if="isModalOpen" @close="closeModal" />
+    <Modal v-if="isModalOpen" @close="closeModal"/>
   </div>
 </template>
 
 <script>
-
 import Modal from '../../components/user/AttendanceModal.vue';
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  components: {  Modal },
+  components: { Modal },
   data() {
     return {
       isModalOpen: false,
+      isHovered: false
     };
   },
   computed: {
@@ -171,10 +107,29 @@ export default {
     },
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
+    },
+    showDropdown() {
+      if (window.innerWidth >= 768) {
+        this.isHovered = true;
+      }
+    },
+    hideDropdown() {
+      if (window.innerWidth >= 768) {
+        this.isHovered = false;
+      }
     }
   },
-
-};
+  mounted() {
+    window.addEventListener('resize', () => {
+      if (window.innerWidth < 768) {
+        this.isHovered = false;
+      }
+    });
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.hideDropdown);
+  }
+}
 </script>
 
 <style scoped>
@@ -182,7 +137,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 20px 60px 30px;
+  padding: 0px 20px 30px 30px;
   color: #fff;
   font-size: 18px;
 }
@@ -210,35 +165,43 @@ export default {
 .nav-link {
   color: #fff;
   text-decoration: none;
+  font-size: 16pt;
+  font-family: 'KB_C2';
 }
 
 .dropdown-menu {
-  background-color: #fff6;
+  background-color: rgb(255, 255, 255);
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   width: auto !important;
+  position: absolute;
+  border : none !important;
+}
+
+.profile-dropdown {
+  left: 10%;
 }
 
 .dropdown-item {
   color: #333;
-  display: inline-block; /* 인라인 블록 요소로 표시 */
+  display: inline-block;
   justify-content: center;
   text-align: center;
-  white-space: nowrap; /* 한 줄에 모두 표시하기 위해 줄 바꿈 방지 */
-  margin-right: 10px; /* 각 항목 사이 간격을 위해 마진 추가 */
+  white-space: nowrap;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
   color: black;
-  background-color: #fffffffa;
+  background-color: rgb(244, 244, 244);
   border-radius: 10px;
 }
 
 .single-line .menu-items {
-  display: inline; /* 한 줄에 모든 항목 표시 */
+  display: inline;
 }
 
-/* 마우스를 올렸을 때 커서 모양 변경 */
 .nav-link:hover {
   cursor: pointer;
 }
@@ -248,8 +211,43 @@ export default {
   text-decoration: none;
 }
 
-/* 드롭다운 화살표 숨기기 */
 .no-caret::after {
   display: none !important;
+}
+
+@media (min-width: 768px) {
+  .dropdown-hover:hover > .dropdown-menu {
+    display: block;
+  }
+}
+
+.nav-link.hover {
+  position: relative;
+  text-decoration: none;
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
+.nav-link.hover::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #ffffffaa;
+  transition: width 0.3s ease;
+}
+
+.nav-link.hover:hover {
+  color: #ffffff;
+}
+
+.nav-link.hover:hover::after {
+  width: 100%;
+}
+
+.hoverI:hover {
+  font-size: 18pt;
 }
 </style>
