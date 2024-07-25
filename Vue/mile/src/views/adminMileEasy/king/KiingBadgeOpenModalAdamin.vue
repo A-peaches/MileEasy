@@ -42,7 +42,9 @@ export default {
             'Content-Type': 'multipart/form-data',
           },
         });
+
         Swal.fire('성공', '파일 업로드가 완료되었습니다.', 'success');
+
         this.$emit('close'); // 모달 닫기 이벤트 발생
       } catch (error) {
         Swal.fire('실패', '파일 업로드가 실패하였습니다.', 'error');

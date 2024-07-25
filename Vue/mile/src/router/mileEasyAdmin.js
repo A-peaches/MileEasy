@@ -28,11 +28,11 @@ export default [
   //🚨운영관리자 : 마일리지 관리
   //마일리지 추가
   {
-    path: '/mileageAddAdminView',
-    name: 'mileageAddAdminView',
+    path: '/mileageManagementView',
+    name: 'mileageManagementView',
     component: () =>
       import(
-        '../views/adminMileEasy/mileageManagement/MileageAddAdminView.vue'
+        '../views/adminMileEasy/mileageManagement/MileageManagementView.vue'
       ),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
