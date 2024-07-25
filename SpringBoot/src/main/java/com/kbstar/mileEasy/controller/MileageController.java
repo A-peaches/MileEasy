@@ -1,7 +1,6 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.*;
-import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -18,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -223,6 +221,35 @@ public class MileageController {
                 // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
                 String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
                 System.out.println("서버에 저장된 다운로드 할 파일명"+encodedFileName);
+                // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
+                String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
+                // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(resource);
+
+            }else{
+                return ResponseEntity.notFound().build(); // 파일이 존재하지 않으면 404응답 반환
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(500).build(); // 예외가 발생하면 500응답 반환
+        }
+    }
+
+    // downloadSample 마일리지 점수 샘플 파일 다운로드
+    @GetMapping("/downloadSample")
+    public ResponseEntity<Resource> downloadSample(){ // ResponseEntity<Resource> : HTTP 응답으로 리소스를 반환
+        try{
+            // miledetailUploadPath를 기준으로 mile_route 경로를 결합하여 파일의 절대 경로를 만든다.
+            Path filePath = Paths.get(mileScoreUploadPath).resolve("mileage_score_sample.xlsx").normalize(); // normalize()는 불필요한 . 및 .. 경로 요소를 제거
+
+            // 파일 경로를 URL로 변환. 이를 기반으로 UrlResource 객체를 생성.
+            Resource resource = new UrlResource(filePath.toUri()); // UrlResource는 파일 시스템의 파일을 나타내는 리소스
+
+            if(resource.exists()){
+                // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
+                String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
+                System.out.println("서버에 저장된 다운로드 할 파일명: "+encodedFileName);
                 // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
                 String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
                 // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴

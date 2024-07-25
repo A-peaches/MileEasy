@@ -1,12 +1,19 @@
 <!--🚨마일리지 관리자 :  마일리지 문서-->
 <template>
-  <div class="cards page-back mx-auto">
+  <div class="cards page-back mx-auto" :style="{height:computedHeight}">
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 점수</h2>
 
     <!-- 날짜 선택 -->
-    <div class="d-flex justify-content-center align-items-center" style="margin-top: 10vh; padding-left: 3%;">
-      <Datepicker  v-model="selectedDate" :format="formatDate" style="width:30%"></Datepicker>
+    <div class="d-flex justify-content-end align-items-center" style="margin-top: 10vh; padding-left: 3%; padding-right: 2%;">
+      <Datepicker  v-model="selectedDate" :format="formatDate" style="width:25%"></Datepicker>
       <button @click="fetchScoresByDate" class="btn-green">날짜 선택</button>
+    </div>
+
+    <!-- 양식 다운로드 -->
+    <div class="d-flex justify-content-end align-items-center mt-3">
+      <span class="lg2" style="width:95%; text-align: right; margin-right:3%;">
+        <button @click="downloadSample"><mark>엑셀 양식 다운로드</mark>&nbsp;&nbsp;<i class="bi bi-download lg2"></i></button>
+      </span>
     </div>
 
     <!-- 엑셀 파일 리스트 (기본) -->
@@ -42,7 +49,7 @@
       </div>
     </div>
     <!--버튼-->
-    <div class="d-flex justify-content-evenly mx-auto" style="width: 80%;">
+    <div class="d-flex justify-content-evenly mx-auto" style="width: 80%; padding-top: 10%;">
       <div class="my-5">
         <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
       </div>
@@ -103,11 +110,12 @@ export default {
   },
   data(){
     return{
-      // isChoice: false,
       isModalOpen: false,
       file: null,
       selectedDate: null,
-      deleteArray: []
+      deleteArray: [],
+      baseHeight: 90,
+      increment: 10,
     }
   },
   computed:{
@@ -122,11 +130,14 @@ export default {
     },
     arrayMileExcel(){
       return this.getArrayMileExcel;
-    }
+    },
+    computedHeight(){
+      return `${this.baseHeight + this.arrayMileExcel.length * this.increment}vh`;
+    },
   },
   methods:{
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
-    ...mapActions('mileExcel', ['fetchMileExcelInfo', 'downloadFile', 'mileExcelLists', 'deleteMileExcel']),
+    ...mapActions('mileExcel', ['fetchMileExcelInfo', 'downloadExcelSample', 'downloadFile', 'mileExcelLists', 'deleteMileExcel']),
     openModal() {
       this.isModalOpen = true;
     },
@@ -156,6 +167,9 @@ export default {
     },
     downloadExcel(mile_excel_file){
       this.downloadFile({ mile_excel_file });
+    },
+    downloadSample(){
+      this.downloadExcelSample();
     },
     onFileChange(event){
       this.file = event.target.files[0];
@@ -223,7 +237,7 @@ export default {
 <style scope>
 .page-back {
   width: 70%;
-  height: 100vh;
+  height: 90vh;
   /* height: 800px; */
   margin-top: 5%;
 }
