@@ -8,34 +8,48 @@
         <div class="category-button">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
-            <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" :href="mileage.mile_description">
-              {{ mileage.mile_name  }} 마일리지
+            <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
+            <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
+              {{ mileage.mile_name }} 마일리지
             </a>
           </div>
         </div>
       </div>
-      <div class="notice-count">총 {{ notices.length }}건</div>
+      <div class="notice-count">총 {{ filteredNotices.length }}건</div>
       <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
         <button class="write-button" @click="goToWritePage">글작성</button>
       </div>
+      <!-- 검색 창 -->
       <div class="search-container">
-        <input type="text" placeholder="검색어를 입력하세요" class="input-search">
-        <button class="search-button">
+        <input 
+          type="text" 
+          v-model="searchQuery" 
+          placeholder="검색어를 입력하세요" 
+          class="input-search"
+        >
+        <button class="search-button" @click="searchNotices">
           <i class="bi bi-search"></i>
         </button>
       </div>
+
       <div class="notice-list">
-        <div class="input-base" v-for="notice in notices" :key="notice.notice_board_no" @click="handleNoticeClick(notice.notice_board_no)">
-          <div class="notice-details">
-            <div class="notice-num">{{notice.notice_board_no }}</div>
-            <div class="notice-mile">{{ notice.mile_name }} 마일리지 </div>
-            <div class="notice-title">{{ notice.notice_board_title}}</div>
-            <div class="notice-date">{{formatDate(notice.notice_board_date) }}</div>
-            <i class="bi bi-eye"></i>
-            <div class="notice-views">{{notice.notice_board_hit }} <i class="fa fa-eye"></i></div> 
+        <div v-if="paginatedNotices.length">
+          <div class="input-base" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice.notice_board_no)">
+            <div class="notice-details">
+              <div class="notice-num">{{notice.notice_board_no }}</div>
+              <div class="notice-mile" :class="{ 'small-text': notice.mile_name.length > 6 }">{{ notice.mile_name }} 마일리지</div>
+              <div class="notice-title">{{ notice.notice_board_title}}</div>
+              <div class="notice-date">{{formatDate(notice.notice_board_date) }}</div>
+              <i class="bi bi-eye"></i>
+              <div class="notice-views">{{notice.notice_board_hit }} <i class="fa fa-eye"></i></div> 
+            </div>
           </div>
         </div>
+        <div v-else>
+          <p>관련 게시글이 없습니다.</p>
+        </div>
       </div>
+      
       <div class="pagination">
         <button @click="prevPage" :disabled="currentPage === 1">«</button>
         <button @click="goToPage(page)" :class="{ active: currentPage === page }" v-for="page in totalPages" :key="page">{{ page }}</button>
@@ -45,6 +59,8 @@
   </div>
 </template>
 
+
+
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
@@ -53,13 +69,32 @@ export default {
   data() {
     return {
       notices: [],
+      mileages: [],
       showCategory: false,
       currentPage: 1,
       itemsPerPage: 10,
+      searchQuery: '',
+      selectedCategory: null, // 선택된 카테고리 저장
+      isProcessing: false, // 요청 중복 방지 플래그 추가
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+
+    filteredNotices() {
+      let result = this.notices;
+      if (this.searchQuery) {
+        result = result.filter(notice => 
+          notice.notice_board_title.includes(this.searchQuery)
+        );
+      }
+      if (this.selectedCategory !== null) {
+        result = result.filter(notice => 
+          notice.mile_name === this.selectedCategory
+        );
+      }
+      return result;
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -70,12 +105,12 @@ export default {
       return !!this.loginInfo; // loginInfo가 null이 아니면 로그인 상태로 판단합니다.
     },
     totalPages() {
-      return Math.ceil(this.notices.length / this.itemsPerPage);
+      return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
     },
     paginatedNotices() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.notices.slice(start, end);
+      return this.filteredNotices.slice(start, end);
     },
   },
   methods: {
@@ -132,7 +167,11 @@ export default {
         console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
       }
     },
-    async handleNoticeClick(noticeId) {
+      async handleNoticeClick(noticeId) {
+      if (this.isProcessing) {
+        return; // 이미 요청이 처리 중이면 중단
+      }
+      this.isProcessing = true; // 요청 처리 시작
       console.log(`Clicked notice with ID: ${noticeId}`); // 로그 추가
       try {
         const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
@@ -144,16 +183,27 @@ export default {
         this.goToDetailView(noticeId); // 상세보기 페이지로 이동
       } catch (error) {
         console.error('Error incrementing views:', error.response ? error.response.data : error.message);
+      } finally {
+        this.isProcessing = false; // 요청 처리 완료
       }
     },
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
+    searchNotices() {
+      this.currentPage = 1;
+    },
+    filterByCategory(mileName) {
+      this.selectedCategory = mileName;
+      this.currentPage = 1;
+    },
+    refreshPage() {
+      this.selectedCategory = null;
+      this.searchQuery = '';
+      this.currentPage = 1;
+    },
   },
-
-
-
   mounted() {
     console.log('loginInfo:', this.loginInfo);
     console.log('isLoggedIn:', this.isLoggedIn);
@@ -169,6 +219,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 html, body {
@@ -230,7 +281,7 @@ h2::after {
 }
 
 .category-button {
-  background-color: #ffffff;
+  background-color: #FBFBFB;
   border-radius: 25px;
   padding: 12px 40px;
   cursor: pointer;
@@ -249,14 +300,15 @@ h2::after {
   border: none;
   padding: 10px 20px;
   cursor: pointer;
-  border-radius: 15px;
+  border-radius: 25px;
   font-size: 18px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_c3', sans-serif;
   transition: background-color 0.3s;
   width: 10%;
   float: right; /* 버튼을 오른쪽으로 이동 */
   margin-top: -80px; /* 위치 조정을 위해 추가 */
   margin-right: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .write-button:hover {
@@ -305,7 +357,7 @@ h2::after {
 .notice-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 .notice-count {
@@ -324,6 +376,11 @@ h2::after {
   line-height: 65px; /* 세로 정렬 */
   font-size: 20px;
   font-family: 'KB_S5', sans-serif;
+  margin-bottom: 20px; /*글 목록 사이 공간*/
+}
+
+.small-text {
+  font-size: 0.8em !important; /* 글씨 크기를 줄임 */
 }
 
 .notice-details {

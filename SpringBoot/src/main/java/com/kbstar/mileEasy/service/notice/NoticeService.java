@@ -1,20 +1,26 @@
 package com.kbstar.mileEasy.service.notice;
 
+import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.dto.Mileage;
 import com.kbstar.mileEasy.dto.Notice;
 import com.kbstar.mileEasy.mapper.NoticeDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.kbstar.mileEasy.mapper.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class NoticeService {
 
+    private final AtomicInteger counter = new AtomicInteger(1); // 초기값을 설정합니다.
+
     @Autowired
     private NoticeDao noticeDao;
+
+    @Autowired
+    private UserDao userDao;
 
     //글 리스트 조회
     public List<Notice> getAllNotices() throws Exception {
@@ -41,10 +47,30 @@ public class NoticeService {
         return noticeDao.getNoticeDetails(noticeId);
     }
 
-    public Notice createNotice(Notice notice) {
-        noticeDao.insertNotice(notice);
-        return notice;
+    // 공지사항 작성
+    public void createNotice(Notice notice) {
+        // user_no 값 로깅
+        System.out.println("Inserting notice with user_no: " + notice.getUser_no());
+
+        // user 테이블에서 해당 user_no가 존재하는지 확인
+        User user = userDao.selectUserById(notice.getUser_no());
+        if (user == null) {
+            throw new IllegalArgumentException("Invalid user_no: " + notice.getUser_no());
+        }
+
+        // Notice 객체 생성 및 DTO 값 설정
+        Notice newNotice = new Notice();
+        newNotice.setNotice_board_no(counter.getAndIncrement());
+        newNotice.setUser_no(notice.getUser_no());
+        newNotice.setUser_name(notice.getUser_name());
+        newNotice.setNotice_board_title(notice.getNotice_board_title());
+        newNotice.setNotice_board_content(notice.getNotice_board_content());
+        newNotice.setNotice_board_file(notice.getNotice_board_file()); // 파일명만 설정
+        newNotice.setMile_no(notice.getMile_no());
+
+        noticeDao.insertNotice(newNotice);
     }
+
 
 
 

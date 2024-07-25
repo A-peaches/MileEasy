@@ -27,11 +27,7 @@
           <div class="file cards" v-if="notice.notice_board_file">
             <h2>첨부파일</h2>
             <ul>
-              <li>
-                <a @click.prevent="downloadFile(notice.notice_board_file)" href="#">
-                  {{ notice.notice_board_file }}
-                </a>
-              </li>
+              <li><a :href="`http://localhost:8090/notice/downloadFile/${notice.notice_board_file}`">{{ notice.notice_board_file }}</a></li>
             </ul>
           </div>
         </div>
@@ -50,17 +46,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import axios from 'axios';
 
 export default {
   props: ['id'], // id를 props로 받음
   data(){
     return{
-      notice: null, //초기 값을 null로 설정
+
     }
   },
   methods: {
+    ...mapActions('notice', ['fetchNoticeDetail', 'incrementViews']),
     goBack() {
       this.$router.go(-1); // 이전 페이지로 이동
     },
@@ -70,24 +67,6 @@ export default {
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);
-    },
-    async fetchNoticeDetail(noticeId) {
-      try {
-        const response = await axios.get(`http://localhost:8090/notice/${noticeId}`);
-        console.log('Fetched notice detail:', response.data); // 응답 데이터를 콘솔에 출력하여 확인합니다.
-        this.notice = response.data;
-      } catch (error) {
-        console.error('Error fetching notice detail:', error.response ? error.response.data : error.message);
-      }
-    },
-    async handleNoticeClick() {
-      try {
-        await axios.post(`http://localhost:8090/notice/increment-views/${this.id}`);
-        console.log('Incremented views for notice:', this.id); // 로그 추가
-        this.notice.notice_board_hit += 1; // 조회수 증가
-      } catch (error) {
-        console.error('Error incrementing views:', error.response ? error.response.data : error.message);
-      }
     },
     async downloadFile(fileName) {
       try {
@@ -111,6 +90,10 @@ export default {
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+    ...mapGetters('notice', ['getNotice']),
+    notice() {
+      return this.getNotice;
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -121,11 +104,16 @@ export default {
       return !!this.loginInfo; // loginInfo가 null이 아니면 로그인 상태로 판단합니다.
     }
   },
+  watch: {
+    id: {
+      immediate: true,
+     
+    },
+  },
   mounted() {
     const noticeId = this.$route.params.id;
     console.log('Notice ID:', noticeId); // Notice ID 값을 콘솔에 출력하여 확인합니다.
-    this.fetchNoticeDetail(noticeId);
-    this.handleNoticeClick(); // 조회수 증가 함수 호출
+    this.fetchNoticeDetail(noticeId); // 초기 로딩 시 공지사항 세부 정보만 가져옴
   },
 };
 </script>
