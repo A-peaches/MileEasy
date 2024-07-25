@@ -3,7 +3,7 @@
     <!-- 사용자 헤더 -->
     <div class="header">
       <div class="logo lg">
-        <a href="/main" class="a_link">
+        <a href="/manager" class="a_link">
           <span class="logo-text" style="font-size:20pt">
             <i class="bi bi-apple mr-3"></i>MileEasy
           </span>
