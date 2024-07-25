@@ -1,18 +1,47 @@
+
 <template>
-  <h1>여기는 전체 나의 마일리지 입니다.</h1>
-  <a href="/hrdView"><h3>연수 마일리지</h3></a>
-  <a href="/monthlyBestView"><h3>Monthly Best</h3></a>
-  <a href="/monthlyBaseView"><h3>Monthly Base</h3></a>
-  <a href="/bestPgView"><h3>Best PG</h3></a>
-  <a href="/bestBranchView"><h3>Best 지점</h3></a>
-  <a href="/leagueTableView"><h3>리그테이블</h3></a>
-  <a href="/hotTipView"><h3>hot tip</h3></a>
-  <a href="/consumerSupportView"><h3>소비자 지원</h3></a>
+  <div class="cards page-back mx-auto">
+    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">나의 마일리지</h2>
+    <div class="d-flex">
+      <div class="cards w-48">
+
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+import {  mapGetters } from 'vuex';
 export default {
   name: 'MyMileageView',
-  components: {},
+  computed: {
+    ...mapGetters('login', ['getLoginInfo']),
+    loginInfo(){
+      return this.getLoginInfo;
+    },
+  },
+  data(){
+    return{
+
+    }
+  },
+  methods: {
+
+    
+
+  },
+  created(){
+
+  }
 };
 </script>
+
+<style scoped>
+.page-back {
+  width: 70%;
+  height: 140vh;
+  margin-top: 5%;
+}
+</style>
+
+
