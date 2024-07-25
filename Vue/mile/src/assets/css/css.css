@@ -53,6 +53,10 @@
 }
 
 /* SweetAlert2 커스텀 스타일 */
+.swal2-container {
+  z-index: 10000 !important; /* 모달의 z-index보다 높은 값으로 설정 */
+}
+
 .swal2-popup {
   width: 512px;
   height: 350px;
@@ -432,7 +436,7 @@ main {
   background-color: rgba(0, 0, 0, 0.4); /* 모달 배경 */
   justify-content: center;
   align-items: center;
-  z-index: 1051; /* 모달 콘텐츠의 z-index를 높게 설정 */
+  z-index: 9999; /* 모달 콘텐츠의 z-index를 높게 설정 */
 }
 
 .modals-content {
@@ -444,7 +448,7 @@ main {
   width: 80%; /* 원하는 크기로 조절 */
   max-width: 600px; /* 최대 너비 설정 */
   position: relative; /* 부모 요소의 중심에 배치 */
-  z-index: 1051; /* 모달 콘텐츠의 z-index를 높게 설정 */
+  z-index: 9999; /* 모달 콘텐츠의 z-index를 높게 설정 */
 }
 
 .close {
@@ -479,3 +483,4 @@ main {
 .top-button:hover {
   background-color: #17a589;
 }
+

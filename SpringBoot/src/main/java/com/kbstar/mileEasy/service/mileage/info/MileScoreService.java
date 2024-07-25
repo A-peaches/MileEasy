@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.service.mileage.info;
 
 import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
 import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.MileScore;
@@ -34,5 +35,9 @@ public class MileScoreService {
 
     public MileByPosition getMilePosition(String userNo) {
         return mileageDao.mileByPosition(userNo);
+    }
+
+    public MileByJob getMileJob(String userNo) {
+        return mileageDao.mileByJob(userNo);
     }
 }

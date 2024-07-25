@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.mapper;
 
 import com.kbstar.mileEasy.beans.MileByAge;
+import com.kbstar.mileEasy.beans.MileByJob;
 import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.HitMile;
@@ -48,4 +49,6 @@ public interface MileageDao {
     MileByAge mileByAge(String userNo);
 
     MileByPosition mileByPosition(String userNo);
+
+    MileByJob mileByJob(String userNo);
 }

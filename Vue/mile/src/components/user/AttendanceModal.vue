@@ -1,5 +1,5 @@
 <template>
-  <div class="modals">
+  <div class="modals " >
     <div class="modals-content">
       <span class="close" @click="$emit('close')">&times;</span>
       <p class="lg2 KB_S4 mb-3" style="margin-bottom: 0px">
