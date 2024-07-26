@@ -1,7 +1,7 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 430px">
+  <div class="cards " style="background-color: #f9f9f9; height: 430px">
     <p class="text-left lg2 KB_C2">
-      즐겨찾기 마일리지&nbsp;&nbsp;
+      즐겨찾기 마일리지&nbsp;
       <i
         class="bi bi-plus-circle-fill"
         style="color: #ffca05; cursor: pointer"
@@ -59,45 +59,43 @@
     </div>
 
     <!-- 모달 -->
-    <teleport to="body">
-    <div v-if="isModalOpen" class="modals">
-      <div
-        class="modals-content"
-        style="width: 40%; height: 45%; background-color: #f9f9f9"
-      >
-        <span class="close" @click="closeModal">&times;</span>
-        <div>
-          <p class="text-left fw-bold mb-3" style="font-size: 19pt">
-            즐겨찾기 추가하기
-          </p>
-          <div class="favorite-options">
-            <div
-              v-for="(item, index) in mileageInfo"
-              :key="index"
-              class="btn-favorite favorite-item KB_C2"
-              :class="{ selected: selectedFavorites.includes(item.mile_name) }"
-              @click="toggleFavorite(item.mile_name)"
-            >
-              {{ item.mile_name }}
-            </div>
+<teleport to="body">
+  <div v-if="isModalOpen" class="modal-overlay">
+    <div class="modals-content">
+      <span class="close" @click="closeModal">&times;</span>
+      <div class="modal-body">
+        <p class="text-left fw-bold mb-3" style="font-size: 19pt">
+          즐겨찾기 추가하기
+        </p>
+        <div class="favorite-options">
+          <div
+            v-for="(item, index) in mileageInfo"
+            :key="index"
+            class="btn-favorite favorite-item KB_C2"
+            :class="{ selected: selectedFavorites.includes(item.mile_name) }"
+            @click="toggleFavorite(item.mile_name)"
+          >
+            {{ item.mile_name }}
           </div>
-          <div class="d-flex justify-content-end">
-            <button
-              class="btn-gray mt-3 KB_C2"
-              @click="updateFavorites"
-              style="
+        </div>
+      </div>
+      <div class="mt-3 text-end">
+        <button
+          class="btn-gray KB_C2"
+          @click="updateFavorites"
+          style="
                 font-size: 16pt;
                 width: 20%;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
               "
-            >
-              등록
-            </button>
-          </div>
-        </div>
+        >
+          등록
+        </button>
       </div>
     </div>
-    </teleport>
+  </div>
+</teleport>
+
   </div>
 </template>
 
@@ -386,5 +384,40 @@ export default {
 
 .favorite-item:hover {
   background-color: #d5d5d5;
+
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modals-content {
+  width: 40%;
+  max-width: 600px; /* 최대 너비 설정 */
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  box-sizing: border-box;
+  /* height 자동 조정 */
+  display: flex;
+  flex-direction: column;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
 }
 </style>

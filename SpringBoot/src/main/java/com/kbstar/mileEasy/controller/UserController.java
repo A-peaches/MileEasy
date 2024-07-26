@@ -40,39 +40,44 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody Map<String, Object> loginInfo) {
         // ResponseEntity는 HTTP 응답의 상태코드, 헤더, 본문을 모두 제어할 수 있는 스프링의 클래스
         // @RequestBody User user는 클라이언트로부터 JSON 형식의 데이터를 받아서 User 객체로 변환한다.
         // 클라이언트에서 전송된 데이터가 User 객체의 필드와 매핑된다.
+        String user_no = (String) loginInfo.get("user_no");
+        String user_pw = (String) loginInfo.get("user_pw");
+        boolean is_checked = (boolean) loginInfo.get("is_checked");
 
-        User checkedUser = GetUserInfoService.checkedUser(user.getUser_no(), user.getUser_pw());
+        User checkedUser = GetUserInfoService.checkedUser(user_no, user_pw);
         // 서비스 계층의 checkedUser 메서드를 호출하여 로그인 정보를 인증한다.
         // 메서드 결과 일치하는 사용자가 있으면 User 객체를 반환. 없으면 null을 반환.
         System.out.println(checkedUser);
         if (checkedUser != null) {
 
-            if(user.isUser_is_admin() && checkedUser.isUser_is_admin()){
+            if(is_checked && checkedUser.isUser_is_admin()){ // 관리자 로그인 && 운영관리자일 때
                 Map<String, Object> response = new HashMap<>();
                 response.put("user", checkedUser);
-                response.put("user_is_admin", checkedUser.isUser_is_admin());
+                response.put("user_is_admin", true);
+                response.put("is_checked", true);
                 return ResponseEntity.ok(response);
             }
 
-            if(user.isUser_is_manager() && checkedUser.isUser_is_manager()){
+            if(is_checked && checkedUser.isUser_is_manager()){ // 관리자 로그인 && 마일리지 담당자일 때
                 Map<String, Object> response = new HashMap<>();
                 response.put("user", checkedUser);
-                response.put("user_is_manager", checkedUser.isUser_is_manager());
+                response.put("user_is_manager", true);
+                response.put("is_checked", true);
                 return ResponseEntity.ok(response);
             }
 
-            if(user.isUser_is_admin() || user.isUser_is_manager()){
-                if(!checkedUser.isUser_is_admin() && !checkedUser.isUser_is_manager()){
+            if(is_checked){ // 관리자 로그인 시
+                if(checkedUser.isUser_is_admin() == false && checkedUser.isUser_is_manager() == false){ // 일반 사용자일 때
                     return ResponseEntity.status(403).body("관리자 권한이 없습니다.");
                 }
             }
 
             Map<String, Object> response = new HashMap<>();
-            loginHistoryService.loginHistory(user.getUser_no());
+            loginHistoryService.loginHistory(user_no);
             response.put("user", checkedUser);
             response.put("user_is_admin", checkedUser.isUser_is_admin());
             response.put("user_is_manager", checkedUser.isUser_is_manager());

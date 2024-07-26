@@ -2,9 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kbstar.mileEasy.mapper.MileageDao">
     <select id ="getMileage" resultType="com.kbstar.mileEasy.dto.Mileage"> <!--selectAllUser 실행 -->
-        SELECT * FROM mileage;
+        SELECT * FROM mileage where mile_is_delete=0;
     </select>
-
 
     <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
         SELECT
@@ -28,7 +27,6 @@
         GROUP BY
             m.mile_name, r.mile_link;
     </select>
-
 
     <select id="getHitMileCount" resultType="int">
         SELECT COUNT(*)
@@ -70,9 +68,6 @@
         ORDER BY m.mile_no;
     </select>
 
-
-
-
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
         SELECT *
         FROM mile_recommand
@@ -86,9 +81,33 @@
             );
     </select>
 
-
     <insert id="insertMileExcel">
         insert into mile_excel (mile_no, mile_excel_file) values ( #{mile_no}, #{mile_excel_file});
+    </insert>
+
+    <insert id="insertMileDocu">
+        insert into Document_mile (mile_no, document_file) values (#{mile_no}, #{document_file});
+    </insert>
+
+    <insert id="moveMileScoreToHistory">
+        insert into mile_history
+            (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
+        select user_no, mile_no, mile_score_date, mile_score_name, mile_score_point
+        from mile_score
+        where mile_no=#{mile_no};
+    </insert>
+
+    <delete id="deleteAllMileScore">
+        delete from mile_score where mile_no = #{mile_no};
+    </delete>
+
+    <delete id="deleteDocument">
+        delete from Document_mile where document_mile_no = #{num}
+    </delete>
+
+    <insert id="insertDetailMileScore">
+        insert into mile_score (user_no, mile_no, mile_score_date, mile_score_name, mile_score_point)
+        values (#{user_no}, #{mile_no}, #{mile_score_date}, #{mile_score_name}, #{mile_score_point});
     </insert>
 
     <select id="selectMileExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
@@ -99,19 +118,221 @@
         select * from mile_excel where mile_no = #{mile_no};
     </select>
 
+    <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
+        select * from Document_mile where mile_no=#{mile_no} limit #{limit} offset #{offset};
+    </select>
+
+    <select id="selectMileSum" resultType="int">
+        select count(document_mile_no) from Document_mile where mile_no=#{mile_no};
+    </select>
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">
-        SELECT user_no, total_score,
-               (SELECT COUNT(DISTINCT total_score)
-                FROM (SELECT SUM(mile_score_point) AS total_score
-                      FROM mile_score
-                      GROUP BY user_no) AS scores
-                WHERE total_score >= s.total_score) AS ranking
-        FROM (SELECT user_no, SUM(mile_score_point) AS total_score
-              FROM mile_score
-              GROUP BY user_no) AS s
-        ORDER BY total_score DESC
-            LIMIT 3;
+        <![CDATA[
+        WITH user_list AS (
+            SELECT user_no FROM user
+        ),
+             attendance_counts AS (
+                 SELECT
+                     u.user_no,
+                     COALESCE(COUNT(a.user_no), 0) AS attendance_count
+                 FROM user_list u
+                          LEFT JOIN attendance a ON u.user_no = a.user_no
+                     AND YEAR(a.attendance_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+            AND MONTH(a.attendance_date) = MONTH(CURDATE() - INTERVAL 1 DAY)
+        GROUP BY u.user_no
+            ),
+            mtip_board_counts AS (
+        SELECT
+            u.user_no,
+            COALESCE(COUNT(m.user_no), 0) AS mtip_board_count
+        FROM user_list u
+            LEFT JOIN mtip_board m ON u.user_no = m.user_no
+            AND YEAR(m.mtip_board_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+            AND MONTH(m.mtip_board_date) = MONTH(CURDATE() - INTERVAL 1 DAY)
+        GROUP BY u.user_no
+            ),
+            ranked_users AS (
+        SELECT
+            u.user_no,
+            COALESCE(a.attendance_count, 0) AS attendance_count,
+            COALESCE(m.mtip_board_count, 0) AS mtip_board_count,
+            (COALESCE(a.attendance_count, 0) + (COALESCE(m.mtip_board_count, 0) * 20)) AS total_score,
+            RANK() OVER (ORDER BY (COALESCE(a.attendance_count, 0) + COALESCE(m.mtip_board_count, 0) * 20) DESC) AS ranking
+        FROM user_list u
+            LEFT JOIN attendance_counts a ON u.user_no = a.user_no
+            LEFT JOIN mtip_board_counts m ON u.user_no = m.user_no
+            )
+        SELECT
+            ranking,
+            COALESCE(u.user_name, 'Unknown User') AS user_name,
+            total_score
+        FROM ranked_users r
+                 LEFT JOIN user u ON r.user_no = u.user_no
+        WHERE ranking <= 5;
+
+
+        ]]>
+    </select>
+
+    <select id="jumpData" resultType="com.kbstar.mileEasy.dto.MileScore">
+        <![CDATA[
+        WITH recent_month_scores AS (
+            SELECT
+                ms.user_no,
+                SUM(ms.mile_score_point) AS recent_month_total_point,
+                MAX(ms.mile_score_date) AS base_date
+            FROM mile_score ms
+            WHERE YEAR(ms.mile_score_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+            AND MONTH(ms.mile_score_date) = MONTH(CURDATE() - INTERVAL 1 DAY)
+        GROUP BY ms.user_no
+            ),
+            recent_previous_month_scores AS (
+        SELECT
+            mh.user_no,
+            SUM(mh.mile_history_point) AS recent_previous_month_total_point,
+            MAX(mh.mile_history_date) AS base_date
+        FROM mile_history mh
+        WHERE YEAR(mh.mile_history_date) = YEAR(CURDATE() - INTERVAL 1 DAY)
+          AND MONTH(mh.mile_history_date) = MONTH(CURDATE() - INTERVAL 1 DAY) - 1
+        GROUP BY mh.user_no
+            ),
+            user_scores AS (
+        SELECT
+            COALESCE(rms.user_no, rps.user_no) AS user_no,
+            COALESCE(rms.recent_month_total_point, 0) AS recent_month_total_point,
+            COALESCE(rps.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(rms.base_date, rps.base_date) AS base_date
+        FROM recent_month_scores rms
+            LEFT JOIN recent_previous_month_scores rps ON rms.user_no = rps.user_no
+
+        UNION ALL
+
+        SELECT
+            COALESCE(rms.user_no, rps.user_no) AS user_no,
+            COALESCE(rms.recent_month_total_point, 0) AS recent_month_total_point,
+            COALESCE(rps.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(rms.base_date, rps.base_date) AS base_date
+        FROM recent_month_scores rms
+            RIGHT JOIN recent_previous_month_scores rps ON rms.user_no = rps.user_no
+        WHERE rms.user_no IS NULL
+            )
+        SELECT
+            RANK() OVER (ORDER BY (us.recent_month_total_point - us.recent_previous_month_total_point) DESC) AS ranking,
+                u.user_name,
+            us.recent_month_total_point - us.recent_previous_month_total_point AS score_increase,
+            us.base_date
+        FROM user_scores us
+                 JOIN user u ON us.user_no = u.user_no
+        ORDER BY ranking
+            LIMIT 5;
+        ]]>
+    </select>
+
+    <select id="kingDataSelect" resultType="com.kbstar.mileEasy.dto.MileScore">
+        <![CDATA[
+        WITH user_list AS (
+            SELECT user_no FROM user
+        ),
+             attendance_counts AS (
+                 SELECT
+                     u.user_no,
+                     COALESCE(COUNT(a.user_no), 0) AS attendance_count
+                 FROM user_list u
+                          LEFT JOIN attendance a ON u.user_no = a.user_no
+                     AND YEAR(a.attendance_date) = YEAR(CURDATE() - INTERVAL 1 month)
+            AND MONTH(a.attendance_date) = MONTH(CURDATE() - INTERVAL 1 month)
+        GROUP BY u.user_no
+            ),
+            mtip_board_counts AS (
+        SELECT
+            u.user_no,
+            COALESCE(COUNT(m.user_no), 0) AS mtip_board_count
+        FROM user_list u
+            LEFT JOIN mtip_board m ON u.user_no = m.user_no
+            AND YEAR(m.mtip_board_date) = YEAR(CURDATE() - INTERVAL 1 month)
+            AND MONTH(m.mtip_board_date) = MONTH(CURDATE() - INTERVAL 1 month)
+        GROUP BY u.user_no
+            ),
+            ranked_users AS (
+        SELECT
+            u.user_no,
+            COALESCE(a.attendance_count, 0) AS attendance_count,
+            COALESCE(m.mtip_board_count, 0) AS mtip_board_count,
+            (COALESCE(a.attendance_count, 0) + (COALESCE(m.mtip_board_count, 0) * 20)) AS total_score,
+            RANK() OVER (ORDER BY (COALESCE(a.attendance_count, 0) + COALESCE(m.mtip_board_count, 0) * 20) DESC) AS ranking
+        FROM user_list u
+            LEFT JOIN attendance_counts a ON u.user_no = a.user_no
+            LEFT JOIN mtip_board_counts m ON u.user_no = m.user_no
+            )
+        SELECT
+            DATE_FORMAT(CURDATE() - INTERVAL 1 month, '%Y-%m') AS base_date,
+            ranking,
+            COALESCE(u.user_name, 'Unknown User') AS user_name,
+            total_score
+        FROM ranked_users r
+                 LEFT JOIN user u ON r.user_no = u.user_no
+        WHERE ranking <= 5;
+
+
+        ]]>
+    </select>
+
+    <select id="jumpDataSelect" resultType="com.kbstar.mileEasy.dto.MileScore">
+        <![CDATA[
+        WITH recent_previous_month_scores AS (
+            SELECT
+                mh.user_no,
+                SUM(mh.mile_history_point) AS recent_previous_month_total_point,
+                MAX(mh.mile_history_date) AS base_date
+            FROM mile_history mh
+            WHERE YEAR(mh.mile_history_date) = YEAR(CURDATE())
+            AND MONTH(mh.mile_history_date) = MONTH(CURDATE()) - 1
+        GROUP BY mh.user_no
+            ),
+            two_months_ago_scores AS (
+        SELECT
+            mh.user_no,
+            SUM(mh.mile_history_point) AS two_months_ago_total_point,
+            MAX(mh.mile_history_date) AS base_date
+        FROM mile_history mh
+        WHERE YEAR(mh.mile_history_date) = YEAR(CURDATE())
+          AND MONTH(mh.mile_history_date) = MONTH(CURDATE()) - 2
+        GROUP BY mh.user_no
+            ),
+            user_scores AS (
+        SELECT
+            COALESCE(rpm.user_no, tma.user_no) AS user_no,
+            COALESCE(rpm.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(tma.two_months_ago_total_point, 0) AS two_months_ago_total_point,
+            COALESCE(rpm.base_date, tma.base_date) AS base_date
+        FROM recent_previous_month_scores rpm
+            LEFT JOIN two_months_ago_scores tma ON rpm.user_no = tma.user_no
+
+        UNION
+
+        SELECT
+            COALESCE(rpm.user_no, tma.user_no) AS user_no,
+            COALESCE(rpm.recent_previous_month_total_point, 0) AS recent_previous_month_total_point,
+            COALESCE(tma.two_months_ago_total_point, 0) AS two_months_ago_total_point,
+            COALESCE(rpm.base_date, tma.base_date) AS base_date
+        FROM recent_previous_month_scores rpm
+            RIGHT JOIN two_months_ago_scores tma ON rpm.user_no = tma.user_no
+        WHERE rpm.user_no IS NULL
+            )
+        SELECT
+            RANK() OVER (ORDER BY (us.recent_previous_month_total_point - us.two_months_ago_total_point) DESC) AS ranking,
+                u.user_name,
+            us.recent_previous_month_total_point - us.two_months_ago_total_point AS score_increase,
+            us.base_date
+        FROM user_scores us
+                 JOIN user u ON us.user_no = u.user_no
+        ORDER BY ranking
+            LIMIT 5;
+
+
+
+
+        ]]>
     </select>
 
     <select id="mileByAge" resultType="com.kbstar.mileEasy.beans.MileByAge">
@@ -258,8 +479,34 @@
             JOIN user u ON ms.user_no = u.user_no
             JOIN user u_target ON u_target.user_no = #{userNo}
         GROUP BY u_target.user_no;
-
-
-
     </select>
+
+    <insert id="moveMileExcelToHistory">
+        insert into mile_excel_history (mile_no, mile_excel_history_file)
+        select mile_no, mile_excel_file
+        from mile_excel
+        where mile_excel_no=#{mile_excel_no};
+    </insert>
+
+    <delete id="deleteAllMileExcel">
+        delete from mile_excel where mile_excel_no=#{mile_excel_no};
+    </delete>
+
+    <insert id="moveScoreToHistory">
+        insert into mile_history (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
+        select user_no, mile_no, mile_score_date, mile_score_name, mile_score_point
+        from mile_score
+        where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
+    </insert>
+
+    <delete id="deleteScore">
+        delete from mile_score where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
+    </delete>
+
+    <select id="deleteMile" >
+        UPDATE mileage
+        SET mile_is_delete = 1
+        WHERE mile_no =  #{mileNo};
+    </select>
+
 </mapper>

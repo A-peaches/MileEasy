@@ -32,8 +32,8 @@ const actions = {
       //  user_year: 입사년도
       //  user_birth: 생년월일
       //  user_is_delete: 직원 삭제 여부
-      //  user_is_manager: 직원 마일리지 담당자 여부
-      //  user_is_admin: 직원 운영 관리자 여부
+      //  user_is_manager: 직원 마일리지 담당자 여부 (1~8번)
+      //  user_is_admin: 직원 운영 관리자 여부 (0 or 1)
       //  dp_no: 소속 부서 이름
       //  level_no: 직급레벨(ex. L1)
       //  job_no: 직무명(ex. 개인)
@@ -61,8 +61,20 @@ const actions = {
     }
   },
   logout({ commit }) {
-    localStorage.removeItem('loginInfo');
-    commit('clearLoginInfo');
+    return new Promise((resolve) => {
+      // 페이드 아웃 애니메이션 시작
+      document.body.classList.add('fade-out');
+      
+      // 애니메이션 완료 후 로그아웃 처리
+      setTimeout(() => {
+        localStorage.removeItem('loginInfo');
+        commit('clearLoginInfo');
+        
+        // 페이드 아웃 클래스 제거
+        document.body.classList.remove('fade-out');
+        resolve();
+      }, 300); // 애니메이션 시간에 맞춰 조절
+    });
   },
   checkLogin({ commit }) {
     const data = JSON.parse(localStorage.getItem('loginInfo'));
