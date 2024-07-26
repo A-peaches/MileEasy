@@ -1,5 +1,6 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
+
     <h2 class="bold-x-lg my-5 ml-5 help-icon "  ref="helpIcon" style="font-family: KB_C3">
       나의 마일리지
       <i
@@ -8,6 +9,7 @@
         style="font-size: 20pt"
       ></i>
     </h2>
+    
     <div v-if="showHelpPopover" class="help-popover" ref="helpPopover">
       <div style="font-size: 12pt">
         <span
