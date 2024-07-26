@@ -38,7 +38,7 @@ export default [
   },
   //마일리지 수정
   {
-    path: '/mileageModifyAdminView',
+    path: '/mileageModifyAdminView/:mile_no',
     name: 'mileageModifyAdminView',
     component: () =>
       import(

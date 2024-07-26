@@ -25,4 +25,6 @@ public interface UserDao {
     ArrayList<LoginHistory> loginHistoryCountArray(String startDate, String endDate);
 
     ArrayList<User> levelChartData(String date);
+
+    ArrayList<User> getileageAdminList(String mileNo);
 }

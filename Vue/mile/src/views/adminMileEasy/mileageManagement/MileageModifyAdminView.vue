@@ -1,30 +1,29 @@
 <template>
   <div class="cards page-back mx-auto">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 관리</h2>
+    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 수정</h2>
     <div>
-      <div
-        class="input-base input-search d-flex justify-content-center mx-auto my-3"
-        style="width: 500px; background: #ebebeb"
-      >
-        <!-- Add 'active' class to make this button appear selected -->
-        <button class="tab-container lg2 fw-bold active">마일리지 수정</button>
-        <button class="tab-container lg2 fw-bold">개발요청</button>
+      <div style="padding: 0 5%">
+        <div class="p-4 mt-5 mx-auto">
+          <div>
+            <div style="text-align: left">마일리지 이름</div>
+            <div style="text-align: left">
+              <input type="text" class="input-base input-gray" readonly />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <p>현재 마일리지 번호: {{ mile_no }}</p>
-    <div style="padding: 0 5%">
-      <div class="p-4 mt-5 mx-auto"></div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+
 export default {
   name: 'MileageModifyAdminView',
   data() {
     return {
-      mile_no: this.getQueryParameter('mile_no'), // 쿼리 파라미터를 가져옴
+      mile_no: null, // 쿼리 파라미터를 가져옴
     };
   },
 
@@ -34,6 +33,10 @@ export default {
     loginInfo() {
       return this.getLoginInfo;
     },
+  },
+
+  created() {
+    this.mile_no = this.$route.params.mile_no; // URL 파라미터를 mile_no 데이터 속성에 저장
   },
 };
 </script>

@@ -2,6 +2,7 @@ package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.mapper.UserDao;
+import com.kbstar.mileEasy.service.admin.AdminService;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -104,6 +105,10 @@ public class AdminController {
     @Autowired
     private MileService mileService;
 
+    @Autowired
+    private AdminService adminService;
+
+
     @Value("${project.uploadpath.badge}")
     private String badgeUploadPath;
 
@@ -195,6 +200,13 @@ public class AdminController {
     public void deleteMile(@RequestParam("mile_no") String mile_no) {
         System.out.println("삭제할 mile_no: " + mile_no);
         mileService.deleteMile(mile_no);
+    }
+
+    @PostMapping("/getileageAdminList")
+    public ArrayList<User> getileageAdminList(@RequestParam("mile_no") String mile_no) {
+        System.out.println("마일리지: " + mile_no);
+        System.out.println(adminService.getileageAdminList(mile_no));
+        return adminService.getileageAdminList(mile_no);
     }
 
 
