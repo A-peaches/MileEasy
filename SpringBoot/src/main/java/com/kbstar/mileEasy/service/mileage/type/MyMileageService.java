@@ -1,14 +1,21 @@
 package com.kbstar.mileEasy.service.mileage.type;
 
+import com.kbstar.mileEasy.beans.MyMiles;
 import com.kbstar.mileEasy.mapper.MileageDao;
+import com.kbstar.mileEasy.mapper.MyMileDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MyMileageService {
 
     @Autowired
-    private MileageDao mileageDao;
+    private MyMileDao myMileDao;
 
 
+    public List<MyMiles> getMyMiles(String userNo) {
+        return myMileDao.getMyMiles(userNo);
+    }
 }
