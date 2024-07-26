@@ -8,4 +8,5 @@ export default [
       import('../views/user/mileage/MyMileageView.vue'),
     meta: { requiresAuth: true }
   },
+
 ];
