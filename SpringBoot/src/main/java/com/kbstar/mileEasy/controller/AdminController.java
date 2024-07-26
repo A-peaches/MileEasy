@@ -111,8 +111,7 @@ public class AdminController {
     public ResponseEntity<?> uploadBadge(@RequestParam("name") String name,
                                          @RequestParam(value="file", required = false) MultipartFile file) {
 
-        System.out.println("파일 업로드 중");
-        System.out.println("업로드 경로: " + badgeUploadPath); // 경로가 올바른지 확인하는 로그
+
 
         try {
             String badgeFileName = null; // 파일 이름을 저장할 변수 선언
@@ -143,25 +142,24 @@ public class AdminController {
 
     @GetMapping("/badgeKingImage")
     public ResponseEntity<?> getBadgeKingImage() {
-        System.out.println("이미지 불러오기 시도");
-        System.out.println("업로드 경로: " + badgeUploadPath);
+
         String imagePath = "king.jpg";
         String fullPath = badgeUploadPath + File.separator + imagePath;
-        System.out.println("전체 파일 경로: " + fullPath);
+
 
         try {
             Resource resource = new FileSystemResource(fullPath);
             if (resource.exists()) {
-                System.out.println("이미지 파일 찾음");
+
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(resource);
             } else {
-                System.out.println("이미지 파일을 찾을 수 없음");
+
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            System.out.println("이미지 로드 중 오류 발생: " + e.getMessage());
+
             e.printStackTrace();
             return ResponseEntity.status(500).body("이미지를 로드할 수 없습니다.");
         }
@@ -170,28 +168,33 @@ public class AdminController {
 
     @GetMapping("/badgeJumpImage")
     public ResponseEntity<?> getBadgeJumpImage() {
-        System.out.println("이미지 불러오기 시도");
-        System.out.println("업로드 경로: " + badgeUploadPath);
+
         String imagePath = "jump.jpg";
         String fullPath = badgeUploadPath + File.separator + imagePath;
-        System.out.println("전체 파일 경로: " + fullPath);
+
 
         try {
             Resource resource = new FileSystemResource(fullPath);
             if (resource.exists()) {
-                System.out.println("이미지 파일 찾음");
+
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(resource);
             } else {
-                System.out.println("이미지 파일을 찾을 수 없음");
+
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            System.out.println("이미지 로드 중 오류 발생: " + e.getMessage());
+
             e.printStackTrace();
             return ResponseEntity.status(500).body("이미지를 로드할 수 없습니다.");
         }
+    }
+
+    @PostMapping("/deleteMile")
+    public void deleteMile(@RequestParam("mile_no") String mile_no) {
+        System.out.println("삭제할 mile_no: " + mile_no);
+        mileService.deleteMile(mile_no);
     }
 
 

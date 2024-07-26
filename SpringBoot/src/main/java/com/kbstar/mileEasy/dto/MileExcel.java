@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 public class MileExcel {
-    private int mile_excel_no;
+    private String mile_excel_no;
     private String mile_no;
     private String mile_excel_file;
     private Timestamp mile_excel_date;
