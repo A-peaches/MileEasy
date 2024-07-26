@@ -119,7 +119,11 @@
     </select>
 
     <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
-        select * from Document_mile where mile_no=#{mile_no};
+        select * from Document_mile where mile_no=#{mile_no} limit #{limit} offset #{offset};
+    </select>
+
+    <select id="selectMileSum" resultType="int">
+        select count(document_mile_no) from Document_mile where mile_no=#{mile_no};
     </select>
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">

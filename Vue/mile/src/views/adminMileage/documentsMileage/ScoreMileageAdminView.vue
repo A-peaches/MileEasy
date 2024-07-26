@@ -31,7 +31,7 @@
             <span class="lg2 pl-2 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
             <span class="md">{{ formatting(score.mile_excel_date) }}</span>
           </div>
-          <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
+          <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md " style="text-align: right;">파일 다운로드 〉</span></button>
         </div>
       </div>
     </div>

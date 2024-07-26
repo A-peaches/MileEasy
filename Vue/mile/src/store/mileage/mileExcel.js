@@ -86,10 +86,10 @@ const actions = {
       console.error('Error get mile excel lists:', error);
     }
   },
-  async mileDocumentLists({ commit }, mile_no){
+  async mileDocumentLists(context, {mile_no, page, itemsPerPage}){
     try{
-      const response = await axios.get(`http://localhost:8090/mileage/totalMileDocument/${mile_no}`)
-      commit('setArrayMileDocument', response.data);
+      const response = await axios.get(`http://localhost:8090/mileage/totalMileDocument/${mile_no}?page=${page}&itemsPerPage=${itemsPerPage}`);
+      return response; // 데이터를 반환하여 컴포넌트에서 처리하도록 함 
     }catch(error){
       console.error('Error get mile document lists:', error);
     }

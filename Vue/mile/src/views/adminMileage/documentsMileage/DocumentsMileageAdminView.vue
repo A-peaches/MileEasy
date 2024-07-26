@@ -3,18 +3,18 @@
   <div class="cards page-back mx-auto" :style="{height:computedHeight}">
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 문서</h2>
     <div class="d-flex justify-content-between align-items-center">
-      <div class="lg2" style="padding: 3em">총 {{ document_sum }}건</div>
+      <div class="lg2" style="padding: 3em">총 {{ documentSum }}건</div>
       <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
         <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
-          <input type="text" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
+          <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
           <button><i class="bi bi-search mr-2" style="font-size: 25px; color: #4b4a4a"></i></button>
         </div>
       </div>
     </div>
     
     <!-- 마일리지 문서 리스트 -->
-    <div v-if="arrayMileDocument.length>0" class="p-5" style="margin-top: 10vh;">
-      <div v-for="document in arrayMileDocument" :key="document.documnet_mile_no" 
+    <div v-if="filteredDocuments.length>0" class="p-5" style="margin-top: 10vh;">
+      <div v-for="document in paginatedDocuments" :key="document.documnet_mile_no" 
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
         :class="{activeDelete: deleteArray.includes(document)}"
         @click="addDeleteDocuArray(document)"
@@ -31,26 +31,37 @@
               </div>
             </div>
           </button>
-          <button @click.stop="downloadDocu(document.document_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
+          <button @click.stop="downloadDocu(document.document_file)">
+            <span class="md" style="text-align: right;">파일 다운로드 〉</span>
+          </button>
         </div>
       </div>
     </div>
     <div v-else style="padding-top: 10vh;">
-      <p class="lg2" style="text-align: center; color:#aeaeb2; font-family: KB_C2;">해당 날짜에 존재하는 마일리지 엑셀 파일이 없습니다.</p>
+      <p class="lg2" style="text-align: center; color:#aeaeb2; font-family: KB_C2;">검색 결과가 없습니다.</p>
     </div>
-    
+
+    <!-- 로드 버튼 -->
+    <div style="margin-bottom: 3%;" v-if="filteredDocuments.length % itemsPerPage === 0 && this.filteredDocuments.length >0">
+      <button @click="loadDocuments" class="lg2" style="font-family: 'KB_C1';">
+        <i class="bi bi-arrow-clockwise lg2"></i>&nbsp;더보기
+      </button>
+    </div>
+ 
     <!--버튼-->
-    <div class="d-flex justify-content-evenly mx-auto" style="width: 80%; padding-top: 10%;">
-      <div class="my-5">
-        <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
-      </div>
-      <div class="my-5">
-        <button @click="deleteDocu" class="btn-gray" 
-          :class="{choice:deleteArray.length>0}" 
-          :style="deleteArray.length>0?{'pointer-events':'auto'} : {'pointer-events':'none'}"
-          style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">
-          삭제하기
-        </button>
+    <div class="button-container mt-auto">
+      <div class="d-flex justify-content-evenly mx-auto">
+        <div class="mt-5">
+          <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
+        </div>
+        <div class="mt-5">
+          <button @click="deleteDocu" class="btn-gray button-style" 
+            :class="{choice:deleteArray.length>0}" 
+            :style="deleteArray.length>0?{'pointer-events':'auto'} : {'pointer-events':'none'}"
+            >
+            삭제하기
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -100,13 +111,17 @@ export default {
       deleteArray: [],
       baseHeight: 90,
       increment: 10,
-      document_sum: 0
+      buttonHeight: 10,
+      searchQuery: '', // 검색어 추가
+      currentPage: 1, // 현재 페이지
+      itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
+      allDocuments: [] // 모든 문서 데이터 
     }
   },
   computed:{
     ...mapGetters('mile', ['getMileInfo']),
     ...mapGetters('login', ['getLoginInfo']),
-    ...mapGetters('mileExcel', ['getArrayMileDocument']),
+    ...mapGetters('mileExcel', ['getArrayMileDocument', 'getDocumentSum']),
     loginInfo(){
       return this.getLoginInfo;
     },
@@ -117,8 +132,23 @@ export default {
       return this.getArrayMileDocument;
     },
     computedHeight(){
-      return `${this.baseHeight + this.arrayMileDocument.length * this.increment}vh`;
+      let height = this.baseHeight + this.paginatedDocuments.length * this.increment;
+      if(this.paginatedDocuments.length % this.itemsPerPage === 0 && this.paginatedDocuments.length >0){
+        height += this.buttonHeight/2;
+      }else{
+        height += this.buttonHeight/2;
+      }
+      return `${height}vh`;
     },
+    documentSum(){
+      return this.getDocumentSum;
+    },
+    filteredDocuments(){ // 검색어에 따라 문서 필터링 
+      return this.allDocuments.filter(document => document.document_file.includes(this.searchQuery));
+    },
+    paginatedDocuments(){
+      return this.filteredDocuments.slice(0, this.currentPage * this.itemsPerPage);
+    }
   },
   methods:{
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
@@ -161,15 +191,24 @@ export default {
       formData.append('file', this.file);
       formData.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
       try{
-        await axios.post(`http://localhost:8090/mileage/uploadDocument`, formData, {
+        const response = await axios.post(`http://localhost:8090/mileage/uploadDocument`, formData, {
           headers: {
             'Content-Type':'multipart/form-data',
           },
         });
-        this.showAlert('마일리지 문서 업로드 성공', 'success', '#');
+        if(response.data.success){
+          this.showAlert('마일리지 문서 업로드 성공', 'success', '#');
+        }else{
+          this.showAlert('마일리지 문서 업로드 실패', 'error', '#');
+        }
       }catch(error){
         console.error('Error uploading document', error);
-        this.showAlert('마일리지 문서 업로드 실패', 'error', '#');
+        console.log('이건 에러 상태 response status:', error.response.status);
+        if(error.response && error.response.status === 409){
+          this.showAlert('중복된 파일명이 있습니다', 'info', '#');
+        }else{
+          this.showAlert('마일리지 문서 업로드 실패', 'error', '#');
+        }
       }
     },
     downloadDocu(document_file){
@@ -198,6 +237,15 @@ export default {
         }
       }
     },
+    async loadDocuments(){
+      const response = await this.mileDocumentLists({
+        mile_no: this.loginInfo.mile_no,
+        page: this.currentPage,
+        itemsPerPage: this.itemsPerPage
+      });
+      this.allDocuments.push(...response.data);
+      this.currentPage++;
+    }
   },
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
@@ -210,7 +258,7 @@ export default {
     const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
     if(mile_no){
       this.getMileDetail(mile_no);
-      this.mileDocumentLists(mile_no);
+      this.loadDocuments(); // 첫 페이지 로드 
       this.getMileDocumentSum(mile_no);
     }else{
       console.error('mile_no이 유효하지 않습니다.');
@@ -260,5 +308,15 @@ export default {
   background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
 
+}
+.button-container {
+  margin-top: auto;
+  padding: 20px 0;
+}
+.button-style {
+  width: 8vw;
+  height: 3vw;
+  font-size: 1.2vw;
+  font-family: KB_C2;
 }
 </style>
