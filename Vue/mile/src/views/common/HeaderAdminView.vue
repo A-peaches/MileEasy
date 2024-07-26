@@ -1,21 +1,26 @@
 <template>
-  <div class="mx-auto" style="width:83%;">
+  <div class="mx-auto" style="width: 83%">
     <!-- 사용자 헤더 -->
     <div class="header">
       <div class="logo lg">
         <a href="/admin" class="a_link">
-          <span class="logo-text" style="font-size:20pt">
+          <span class="logo-text" style="font-size: 20pt">
             <i class="bi bi-apple mr-3"></i>MileEasy
           </span>
         </a>
       </div>
       <div class="menu">
-        <div class="nav justify-content-start" style="margin-left: 80px;">
+        <div class="nav justify-content-start" style="margin-left: 80px">
           <div class="nav-item">
-            <a class="nav-link hover" href="/kingTopAdminView">마왕 관리</a>
+            <a class="nav-link hover" href="/kingMain">마왕 관리</a>
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" aria-current="page" href="/mileageManagementView">마일리지 관리</a>
+            <a
+              class="nav-link hover"
+              aria-current="page"
+              href="/mileageManagementView"
+              >마일리지 관리</a
+            >
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/m_TipListView">M-tip관리</a>
@@ -32,17 +37,30 @@
         </div>
       </div>
       <div class="d-flex justify-content-center align-items-center">
-        <div class="nav-item dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+        <div
+          class="nav-item dropdown"
+          @mouseenter="showDropdown"
+          @mouseleave="hideDropdown"
+        >
           <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
-            <img v-if="loginInfo && loginInfo.user_no"
+            <img
+              v-if="loginInfo && loginInfo.user_no"
               :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
               class="profile-small my-3"
               alt="Profile Picture"
-              @error="setDefaultImage"/>
+              @error="setDefaultImage"
+            />
           </a>
-          <div class="dropdown-menu dropdown-menu-end profile-dropdown" :class="{ 'show': isHovered }">
-            <a class="dropdown-item" aria-current="page" @click="Logout">로그아웃</a>
-            <a class="dropdown-item" href="/passwordChangeView">비밀번호 변경</a>
+          <div
+            class="dropdown-menu dropdown-menu-end profile-dropdown"
+            :class="{ show: isHovered }"
+          >
+            <a class="dropdown-item" aria-current="page" @click="Logout"
+              >로그아웃</a
+            >
+            <a class="dropdown-item" href="/passwordChangeView"
+              >비밀번호 변경</a
+            >
           </div>
         </div>
       </div>
@@ -56,11 +74,11 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   data() {
     return {
-      isHovered: false
+      isHovered: false,
     };
   },
   computed: {
-    ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -69,10 +87,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions("login", ["logout"]),
+    ...mapActions('login', ['logout']),
     Logout() {
       this.logout();
-      window.location.href = "/login";
+      window.location.href = '/login';
     },
 
     willBeUpdate() {
@@ -90,7 +108,7 @@ export default {
       if (window.innerWidth >= 768) {
         this.isHovered = false;
       }
-    }
+    },
   },
   mounted() {
     window.addEventListener('resize', () => {
@@ -101,7 +119,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.hideDropdown);
-  }
+  },
 };
 </script>
 
@@ -148,7 +166,7 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   width: auto !important;
   position: absolute;
-  border : none !important;
+  border: none !important;
 }
 
 .profile-dropdown {

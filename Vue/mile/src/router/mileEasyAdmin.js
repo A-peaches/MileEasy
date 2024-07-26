@@ -17,11 +17,11 @@ export default [
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
 
-  //마왕 top
+  //마왕관리
   {
-    path: '/kingTopAdminView',
-    name: 'kingTopAdminView',
-    component: () => import('../views/adminMileEasy/king/KingTopAdminView.vue'),
+    path: '/kingMain',
+    name: 'kingMain',
+    component: () => import('../views/adminMileEasy/king/KingMain.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
 
@@ -43,16 +43,6 @@ export default [
     component: () =>
       import(
         '../views/adminMileEasy/mileageManagement/MileageModifyAdminView.vue'
-      ),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
-  //마일리지 수정 상세
-  {
-    path: '/mileageModifyDetailAdminView',
-    name: 'mileageModifyDetailAdminView',
-    component: () =>
-      import(
-        '../views/adminMileEasy/mileageManagement/MileageModifyDetailiAdminView.vue'
       ),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
