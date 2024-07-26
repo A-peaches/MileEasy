@@ -22,8 +22,12 @@
 import { mapGetters } from 'vuex';
 export default {
   name: 'MileageModifyAdminView',
-  props: ['mile_no'],
-  methods: {},
+  data() {
+    return {
+      mile_no: this.getQueryParameter('mile_no'), // 쿼리 파라미터를 가져옴
+    };
+  },
+
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
 

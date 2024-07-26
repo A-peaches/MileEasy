@@ -55,4 +55,37 @@
         delete from mile_recommand where mile_recommand_no=#{mile_recommand_no};
     </delete>
 
+    <select id="mileCount" resultType="com.kbstar.mileEasy.dto.HitMile">
+        <![CDATA[
+        WITH RECURSIVE DateRange AS (
+            SELECT CAST(#{start} AS DATE) AS hit_date
+            UNION ALL
+            SELECT hit_date + INTERVAL 1 DAY
+        FROM DateRange
+        WHERE hit_date + INTERVAL 1 DAY <= #{end}
+            ),
+            HitCounts AS (
+        SELECT
+            hit_date,
+            hit_count
+        FROM
+            hit_mile
+        WHERE
+            mile_no = #{mile}
+            )
+        SELECT
+            DateRange.hit_date,
+            COALESCE(HitCounts.hit_count, 0) AS hit_count
+        FROM
+            DateRange
+                LEFT JOIN
+            HitCounts
+            ON
+                DateRange.hit_date = HitCounts.hit_date
+        ORDER BY
+            DateRange.hit_date;
+
+
+        ]]>
+    </select>
 </mapper>
