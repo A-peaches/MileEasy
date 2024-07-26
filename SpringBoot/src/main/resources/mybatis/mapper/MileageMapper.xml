@@ -5,7 +5,6 @@
         SELECT * FROM mileage where mile_is_delete=0;
     </select>
 
-
     <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
         SELECT
             m.mile_name AS mile_no,
@@ -28,7 +27,6 @@
         GROUP BY
             m.mile_name, r.mile_link;
     </select>
-
 
     <select id="getHitMileCount" resultType="int">
         SELECT COUNT(*)
@@ -70,9 +68,6 @@
         ORDER BY m.mile_no;
     </select>
 
-
-
-
     <select id="getRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">
         SELECT *
         FROM mile_recommand
@@ -86,9 +81,33 @@
             );
     </select>
 
-
     <insert id="insertMileExcel">
         insert into mile_excel (mile_no, mile_excel_file) values ( #{mile_no}, #{mile_excel_file});
+    </insert>
+
+    <insert id="insertMileDocu">
+        insert into Document_mile (mile_no, document_file) values (#{mile_no}, #{document_file});
+    </insert>
+
+    <insert id="moveMileScoreToHistory">
+        insert into mile_history
+            (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
+        select user_no, mile_no, mile_score_date, mile_score_name, mile_score_point
+        from mile_score
+        where mile_no=#{mile_no};
+    </insert>
+
+    <delete id="deleteAllMileScore">
+        delete from mile_score where mile_no = #{mile_no};
+    </delete>
+
+    <delete id="deleteDocument">
+        delete from Document_mile where document_mile_no = #{num}
+    </delete>
+
+    <insert id="insertDetailMileScore">
+        insert into mile_score (user_no, mile_no, mile_score_date, mile_score_name, mile_score_point)
+        values (#{user_no}, #{mile_no}, #{mile_score_date}, #{mile_score_name}, #{mile_score_point});
     </insert>
 
     <select id="selectMileExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
@@ -99,6 +118,13 @@
         select * from mile_excel where mile_no = #{mile_no};
     </select>
 
+    <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
+        select * from Document_mile where mile_no=#{mile_no} limit #{limit} offset #{offset};
+    </select>
+
+    <select id="selectMileSum" resultType="int">
+        select count(document_mile_no) from Document_mile where mile_no=#{mile_no};
+    </select>
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">
         <![CDATA[
@@ -453,14 +479,34 @@
             JOIN user u ON ms.user_no = u.user_no
             JOIN user u_target ON u_target.user_no = #{userNo}
         GROUP BY u_target.user_no;
-
-
-
     </select>
+
+    <insert id="moveMileExcelToHistory">
+        insert into mile_excel_history (mile_no, mile_excel_history_file)
+        select mile_no, mile_excel_file
+        from mile_excel
+        where mile_excel_no=#{mile_excel_no};
+    </insert>
+
+    <delete id="deleteAllMileExcel">
+        delete from mile_excel where mile_excel_no=#{mile_excel_no};
+    </delete>
+
+    <insert id="moveScoreToHistory">
+        insert into mile_history (user_no, mile_no, mile_history_date, mile_history_name, mile_history_point)
+        select user_no, mile_no, mile_score_date, mile_score_name, mile_score_point
+        from mile_score
+        where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
+    </insert>
+
+    <delete id="deleteScore">
+        delete from mile_score where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
+    </delete>
 
     <select id="deleteMile" >
         UPDATE mileage
         SET mile_is_delete = 1
         WHERE mile_no =  #{mileNo};
     </select>
+
 </mapper>
