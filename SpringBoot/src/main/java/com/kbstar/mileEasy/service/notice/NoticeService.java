@@ -49,26 +49,19 @@ public class NoticeService {
 
     // 공지사항 작성
     public void createNotice(Notice notice) {
-        // user_no 값 로깅
-        System.out.println("Inserting notice with user_no: " + notice.getUser_no());
-
-        // user 테이블에서 해당 user_no가 존재하는지 확인
         User user = userDao.selectUserById(notice.getUser_no());
         if (user == null) {
             throw new IllegalArgumentException("Invalid user_no: " + notice.getUser_no());
         }
 
-        // Notice 객체 생성 및 DTO 값 설정
-        Notice newNotice = new Notice();
-        newNotice.setNotice_board_no(counter.getAndIncrement());
-        newNotice.setUser_no(notice.getUser_no());
-        newNotice.setUser_name(notice.getUser_name());
-        newNotice.setNotice_board_title(notice.getNotice_board_title());
-        newNotice.setNotice_board_content(notice.getNotice_board_content());
-        newNotice.setNotice_board_file(notice.getNotice_board_file()); // 파일명만 설정
-        newNotice.setMile_no(notice.getMile_no());
+        // 파일 이름이 null이 아닌 경우에만 설정
+        if (notice.getNotice_board_file() != null && !notice.getNotice_board_file().isEmpty()) {
+            notice.setNotice_board_file(notice.getNotice_board_file());
+        } else {
+            notice.setNotice_board_file(null);
+        }
 
-        noticeDao.insertNotice(newNotice);
+        noticeDao.insertNotice(notice);
     }
 
 

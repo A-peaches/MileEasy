@@ -36,16 +36,15 @@
         </div>
         <div class="form-group file-upload">
           <label for="file">첨부파일</label>
-             <div class="p-4">
-                <div>
-                   <input type="file" @change="handleFileUpload" class="md" style="width: 100%; text-align: right; padding-right: 70px;" />
-               </div>
-          <!-- 파일 다운로드 링크 추가 -->
-        <div v-if="form.file">
-           <a @click.prevent="downloadFile(form.file.id)" href="#" class="file-download-link">
-               {{ form.file.name }} 다운로드
-            </a>
-         </div>
+          <div class="p-4">
+            <div>
+              <input type="file" @change="handleFileUpload" class="md" style="width: 100%; text-align: right; padding-right: 70px;" />
+            </div>
+            <div v-if="uploadedFileName">
+              <a @click.prevent="downloadFile" href="#" class="file-download-link">
+                {{ uploadedFileName }} 다운로드
+              </a>
+            </div>
           </div>
         </div>
         <div class="btn-yellow-container">
@@ -55,6 +54,7 @@
     </div>
   </div>
 </template>
+             
 
 <script>
 import axios from 'axios'; // axios를 정의합니다.
@@ -129,33 +129,46 @@ export default {
         this.showKind = false;
       }
     },
-    handleFileUpload(event) {
-      this.form.file = event.target.files[0] || null;
-    },
-    setUserInfo() {
-      const loginInfo = this.getLoginInfo;
-      if (loginInfo) {
-        this.form.user_no = loginInfo.user_no;
-        this.form.user_name = loginInfo.user_name;
+    async handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        this.uploadedFileName = response.data;
+        this.form.file = this.uploadedFileName;
+      } catch (error) {
+        console.error('파일 업로드 중 오류 발생:', error);
+        this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
       }
     },
-    async downloadFile(fileId) {
-    try {
-      const response = await axios.get(`http://localhost:8090/api/download/${fileId}`, {
-        responseType: 'blob'
-      });
-      
-      const blob = new Blob([response.data]);
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = 'downloaded-file'; // 서버에서 파일 이름을 제공하면 더 좋습니다
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-    } catch (error) {
-      console.error('파일 다운로드 중 오류 발생:', error);
-      this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
-    }
-  },
+    async downloadFile() {
+      if (!this.uploadedFileName) return;
+
+      try {
+        const response = await axios.get(`http://localhost:8090/notice/download/${this.uploadedFileName}`, {
+          responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', this.uploadedFileName.split('_').pop()); // UUID 제거
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('파일 다운로드 중 오류 발생:', error);
+        this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
+      }
+    },
     async submitForm() {
       const formData = new FormData();
       formData.append('title', this.form.title);
@@ -165,8 +178,8 @@ export default {
       formData.append('user_no', this.form.user_no);
       formData.append('user_name', this.form.user_name);
 
-      if (this.form.file) {
-        formData.append('file', this.form.file);
+      if (this.uploadedFileName) {
+        formData.append('file', this.uploadedFileName);
       }
 
       try {
@@ -187,6 +200,14 @@ export default {
         this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
       }
     },
+    setUserInfo() {
+      const loginInfo = this.getLoginInfo;
+      if (loginInfo) {
+        this.form.user_no = loginInfo.user_no;
+        this.form.user_name = loginInfo.user_name;
+      }
+    },
+    
     async fetchMileages() {
       try {
         const response = await axios.get('http://localhost:8090/notice/mileage');
@@ -251,6 +272,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top : 4%;
 }
 
 .header {
@@ -305,7 +327,7 @@ h2 {
   width: 100%;
   border: 1px solid #ccc;
   padding: 100px;
-  border-radius: 30px;
+  border-radius: 8px;
   box-sizing: border-box;
   min-height: 60vh;
 }

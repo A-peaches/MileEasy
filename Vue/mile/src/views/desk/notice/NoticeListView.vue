@@ -5,7 +5,7 @@
         <h2>공지사항</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button">카테고리</div>
+        <div class="category-button list-wrapper">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
@@ -15,18 +15,31 @@
           </div>
         </div>
       </div>
-      <div class="notice-count">총 {{ filteredNotices.length }}건</div>
-      <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
-        <button class="write-button" @click="goToWritePage">글작성</button>
+      <div class="notice-count-container">
+        <div class="notice-count">총 {{ filteredNotices.length }}건</div>
+        <label class="checkbox-container">
+          <input type="checkbox" v-model="sortByViews" @change="handleCheckboxChange('views')">
+          <span class="custom-checkbox"></span> <span class="checkbox-label">조회 수</span>
+        </label>
+        <label class="checkbox-container">
+          <input type="checkbox" v-model="sortByDateAsc"  @change="handleCheckboxChange('date')">
+          <span class="custom-checkbox"></span> <span class="checkbox-label">최신순</span>
+        </label>
+      </div>
+      <div>
+        <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+          <button class="write-button" @click="goToWritePage">
+            <i class="bi bi-pencil" style="margin-right:10px;"></i> 글작성
+          </button>
+         </div>
       </div>
       <!-- 검색 창 -->
       <div class="search-container">
         <input 
-          type="text" 
-          v-model="searchQuery" 
-          placeholder="검색어를 입력하세요" 
-          class="input-search"
-        >
+        type="text" 
+        v-model="searchQuery" 
+        placeholder="제목 및 내용을 검색하세요" 
+        class="input-search"/>
         <button class="search-button" @click="searchNotices">
           <i class="bi bi-search"></i>
         </button>
@@ -34,32 +47,32 @@
 
       <div class="notice-list">
         <div v-if="paginatedNotices.length">
-          <div class="input-base" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice.notice_board_no)">
-            <div class="notice-details">
-              <div class="notice-num">{{notice.notice_board_no }}</div>
-              <div class="notice-mile" :class="{ 'small-text': notice.mile_name.length > 6 }">{{ notice.mile_name }} 마일리지</div>
-              <div class="notice-title">{{ notice.notice_board_title}}</div>
-              <div class="notice-date">{{formatDate(notice.notice_board_date) }}</div>
-              <i class="bi bi-eye"></i>
-              <div class="notice-views">{{notice.notice_board_hit }} <i class="fa fa-eye"></i></div> 
+          <div class="input-base list-wrapper" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice.notice_board_no)">
+              <div class="notice-details">
+                <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
+                <div v-else class="notice-num">{{ notice.display_num }}</div>
+                <div class="notice-mile">{{ notice.mile_name }} 마일리지</div>
+                <div class="notice-title">{{ notice.notice_board_title }}</div>
+                <div class="notice-date">{{ formatDate(notice.notice_board_date) }}</div>
+                <i class="bi bi-eye"></i>
+                <div class="notice-views">{{ notice.notice_board_hit }} <i class="fa fa-eye"></i></div>
+              </div>
             </div>
-          </div>
+
         </div>
         <div v-else>
-          <p>관련 게시글이 없습니다.</p>
+          <p>게시글이 없습니다.</p>
         </div>
       </div>
-      
+
       <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">«</button>
+        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
         <button @click="goToPage(page)" :class="{ active: currentPage === page }" v-for="page in totalPages" :key="page">{{ page }}</button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">»</button>
+        <button @click="nextPage" :disabled="currentPage === totalPages">〉</button>
       </div>
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { mapGetters } from 'vuex';
@@ -74,27 +87,45 @@ export default {
       currentPage: 1,
       itemsPerPage: 10,
       searchQuery: '',
-      selectedCategory: null, // 선택된 카테고리 저장
-      isProcessing: false, // 요청 중복 방지 플래그 추가
+      selectedCategory: null,
+      isProcessing: false,
+      sortByDateAsc: true, // 최신순 체크박스가 기본으로 선택
+      sortByViews: false, // 조회 수 정렬 여부
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
     filteredNotices() {
-      let result = this.notices;
-      if (this.searchQuery) {
-        result = result.filter(notice => 
-          notice.notice_board_title.includes(this.searchQuery)
-        );
-      }
-      if (this.selectedCategory !== null) {
-        result = result.filter(notice => 
-          notice.mile_name === this.selectedCategory
-        );
-      }
-      return result;
-    },
+    let result = this.notices;
+    if (this.searchQuery) {
+      const query = this.searchQuery.toLowerCase();
+      result = result.filter(notice => 
+        notice.notice_board_title.toLowerCase().includes(query) || 
+        notice.notice_board_content.toLowerCase().includes(query)
+      );
+    }
+    if (this.selectedCategory !== null) {
+      result = result.filter(notice => 
+        notice.mile_name === this.selectedCategory
+      );
+    }
+    if (this.sortByViews) {
+      result.sort((a, b) => b.notice_board_hit - a.notice_board_hit || new Date(b.notice_board_date) - new Date(a.notice_board_date));
+    } else if (this.sortByDateAsc) {
+      result.sort((a, b) => new Date(b.notice_board_date) - new Date(a.notice_board_date));
+    } else {
+      result.sort((a, b) => new Date(a.notice_board_date) - new Date(b.notice_board_date));
+    }
+   // NEW 항목과 번호 증가를 처리합니다.
+   let displayNum = 1;
+    return result.map(notice => ({
+      ...notice,
+      is_new: this.isNew(notice.notice_board_date),
+      display_num: this.isNew(notice.notice_board_date) ? 'NEW' : displayNum++
+    }));
+  },
+
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -102,18 +133,33 @@ export default {
       return this.getIsChecked;
     },
     isLoggedIn() {
-      return !!this.loginInfo; // loginInfo가 null이 아니면 로그인 상태로 판단합니다.
+      return !!this.loginInfo;
     },
     totalPages() {
       return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
     },
     paginatedNotices() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.filteredNotices.slice(start, end);
-    },
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredNotices.slice(start, end);
+  },
+
   },
   methods: {
+    isNew(dateString) {
+    const today = new Date();
+    const noticeDate = new Date(dateString);
+    const differenceInTime = today.getTime() - noticeDate.getTime();
+    const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+    return differenceInDays <= 7;
+  },
+    handleCheckboxChange(sortType) {
+      if (sortType === 'views' && this.sortByViews) {
+        this.sortByDateAsc = false;
+      } else if (sortType === 'date' && this.sortByDateAsc) {
+        this.sortByViews = false;
+      }
+    },
     toggleCategory() {
       this.showCategory = !this.showCategory;
     },
@@ -150,41 +196,42 @@ export default {
       this.$router.push({ name: 'noticeWriteAdminView' });
     },
     async fetchNotices() {
+      console.log('fetchNotices method called'); // 이 로그가 출력되는지 확인합니다.
       try {
         const response = await axios.get('http://localhost:8090/notice/list');
-        console.log('Fetched notices:', response.data); // 응답 데이터를 콘솔에 출력하여 확인합니다.
+        console.log('Fetched notices:', response.data);
         this.notices = response.data;
-    } catch (error) {
-      console.error('Error fetching notices:', error.response ? error.response.data : error.message);
-    }
-},
+      } catch (error) {
+        console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+      }
+    },
     async fetchMileages() {
       try {
         const response = await axios.get('http://localhost:8090/notice/mileage');
-        console.log('Fetched mileages:', response.data); // 응답 데이터를 콘솔에 출력하여 확인합니다.
+        console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
         console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
       }
     },
-      async handleNoticeClick(noticeId) {
+    async handleNoticeClick(noticeId) {
       if (this.isProcessing) {
-        return; // 이미 요청이 처리 중이면 중단
+        return;
       }
-      this.isProcessing = true; // 요청 처리 시작
-      console.log(`Clicked notice with ID: ${noticeId}`); // 로그 추가
+      this.isProcessing = true;
+      console.log(`Clicked notice with ID: ${noticeId}`);
       try {
         const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
-        console.log('Increment views response:', response); // 응답 로그 추가
+        console.log('Increment views response:', response);
         const notice = this.notices.find(notice => notice.notice_board_no === noticeId);
         if (notice) {
           notice.notice_board_hit += 1;
         }
-        this.goToDetailView(noticeId); // 상세보기 페이지로 이동
+        this.goToDetailView(noticeId);
       } catch (error) {
         console.error('Error incrementing views:', error.response ? error.response.data : error.message);
       } finally {
-        this.isProcessing = false; // 요청 처리 완료
+        this.isProcessing = false;
       }
     },
     formatDate(dateString) {
@@ -255,11 +302,13 @@ h2::after {
 
 .app-container {
   width: 100%;
-  padding: 0px;
+  padding: 0;
   min-height: 100vh; /* 최소 높이를 설정하여 페이지 전체를 채움 */
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top : 4%;
+  
 }
 
 .content {
@@ -269,6 +318,7 @@ h2::after {
   max-width: 1300px;
   box-sizing: border-box;
   min-height: 100vh;
+  margin: auto;
 }
 
 .content.cards {
@@ -277,11 +327,12 @@ h2::after {
   padding: 60px;
   border-radius: 8px;
   box-sizing: border-box;
-  min-height: 100vh;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .category-button {
-  background-color: #FBFBFB;
+  background-color: #f9f9f9;
   border-radius: 25px;
   padding: 12px 40px;
   cursor: pointer;
@@ -292,27 +343,6 @@ h2::after {
   font-size: 20px;
   font-family: 'KB_S5', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
-}
-
-.write-button {
-  background-color: #ffca05;
-  color: #4b4a4a;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 25px;
-  font-size: 18px;
-  font-family: 'KB_c3', sans-serif;
-  transition: background-color 0.3s;
-  width: 10%;
-  float: right; /* 버튼을 오른쪽으로 이동 */
-  margin-top: -80px; /* 위치 조정을 위해 추가 */
-  margin-right: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.write-button:hover {
-  background-color: #edbb00;
 }
 
 .search-container {
@@ -368,19 +398,69 @@ h2::after {
   padding-left: 3%;
 }
 
+.notice-count-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  top: -5px; /* 위치를 살짝 위로 올립니다 */
+}
+
+.checkbox-container input[type="checkbox"] {
+  display: none; /* 기본 체크박스를 숨깁니다 */
+}
+
+.checkbox-container .custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: #f6a319; /* 체크된 상태일 때 배경색 변경 (노란색) */
+  border: none; /* 체크된 상태일 때 테두리 제거 */
+}
+
+.checkbox-container input[type="checkbox"]:checked + .custom-checkbox::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: white;
+  transform: translate(-50%, -50%);
+}
+
+.checkbox-label {
+  margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
+  font-family: 'KB_S5', sans-serif;
+  font-size: 20px;
+}
+
 .input-base {
   width: 100%;
   height: 65px;
-  background-color: #FBFBFB;
+  background-color: #f9f9f9;
   text-align: center; /* 가로 정렬 */
   line-height: 65px; /* 세로 정렬 */
   font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
   margin-bottom: 20px; /*글 목록 사이 공간*/
 }
 
-.small-text {
-  font-size: 0.8em !important; /* 글씨 크기를 줄임 */
+.list-wrapper:hover {
+  cursor: pointer;
+  background-color: #E1E3E4 !important;
+  transition: background-color 0.3s ease;
 }
 
 .notice-details {
@@ -393,27 +473,41 @@ h2::after {
   flex: 1 1 150%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
+  font-size: 20px;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .notice-num {
   flex: 1 1 20%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
+  font-size: 12pt;
+  font-family: 'KB_S5', sans-serif;
 }
-
-.notice-mile{
-  flex: 1 1 50%;
+.notice-new{
+  flex: 1 1 20%;
   text-align: center;
+  letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
+  font-size: 12pt;
+  font-family: 'KB_S5', sans-serif;
+  color: #edbb00;
+}
+.notice-mile {
+  flex: 1 1 50%;
+  text-align: left;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
   color: #745F40;
   font-family: 'KB_S5', sans-serif;
+  font-size: 0.8em;
+  margin-left: 10px; /* 왼쪽 여백 추가 */
 }
 
 .notice-date {
   flex: 1 1 60%;
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
-  font-size: 17px;
+  font-size: 16px;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .notice-views {
@@ -422,12 +516,14 @@ h2::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 19px;
 }
 
 .views-text {
   flex: 1;
   text-align: right; /* 텍스트를 오른쪽 정렬 */
+  font-size: 18px;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .views-icon {
@@ -482,28 +578,68 @@ h2::after {
   width: auto; /* 너비를 자동으로 설정 */
 }
 
+/* 페이지 네이션 및 글쓰기 버튼 스타일 */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 100px;
+  gap: 5px;
 }
 
 .pagination button {
   background-color: #ffffff;
-  border: 1px solid #ccc;
   padding: 10px 20px;
   cursor: pointer;
   margin: 0 5px;
   border-radius: 5px;
+  font-size: 18px; /* 숫자의 폰트 크기 */
+  font-family: 'KB_s4', sans-serif; /* 숫자의 폰트 */
 }
 
 .pagination button:disabled {
-  background-color: #f1f1f1;
+  background-color: #d5e9e3;
   cursor: not-allowed;
+  color: white;
 }
 
 .pagination button.active {
-  background-color: #8d8d8d;
+  background-color: #43c2a0;
   color: white;
+}
+
+.pagination button.arrow-button {
+  font-size: 18px; /* 화살표의 폰트 크기 */
+}
+
+.write-button {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 20px;
+  color: #000;
+  background-color: transparent;
+  margin-left: 89%; /* 왼쪽으로 이동 */
+  margin-bottom: 3vh;
+  font-family: 'KB_S5', sans-serif;
+}
+
+.write-button i {
+  margin-right: 5px;
+}
+
+.write-button i.bi.bi-pencil {
+  color: #32ab8b;
+  font-size: 20px;
 }
 </style>
