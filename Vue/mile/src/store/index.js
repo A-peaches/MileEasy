@@ -22,6 +22,7 @@ import mileExcel from './mileage/mileExcel';
 import mileExcelHistory from './mileage/mileExcelHistory';
 import mileRecommand from './mileage/mileRecommand';
 import mile from './userInfo/mile';
+import badge from './badge/badge';
 
 export default createStore({
   modules: {
@@ -47,5 +48,6 @@ export default createStore({
     mileExcelHistory,
     mileRecommand,
     mile,
-  }
+    badge,
+  },
 });

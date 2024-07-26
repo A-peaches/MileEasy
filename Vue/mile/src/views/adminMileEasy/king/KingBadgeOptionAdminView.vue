@@ -212,6 +212,7 @@ export default {
     },
     ...mapActions('badge', ['badgeKingImage']),
     ...mapActions('badge', ['badgeJumpImage']),
+    ...mapActions('badge', ['watchBadgeChanges']),
     handleImageError() {
       console.error('이미지 로드 실패');
     },
@@ -221,6 +222,7 @@ export default {
     // 컴포넌트가 마운트된 후에 Vuex action을 통해 데이터를 초기화합니다.
     this.badgeKingImage();
     this.badgeJumpImage();
+    this.watchBadgeChanges(); // 감시자 시작
   },
 };
 </script>

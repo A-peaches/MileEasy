@@ -40,6 +40,12 @@ const actions = {
       console.error(`Error fetching badge:`, error);
     }
   },
+  async watchBadgeChanges({ dispatch }) {
+    setInterval(() => {
+      dispatch('badgeKingImage');
+      dispatch('badgeJumpImage');
+    }); // 5초마다 확인 (필요에 따라 조정 가능)
+  },
 };
 
 const getters = {

@@ -81,10 +81,7 @@
             <div style="display: flex">
               <div class="king" style="width: 50%">
                 <div>
-                  <img
-                    src="mile/src/assets/img/add.png"
-                    style="width: 120px; height: 120px"
-                  />
+                  <img :src="kingImage" style="width: 120px; height: 120px" />
                 </div>
                 <div class="KB_C1 title" style="font-size: 20pt">
                   마왕 TOP 5
@@ -119,10 +116,7 @@
               </div>
               <div class="jump" style="width: 50%">
                 <div>
-                  <img
-                    src="mile/src/assets/img/add.png"
-                    style="width: 120px; height: 120px"
-                  />
+                  <img :src="jumpImage" style="width: 120px; height: 120px" />
                 </div>
                 <div class="KB_C1 title" style="font-size: 20pt">
                   Jump UP TOP 5
@@ -170,7 +164,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import axios from 'axios';
 
 export default {
@@ -208,9 +202,21 @@ export default {
         this.jumpTop3 = []; // 오류 발생 시 빈 배열로 초기화
       }
     },
+    ...mapActions('badge', ['badgeKingImage']),
+    ...mapActions('badge', ['badgeJumpImage']),
+    ...mapActions('badge', ['watchBadgeChanges']),
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('badge', ['getKingBadge']),
+    ...mapGetters('badge', ['getJumpBadge']),
+    ...mapGetters('login', ['getLoginInfo']),
+    kingImage() {
+      return this.getKingBadge;
+    },
+    jumpImage() {
+      return this.getJumpBadge;
+    },
 
     loginInfo() {
       return this.getLoginInfo;
@@ -219,6 +225,9 @@ export default {
   mounted() {
     this.kingData(); // 컴포넌트가 마운트되면 데이터 요청
     this.jumpData();
+    this.badgeKingImage();
+    this.badgeJumpImage();
+    this.watchBadgeChanges(); // 감시자 시작
   },
 };
 </script>

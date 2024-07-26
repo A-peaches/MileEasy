@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kbstar.mileEasy.mapper.MileageDao">
     <select id ="getMileage" resultType="com.kbstar.mileEasy.dto.Mileage"> <!--selectAllUser 실행 -->
-        SELECT * FROM mileage;
+        SELECT * FROM mileage where mile_is_delete=0;
     </select>
 
     <select id="getMileScore" resultType="com.kbstar.mileEasy.dto.MileScore">
@@ -168,7 +168,7 @@
             total_score
         FROM ranked_users r
                  LEFT JOIN user u ON r.user_no = u.user_no
-        WHERE ranking <= 3;
+        WHERE ranking <= 5;
 
 
         ]]>
@@ -224,7 +224,7 @@
         FROM user_scores us
                  JOIN user u ON us.user_no = u.user_no
         ORDER BY ranking
-            LIMIT 3;
+            LIMIT 5;
         ]]>
     </select>
 
@@ -271,7 +271,7 @@
             total_score
         FROM ranked_users r
                  LEFT JOIN user u ON r.user_no = u.user_no
-        WHERE ranking <= 3;
+        WHERE ranking <= 5;
 
 
         ]]>
@@ -327,7 +327,7 @@
         FROM user_scores us
                  JOIN user u ON us.user_no = u.user_no
         ORDER BY ranking
-            LIMIT 3;
+            LIMIT 5;
 
 
 
@@ -479,9 +479,6 @@
             JOIN user u ON ms.user_no = u.user_no
             JOIN user u_target ON u_target.user_no = #{userNo}
         GROUP BY u_target.user_no;
-
-
-
     </select>
 
     <insert id="moveMileExcelToHistory">
@@ -505,5 +502,11 @@
     <delete id="deleteScore">
         delete from mile_score where mile_score_date=#{mile_score_date} and mile_no=#{mile_no};
     </delete>
+
+    <select id="deleteMile" >
+        UPDATE mileage
+        SET mile_is_delete = 1
+        WHERE mile_no =  #{mileNo};
+    </select>
 
 </mapper>
