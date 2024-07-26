@@ -9,8 +9,9 @@ import java.util.List;
 @Mapper
 public interface NoticeDao {
 
-    @Insert("INSERT INTO notice (user_no, user_name, notice_board_title, notice_board_content, notice_board_file, notice_board_date, notice_board_hit, notice_board_is_delete) " +
-            "VALUES (#{user_no}, #{user_name}, #{notice_board_title}, #{notice_board_content}, #{notice_board_file}, NOW(), #{notice_board_hit}, #{notice_board_is_delete})")
+    @Insert("INSERT INTO notice (user_no, user_name, notice_board_title, notice_board_content, notice_board_file, mile_no) " +
+            "VALUES (#{user_no}, #{user_name}, #{notice_board_title}, #{notice_board_content}, #{notice_board_file, jdbcType=VARCHAR}, #{mile_no})")
+    @Options(useGeneratedKeys = true, keyProperty = "notice_board_no")
     void insertNotice(Notice notice);
     /* 게시글 글작성 */
 
@@ -34,5 +35,6 @@ public interface NoticeDao {
             "WHERE n.notice_board_no = #{noticeId}")
     Notice getNoticeDetails(int noticeId);
     /* 게시글 상세보기 */
+
 
 }
