@@ -484,3 +484,15 @@ main {
   background-color: #17a589;
 }
 
+
+
+.tab-container:hover {
+  padding: 10px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background-color: #d3d3d3;
+}
+
+.tab-container.active {
+  background-color: #d3d3d3;
+}
