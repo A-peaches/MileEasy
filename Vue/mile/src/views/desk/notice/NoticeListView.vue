@@ -22,7 +22,7 @@
           <span class="custom-checkbox"></span> <span class="checkbox-label">조회 수</span>
         </label>
         <label class="checkbox-container">
-          <input type="checkbox" v-model="sortByDateAsc"  @change="handleCheckboxChange('date')">
+          <input type="checkbox" v-model="sortByDateAsc" @change="handleCheckboxChange('date')">
           <span class="custom-checkbox"></span> <span class="checkbox-label">최신순</span>
         </label>
       </div>
@@ -215,25 +215,35 @@ export default {
       }
     },
     async handleNoticeClick(noticeId) {
-      if (this.isProcessing) {
-        return;
-      }
-      this.isProcessing = true;
-      console.log(`Clicked notice with ID: ${noticeId}`);
-      try {
-        const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
-        console.log('Increment views response:', response);
-        const notice = this.notices.find(notice => notice.notice_board_no === noticeId);
-        if (notice) {
-          notice.notice_board_hit += 1;
-        }
-        this.goToDetailView(noticeId);
-      } catch (error) {
-        console.error('Error incrementing views:', error.response ? error.response.data : error.message);
-      } finally {
-        this.isProcessing = false;
-      }
-    },
+  if (this.isProcessing) {
+    return;
+  }
+  this.isProcessing = true;
+  console.log(`Clicked notice with ID: ${noticeId}`);
+  try {
+    const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
+    console.log('Increment views response:', response.data);
+    
+    // 로컬 상태 업데이트
+    const noticeIndex = this.notices.findIndex(notice => notice.notice_board_no === noticeId);
+    if (noticeIndex !== -1) {
+      this.notices[noticeIndex] = {
+        ...this.notices[noticeIndex],
+        notice_board_hit: (this.notices[noticeIndex].notice_board_hit || 0) + 1
+      };
+    }
+    
+    // 상세 페이지로 이동
+    this.goToDetailView(noticeId);
+  } catch (error) {
+    console.error('Error incrementing views:', error.response ? error.response.data : error.message);
+  } finally {
+    this.isProcessing = false;
+  }
+},
+
+
+
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);

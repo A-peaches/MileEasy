@@ -28,6 +28,7 @@ public class NoticeController {
 
     @Autowired
     private NoticeService noticeService;
+
     /*추가코드*/
     @Value("${project.uploadpath.notice}")
     private String uploadPath;
@@ -82,6 +83,7 @@ public class NoticeController {
         List<Mileage> mileages = noticeService.getAllMilesge();
         return ResponseEntity.ok(mileages);
     }
+
     // 게시글 조회수
     @PostMapping("/increment-views/{noticeId}")
     public ResponseEntity<Void> incrementNoticeViews(@PathVariable("noticeId") int noticeId) {

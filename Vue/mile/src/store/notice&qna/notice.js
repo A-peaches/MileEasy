@@ -17,7 +17,7 @@ const mutations = {
   INCREMENT_VIEWS(state, noticeId) {
     const notice = state.notices.find(n => n.notice_board_no === noticeId);
     if (notice) {
-      notice.notice_board_hit += 1;
+      notice.notice_board_hit = (notice.notice_board_hit || 0) + 1;
     }
   },
 };
@@ -41,8 +41,10 @@ const actions = {
   },
   async incrementViews({ commit }, noticeId) {
     try {
-      await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
-      commit('INCREMENT_VIEWS', noticeId);
+      const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
+      if (response.status === 200) {
+        commit('INCREMENT_VIEWS', noticeId);
+      }
     } catch (error) {
       console.error('Error incrementing views:', error.response ? error.response.data : error.message);
     }
