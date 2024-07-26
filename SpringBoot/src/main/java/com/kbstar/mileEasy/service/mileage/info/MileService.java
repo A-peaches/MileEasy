@@ -35,4 +35,7 @@ public class MileService {
     public ArrayList<User> levelChartData(String date) {
         return userDao.levelChartData(date);
     }
+
+    public void deleteMile(String mileNo) { mileageDao.deleteMile(mileNo);
+    }
 }
