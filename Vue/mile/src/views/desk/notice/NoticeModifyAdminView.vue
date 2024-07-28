@@ -226,6 +226,7 @@ export default {
         allowEscapeKey: false,
         allowEnterKey: false,
         stopKeydownPropagation: false,
+        scrollbarPadding: false,
         backdrop: true,
         didOpen: () => {
           document.body.classList.add('no-scroll');

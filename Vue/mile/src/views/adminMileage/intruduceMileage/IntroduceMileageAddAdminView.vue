@@ -91,6 +91,7 @@ export default {
       this.$swal({
         title: t,
         icon: i,
+        scrollbarPadding: false
       }).then((result) => {
         if(result.isConfirmed && r !== '#'){
           this.$router.push(r);

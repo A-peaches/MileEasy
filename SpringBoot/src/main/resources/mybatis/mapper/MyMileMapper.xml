@@ -3,17 +3,51 @@
 <mapper namespace="com.kbstar.mileEasy.mapper.MyMileDao">
     <select id="getMyMiles" resultType="com.kbstar.mileEasy.beans.MyMiles">
         SELECT
-            ms.mile_no,
+            m.mile_no,
             m.mile_name,
             SUM(CASE WHEN ms.user_no = #{userNo} THEN ms.mile_score_point ELSE 0 END) AS user_point,
             m.mile_max,
             SUM(ms.mile_score_point) AS all_point,
             ms.mile_score_date AS mile_date
         FROM
-            mile_score ms
-                JOIN
-            mileage m ON ms.mile_no = m.mile_no
+            mileage m
+                LEFT JOIN
+            mile_score ms ON ms.mile_no = m.mile_no
+        WHERE
+            m.mile_is_delete = 0
         GROUP BY
-            ms.mile_no, m.mile_max,  ms.mile_score_date;
+            m.mile_no, m.mile_max, ms.mile_score_date;
+
+    </select>
+
+    <select id="getMileStatus" resultType="com.kbstar.mileEasy.beans.MileStatus">
+        SELECT
+            md.mile_score_name AS score_name,
+            COALESCE(ms.user_point, 0) AS user_point,
+            m.mile_name,
+            COALESCE(mh.prev_point, 0) AS prev_point,
+            ms.latest_score_date AS mile_date,
+            mh.latest_history_date AS prev_date
+        FROM
+            mileage_detail md
+                LEFT JOIN
+            mileage m ON md.mile_no = m.mile_no
+                LEFT JOIN
+            (SELECT mile_no, mile_score_name, SUM(mile_score_point) AS user_point, MAX(mile_score_date) AS latest_score_date
+             FROM mile_score
+             WHERE user_no = #{userNo}
+             GROUP BY mile_no, mile_score_name) ms
+            ON md.mile_no = ms.mile_no AND md.mile_score_name = ms.mile_score_name
+                LEFT JOIN
+            (SELECT mile_no, mile_history_name, MAX(mile_history_point) AS prev_point, MAX(mile_history_date) AS latest_history_date
+             FROM mile_history
+             WHERE mile_no = #{mileNo}
+             GROUP BY mile_no, mile_history_name) mh
+            ON md.mile_no = mh.mile_no AND md.mile_score_name = mh.mile_history_name
+        WHERE
+            m.mile_no = #{mileNo}
+        GROUP BY
+            md.mile_score_name, m.mile_name, ms.user_point, mh.prev_point, ms.latest_score_date, mh.latest_history_date;
+
     </select>
 </mapper>

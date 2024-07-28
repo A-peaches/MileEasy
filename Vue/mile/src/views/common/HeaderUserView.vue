@@ -100,6 +100,7 @@ export default {
         title: "안내",
         text: "이 기능은 추후 업데이트 예정입니다",
         icon: "info",
+        scrollbarPadding: false
       });
     },
     willBeUpdate() {
