@@ -57,12 +57,30 @@
               class="input-base input-gray"
               placeholder="새 담당자 입력"
               v-model="newAdmin.user_name"
+              @input="filterUserList(index, newAdmin.user_name)"
             />
             &nbsp;&nbsp;
             <i class="bi bi-dash-lg" @click="removeNewAdmin(index)"></i>
             <span v-if="!newAdmin.user_name && isSubmitted" style="color: red"
               >이름이나 사번을 입력해주세요</span
             >
+            <!-- 유저 검색 결과 리스트 -->
+            <div
+              v-if="
+                filteredUserList[index] && filteredUserList[index].length > 0
+              "
+            >
+              <ul>
+                <li
+                  v-for="user in filteredUserList[index]"
+                  :key="user.user_no"
+                  @click="selectUser(index, user)"
+                  style="cursor: pointer"
+                >
+                  {{ user.user_name }} ({{ user.user_no }}) {{ user.dp_no }}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -86,6 +104,8 @@ export default {
       newAdmins: [], // 새로 추가된 담당자 목록
       mileNameInput: this.mileName, // 마일리지 이름 입력 필드
       isSubmitted: false, // 유효성 검사 후 제출 여부
+      userList: [], // 유저 리스트
+      filteredUserList: [], // 필터링된 유저 리스트
     };
   },
   props: {
@@ -115,11 +135,28 @@ export default {
         this.admins = []; // 오류 처리
       }
     },
+    async searchUser() {
+      try {
+        const response = await axios.post(
+          'http://localhost:8090/admin/searchUser',
+          null,
+          {
+            params: {},
+          }
+        );
+        console.log('유저 리스트:', response.data);
+        this.userList = response.data; // 유저 리스트 업데이트
+      } catch (error) {
+        console.error('Error fetching user list:', error);
+        this.userList = []; // 오류 처리
+      }
+    },
     addAdminField() {
       // 새로운 담당자 입력 필드 추가
       this.newAdmins.push({
         user_name: '',
       });
+      this.filteredUserList.push([]); // 새 필드 추가 시 필터링 리스트 초기화
     },
     removeAdmin(index) {
       // 기존 담당자 제거
@@ -128,6 +165,7 @@ export default {
     removeNewAdmin(index) {
       // 새 담당자 입력 필드 제거
       this.newAdmins.splice(index, 1);
+      this.filteredUserList.splice(index, 1); // 필터링된 유저 리스트에서 제거
     },
     async newAdminList() {
       this.isSubmitted = true;
@@ -160,21 +198,18 @@ export default {
         this.admins = []; // 오류 처리
       }
     },
-    async searchUser() {
-      try {
-        const response = await axios.post(
-          'http://localhost:8090/admin/searchUser',
-          null,
-          {
-            params: {},
-          }
+    filterUserList(index, searchTerm) {
+      if (searchTerm) {
+        this.filteredUserList[index] = this.userList.filter((user) =>
+          user.user_name.includes(searchTerm)
         );
-        console.log('유저 리스트:', response.data);
-        return response.data; // 기존 담당자 목록 업데이트
-      } catch (error) {
-        console.error('Error fetching admin list:', error);
-        this.admins = []; // 오류 처리
+      } else {
+        this.filteredUserList[index] = [];
       }
+    },
+    selectUser(index, user) {
+      this.newAdmins[index].user_name = user.user_name;
+      this.filteredUserList[index] = []; // 선택 후 필터링 리스트 초기화
     },
   },
   mounted() {
@@ -195,5 +230,18 @@ export default {
 }
 .modals {
   background-color: rgba(102, 102, 102, 0.1);
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
+ul li {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin: 2px 0;
+}
+ul li:hover {
+  background-color: #e9e9e9;
 }
 </style>
