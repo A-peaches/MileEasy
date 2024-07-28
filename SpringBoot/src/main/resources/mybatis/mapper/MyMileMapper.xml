@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbstar.mileEasy.mapper.MyMileDao">
+    <select id="getMyMiles" resultType="com.kbstar.mileEasy.beans.MyMiles">
+        SELECT
+            ms.mile_no,
+            m.mile_name,
+            SUM(CASE WHEN ms.user_no = #{userNo} THEN ms.mile_score_point ELSE 0 END) AS user_point,
+            m.mile_max,
+            SUM(ms.mile_score_point) AS all_point,
+            ms.mile_score_date AS mile_date
+        FROM
+            mile_score ms
+                JOIN
+            mileage m ON ms.mile_no = m.mile_no
+        GROUP BY
+            ms.mile_no, m.mile_max,  ms.mile_score_date;
+    </select>
+</mapper>
