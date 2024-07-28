@@ -1,5 +1,5 @@
 <template>
-  <div class="modals">
+  <div class="modals" v-if="isOpen">
     <div class="modals-content" style="width: 500px; height: auto">
       <span class="close" @click="$emit('close')">&times;</span>
 
@@ -25,11 +25,12 @@
         <span style="text-align: left; margin-left: 15px; font-size: 13pt">
           담당자 설정
         </span>
-        <i class="bi bi-plus-lg"></i>
+        <i class="bi bi-plus-lg" @click="addAdminField"></i>
         <div style="text-align: left; margin-left: 5px">
+          <!-- 기존 담당자 목록 -->
           <div
             v-for="(admin, index) in admins"
-            :key="index"
+            :key="'admin-' + admin.user_no"
             style="margin-bottom: 5px; text-align: left"
           >
             <input
@@ -38,21 +39,33 @@
               readonly
               class="input-base input-gray"
               :value="`${admin.user_name} (${admin.user_no}) ${admin.dp_no}`"
-              Correctly
-              bind
-              admin
-              user
-              names
             />
             &nbsp;&nbsp;
-            <i class="bi bi-dash-lg"></i>
+            <i class="bi bi-dash-lg" @click="removeAdmin(index)"></i>
+          </div>
+
+          <!-- 새 담당자 입력 필드 -->
+          <div
+            v-for="(newAdmin, index) in newAdmins"
+            :key="'new-' + index"
+            style="margin-bottom: 5px; text-align: left"
+          >
+            <input
+              type="text"
+              style="width: 300px; height: 40px"
+              class="input-base input-gray"
+              placeholder="새 담당자 입력"
+              v-model="newAdmin.user_name"
+            />
+            &nbsp;&nbsp;
+            <i class="bi bi-dash-lg" @click="removeNewAdmin(index)"></i>
           </div>
         </div>
       </div>
       <br />
 
       <div style="text-align: right">
-        <button class="btn-yellow">변경하기</button>
+        <button class="btn-yellow" @click.stop="newAdminList">변경하기</button>
       </div>
     </div>
   </div>
@@ -65,7 +78,8 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      admins: [], // Array to hold admin names for multiple input fields
+      admins: [], // 기존 담당자 목록
+      newAdmins: [], // 새로 추가된 담당자 목록
     };
   },
   props: {
@@ -77,10 +91,10 @@ export default {
     ...mapGetters('login', ['getLoginInfo']),
   },
   methods: {
-    async getileageAdminList() {
+    async getMileageAdminList() {
       try {
         const response = await axios.post(
-          'http://localhost:8090/admin/getileageAdminList',
+          'http://localhost:8090/admin/getMileageAdminList',
           null,
           {
             params: {
@@ -89,15 +103,52 @@ export default {
           }
         );
         console.log('담당자 리스트:', response.data);
-        this.admins = response.data; // Update with the fetched array of admin names
+        this.admins = response.data; // 기존 담당자 목록 업데이트
       } catch (error) {
         console.error('Error fetching admin list:', error);
-        this.admins = []; // Handle error case
+        this.admins = []; // 오류 처리
+      }
+    },
+    addAdminField() {
+      // 새로운 담당자 입력 필드 추가
+      this.newAdmins.push({
+        user_name: '',
+      });
+    },
+    removeAdmin(index) {
+      // 기존 담당자 제거
+      this.admins.splice(index, 1);
+    },
+    removeNewAdmin(index) {
+      // 새 담당자 입력 필드 제거
+      this.newAdmins.splice(index, 1);
+    },
+    async newAdminList() {
+      console.log(this.newAdmins);
+      console.log(this.admins);
+      this.$emit('close'); // 변경하기 버튼 클릭 시 모달 닫기
+      try {
+        const response = await axios.post(
+          'http://localhost:8090/admin/newAdminList',
+          null,
+          {
+            params: {
+              mile_no: this.mileNo,
+              new_admins: this.newAdmins,
+            },
+          }
+        );
+        console.log('완료여부:', response.data);
+        this.admins = response.data; // 기존 담당자 목록 업데이트
+        // 모달 닫기
+      } catch (error) {
+        console.error('Error fetching admin list:', error);
+        this.admins = []; // 오류 처리
       }
     },
   },
   mounted() {
-    this.getileageAdminList();
+    this.getMileageAdminList();
   },
 };
 </script>

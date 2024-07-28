@@ -202,8 +202,16 @@ public class AdminController {
         mileService.deleteMile(mile_no);
     }
 
-    @PostMapping("/getileageAdminList")
+    @PostMapping("/getMileageAdminList")
     public ArrayList<User> getileageAdminList(@RequestParam("mile_no") String mile_no) {
+        System.out.println("마일리지: " + mile_no);
+        System.out.println(adminService.getileageAdminList(mile_no));
+        return adminService.getileageAdminList(mile_no);
+    }
+
+
+    @PostMapping("/newAdminList")
+    public ArrayList<User> newAdminList(@RequestParam("mile_no") String mile_no) {
         System.out.println("마일리지: " + mile_no);
         System.out.println(adminService.getileageAdminList(mile_no));
         return adminService.getileageAdminList(mile_no);
