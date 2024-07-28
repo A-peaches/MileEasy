@@ -24,10 +24,10 @@ const mutations = {
 };
 
 const actions = {
-  async fetchMileExcelInfo({ commit }, selectedDate) {
+  async fetchMileExcelInfo(context, {selectedDate, mile_no, page, itemsPerPage}) {
     try{
-      const response = await axios.get(`http://localhost:8090/mileage/mileExcelFiles`, {params: {date: selectedDate}});
-      commit('setArrayMileExcel', response.data);
+      const response = await axios.get(`http://localhost:8090/mileage/mileExcelFiles`, {params: {date: selectedDate, mile_no: mile_no, page: page, itemsPerPage:itemsPerPage}});
+      return response;
     }catch(error){
       console.error('Error fetching mile Excel info:', error);
     }
@@ -78,10 +78,10 @@ const actions = {
       console.error('파일 다운로드 실패', error);
     }
   },
-  async mileExcelLists({ commit }, mile_no){
+  async mileExcelLists(context, {mile_no, page, itemsPerPage}){
     try{
-      const response = await axios.get(`http://localhost:8090/mileage/totalMileExcel/${mile_no}`)
-      commit('setArrayMileExcel', response.data);
+      const response = await axios.get(`http://localhost:8090/mileage/totalMileExcel/${mile_no}?page=${page}&itemsPerPage=${itemsPerPage}`);
+      return response;
     }catch(error){
       console.error('Error get mile excel lists:', error);
     }

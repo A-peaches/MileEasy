@@ -4,9 +4,9 @@
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 점수</h2>
 
     <!-- 날짜 선택 -->
-    <div class="d-flex justify-content-end align-items-center" style="margin-top: 10vh; padding-left: 3%; padding-right: 2%;">
+    <div class="d-flex justify-content-end align-items-center" style="margin-top: 10vh; padding-left: 3%; padding-right: 3%;">
       <Datepicker  v-model="selectedDate" :format="formatDate" style="width:25%"></Datepicker>
-      <button @click="fetchScoresByDate" class="btn-green">날짜 선택</button>
+      <!-- <button @click="fetchScoresByDate" class="btn-green">날짜 선택</button> -->
     </div>
 
     <!-- 양식 다운로드 -->
@@ -17,8 +17,8 @@
     </div>
 
     <!-- 엑셀 파일 리스트 (기본) -->
-    <div v-if="!selectedDate" class="p-5" style="margin-top: 10vh;">
-      <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" 
+    <div v-if="!selectedDate && paginatedScores.length>0" class="pr-5 pl-5 pb-5 pt-4" style="margin-top: 10vh;">
+      <div v-for="score in paginatedScores" :key="score.mile_excel_no" 
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
         :class="{activeDelete: deleteArray.includes(score)}"
         @click="addDeleteArray(score)"
@@ -31,50 +31,63 @@
             <span class="lg2 pl-2 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
             <span class="md">{{ formatting(score.mile_excel_date) }}</span>
           </div>
-          <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md " style="text-align: right;">파일 다운로드 〉</span></button>
+          <button @click.stop="downloadExcel(score.mile_excel_file)">
+            <span class="md " style="text-align: right;">파일 다운로드 〉</span>
+          </button>
         </div>
       </div>
     </div>
 
     <!-- 엑셀 파일 리스트 (날짜 선택 시) -->
-    <div v-else class="p-5" style="margin-top: 10vh;">
-      <div v-if="arrayMileExcel.length>0">
-        <div v-for="score in arrayMileExcel" :key="score.mile_excel_no" 
+    <div v-else class="pr-5 pl-5 pb-5 pt-4" style="margin-top: 10vh;">
+      <div v-if="paginatedScores.length>0">
+        <div v-for="score in paginatedScores" :key="score.mile_excel_no" 
           class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper" 
           :class="{activeDelete: deleteArray.includes(score)}"
           @click="addDeleteArray(score)"
-          style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); background-color: #FBFBFB;">
+          style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
           <div class="d-flex align-items-center justify-content-between">
-          <div class="d-flex justify-content-start align-items-center" style="width:80%;">
-            <div v-if="isNew(score.mile_excel_date)">
-              <span class="md" style="color: #edbb00">NEW</span>
+            <div class="d-flex justify-content-start align-items-center" style="width:80%;">
+              <div v-if="isNew(score.mile_excel_date)" style="padding-left:3%;">
+                <span class="md" style="color: #edbb00">NEW</span>
+              </div>
+              <span class="lg2 pl-2 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
+              <span class="md">{{ formatting(score.mile_excel_date) }}</span>
             </div>
-            <span class="lg2 pl-5 pr-2" style="margin-left: 3%; text-align: left; font-family: KB_C2">{{ score.mile_excel_file }}</span>
-            <span class="md">{{ formatting(score.mile_excel_date) }}</span>
+            <button @click.stop="downloadExcel(score.mile_excel_file)">
+              <span class="md" style="text-align: right;">파일 다운로드 〉</span>
+            </button>
           </div>
-          <button @click.stop="downloadExcel(score.mile_excel_file)"><span class="md" style="text-align: right;">파일 다운로드 〉</span></button>
-        </div>
         </div>
       </div>
       <div v-else>
         <p class="lg2" style="text-align: center; color:#aeaeb2; font-family: KB_C2;">해당 날짜에 존재하는 마일리지 엑셀 파일이 없습니다.</p>
       </div>
     </div>
-    <!--버튼-->
-    <div class="d-flex justify-content-evenly mx-auto" style="width: 80%; padding-top: 10%;">
-      <div class="my-5">
-        <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
-      </div>
-      <div class="my-5">
-        <button @click="deleteDocu" class="btn-gray" 
-          :class="{choice:deleteArray.length>0}" 
-          :style="deleteArray.length>0?{'pointer-events':'auto'} : {'pointer-events':'none'}"
-          style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">
-          삭제하기
-        </button>
-      </div>
+
+    <!-- 로드 버튼 -->
+    <div style="margin-bottom: 3%;" v-if="showLoadButton">
+      <button @click="loadScores" class="lg2" style="font-family: 'KB_C1';">
+        <i class="bi bi-arrow-clockwise lg2"></i>&nbsp;더보기
+      </button>
     </div>
 
+    <!--버튼-->
+    <div class="button-container mt-auto">
+      <div class="d-flex justify-content-evenly mx-auto">
+        <div class="my-5">
+          <button @click="openModal" class="btn-green" style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">등록하기</button>
+        </div>
+        <div class="my-5">
+          <button @click="deleteDocu" class="btn-gray" 
+            :class="{choice:deleteArray.length>0}" 
+            :style="deleteArray.length>0?{'pointer-events':'auto'} : {'pointer-events':'none'}"
+            style="width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;">
+            삭제하기
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 모달 -->
@@ -127,8 +140,13 @@ export default {
       file: null,
       selectedDate: null,
       deleteArray: [],
-      baseHeight: 90,
+      baseHeight: 80,
       increment: 10,
+      buttonHeight: 10,
+      currentPage: 1, // 현재 페이지
+      itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
+      allScores: [], // 모든 엑셀파일 데이터 
+      countList: 0 // 총 리스트 수
     }
   },
   computed:{
@@ -145,8 +163,33 @@ export default {
       return this.getArrayMileExcel;
     },
     computedHeight(){
-      return `${this.baseHeight + this.arrayMileExcel.length * this.increment}vh`;
+      let height = this.baseHeight + this.paginatedScores.length * this.increment;
+      if(this.paginatedScores.length % this.itemsPerPage === 0 && this.paginatedScores.length >0){
+        height += this.buttonHeight/2;
+      }else{
+        height += this.buttonHeight/2;
+      }
+      return `${height}vh`;
     },
+    filteredScores(){
+      if(this.selectedDate){
+        const selectedDateStr = this.formattingYear(this.selectedDate);
+        return this.allScores.filter(score => 
+          this.formattingYear(score.mile_excel_date) === selectedDateStr
+        );
+      }
+        return this.allScores;
+    },
+    paginatedScores(){
+      return this.filteredScores.slice(0, this.currentPage * this.itemsPerPage);
+    },
+    showLoadButton(){
+      const condition1 = this.filteredScores.length % this.itemsPerPage === 0;
+      const condition2 = this.filteredScores.length > 0;
+      const condition3 = this.filteredScores.length !== this.countList;
+      
+      return condition1 && condition2 && condition3;
+    }
   },
   methods:{
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
@@ -205,19 +248,30 @@ export default {
       formData.append('file', this.file);
       formData.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
       try{
-        await axios.post(`http://localhost:8090/mileage/uploadExcel`, formData, {
+        const response = await axios.post(`http://localhost:8090/mileage/uploadExcel`, formData, {
           headers: {
             'Content-Type':'multipart/form-data',
           },
         });
-        this.showAlert('마일리지 업로드 성공', 'success', '#');
+        if(response.data.success){
+          this.showAlert('마일리지 업로드 성공', 'success', '#');
+        }else{
+          this.showAlert('마일리지 업로드 실패', 'error', '#');
+        }
       }catch(error){
         console.error('Error uploading file', error);
         this.showAlert('마일리지 업로드 실패', 'error', '#');
       }
     },
     async fetchScoresByDate(){
-      await this.fetchMileExcelInfo(this.selectedDate);
+      const response = await this.fetchMileExcelInfo({
+        selectedDate: this.formattingYear(this.selectedDate),
+        mile_no: this.loginInfo.mile_no,
+        page: this.currentPage,
+        itemsPerPage: this.itemsPerPage
+      });
+      this.allScores.push(...response.data);
+      this.currentPage++;
     },
     showAlert(t, i, r) {
       this.$swal({
@@ -239,6 +293,23 @@ export default {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     },
+    async loadScores(){
+      if(this.selectedDate){
+        await this.fetchScoresByDate();
+      }else{
+        const response = await this.mileExcelLists({
+          mile_no: this.loginInfo.mile_no,
+          page: this.currentPage,
+          itemsPerPage: this.itemsPerPage
+        });
+        this.allScores.push(...response.data);
+        this.currentPage++;
+
+        const mile_no = this.loginInfo.mile_no;
+        const countList = await axios.get(`http://localhost:8090/mileage/countList/${mile_no}`);
+        this.countList = countList.data;
+      } 
+    },
   },
   created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
@@ -251,7 +322,7 @@ export default {
     const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
     if(mile_no){
       this.getMileDetail(mile_no);
-      this.mileExcelLists(mile_no);
+      this.loadScores(); // 첫 페이지 로드 
     }else{
       console.error('mile_no이 유효하지 않습니다.');
     }
@@ -263,7 +334,7 @@ export default {
 <style scope>
 .page-back {
   width: 70%;
-  height: 90vh;
+  /* height: 90vh; */
   /* height: 800px; */
   margin-top: 5%;
 }
@@ -299,5 +370,15 @@ export default {
   cursor: pointer;
   background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
+}
+.button-container {
+  margin-top: auto;
+  padding: 20px 0;
+}
+.button-style {
+  width: 8vw;
+  height: 3vw;
+  font-size: 1.2vw;
+  font-family: KB_C2;
 }
 </style>

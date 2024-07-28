@@ -58,9 +58,9 @@ public class MileScoreService {
         }
     }
     public int getSum(String mile_no){ return mileageDao.selectMileSum(mile_no);}
-    public List<MileExcel> getMileExcel(String selectedDate){ return mileageDao.selectMileExcel(selectedDate);}
+    public List<MileExcel> getMileExcel(String selectedDate, String mile_no, int limit, int offset){ return mileageDao.selectMileExcel(selectedDate, mile_no, limit, offset);}
     public List<DocumentMile> totalDocument(String mile_no, int limit, int offset){ return mileageDao.selectTotalDocument(mile_no, limit, offset);}
-    public List<MileExcel> totalExcel(String mile_no){ return mileageDao.selectTotalExcel(mile_no);}
+    public List<MileExcel> totalExcel(String mile_no, int limit, int offset){ return mileageDao.selectTotalExcel(mile_no, limit, offset);}
     public ArrayList<MileScore> kingData() {return  mileageDao.kingData();   }
     public int addMileageDocument(String mile_no, String document_file) {
         return mileageDao.insertMileDocu(mile_no, document_file);}
@@ -69,7 +69,8 @@ public class MileScoreService {
             mileageDao.deleteDocument(num);
         }
     }
-
+    public int getCount(String mile_no){ return mileageDao.selectCount(mile_no);}
+    public int getCountDocuments(String mile_no){ return mileageDao.selectCountDocu(mile_no);}
     public ArrayList<MileScore> jumpData() { return  mileageDao.jumpData();}
 
     public ArrayList<MileScore> kingDataSelect() {return  mileageDao.kingDataSelect();

@@ -43,8 +43,8 @@ public interface MileageDao {
     void moveMileScoreToHistory(String mile_no);
     void deleteAllMileScore(String mile_no);
     void insertDetailMileScore(Map<String, Object> detailScore);
-    List<MileExcel> selectMileExcel(String selectedDate);
-    List<MileExcel> selectTotalExcel(String mile_no);
+    List<MileExcel> selectMileExcel(String selectedDate, String mile_no, int limit, int offset);
+    List<MileExcel> selectTotalExcel(String mile_no, int limit, int offset);
     List<DocumentMile> selectTotalDocument(String mile_no, int limit, int offset);
     void moveMileExcelToHistory(String mile_excel_no);
     void deleteAllMileExcel(String mile_excel_no);
@@ -52,6 +52,8 @@ public interface MileageDao {
     void deleteScore(String mile_score_date, String mile_no);
     int insertMileDocu(String mile_no, String document_file);
     void deleteDocument(String num);
+    int selectCount(String mile_no);
+    int selectCountDocu(String mile_no);
     ArrayList<MileScore> kingData();
 
 
