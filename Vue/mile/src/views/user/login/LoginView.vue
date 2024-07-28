@@ -103,6 +103,7 @@ export default {
       this.$swal({
         title: '유효하지 않은 로그인정보 입니다',
         icon: 'error',
+        scrollbarPadding: false
       });
     },
   },

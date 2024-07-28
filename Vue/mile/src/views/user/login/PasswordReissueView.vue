@@ -71,7 +71,7 @@ export default {
         title: "발송완료!",
         text: message,
         icon: icon,
-        
+        scrollbarPadding: false
       });
     },
   }

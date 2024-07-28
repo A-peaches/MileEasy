@@ -181,6 +181,7 @@ export default {
       this.$swal({
         title: t,
         icon: i,
+        scrollbarPadding: false
       }).then((result) => {
         if(result.isConfirmed){
           if(r == '#'){

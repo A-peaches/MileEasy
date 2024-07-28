@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.mileage.type;
 
+import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
 import com.kbstar.mileEasy.mapper.MileageDao;
 import com.kbstar.mileEasy.mapper.MyMileDao;
@@ -17,5 +18,9 @@ public class MyMileageService {
 
     public List<MyMiles> getMyMiles(String userNo) {
         return myMileDao.getMyMiles(userNo);
+    }
+
+    public List<MileStatus>  getMileStatus(String userNo, int mileNo) {
+        return myMileDao.getMileStatus(userNo,mileNo);
     }
 }
