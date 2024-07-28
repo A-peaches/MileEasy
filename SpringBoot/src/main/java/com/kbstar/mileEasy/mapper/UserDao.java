@@ -27,4 +27,6 @@ public interface UserDao {
     ArrayList<User> levelChartData(String date);
 
     ArrayList<User> getileageAdminList(String mileNo);
+
+    ArrayList<User> searchUser();
 }

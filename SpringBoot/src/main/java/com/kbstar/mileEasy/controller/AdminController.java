@@ -210,6 +210,13 @@ public class AdminController {
     }
 
 
+    @PostMapping("/searchUser")
+    public ArrayList<User> searchUser() {
+        System.out.println("서치유저");
+        return adminService.searchUser();
+    }
+
+
     @PostMapping("/newAdminList")
     public ArrayList<User> newAdminList(@RequestParam("mile_no") String mile_no) {
         System.out.println("마일리지: " + mile_no);

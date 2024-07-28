@@ -23,6 +23,8 @@ public class AdminService {
 
     }
 
+    public ArrayList<User> searchUser() { return userDao.searchUser();   }
+
     // @Autowired
     //private AdminDao adminDao;
 

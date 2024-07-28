@@ -1,6 +1,6 @@
 <template>
   <div class="modals" v-if="isOpen">
-    <div class="modals-content" style="width: 500px; height: auto">
+    <div class="modals-content" style="width: 700px; height: auto">
       <span class="close" @click="$emit('close')">&times;</span>
 
       <span class="KB_S4" style="font-size: 19pt">{{ mileName }} 수정</span>
@@ -60,6 +60,9 @@
             />
             &nbsp;&nbsp;
             <i class="bi bi-dash-lg" @click="removeNewAdmin(index)"></i>
+            <span v-if="!newAdmin.user_name && isSubmitted" style="color: red"
+              >이름이나 사번을 입력해주세요</span
+            >
           </div>
         </div>
       </div>
@@ -82,6 +85,7 @@ export default {
       admins: [], // 기존 담당자 목록
       newAdmins: [], // 새로 추가된 담당자 목록
       mileNameInput: this.mileName, // 마일리지 이름 입력 필드
+      isSubmitted: false, // 유효성 검사 후 제출 여부
     };
   },
   props: {
@@ -126,6 +130,14 @@ export default {
       this.newAdmins.splice(index, 1);
     },
     async newAdminList() {
+      this.isSubmitted = true;
+
+      // 새 담당자 유효성 검사
+      const invalidAdmins = this.newAdmins.filter((admin) => !admin.user_name);
+      if (invalidAdmins.length > 0) {
+        return;
+      }
+
       console.log(this.newAdmins);
       console.log(this.admins);
       this.$emit('close'); // 변경하기 버튼 클릭 시 모달 닫기
@@ -142,6 +154,23 @@ export default {
         );
         console.log('완료여부:', response.data);
         this.admins = response.data; // 기존 담당자 목록 업데이트
+        this.isSubmitted = false; // 제출 후 초기화
+      } catch (error) {
+        console.error('Error fetching admin list:', error);
+        this.admins = []; // 오류 처리
+      }
+    },
+    async searchUser() {
+      try {
+        const response = await axios.post(
+          'http://localhost:8090/admin/searchUser',
+          null,
+          {
+            params: {},
+          }
+        );
+        console.log('유저 리스트:', response.data);
+        return response.data; // 기존 담당자 목록 업데이트
       } catch (error) {
         console.error('Error fetching admin list:', error);
         this.admins = []; // 오류 처리
@@ -150,6 +179,7 @@ export default {
   },
   mounted() {
     this.getMileageAdminList();
+    this.searchUser();
   },
   watch: {
     mileName(newVal) {
