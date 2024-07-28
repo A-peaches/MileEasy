@@ -16,6 +16,7 @@
             class="input-base input-gray"
             placeholder="변경 후 마일리지 이름을 입력하세요"
             style="width: 300px; height: 40px"
+            v-model="mileNameInput"
           />
         </div>
       </div>
@@ -80,6 +81,7 @@ export default {
     return {
       admins: [], // 기존 담당자 목록
       newAdmins: [], // 새로 추가된 담당자 목록
+      mileNameInput: this.mileName, // 마일리지 이름 입력 필드
     };
   },
   props: {
@@ -140,7 +142,6 @@ export default {
         );
         console.log('완료여부:', response.data);
         this.admins = response.data; // 기존 담당자 목록 업데이트
-        // 모달 닫기
       } catch (error) {
         console.error('Error fetching admin list:', error);
         this.admins = []; // 오류 처리
@@ -149,6 +150,11 @@ export default {
   },
   mounted() {
     this.getMileageAdminList();
+  },
+  watch: {
+    mileName(newVal) {
+      this.mileNameInput = newVal;
+    },
   },
 };
 </script>

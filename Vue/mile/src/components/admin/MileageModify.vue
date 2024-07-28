@@ -20,13 +20,6 @@
                 <a @click.stop="openModal(card.mile_name, card.mile_no)"
                   >수정</a
                 >
-                <SearchModal
-                  v-if="isModalOpen"
-                  :mileName="selectedMileName"
-                  :mileNo="selectedMileNo"
-                  :isOpen="isModalOpen"
-                  @close="closeModal"
-                />
                 &nbsp;&nbsp;
                 <a @click="deleteMile(card.mile_no)">삭제</a>
               </span>
@@ -42,6 +35,13 @@
       </div>
       <div class="my-3"></div>
     </div>
+    <SearchModal
+      v-if="isModalOpen"
+      :mileName="selectedMileName"
+      :mileNo="selectedMileNo"
+      :isOpen="isModalOpen"
+      @close="closeModal"
+    />
   </div>
 </template>
 
@@ -52,7 +52,7 @@ import Swal from 'sweetalert2';
 import SearchModal from '../admin/SearchModal.vue';
 
 export default {
-  name: 'KingMain',
+  name: 'MileageModify',
   components: { SearchModal },
   data() {
     return {
