@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.quartz.QuartzTransactionManager;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -365,6 +366,13 @@ public class MileageController {
             e.printStackTrace();
             return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
+    }
+
+    // totalLists 마일리지 문서 리스트 전체 불러오기(매개변수: mile_no)
+    @GetMapping("/totalLists/{mile_no}")
+    public List<DocumentMile> totalLists(@PathVariable String mile_no){
+        List<DocumentMile> documentMileList = mileScoreService.documentsForSearch(mile_no);
+        return documentMileList;
     }
 
     //totalMileDocument 마일리지 문서 리스트 형식으로 불러오기 (매개변수: mile_no, page, itemsPerPage)

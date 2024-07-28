@@ -5,7 +5,8 @@ const state = {
   objectMileExcel: null,
   arrayMileExcel: [],
   arrayMileDocument: [],
-  document_sum: 0
+  document_sum: 0,
+  totalDocuments: []
 };
 
 const mutations = {
@@ -20,6 +21,9 @@ const mutations = {
   },
   setDocumentSum(state, payload) {
     state.documentSum = payload;
+  },
+  setTotaldocuments(state, payload) {
+    state.totalDocuments = payload;
   }
 };
 
@@ -86,6 +90,14 @@ const actions = {
       console.error('Error get mile excel lists:', error);
     }
   },
+  async mileDocumentsTotal({commit}, mile_no){
+    try{
+      const response = await axios.get(`http://localhost:8090/mileage/totalLists/${mile_no}`);
+      commit('setTotalDocuments', response.data);
+    }catch(error){
+      console.error('Error get document total lists:', error);
+    }
+  },
   async mileDocumentLists(context, {mile_no, page, itemsPerPage}){
     try{
       const response = await axios.get(`http://localhost:8090/mileage/totalMileDocument/${mile_no}?page=${page}&itemsPerPage=${itemsPerPage}`);
@@ -127,6 +139,7 @@ const getters = {
   getArrayMileExcel: (state) => state.arrayMileExcel,
   getArrayMileDocument: (state) => state.arrayMileDocument,
   getDocumentSum: (state) => state.documentSum,
+  getTotalDocuments: (state) => state.totalDocuments
 };
 
 

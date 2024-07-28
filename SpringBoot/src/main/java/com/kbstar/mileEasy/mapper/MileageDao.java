@@ -46,6 +46,7 @@ public interface MileageDao {
     List<MileExcel> selectMileExcel(String selectedDate, String mile_no, int limit, int offset);
     List<MileExcel> selectTotalExcel(String mile_no, int limit, int offset);
     List<DocumentMile> selectTotalDocument(String mile_no, int limit, int offset);
+    List<DocumentMile> selectDocumentLists(String mile_no);
     void moveMileExcelToHistory(String mile_excel_no);
     void deleteAllMileExcel(String mile_excel_no);
     void moveScoreToHistory(String mile_score_date, String mile_no);

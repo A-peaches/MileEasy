@@ -122,6 +122,10 @@
         select * from Document_mile where mile_no=#{mile_no} order by document_date DESC limit #{limit} offset #{offset};
     </select>
 
+    <select id="selectDocumentLists" resultType="com.kbstar.mileEasy.dto.DocumentMile">
+        select * from Document_mile where mile_no=#{mile_no} order by document_date DESC;
+    </select>
+
     <select id="selectCount" resultType="int">
         select count(mile_excel_no) from mile_excel where mile_no =#{mile_no};
     </select>
