@@ -47,7 +47,7 @@
 
       <div class="notice-list">
         <div v-if="paginatedNotices.length">
-          <div class="input-base list-wrapper" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice.notice_board_no)">
+          <div class="input-base list-wrapper" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice)">
               <div class="notice-details">
                 <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
@@ -166,9 +166,6 @@ export default {
     closeDropdown() {
       this.showCategory = false;
     },
-    goToDetailView(noticeId) {
-      this.$router.push({ name: 'noticeDetailView', params: { id: noticeId } });
-    },
     handleClickOutside(event) {
       if (
         this.$refs.dropdownMenu &&
@@ -214,35 +211,38 @@ export default {
         console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
       }
     },
-    async handleNoticeClick(noticeId) {
-  if (this.isProcessing) {
-    return;
-  }
-  this.isProcessing = true;
-  console.log(`Clicked notice with ID: ${noticeId}`);
-  try {
-    const response = await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
-    console.log('Increment views response:', response.data);
-    
-    // 로컬 상태 업데이트
-    const noticeIndex = this.notices.findIndex(notice => notice.notice_board_no === noticeId);
-    if (noticeIndex !== -1) {
-      this.notices[noticeIndex] = {
-        ...this.notices[noticeIndex],
-        notice_board_hit: (this.notices[noticeIndex].notice_board_hit || 0) + 1
-      };
-    }
-    
-    // 상세 페이지로 이동
-    this.goToDetailView(noticeId);
-  } catch (error) {
-    console.error('Error incrementing views:', error.response ? error.response.data : error.message);
-  } finally {
-    this.isProcessing = false;
-  }
-},
+    async handleNoticeClick(notice) {
+      if (this.isProcessing) return;
+      this.isProcessing = true;
+      try {
+        const response = await axios.post(`http://localhost:8090/notice/increment-views/${notice.notice_board_no}`);
+        console.log('Increment views response:', response.data);
 
+        const noticeIndex = this.notices.findIndex(n => n.notice_board_no === notice.notice_board_no);
+        if (noticeIndex !== -1) {
+          this.notices[noticeIndex] = {
+            ...this.notices[noticeIndex],
+            notice_board_hit: (this.notices[noticeIndex].notice_board_hit || 0) + 1
+          };
+        }
 
+        this.$router.push({
+          name: 'noticeDetailView',
+          params: { 
+            id: notice.notice_board_no, 
+            notice: {
+              ...notice,
+              mile_no: notice.mile_no,
+              mile_name: notice.mile_name
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error incrementing views:', error.response ? error.response.data : error.message);
+      } finally {
+        this.isProcessing = false;
+      }
+    },
 
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };

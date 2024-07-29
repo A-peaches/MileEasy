@@ -16,9 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +34,64 @@ public class NoticeController {
     @Value("${project.uploadpath.notice}")
     private String uploadPath;
 
+    // 게시글 수정
+    @PostMapping("/update")
+    public ResponseEntity<?> updateNotice(
+            @RequestParam("notice_board_no") int noticeBoardNo,
+            @RequestParam("notice_board_title") String title,
+            @RequestParam("mile_name") String mileName,
+            @RequestParam("notice_board_content") String content,
+            @RequestParam("user_no") String userNo,
+            @RequestParam("user_name") String userName,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            Notice notice = new Notice();
+            notice.setNotice_board_no(noticeBoardNo);
+            notice.setNotice_board_title(title);
+            notice.setMile_name(mileName);
+            notice.setNotice_board_content(content);
+            notice.setUser_no(userNo);
+            notice.setUser_name(userName);
+
+            if (file != null && !file.isEmpty()) {
+                String originalFileName = file.getOriginalFilename();
+                String decodedFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8.toString());
+                String fileName = UUID.randomUUID().toString() + "_" + decodedFileName;
+                Path filePath = Paths.get(uploadPath).resolve(fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                notice.setNotice_board_file(fileName);
+            }
+
+            noticeService.updateNotice(notice);
+            return ResponseEntity.ok("Notice updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating notice: " + e.getMessage());
+        }
+    }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
+//        Notice notice = noticeService.findById(id);
+//        if (notice != null) {
+//            return ResponseEntity.ok(notice);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteNotice(@PathVariable Long id) {
+        try {
+            noticeService.deleteNotice(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice");
+        }
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -45,24 +104,51 @@ public class NoticeController {
         }
     }
 
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+    @GetMapping("/download/{encodedFileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String encodedFileName) {
         try {
-            Path filePath = Paths.get(uploadPath).resolve(fileName);
+            String decodedFileName = URLDecoder.decode(encodedFileName, StandardCharsets.UTF_8.name());
+            System.out.println("Decoded file name: " + decodedFileName); // 로그 추가
+
+            // UUID를 포함한 파일 이름 찾기
+            Path dirPath = Paths.get(uploadPath);
+            String matchingFileName = null;
+
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath)) {
+                for (Path path : stream) {
+                    if (path.getFileName().toString().endsWith("_" + decodedFileName)) {
+                        matchingFileName = path.getFileName().toString();
+                        break;
+                    }
+                }
+            }
+
+            if (matchingFileName == null) {
+                System.out.println("File not found");
+                return ResponseEntity.notFound().build();
+            }
+
+            Path filePath = dirPath.resolve(matchingFileName);
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() || resource.isReadable()) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLEncoder.encode(decodedFileName, StandardCharsets.UTF_8.toString()) + "\"")
                         .body(resource);
             } else {
+                System.out.println("Resource not readable");
                 return ResponseEntity.notFound().build();
             }
-        } catch (MalformedURLException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
+
+
+
+
 
     //게시글 리스트
     @GetMapping("/list")
@@ -83,7 +169,6 @@ public class NoticeController {
         List<Mileage> mileages = noticeService.getAllMilesge();
         return ResponseEntity.ok(mileages);
     }
-
     // 게시글 조회수
     @PostMapping("/increment-views/{noticeId}")
     public ResponseEntity<Void> incrementNoticeViews(@PathVariable("noticeId") int noticeId) {
@@ -139,7 +224,6 @@ public class NoticeController {
             return ResponseEntity.status(500).body("공지사항 등록 중 오류가 발생했습니다.");
         }
     }
-
 
 }
 

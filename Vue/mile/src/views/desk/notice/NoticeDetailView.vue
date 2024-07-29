@@ -17,8 +17,6 @@
       <div class="content">
         <span v-if="isNew(notice.notice_board_date)" class="new-label">NEW</span>
         <h1 class="title">{{ notice.notice_board_title }}</h1>
-          
-
         <div class="meta">
           <span class="author">{{ notice.user_name }}</span>
           <span class="date">{{ formatDate(notice.notice_board_date) }}</span>
@@ -27,14 +25,17 @@
           <div class="body">
             <p>{{ notice.notice_board_content }}</p>
           </div>
-          <div class="file cards" v-if="notice.notice_board_file">
-          <h2>첨부파일</h2>
-          <div v-if="notice.notice_board_file">
-            <a @click.prevent="downloadFile" href="#" class="file-download-link">
-              {{ notice.notice_board_file }} 다운로드
-            </a>
-  </div>
-        </div>
+          <div class="file cards">
+            <h2>첨부파일</h2>
+            <div v-if="notice.notice_board_file">
+              <a @click.prevent="downloadFile" href="#" class="file-download-link">
+                {{ notice.notice_board_file }} 다운로드
+              </a>
+            </div>
+            <div v-else>
+              <p style="color: #4b4a4a;">첨부된 파일이 없습니다. 필요시 관리자에게 문의하세요.</p>
+            </div>
+          </div>
         </div>
         <div class="icon-container">
           <div class="views-icon">
@@ -65,39 +66,41 @@ export default {
       this.$router.push({ name: 'noticeModifyAdminView', params: { id: this.notice.notice_board_no } });
     },
     isNew(dateString) {
-    const today = new Date();
-    const noticeDate = new Date(dateString);
-    const diffTime = Math.abs(today - noticeDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 7;
-  },
+      const today = new Date();
+      const noticeDate = new Date(dateString);
+      const diffTime = Math.abs(today - noticeDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays <= 7;
+    },
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
     async downloadFile() {
-      if (!this.notice.notice_board_file) return;
+    if (!this.notice.notice_board_file) return;
 
-      try {
-        const response = await axios({
-          url: `http://localhost:8090/notice/download/${this.notice.notice_board_file}`,
-          method: 'GET',
-          responseType: 'blob',
-        });
-        
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', this.notice.notice_board_file.split('_').pop()); // UUID 제거
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error('파일 다운로드 중 오류 발생:', error);
-        // 에러 처리 (예: 사용자에게 알림)
-      }
-    },
+    try {
+      const encodedFileName = encodeURIComponent(this.notice.notice_board_file);
+      console.log("Encoded file name: " + encodedFileName); // 로그 추가
+      const response = await axios({
+        url: `http://localhost:8090/notice/download/${encodedFileName}`,
+        method: 'GET',
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', this.notice.notice_board_file); // UUID 제거하여 다운로드
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('파일 다운로드 중 오류 발생:', error);
+      // 에러 처리 (예: 사용자에게 알림)
+    }
   },
+},
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('notice', ['getNotice']),
@@ -125,10 +128,12 @@ export default {
   mounted() {
     const noticeId = this.$route.params.id;
     this.fetchNoticeDetail(noticeId);
-    console.log('Notice Detail:', this.notice); // Notice 객체 콘솔 출력s
+    console.log('Notice Detail:', this.notice); // Notice 객체 콘솔 출력
   },
 };
 </script>
+
+
 
 <style scoped>
 .app-container {
