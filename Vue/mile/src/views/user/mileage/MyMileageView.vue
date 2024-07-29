@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="row mx-2" style="margin-top: 100px" v-if="dataLoaded">
-      <div v-for="(card, index) in getMyMile" :key="index" class="col-6 mb-3">
+      <div v-for="(card, index) in filteredMyMile" :key="index" class="col-6 mb-3">
         <div
           class="cards mx-3 fade-up-item"
           style="background-color: #f9f9f9; height: 280px; position: relative"
@@ -119,15 +119,23 @@ export default {
       el.style.setProperty("--index", index);
     },
     applyFadeUpEffect() {
-      const items = this.$el.querySelectorAll(".fade-up-item");
-      items.forEach((item, index) => {
-        item.style.setProperty("--index", index);
-        item.style.setProperty("z-index", 10 - index);
-        setTimeout(() => {
-          item.classList.add("fade-up-active");
-        }, 100 * index);
-      });
-    },
+  console.log("Applying fade-up effect");
+  const items = this.$el.querySelectorAll(".fade-up-item");
+  console.log(`Found ${items.length} items to animate`);
+  
+  items.forEach((item, index) => {
+    item.style.setProperty("--index", index);
+    item.style.setProperty("z-index", items.length - index);
+    
+    // 모든 항목에 대해 약간의 기본 지연 시간을 설정
+    const baseDelay = 50;
+    const delay = baseDelay + (50 * index);
+    
+    setTimeout(() => {
+      item.classList.add("fade-up-active");
+    }, delay);
+  });
+},
     toggleHelpPopover(event) {
       event.stopPropagation(); // 이벤트 전파 중지
       console.log('toggleHelpPopover 클릭');
@@ -154,8 +162,11 @@ export default {
     ...mapGetters("login", ["getLoginInfo"]),
     ...mapGetters("mileScore", ["getMyMile"]),
 
-    myMile() {
-      return this.getMyMiles;
+    filteredMyMile() {
+      if (this.getLoginInfo.job_no == '기획') {
+        return this.getMyMile.filter(item => item.mile_is_branch == false);
+      }
+      return this.getMyMile;
     },
   },
   watch: {

@@ -31,14 +31,14 @@ const actions = {
       //  user_profile: 직원 프로필 사진 파일 이름
       //  user_year: 입사년도
       //  user_birth: 생년월일
-      //  user_is_delete: 직원 삭제 여부
-      //  user_is_manager: 직원 마일리지 담당자 여부 (1~8번)
+      //  user_is_delete: 직원 삭제 여부 (0 or 1)
+      //  user_is_manager: 직원 마일리지 담당자 여부 (0 or 1)
       //  user_is_admin: 직원 운영 관리자 여부 (0 or 1)
       //  dp_no: 소속 부서 이름
       //  level_no: 직급레벨(ex. L1)
       //  job_no: 직무명(ex. 개인)
       //  position_no: 직급명(ex. 대리)
-      //  mile_no: 직원 마일리지 담당자인 경우, 마일리지 번호 
+      //  mile_no: 직원 마일리지 담당자인 경우, 마일리지 번호 (1~8)
       //}
       commit('setIsChecked', loginInfo.is_checked);
       if (response.status === 200) {

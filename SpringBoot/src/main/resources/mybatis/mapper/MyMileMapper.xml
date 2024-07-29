@@ -8,7 +8,8 @@
             SUM(CASE WHEN ms.user_no = #{userNo} THEN ms.mile_score_point ELSE 0 END) AS user_point,
             m.mile_max,
             SUM(ms.mile_score_point) AS all_point,
-            ms.mile_score_date AS mile_date
+            ms.mile_score_date AS mile_date,
+            m.mile_is_branch
         FROM
             mileage m
                 LEFT JOIN

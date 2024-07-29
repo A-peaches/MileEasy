@@ -6,14 +6,14 @@
       <div class="lg2" style="padding: 3em">총 {{ documentSum }}건</div>
       <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
         <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
-          <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
+          <input type="text" v-model="searchQuery" @input="onSearch" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
           <button><i class="bi bi-search mr-2" style="font-size: 25px; color: #4b4a4a"></i></button>
         </div>
       </div>
     </div>
     
     <!-- 마일리지 문서 리스트 -->
-    <div v-if="filteredDocuments.length>0" class="p-5" style="margin-top: 10vh;">
+    <div v-if="filteredDocuments.length>0" class="pr-5 pl-5 pb-5 pt-4" style="margin-top: 10vh;">
       <div v-for="document in paginatedDocuments" :key="document.documnet_mile_no" 
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
         :class="{activeDelete: deleteArray.includes(document)}"
@@ -42,7 +42,7 @@
     </div>
 
     <!-- 로드 버튼 -->
-    <div style="margin-bottom: 3%;" v-if="filteredDocuments.length % itemsPerPage === 0 && this.filteredDocuments.length >0">
+    <div style="margin-bottom: 3%;" v-if="showLoadButton">
       <button @click="loadDocuments" class="lg2" style="font-family: 'KB_C1';">
         <i class="bi bi-arrow-clockwise lg2"></i>&nbsp;더보기
       </button>
@@ -115,7 +115,9 @@ export default {
       searchQuery: '', // 검색어 추가
       currentPage: 1, // 현재 페이지
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
-      allDocuments: [] // 모든 문서 데이터 
+      allDocuments: [], // 모든 문서 데이터 
+      countList: 0,
+      lastInputTime: 0 // 마지막 입력 시간
     }
   },
   computed:{
@@ -148,6 +150,13 @@ export default {
     },
     paginatedDocuments(){
       return this.filteredDocuments.slice(0, this.currentPage * this.itemsPerPage);
+    },
+    showLoadButton(){
+      const condition1 = this.filteredDocuments.length % this.itemsPerPage === 0;
+      const condition2 = this.filteredDocuments.length > 0;
+      const condition3 = this.filteredDocuments.length !== this.countList;
+      
+      return condition1 && condition2 && condition3;
     }
   },
   methods:{
@@ -213,7 +222,6 @@ export default {
       }
     },
     downloadDocu(document_file){
-      
       this.downloadDocument({ document_file });
     },
     addDeleteDocuArray(document){
@@ -223,7 +231,6 @@ export default {
       }else{
         this.deleteArray = this.deleteArray.filter(item => item !== document);
       }
-      console.log("이건 삭제할 대상 배열", this.deleteArray);
     },
     async deleteDocu(){
       if(this.deleteArray!=null){
@@ -246,6 +253,19 @@ export default {
       });
       this.allDocuments.push(...response.data);
       this.currentPage++;
+      
+      const mile_no = this.loginInfo.mile_no;
+      const countList = await axios.get(`http://localhost:8090/mileage/countListDocuments/${mile_no}`);
+      this.countList = countList.data;
+    },
+    onSearch(){
+      const currentTime = Date.now();
+      const timeSinceLastInput = currentTime - this.lastInputTime;
+
+      if(timeSinceLastInput>500){
+        this.lastInputTime = currentTime;
+        this.loadDocuments();
+      }
     }
   },
   created(){
@@ -264,7 +284,12 @@ export default {
     }else{
       console.error('mile_no이 유효하지 않습니다.');
     }
-    
+  },
+  watch: {
+    searchQuery(){
+      this.lastInputTime = Date.now();
+      this.onSearch();
+    }
   }
 };
 </script>

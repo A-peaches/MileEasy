@@ -80,7 +80,7 @@ export default {
 };
 </script>
   
-  <style scoped>
+<style scoped>
 .page-back {
   width: 70%;
   height: 100%;
