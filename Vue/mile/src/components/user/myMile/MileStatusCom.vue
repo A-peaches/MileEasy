@@ -87,22 +87,26 @@ export default {
     },
 
     applyFadeUpEffect() {
-    const items = this.$el.querySelectorAll(".fade-up-item");
-    items.forEach((item, index) => {
-      item.style.setProperty("--index", index);
-      item.style.setProperty("z-index", 10 - index);
-      
-      // 지연 시간을 약간 늘리고, 단일 아이템일 경우에도 충분한 지연을 줍니다.
-      const delay = items.length === 1 ? 300 : 100 * (index + 1);
-      
-      setTimeout(() => {
-        item.classList.add("fade-up-active");
-      }, delay);
-    });
-  },
+  console.log("Applying fade-up effect");
+  const items = this.$el.querySelectorAll(".fade-up-item");
+  console.log(`Found ${items.length} items to animate`);
+  
+  items.forEach((item, index) => {
+    item.style.setProperty("--index", index);
+    item.style.setProperty("z-index", items.length - index);
+    
+    // 모든 항목에 대해 약간의 기본 지연 시간을 설정
+    const baseDelay = 50;
+    const delay = baseDelay + (50 * index);
+    
+    setTimeout(() => {
+      item.classList.add("fade-up-active");
+    }, delay);
+  });
+},
 
 
-  async loadData() {
+async loadData() {
   try {
     const loginInfo = this.getLoginInfo;
     if (loginInfo && loginInfo.user_no) {
@@ -113,22 +117,24 @@ export default {
       console.log("상속:", this.getMileStatus[0].mile_name);
       this.$emit("data-loaded", this.getMileStatus[0].mile_name);
       
-      // 데이터 로딩 완료 후 약간의 지연을 두고 효과 적용
-      setTimeout(() => {
-        this.dataLoaded = true;
-        this.$nextTick(() => {
-          this.applyFadeUpEffect();
-        });
-      }, 100);
+      this.dataLoaded = true;
+      this.$nextTick(() => {
+        this.applyFadeUpEffect();
+      });
     }
   } catch (error) {
     console.error("Error loading data:", error);
   }
 }
   },
-  async created() {
-    await this.loadData();
-  },
+mounted() {
+  this.loadData().then(() => {
+    // 데이터 로딩 완료 후 애니메이션 적용
+    this.$nextTick(() => {
+      this.applyFadeUpEffect();
+    });
+  });
+},
   computed: {
     ...mapGetters("login", ["getLoginInfo"]),
     ...mapGetters("mileScore", ["getMileStatus"]),
@@ -141,7 +147,7 @@ export default {
   transform: translateY(20px);
   transition: all 0.5s ease-out;
   transition-delay: calc(var(--index) * 100ms);
-  position: relative; /* z-index가 작동하도록 */
+  position: relative;
 }
 .fade-up-active {
   opacity: 1;

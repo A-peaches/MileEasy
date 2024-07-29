@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Mileage {
+public class MileDetail {
     private int mile_no;
     private String mile_name;
     private int mile_max;

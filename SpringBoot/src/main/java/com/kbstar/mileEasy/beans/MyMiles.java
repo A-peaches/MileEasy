@@ -14,4 +14,5 @@ public class MyMiles {
     private int mile_max;
     private int all_point;
     private String mile_date;
+    private boolean mile_is_branch;
 }
