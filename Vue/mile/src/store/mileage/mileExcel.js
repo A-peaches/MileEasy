@@ -5,7 +5,8 @@ const state = {
   objectMileExcel: null,
   arrayMileExcel: [],
   arrayMileDocument: [],
-  document_sum: 0
+  document_sum: 0,
+  totalDocuments: []
 };
 
 const mutations = {
@@ -20,14 +21,17 @@ const mutations = {
   },
   setDocumentSum(state, payload) {
     state.documentSum = payload;
+  },
+  setTotaldocuments(state, payload) {
+    state.totalDocuments = payload;
   }
 };
 
 const actions = {
-  async fetchMileExcelInfo({ commit }, selectedDate) {
+  async fetchMileExcelInfo(context, {selectedDate, mile_no, page, itemsPerPage}) {
     try{
-      const response = await axios.get(`http://localhost:8090/mileage/mileExcelFiles`, {params: {date: selectedDate}});
-      commit('setArrayMileExcel', response.data);
+      const response = await axios.get(`http://localhost:8090/mileage/mileExcelFiles`, {params: {date: selectedDate, mile_no: mile_no, page: page, itemsPerPage:itemsPerPage}});
+      return response;
     }catch(error){
       console.error('Error fetching mile Excel info:', error);
     }
@@ -78,12 +82,20 @@ const actions = {
       console.error('파일 다운로드 실패', error);
     }
   },
-  async mileExcelLists({ commit }, mile_no){
+  async mileExcelLists(context, {mile_no, page, itemsPerPage}){
     try{
-      const response = await axios.get(`http://localhost:8090/mileage/totalMileExcel/${mile_no}`)
-      commit('setArrayMileExcel', response.data);
+      const response = await axios.get(`http://localhost:8090/mileage/totalMileExcel/${mile_no}?page=${page}&itemsPerPage=${itemsPerPage}`);
+      return response;
     }catch(error){
       console.error('Error get mile excel lists:', error);
+    }
+  },
+  async mileDocumentsTotal({commit}, mile_no){
+    try{
+      const response = await axios.get(`http://localhost:8090/mileage/totalLists/${mile_no}`);
+      commit('setTotalDocuments', response.data);
+    }catch(error){
+      console.error('Error get document total lists:', error);
     }
   },
   async mileDocumentLists(context, {mile_no, page, itemsPerPage}){
@@ -127,6 +139,7 @@ const getters = {
   getArrayMileExcel: (state) => state.arrayMileExcel,
   getArrayMileDocument: (state) => state.arrayMileDocument,
   getDocumentSum: (state) => state.documentSum,
+  getTotalDocuments: (state) => state.totalDocuments
 };
 
 

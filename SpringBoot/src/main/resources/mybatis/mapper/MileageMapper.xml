@@ -111,15 +111,27 @@
     </insert>
 
     <select id="selectMileExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
-        select * from mile_excel where date(mile_excel_date) = #{selectedDate};
+        select * from mile_excel where date(mile_excel_date) = #{selectedDate} and mile_no = #{mile_no} order by mile_excel_date DESC limit #{limit} offset #{offset};
     </select>
 
     <select id="selectTotalExcel" resultType="com.kbstar.mileEasy.dto.MileExcel">
-        select * from mile_excel where mile_no = #{mile_no};
+        select * from mile_excel where mile_no = #{mile_no} order by mile_excel_date DESC limit #{limit} offset #{offset};
     </select>
 
     <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
-        select * from Document_mile where mile_no=#{mile_no} limit #{limit} offset #{offset};
+        select * from Document_mile where mile_no=#{mile_no} order by document_date DESC limit #{limit} offset #{offset};
+    </select>
+
+    <select id="selectDocumentLists" resultType="com.kbstar.mileEasy.dto.DocumentMile">
+        select * from Document_mile where mile_no=#{mile_no} order by document_date DESC;
+    </select>
+
+    <select id="selectCount" resultType="int">
+        select count(mile_excel_no) from mile_excel where mile_no =#{mile_no};
+    </select>
+
+    <select id="selectCountDocu" resultType="int">
+        select count(document_mile_no) from Document_mile where mile_no =#{mile_no};
     </select>
 
     <select id="selectMileSum" resultType="int">
