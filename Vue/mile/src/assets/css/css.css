@@ -78,11 +78,10 @@
   color: #4b4a4a !important;
 }
 
-/* 페이지가 밀리지 않도록 body의 overflow를 조정 */
-.swal2-shown {
-  overflow: hidden !important;
-}
 
+body.swal2-shown > [aria-hidden="true"] {
+  overflow: visible;
+}
 /* 초록색 버튼 */
 .btn-green {
   background-color: #19c99b;
