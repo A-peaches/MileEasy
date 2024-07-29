@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.beans.ExcelNotice;
 import com.kbstar.mileEasy.beans.MileByJob;
 import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
@@ -38,4 +39,10 @@ public class MyMileController {
         return mileStatus;
     }
 
+    @GetMapping("/getExcelNotice")
+    public List<ExcelNotice> getExcelNotice() {
+            List<ExcelNotice> excelNotices = myMileageService.getExcelNotice();
+            System.out.println("엑셀알림" + excelNotices);
+            return excelNotices;
+    }
 }

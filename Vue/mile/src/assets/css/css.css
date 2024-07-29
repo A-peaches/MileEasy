@@ -471,12 +471,16 @@ main {
   background-color: #19c99b;
   color: white;
   border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
+  border-radius: 50%;
+  width: 50px; /* 버튼의 가로 길이와 세로 길이를 같게 설정 */
+  height: 50px;
   font-family: 'KB_C3', sans-serif;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .top-button:hover {

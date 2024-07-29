@@ -23,7 +23,9 @@
 
       <router-view />
 
-      <button @click="scrollToTop" class="top-button">TOP</button>
+      <button @click="scrollToTop" class="top-button">
+        TOP
+      </button>
       <Footer />
       <!-- TOP 버튼 -->
     </main>

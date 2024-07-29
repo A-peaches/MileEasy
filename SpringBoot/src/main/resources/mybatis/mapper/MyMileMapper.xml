@@ -28,7 +28,8 @@
             m.mile_name,
             COALESCE(mh.prev_point, 0) AS prev_point,
             ms.latest_score_date AS mile_date,
-            mh.latest_history_date AS prev_date
+            mh.latest_history_date AS prev_date,
+            md.job_name
         FROM
             mileage_detail md
                 LEFT JOIN
@@ -48,7 +49,25 @@
         WHERE
             m.mile_no = #{mileNo}
         GROUP BY
-            md.mile_score_name, m.mile_name, ms.user_point, mh.prev_point, ms.latest_score_date, mh.latest_history_date;
+            md.mile_score_name, m.mile_name, ms.user_point, mh.prev_point, ms.latest_score_date, mh.latest_history_date,md.job_name;
 
+    </select>
+
+    <select id="getExcelNotice" resultType="com.kbstar.mileEasy.beans.ExcelNotice">
+        SELECT
+            me.mile_no,
+            me.mile_excel_file,
+            me.mile_excel_date,
+            m.mile_name,
+            m.mile_is_branch,
+            m.mile_description
+        FROM
+            mile_excel me
+                JOIN
+            mileage m ON me.mile_no = m.mile_no
+        WHERE
+            me.mile_excel_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+        ORDER BY
+            me.mile_excel_date DESC;
     </select>
 </mapper>
