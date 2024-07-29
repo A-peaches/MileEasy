@@ -29,4 +29,8 @@ public interface UserDao {
     ArrayList<User> getileageAdminList(String mileNo);
 
     ArrayList<User> searchUser();
+
+    void clearManager(String mileNo);
+
+    void newManager(String mileNo, List<String> adminList);
 }

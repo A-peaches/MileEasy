@@ -217,14 +217,25 @@ public class AdminController {
 
 
     @PostMapping("/newAdminList")
-    public ArrayList<User> newAdminList(@RequestParam("mile_no") String mile_no,@RequestParam("final_admin_list") ArrayList<String> final_admin_list) {
-        System.out.println("마일리지: " + mile_no);
-        for(int i=0; i<final_admin_list.size(); i++){
-            System.out.println(final_admin_list.get(i));
-        }
-        System.out.println(adminService.getileageAdminList(mile_no));
-        return adminService.getileageAdminList(mile_no);
+    public void newAdminList(
+            @RequestParam("mile_no") String mileNo,
+            @RequestParam("final_admin_list") String finalAdminList) {
+        adminService.clearManager(mileNo);
+
+        List<String> adminList = Arrays.asList(finalAdminList.split(","));
+        adminService.newManager(mileNo,adminList);
     }
+
+    @GetMapping ("/lastUpdate")
+    public ArrayList<MileScore> lastUpdate() {
+        System.out.println("들어옴");
+       return  adminService.lastUpdate();
+    }
+
+
+
+
+
 
 
 

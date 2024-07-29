@@ -68,4 +68,6 @@ public interface MileageDao {
     MileByJob mileByJob(String userNo);
 
     void deleteMile(String mileNo);
+
+    ArrayList<MileScore> lastUpdate();
 }

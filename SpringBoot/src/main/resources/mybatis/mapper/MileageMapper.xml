@@ -509,4 +509,33 @@
         WHERE mile_no =  #{mileNo};
     </select>
 
+<!--    <select id="lastUpdate" resultType="com.kbstar.mileEasy.dto.MileScore">-->
+<!--        WITH Combined AS (-->
+<!--        SELECT-->
+<!--        mile_no,-->
+<!--        mile_history_date AS date-->
+<!--        FROM mile_history-->
+<!--        UNION ALL-->
+<!--        SELECT-->
+<!--        mile_no,-->
+<!--        mile_score_date AS date-->
+<!--        FROM mile_score-->
+<!--        ),-->
+<!--        Ranked AS (-->
+<!--        SELECT-->
+<!--        mile_no,-->
+<!--        date,-->
+<!--        ROW_NUMBER() OVER (PARTITION BY mile_no ORDER BY date DESC) AS rn-->
+<!--        FROM Combined-->
+<!--        WHERE date <= CURRENT_DATE-->
+<!--        )-->
+<!--        SELECT-->
+<!--        mile_no,-->
+<!--        date-->
+<!--        FROM Ranked-->
+<!--        WHERE rn = 1-->
+<!--</select>-->
+
+
+
 </mapper>

@@ -156,4 +156,27 @@
 
     </select>
 
+    <update id="clearManager">
+        UPDATE user
+        SET mile_no = NULL,
+            user_is_manager = 0
+        WHERE mile_no = #{mileNo}
+          AND user_is_manager = 1
+    </update>
+
+    <update id="newManager">
+        UPDATE user
+        SET
+        user_is_manager = 1,
+        mile_no = #{mileNo}
+        WHERE
+        user_no IN
+        <foreach collection="adminList" item="userNo" open="(" separator="," close=")">
+            #{userNo}
+        </foreach>
+        AND user_is_manager = 0
+    </update>
+
+
+
 </mapper>

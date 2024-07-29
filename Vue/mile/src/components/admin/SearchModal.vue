@@ -190,6 +190,8 @@ export default {
       // 최종 담당자 목록 콘솔에 출력
       console.log('최종 담당자 목록 (user_no):', finalAdminList);
 
+      const listAdminString = finalAdminList.join(',');
+
       // 최종 담당자가 한 명도 없는 경우 경고 메시지 표시
       if (finalAdminList.length === 0 || finalAdminList === null) {
         await Swal.fire({
@@ -204,13 +206,14 @@ export default {
 
       this.$emit('close'); // 변경하기 버튼 클릭 시 모달 닫기
       try {
+        // 쿼리 매개변수로 데이터 전송
         const response = await axios.post(
           'http://localhost:8090/admin/newAdminList',
           null,
           {
             params: {
               mile_no: this.mileNo,
-              final_admin_list: finalAdminList,
+              final_admin_list: listAdminString,
             },
           }
         );
