@@ -55,20 +55,21 @@
               type="text"
               style="width: 300px; height: 40px"
               class="input-base input-gray"
-              placeholder="새 담당자 입력"
-              v-model="newAdmin.user_name"
-              @input="filterUserList(index, newAdmin.user_name)"
+              placeholder="이름 또는 사번 입력"
+              v-model="newAdmin.searchTerm"
+              @input="filterUserList(index, newAdmin.searchTerm)"
             />
             &nbsp;&nbsp;
             <i class="bi bi-dash-lg" @click="removeNewAdmin(index)"></i>
-            <span v-if="!newAdmin.user_name && isSubmitted" style="color: red"
-              >이름이나 사번을 입력해주세요</span
-            >
+            <span v-if="!newAdmin.searchTerm && isSubmitted" style="color: red">
+              이름이나 사번을 입력해주세요
+            </span>
             <!-- 유저 검색 결과 리스트 -->
             <div
               v-if="
                 filteredUserList[index] && filteredUserList[index].length > 0
               "
+              class="user-list"
             >
               <ul>
                 <li
@@ -96,6 +97,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -154,7 +156,10 @@ export default {
     addAdminField() {
       // 새로운 담당자 입력 필드 추가
       this.newAdmins.push({
-        user_name: '',
+        searchTerm: '', // 검색어
+        user_name: '', // 유저 이름
+        user_no: '', // 유저 번호
+        dp_no: '', // 부서 번호
       });
       this.filteredUserList.push([]); // 새 필드 추가 시 필터링 리스트 초기화
     },
@@ -171,13 +176,32 @@ export default {
       this.isSubmitted = true;
 
       // 새 담당자 유효성 검사
-      const invalidAdmins = this.newAdmins.filter((admin) => !admin.user_name);
+      const invalidAdmins = this.newAdmins.filter((admin) => !admin.user_no);
       if (invalidAdmins.length > 0) {
         return;
       }
 
-      console.log(this.newAdmins);
-      console.log(this.admins);
+      // 최종 담당자 목록 생성 (기존 담당자 + 새 담당자)
+      const finalAdminList = [
+        ...this.admins.map((admin) => admin.user_no),
+        ...this.newAdmins.map((admin) => admin.user_no),
+      ];
+
+      // 최종 담당자 목록 콘솔에 출력
+      console.log('최종 담당자 목록 (user_no):', finalAdminList);
+
+      // 최종 담당자가 한 명도 없는 경우 경고 메시지 표시
+      if (finalAdminList.length === 0 || finalAdminList === null) {
+        await Swal.fire({
+          icon: 'warning',
+          title: '담당자 설정 필요',
+          text: '최소 한 명 이상의 담당자를 설정해주세요.',
+          confirmButtonText: '확인',
+          scrollbarPadding: false,
+        });
+        return; // 함수 실행 중단
+      }
+
       this.$emit('close'); // 변경하기 버튼 클릭 시 모달 닫기
       try {
         const response = await axios.post(
@@ -187,6 +211,7 @@ export default {
             params: {
               mile_no: this.mileNo,
               new_admins: this.newAdmins,
+              final_admin_list: finalAdminList,
             },
           }
         );
@@ -200,16 +225,28 @@ export default {
     },
     filterUserList(index, searchTerm) {
       if (searchTerm) {
-        this.filteredUserList[index] = this.userList.filter((user) =>
-          user.user_name.includes(searchTerm)
+        const lowercaseSearchTerm = searchTerm.toLowerCase();
+        // 이름 또는 사번으로 필터링
+        this.filteredUserList[index] = this.userList.filter(
+          (user) =>
+            user.user_name.toLowerCase().includes(lowercaseSearchTerm) ||
+            user.user_no.toLowerCase().includes(lowercaseSearchTerm)
         );
       } else {
         this.filteredUserList[index] = [];
       }
     },
     selectUser(index, user) {
+      // 선택한 유저의 정보를 포맷된 문자열로 설정
+      this.newAdmins[
+        index
+      ].searchTerm = `${user.user_name} (${user.user_no}) ${user.dp_no}`;
       this.newAdmins[index].user_name = user.user_name;
-      this.filteredUserList[index] = []; // 선택 후 필터링 리스트 초기화
+      this.newAdmins[index].user_no = user.user_no;
+      this.newAdmins[index].dp_no = user.dp_no;
+      this.$nextTick(() => {
+        this.filteredUserList[index] = []; // 선택 후 필터링 리스트 초기화
+      });
     },
   },
   mounted() {
@@ -231,17 +268,22 @@ export default {
 .modals {
   background-color: rgba(102, 102, 102, 0.1);
 }
+.user-list {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: white;
+}
 ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 ul li {
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
   padding: 5px;
-  margin: 2px 0;
+  cursor: pointer;
 }
 ul li:hover {
-  background-color: #e9e9e9;
+  background-color: #f0f0f0;
 }
 </style>
