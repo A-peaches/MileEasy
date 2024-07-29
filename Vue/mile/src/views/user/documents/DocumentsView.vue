@@ -321,11 +321,9 @@ export default {
   border-radius: 25px;
   padding: 12px 40px;
   cursor: pointer;
-  margin-bottom: 80px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* 공지사항과 카테고리 버튼 사이의 간격 */
   display: inline-block;
-  font-size: 20px;
+  font-size: 17pt;
   font-family: 'KB_S5', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
 }
