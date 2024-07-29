@@ -8,10 +8,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 public class MileDetail {
+    private int mile_detail_no;
     private int mile_no;
-    private String mile_name;
-    private int mile_max;
-    private String mile_description;
-    private boolean mile_is_delete;
-    private boolean mile_is_branch;
+    private String mile_score_name;
+    private String jon_name;
 }
