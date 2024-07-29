@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.beans.PageCount;
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.service.manager.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -217,7 +218,6 @@ public class ManagerController {
 
     }
 
-
     @PostMapping("/mileCount")
     public ArrayList<HitMile> mileCount(
             @RequestParam("startDate") String startDate,
@@ -230,6 +230,28 @@ public class ManagerController {
         String mile = mile_no;
 
         return managerService.mileCount(start, end, mile);
+    }
+
+
+    @PostMapping("/mileageCount")
+    public ArrayList<MileScore> mileageCount(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("mile_no") String mile_no) {
+
+        System.out.println("여기는 마일리지");
+
+        return managerService.mileageCount(startDate,mile_no);
+    }
+
+
+    @PostMapping("/visitCount")
+    public ArrayList<PageCount> visitCount(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("mile_no") String mile_no) {
+
+
+
+        return managerService.visitCount(startDate,mile_no);
     }
 
 }

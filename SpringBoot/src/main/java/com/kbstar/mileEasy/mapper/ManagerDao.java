@@ -1,4 +1,5 @@
 package com.kbstar.mileEasy.mapper;
+import com.kbstar.mileEasy.beans.PageCount;
 import com.kbstar.mileEasy.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -19,4 +20,9 @@ public interface ManagerDao {
     int deleteRecommand(String mile_recommand_no);
 
     ArrayList<HitMile> mileCount(String start, String end, String mile);
+
+
+    ArrayList<PageCount> visitCount(String startDate, String mile_no);
+
+    ArrayList<MileScore> mileageCount(String startDate, String mile_no);
 }
