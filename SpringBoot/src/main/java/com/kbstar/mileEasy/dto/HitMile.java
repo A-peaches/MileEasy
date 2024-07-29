@@ -14,4 +14,5 @@ public class HitMile {
     private int mile_no;
     private int hit_count;
     private Timestamp hit_date; // git_date -> hit_date로 수정
+    private int count;
 }

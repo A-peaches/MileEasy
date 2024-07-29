@@ -25,4 +25,18 @@ public interface UserDao {
     ArrayList<LoginHistory> loginHistoryCountArray(String startDate, String endDate);
 
     ArrayList<User> levelChartData(String date);
+
+    ArrayList<User> getileageAdminList(String mileNo);
+
+    ArrayList<User> searchUser();
+
+    void clearManager(String mileNo);
+
+    void newManager(String mileNo, List<String> adminList);
+
+    int getNextMonthlyKingNo();
+
+    void insertMonthlyKings(List<String> king);
+
+    void insertMonthlyJumps(List<String> jump);
 }
