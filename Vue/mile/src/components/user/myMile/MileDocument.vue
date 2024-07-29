@@ -4,7 +4,7 @@
       <div class="lg2" style="padding: 3em">총 {{ documentSum }}건</div>
       <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
         <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
-          <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
+          <input type="text" v-model="searchQuery" @input="onSearch" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
           <button><i class="bi bi-search mr-2" style="font-size: 25px; color: #4b4a4a"></i></button>
         </div>
       </div>
@@ -63,7 +63,8 @@ export default {
       currentPage: 1, // 현재 페이지
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
       allDocuments: [], // 모든 문서 데이터 
-      countList: 0
+      countList: 0,
+      lastInputTime: 0 // 마지막 입력 시간
     };
   },
   methods: {
@@ -85,7 +86,7 @@ export default {
       const response = await this.mileDocumentLists({
         mile_no: this.mile_no,
         page: this.currentPage,
-        itemsPerPage: this.itemsPerPage
+        itemsPerPage: this.itemsPerPage,
       });
       if(response.data.length == 0 || response.data == null){
         console.error('불러올 문서가 존재하지 않습니다.');
@@ -97,6 +98,15 @@ export default {
       const countList = await axios.get(`http://localhost:8090/mileage/countListDocuments/${mile_no}`);
       this.countList = countList.data;
     },
+    onSearch(){
+      const currentTime = Date.now();
+      const timeSinceLastInput = currentTime - this.lastInputTime;
+
+      if(timeSinceLastInput>500){
+        this.lastInputTime = currentTime;
+        this.loadDocuments();
+      }
+    }
   },
   created() {
     if(this.mile_no){
@@ -143,13 +153,10 @@ export default {
     }
   },
   watch: {
+    searchQuery(){
+      this.lastInputTime = Date.now();
+      this.onSearch();
+    }
   }
 };
 </script>
-
-<style scope>
-/* .page-back {
-  height: 90vh;
-} */
-
-</style>

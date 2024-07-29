@@ -384,7 +384,7 @@ public class MileageController {
     ) {
         int offset = (page - 1) * itemsPerPage;
         // offset은 SQL 쿼리에서 페이징 처리 시 시작 위치를 지정하는데 사용.
-        // 예를 들어, 페이지 당 10개 항목 표시 하고 3번째 페이지를 요청하는 경우, offsetdms 20이 되어
+        // 예를 들어, 페이지 당 10개 항목 표시 하고 3번째 페이지를 요청하는 경우, offset은 20이 되어
         // DB에서 21번째 항목부터 10개의 항목을 가져오게 된다.
         int limit = itemsPerPage;
         List<DocumentMile> documentMileList = mileScoreService.totalDocument(mile_no, limit, offset);
