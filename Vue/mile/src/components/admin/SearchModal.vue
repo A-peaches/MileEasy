@@ -210,7 +210,6 @@ export default {
           {
             params: {
               mile_no: this.mileNo,
-              new_admins: this.newAdmins,
               final_admin_list: finalAdminList,
             },
           }

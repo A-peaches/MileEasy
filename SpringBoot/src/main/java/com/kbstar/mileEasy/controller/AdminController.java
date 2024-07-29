@@ -212,14 +212,16 @@ public class AdminController {
 
     @PostMapping("/searchUser")
     public ArrayList<User> searchUser() {
-        System.out.println("서치유저");
         return adminService.searchUser();
     }
 
 
     @PostMapping("/newAdminList")
-    public ArrayList<User> newAdminList(@RequestParam("mile_no") String mile_no) {
+    public ArrayList<User> newAdminList(@RequestParam("mile_no") String mile_no,@RequestParam("final_admin_list") ArrayList<String> final_admin_list) {
         System.out.println("마일리지: " + mile_no);
+        for(int i=0; i<final_admin_list.size(); i++){
+            System.out.println(final_admin_list.get(i));
+        }
         System.out.println(adminService.getileageAdminList(mile_no));
         return adminService.getileageAdminList(mile_no);
     }
