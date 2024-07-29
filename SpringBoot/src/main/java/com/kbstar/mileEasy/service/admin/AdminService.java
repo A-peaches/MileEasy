@@ -40,6 +40,18 @@ public class AdminService {
     public ArrayList<MileScore> lastUpdate() {return mileageDao.lastUpdate();
     }
 
+    public void insertMonthlyKings(List<String> king, List<String> jump) {
+        userDao.insertMonthlyKings(king);
+        userDao.insertMonthlyJumps(jump);
+
+    }
+
+    public void updateMilename(String mileNameInput, String mileNo) { mileageDao.updateMilename(mileNameInput,mileNo);
+    }
+
+    public void updateMileMax(String mileMax, String mileNo) { mileageDao.updateMileMax(mileMax,mileNo);
+    }
+
     // @Autowired
     //private AdminDao adminDao;
 

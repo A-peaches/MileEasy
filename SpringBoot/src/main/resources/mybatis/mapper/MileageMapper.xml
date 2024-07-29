@@ -242,8 +242,10 @@
 
     <select id="kingDataSelect" resultType="com.kbstar.mileEasy.dto.MileScore">
         <![CDATA[
+
         WITH user_list AS (
-            SELECT user_no FROM user
+            SELECT user_no
+            FROM user
         ),
              attendance_counts AS (
                  SELECT
@@ -280,7 +282,8 @@
             DATE_FORMAT(CURDATE() - INTERVAL 1 month, '%Y-%m') AS base_date,
             ranking,
             COALESCE(u.user_name, 'Unknown User') AS user_name,
-            total_score
+            total_score,
+            r.user_no
         FROM ranked_users r
                  LEFT JOIN user u ON r.user_no = u.user_no
         WHERE ranking <= 5;
@@ -335,15 +338,12 @@
             RANK() OVER (ORDER BY (us.recent_previous_month_total_point - us.two_months_ago_total_point) DESC) AS ranking,
                 u.user_name,
             us.recent_previous_month_total_point - us.two_months_ago_total_point AS score_increase,
-            us.base_date
+            us.base_date,
+            us.user_no
         FROM user_scores us
                  JOIN user u ON us.user_no = u.user_no
         ORDER BY ranking
             LIMIT 5;
-
-
-
-
         ]]>
     </select>
 
@@ -521,32 +521,69 @@
         WHERE mile_no =  #{mileNo};
     </select>
 
-<!--    <select id="lastUpdate" resultType="com.kbstar.mileEasy.dto.MileScore">-->
-<!--        WITH Combined AS (-->
-<!--        SELECT-->
-<!--        mile_no,-->
-<!--        mile_history_date AS date-->
-<!--        FROM mile_history-->
-<!--        UNION ALL-->
-<!--        SELECT-->
-<!--        mile_no,-->
-<!--        mile_score_date AS date-->
-<!--        FROM mile_score-->
-<!--        ),-->
-<!--        Ranked AS (-->
-<!--        SELECT-->
-<!--        mile_no,-->
-<!--        date,-->
-<!--        ROW_NUMBER() OVER (PARTITION BY mile_no ORDER BY date DESC) AS rn-->
-<!--        FROM Combined-->
-<!--        WHERE date <= CURRENT_DATE-->
-<!--        )-->
-<!--        SELECT-->
-<!--        mile_no,-->
-<!--        date-->
-<!--        FROM Ranked-->
-<!--        WHERE rn = 1-->
-<!--</select>-->
+    <select id="lastUpdate" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <![CDATA[
+        -- 현재 날짜의 직전 달의 시작일과 마지막 일 계산
+        WITH DateRanges AS (
+            SELECT
+                DATE_FORMAT(CURDATE() - INTERVAL 1 MONTH, '%Y-%m-01') AS start_of_previous_month,
+                LAST_DAY(CURDATE() - INTERVAL 1 MONTH) AS end_of_previous_month
+        ),
+-- 날짜 통합
+             Combined AS (
+                 SELECT mile_no, mile_history_date AS date
+        FROM mile_history
+        UNION ALL
+        SELECT mile_no, mile_score_date AS date
+        FROM mile_score
+            ),
+-- 전달 범위 내 데이터 필터링
+            Filtered AS (
+        SELECT
+            mile_no,
+            date
+        FROM Combined
+            JOIN DateRanges
+        ON Combined.date BETWEEN DateRanges.start_of_previous_month AND DateRanges.end_of_previous_month
+            ),
+-- 각 mile_no별 최신 날짜 찾기
+            Ranked AS (
+        SELECT
+            mile_no,
+            date,
+            ROW_NUMBER() OVER (PARTITION BY mile_no ORDER BY date DESC) AS rn
+        FROM Filtered
+            ),
+-- mileage 테이블과의 조인 및 mile_no가 없는 경우 처리
+            MileNoCheck AS (
+        SELECT
+            m.mile_no,
+            IFNULL(r.date, NULL) AS date
+        FROM mileage m
+            LEFT JOIN Ranked r
+        ON m.mile_no = r.mile_no AND r.rn = 1
+        WHERE m.mile_is_delete = 0
+            )
+-- 최신 날짜 선택
+        SELECT mile_no, date
+        FROM MileNoCheck;
+
+
+        ]]>
+</select>
+
+    <update id="updateMilename" >
+        UPDATE mileage
+        SET mile_name = #{mileNameInput}
+        WHERE mile_no = #{mileNo};
+    </update>
+
+    <update id="updateMileMax" >
+        UPDATE mileage
+        SET mile_max = #{mileMax}
+        WHERE mile_no = #{mileNo};
+    </update>
+
 
 
 

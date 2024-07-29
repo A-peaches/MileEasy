@@ -33,4 +33,10 @@ public interface UserDao {
     void clearManager(String mileNo);
 
     void newManager(String mileNo, List<String> adminList);
+
+    int getNextMonthlyKingNo();
+
+    void insertMonthlyKings(List<String> king);
+
+    void insertMonthlyJumps(List<String> jump);
 }

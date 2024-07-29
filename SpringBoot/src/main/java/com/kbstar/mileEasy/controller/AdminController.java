@@ -219,11 +219,20 @@ public class AdminController {
     @PostMapping("/newAdminList")
     public void newAdminList(
             @RequestParam("mile_no") String mileNo,
-            @RequestParam("final_admin_list") String finalAdminList) {
+            @RequestParam("final_admin_list") String finalAdminList,
+            @RequestParam("mileNameInput") String mileNameInput,
+            @RequestParam("mileMax") String mileMax) {
         adminService.clearManager(mileNo);
-
         List<String> adminList = Arrays.asList(finalAdminList.split(","));
         adminService.newManager(mileNo,adminList);
+
+        if(mileNameInput !=null && !mileNameInput.isEmpty()) {
+            adminService.updateMilename(mileNameInput,mileNo);
+        }
+
+        if(mileMax !=null && !mileMax.isEmpty()) {
+            adminService.updateMileMax(mileMax,mileNo);
+        }
     }
 
     @GetMapping ("/lastUpdate")
@@ -233,6 +242,12 @@ public class AdminController {
     }
 
 
+    @PostMapping("/pickBadge")
+    public void pickBadge(
+            @RequestParam List<String> king,
+            @RequestParam List<String> jump) {
+        adminService.insertMonthlyKings(king,jump);
+    }
 
 
 

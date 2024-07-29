@@ -81,10 +81,12 @@ export default {
       this.selectedMileName = mileName;
       this.selectedMileNo = mileNo;
       this.isModalOpen = true;
+      this.getMileage();
     },
 
     closeModal() {
       this.isModalOpen = false;
+      this.getMileage();
     },
 
     async deleteMile(mile_no) {

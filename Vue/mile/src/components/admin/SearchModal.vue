@@ -3,7 +3,9 @@
     <div class="modals-content" style="width: 700px; height: auto">
       <span class="close" @click="$emit('close')">&times;</span>
 
-      <span class="KB_S4" style="font-size: 19pt">{{ mileName }} 수정</span>
+      <span class="KB_S4" style="font-size: 19pt"
+        >{{ mileName }} 마일리지 수정</span
+      >
       <br /><br />
 
       <div style="text-align: left">
@@ -13,10 +15,26 @@
         <div style="text-align: left; margin-left: 5px">
           <input
             type="text"
-            class="input-base input-gray"
+            class="input-base input-gray new_mileageName"
             placeholder="변경 후 마일리지 이름을 입력하세요"
             style="width: 300px; height: 40px"
             v-model="mileNameInput"
+          />
+        </div>
+      </div>
+      <br />
+
+      <div style="text-align: left">
+        <span style="text-align: left; margin-left: 13px; font-size: 13pt">
+          연간 최대한도
+        </span>
+        <div style="text-align: left; margin-left: 5px">
+          <input
+            type="text"
+            class="input-base input-gray new_mileageName"
+            placeholder="변경 후 최대한도를 입력하세요"
+            style="width: 300px; height: 40px"
+            v-model="mileMax"
           />
         </div>
       </div>
@@ -104,10 +122,11 @@ export default {
     return {
       admins: [], // 기존 담당자 목록
       newAdmins: [], // 새로 추가된 담당자 목록
-      mileNameInput: this.mileName, // 마일리지 이름 입력 필드
+      mileNameInput: '', // 마일리지 이름 입력 필드
       isSubmitted: false, // 유효성 검사 후 제출 여부
       userList: [], // 유저 리스트
       filteredUserList: [], // 필터링된 유저 리스트
+      mileMax: '',
     };
   },
   props: {
@@ -204,7 +223,6 @@ export default {
         return; // 함수 실행 중단
       }
 
-      this.$emit('close'); // 변경하기 버튼 클릭 시 모달 닫기
       try {
         // 쿼리 매개변수로 데이터 전송
         const response = await axios.post(
@@ -214,10 +232,17 @@ export default {
             params: {
               mile_no: this.mileNo,
               final_admin_list: listAdminString,
+              mileNameInput: this.mileNameInput,
+              mileMax: this.mileMax,
             },
           }
         );
-        console.log('완료여부:', response.data);
+        await Swal.fire({
+          icon: 'success',
+          title: '수정완료',
+          text: '정상적으로 수정되었습니다.',
+        });
+        this.$emit('close');
         this.admins = response.data; // 기존 담당자 목록 업데이트
         this.isSubmitted = false; // 제출 후 초기화
       } catch (error) {

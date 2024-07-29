@@ -73,4 +73,8 @@ public interface MileageDao {
     void deleteMile(String mileNo);
 
     ArrayList<MileScore> lastUpdate();
+
+    void updateMilename(String mileNameInput,String mileNo);
+
+    void updateMileMax(String mileMax, String mileNo);
 }

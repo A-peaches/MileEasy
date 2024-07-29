@@ -99,6 +99,7 @@ export default {
     },
     showCoding() {
       this.isModifyActive = false; // '개발요청' 활성화
+      this.getMileage();
     },
   },
   mounted() {

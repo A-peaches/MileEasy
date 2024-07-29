@@ -1,5 +1,11 @@
 <template>
   <div class="cards page-back mx-auto" :style="{ height: computedHeight }">
+    <div class="button-container">
+      <button class="back-button" @click="goBack">
+        <span class="arrow">❮</span> 이전
+      </button>
+    </div>
+
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">채택하기</h2>
     <div style="padding: 0 5%">
       <div class="p-4 mt-5">
@@ -15,11 +21,11 @@
           class="p-2"
           style="
             justify-content: space-between;
-            align-items: flex-start; /* 위로 정렬 */
+            align-items: flex-start;
             background-color: #f6f6f6;
           "
         >
-          <div style="display: flex">
+          <div style="display: flex; justify-content: space-between">
             <div class="king" style="width: 48%">
               <div
                 class="KB_C1 title"
@@ -31,29 +37,10 @@
               <div class="text-center mx-auto" style="width: 80%">
                 <div class="KB_S1 text-center">
                   <template v-for="(item, index) in kingTop5" :key="index">
-                    <div
-                      :class="{ top1: index === 0 }"
-                      style="
-                        display: flex;
-                        justify-content: space-between; /* 수평으로 간격을 벌림 */
-                        align-items: center; /* 수직 가운데 정렬 */
-                        text-align: center;
-                        margin-bottom: 20px;
-                        padding: 10px;
-                        background-color: #ffffff;
-                        border-radius: 8px;
-                        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                      "
-                    >
-                      <div style="flex: 1; text-align: left">
-                        {{ item.ranking }}등
-                      </div>
-                      <div style="flex: 2; text-align: center">
-                        {{ item.user_name }}
-                      </div>
-                      <div style="flex: 1; text-align: right">
-                        {{ item.total_score }}
-                      </div>
+                    <div :class="{ top1: index === 0 }" class="top-item">
+                      <div class="item-rank">{{ item.ranking }}등</div>
+                      <div class="item-name">{{ item.user_name }}</div>
+                      <div class="item-score">{{ item.total_score }}</div>
                     </div>
                   </template>
                 </div>
@@ -70,29 +57,10 @@
               <div class="text-center mx-auto" style="width: 80%">
                 <div class="KB_S1 text-center">
                   <template v-for="(item, index) in jumpTop5" :key="index">
-                    <div
-                      :class="{ top1: index === 0 }"
-                      style="
-                        display: flex;
-                        justify-content: space-between; /* 수평으로 간격을 벌림 */
-                        align-items: center; /* 수직 가운데 정렬 */
-                        text-align: center;
-                        margin-bottom: 20px;
-                        padding: 10px;
-                        background-color: #ffffff;
-                        border-radius: 8px;
-                        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                      "
-                    >
-                      <div style="flex: 1; text-align: left">
-                        {{ item.ranking }}등
-                      </div>
-                      <div style="flex: 2; text-align: center">
-                        {{ item.user_name }}
-                      </div>
-                      <div style="flex: 1; text-align: right">
-                        {{ item.score_increase }}
-                      </div>
+                    <div :class="{ top1: index === 0 }" class="top-item">
+                      <div class="item-rank">{{ item.ranking }}등</div>
+                      <div class="item-name">{{ item.user_name }}</div>
+                      <div class="item-score">{{ item.score_increase }}</div>
                     </div>
                   </template>
                 </div>
@@ -114,7 +82,7 @@
           class="p-2"
           style="
             justify-content: space-between;
-            align-items: flex-start; /* 위로 정렬 */
+            align-items: flex-start;
             background-color: #f6f6f6;
           "
         >
@@ -128,18 +96,25 @@
             <tbody>
               <tr v-for="(label, index) in mileageLabels" :key="index">
                 <td>{{ label }}</td>
-                <td>{{ dates[index] || 'N/A' }}</td>
+                <td>{{ dates[index] || '-' }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
+
+    <div class="btn-container">
+      <button class="btn-yellow KB_S4" @click="checkValidDates">
+        채택하기
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   name: 'KingPickView',
@@ -149,16 +124,18 @@ export default {
       kingTop5: [],
       jumpTop5: [],
       baseDate: '',
-      mileageLabels: [], // 수정: mileageLabels로 변경
-      dates: [], // 수정: dates 배열 추가
+      mileageLabels: [],
+      dates: [],
+      kingUserList: [],
+      jumpUserList: [],
     };
   },
 
   async mounted() {
     await this.kingData();
     await this.jumpData();
-    await this.fetchMileageLabels(); // 수정: label 메서드를 fetchMileageLabels로 변경
-    this.lastUpdate();
+    await this.fetchMileageLabels();
+    await this.lastUpdate();
   },
 
   methods: {
@@ -168,11 +145,14 @@ export default {
           'http://localhost:8090/mileage/kingDataSelect'
         );
         console.log('kingDataSelect top5:', response.data);
-        this.baseDate = response.data.length ? response.data[0].base_date : ''; // 첫 번째 데이터의 기준일자 설정
-        this.kingTop5 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 5만 가져오기
+        this.baseDate = response.data.length ? response.data[0].base_date : '';
+        this.kingTop5 = response.data.slice(0, 5);
+        this.kingUserList = response.data
+          .map((item) => item.user_no)
+          .slice(0, 3);
       } catch (error) {
         console.error('kingDataSelect top5:', error);
-        this.kingTop5 = []; // 오류 발생 시 빈 배열로 초기화
+        this.kingTop5 = [];
       }
     },
 
@@ -182,10 +162,13 @@ export default {
           'http://localhost:8090/mileage/jumpDataSelect'
         );
         console.log('점프업 top5:', response.data);
-        this.jumpTop5 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 5만 가져오기
+        this.jumpTop5 = response.data.slice(0, 5);
+        this.jumpUserList = response.data
+          .map((item) => item.user_no)
+          .slice(0, 3);
       } catch (error) {
         console.error('점프업 top5:', error);
-        this.jumpTop5 = []; // 오류 발생 시 빈 배열로 초기화
+        this.jumpTop5 = [];
       }
     },
 
@@ -194,21 +177,13 @@ export default {
         const response = await axios.get(
           'http://localhost:8090/mileage/getMileage'
         );
-        this.mileageLabels = response.data.map((item) => item.mile_name); // mileageLabels에 데이터를 저장
-        this.dates = this.mileageLabels.map(() => this.getDummyDate()); // 더미 날짜로 채우기
+        this.mileageLabels = response.data.map((item) => item.mile_name);
+        this.dates = new Array(this.mileageLabels.length).fill('-');
       } catch (error) {
         console.error('Error fetching mileage labels:', error);
         this.mileageLabels = [];
         this.dates = [];
       }
-    },
-
-    getDummyDate() {
-      // 날짜 생성, 실제 데이터에 맞게 수정 필요
-      const today = new Date();
-      return `${today.getFullYear()}-${
-        today.getMonth() + 1
-      }-${today.getDate()}`;
     },
 
     async lastUpdate() {
@@ -217,11 +192,95 @@ export default {
           'http://localhost:8090/admin/lastUpdate'
         );
         console.log('날짜 데이터', response.data);
+        this.dates = response.data.map((item) => item.date || '-');
       } catch (error) {
-        console.error('Error fetching mileage labels:', error);
-        this.mileageLabels = [];
-        this.dates = [];
+        console.error('Error fetching last update dates:', error);
+        this.dates = new Array(this.mileageLabels.length).fill('-');
       }
+    },
+
+    isLastDayOfPreviousMonth(dateString) {
+      if (!dateString || dateString === '-') return false;
+
+      const date = new Date(dateString);
+      const today = new Date();
+
+      // 오늘 날짜의 전달 마지막 날 계산
+      const firstDayOfCurrentMonth = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+      const lastDayOfPreviousMonth = new Date(firstDayOfCurrentMonth - 1);
+
+      // 전달의 마지막 날과 비교
+      return (
+        date.getFullYear() === lastDayOfPreviousMonth.getFullYear() &&
+        date.getMonth() === lastDayOfPreviousMonth.getMonth() &&
+        date.getDate() === lastDayOfPreviousMonth.getDate()
+      );
+    },
+
+    checkValidDates() {
+      // 유효하지 않은 날짜가 있는지 검사
+      const invalidDates = this.dates
+        .map((date, index) => ({ date, index }))
+        .filter(
+          ({ date }) => date === '-' || !this.isLastDayOfPreviousMonth(date)
+        );
+
+      if (invalidDates.length > 0) {
+        const invalidDatesList = invalidDates
+          .map(
+            ({ index }) =>
+              `${this.mileageLabels[index]} (${
+                this.dates[index] === '-' ? '날짜 없음' : this.dates[index]
+              })`
+          )
+          .join('<br>');
+
+        Swal.fire({
+          icon: 'warning',
+          title: '업데이트 날짜 오류',
+          html: `
+        <div>최종 업데이트 날짜가 말일이 아닌 것이 있습니다.</div>
+        <div class="swal-dates-list" style="color: red;">${invalidDatesList}</div>
+      `,
+          confirmButtonText: '확인',
+          heightAuto: true, // 높이 자동 조절 비활성화
+          scrollbarPadding: false,
+
+          customClass: {
+            container: 'my-swal-container',
+            content: 'my-swal-content',
+          },
+        });
+      } else {
+        this.pickBadge();
+      }
+    },
+    async pickBadge() {
+      try {
+        const params = new URLSearchParams();
+        this.kingUserList.forEach((user) => params.append('king', user));
+        this.jumpUserList.forEach((user) => params.append('jump', user));
+
+        const response = await axios.post(
+          `http://localhost:8090/admin/pickBadge?${params.toString()}`
+        );
+        console.log('Response:', response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '채택완료',
+          text: '성공적으로 완료되었습니다',
+          scrollbarPadding: false,
+        });
+      } catch (error) {
+        console.error('Error picking badge:', error);
+      }
+    },
+    goBack() {
+      this.$router.go(-1);
     },
   },
 };
@@ -232,13 +291,14 @@ export default {
   width: 70%;
   margin-top: 5%;
 }
+
 .btn-yellow {
   width: 120px;
   height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
+  cursor: pointer;
 }
+
 .top1 {
   font-weight: bold;
   font-size: 16pt;
@@ -246,13 +306,37 @@ export default {
   border-radius: 16px;
 }
 
-/* 테이블 스타일 추가 */
 .styled-table {
+  background-color: #fff;
   width: 100%;
   border-collapse: collapse;
   margin: 25px 0;
   font-size: 16px;
-  text-align: left;
+}
+.back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: #5b5b5b;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 0;
+  font-family: 'KB_S5', sans-serif;
+}
+
+.back-button .arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 8px;
+  font-size: 17px;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .styled-table thead tr {
@@ -270,11 +354,54 @@ export default {
   border-bottom: 1px solid #dddddd;
 }
 
-.styled-table tbody tr:nth-of-type(even) {
-  background-color: #f3f3f3;
-}
-
 .styled-table tbody tr:last-of-type {
   border-bottom: 2px solid #5fc9ad;
+}
+
+.btn-container {
+  text-align: right;
+  padding: 10px;
+}
+
+.top-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.item-rank,
+.item-name,
+.item-score {
+  flex: 1;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  flex: 1;
+}
+
+.my-swal-container .swal2-title {
+  margin-bottom: 15px; /* 제목과 본문 사이의 여백 */
+}
+
+.swal-dates-list {
+  white-space: pre-wrap; /* 줄바꿈 유지 */
+  word-break: break-word; /* 긴 단어 줄바꿈 */
+  color: red; /* 텍스트 색상 빨간색으로 설정 */
+}
+
+.swal2-html-container {
+  overflow: visible; /* 스크롤이 없고 내용이 모두 보이도록 설정 */
+}
+.swal2-popup {
+  height: auto;
 }
 </style>

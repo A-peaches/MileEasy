@@ -178,5 +178,35 @@
     </update>
 
 
+    <insert id="insertMonthlyKings">
+        INSERT INTO monthly_king (user_no, is_king, monthly_king_date)
+        VALUES
+        <foreach collection="king" item="userNo" separator=",">
+            (#{userNo}, 1, CURDATE())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_king = VALUES(is_king),
+        monthly_king_date = VALUES(monthly_king_date);
+    </insert>
+
+    <insert id="insertMonthlyJumps">
+        INSERT INTO monthly_king (user_no, is_jump, monthly_king_date)
+        VALUES
+        <foreach collection="jump" item="userNo" separator=",">
+            (#{userNo}, 1, CURDATE())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_jump = VALUES(is_jump),
+        monthly_king_date = VALUES(monthly_king_date);
+    </insert>
+
+
+
+
+
+
+
+
+
 
 </mapper>
