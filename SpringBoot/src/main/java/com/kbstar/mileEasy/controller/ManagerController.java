@@ -156,18 +156,20 @@ public class ManagerController {
     // 마일리지 상세보기 삭제하기
     @GetMapping("/deleteMile/{mile_introduce_no}")
     public ResponseEntity<?> deleteMileDetail(@PathVariable String mile_introduce_no) {
+        int result2 = managerService.deleteMileDetail(mile_introduce_no);
         int result = managerService.deleteMile(mile_introduce_no);
-        if (result > 0) {
+        
+        if (result+result2 > 1) {
             return ResponseEntity.ok().body("{\"success\":true}");
         } else {
-            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"fail delete detail\"}");
         }
     }
 
     // 마일리지 상세보기 수정 시 기존 정보 가져오기
     @GetMapping("/mileModifyDetail/{mile_introduce_no}")
-    public MileIntroduce mileModifyDetail(@PathVariable String mile_introduce_no) {
-        MileIntroduce mileModify = managerService.mileModifyDetail(mile_introduce_no);
+    public MileIntroduce mileModifyDetail(@PathVariable String mile_introduce_no, @RequestParam String mile_no) {
+        MileIntroduce mileModify = managerService.mileModifyDetail(mile_introduce_no, mile_no);
         System.out.println(mileModify);
         return mileModify;
     }
@@ -177,6 +179,7 @@ public class ManagerController {
     public ResponseEntity<?> updateMileage( // ResponseEntity<?>는 HTTP응답을 의미. 제네릭 타입은 응답 본문이 특정 타입이 아님을 의미
                                             @RequestParam("mile_introduce_no") String mile_introduce_no,
                                             @RequestParam("mile_title") String mile_title,
+                                            @RequestParam("job_name") String job_name,
                                             @RequestParam("mile_content") String mile_content,
                                             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
@@ -199,7 +202,8 @@ public class ManagerController {
             }
 
             int result = managerService.updateMileage(mile_title, mile_content, mile_route, mile_introduce_no);
-            if (result > 0) {
+            int result2 = managerService.updateMileageDetail(mile_introduce_no, job_name);
+            if (result+result2 > 1) {
                 return ResponseEntity.ok().body(Map.of("success", true));
             } else {
                 return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));

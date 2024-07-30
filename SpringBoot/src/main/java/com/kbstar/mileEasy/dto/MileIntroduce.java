@@ -12,4 +12,5 @@ public class MileIntroduce {
     private String mile_title;
     private String mile_content;
     private String mile_route;
+    private String job_name;
 }

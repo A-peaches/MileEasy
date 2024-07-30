@@ -71,7 +71,7 @@ export default {
       mile_no: '',
       mile_route: '',
       file: null,
-      selectedJob: '' // 기본값 설정 
+      selectedJob: '공통' // 기본값 설정 
     }
   },
   methods: {
