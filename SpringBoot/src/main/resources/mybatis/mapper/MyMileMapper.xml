@@ -51,4 +51,15 @@
             md.mile_score_name, m.mile_name, ms.user_point, mh.prev_point, ms.latest_score_date, mh.latest_history_date;
 
     </select>
+
+    <select id="selectMileDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
+        select mile_name, document_file, date(document_date) as document_date
+        from Document_mile dm
+        join mileage m on dm.mile_no = m.mile_no
+        order by document_date DESC;
+    </select>
+
+    <select id="selectCount" resultType="int">
+        select count(*) from Document_mile;
+    </select>
 </mapper>
