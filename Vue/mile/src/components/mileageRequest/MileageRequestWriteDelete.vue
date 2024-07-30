@@ -10,7 +10,7 @@
       padding: 10px 140px 60px 140px !important;
     "
   >
-    <div class="mt-3" style="text-align: left">마일리지 이름</div>
+    <div class="mt-5" style="text-align: left">마일리지 이름</div>
     <input
       v-model="mileageName"
       type="text"
@@ -47,11 +47,16 @@ import { ref, computed } from 'vue';
 import Swal from 'sweetalert2';
 import SearchModal from './SearchModal.vue';
 import axios from 'axios';
+import { useStore } from 'vuex';
+
 export default {
   name: 'MileageRequestWriteAdd',
   components: { SearchModal },
 
   setup() {
+    const store = useStore();
+    const loginInfo = computed(() => store.getters['login/getLoginInfo']); // Use Vuex store getter
+
     const request = ref(3);
     const mileageName = ref('');
     const annualLimit = ref('');
@@ -115,13 +120,15 @@ export default {
       );
     };
 
-    const submitForm = () => {
-      let hasError = false;
-
+    const submitForm = async () => {
       // Perform validation checks
-
-      // If there are errors, prevent form submission
-      if (hasError) {
+      if (!isMileageNameValid.value) {
+        Swal.fire({
+          icon: 'error',
+          title: '입력 오류',
+          text: '마일리지 이름을 입력하세요.',
+          scrollbarPadding: false,
+        });
         return;
       }
 
@@ -135,11 +142,13 @@ export default {
         ),
         request_etc: additionalNotes.value,
         request_no: request.value, // Accessing request value using request.value
+        user_no: loginInfo.value.user_no, // Adding user_no from loginInfo
+        mile_no: loginInfo.value.mile_no,
       };
 
       try {
         // Send form data to the server
-        const response = axios.post(
+        const response = await axios.post(
           'http://localhost:8090/user/requestAdd',
           formData
         );
@@ -160,7 +169,6 @@ export default {
           scrollbarPadding: false,
         });
       }
-      // Add your form submission logic here
     };
 
     return {
@@ -183,6 +191,7 @@ export default {
       isCommonMileageValid,
       isRowsValid,
       validateRows,
+      loginInfo, // Ensure it's included only once
     };
   },
 };

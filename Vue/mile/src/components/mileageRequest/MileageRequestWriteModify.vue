@@ -10,7 +10,7 @@
       padding: 10px 140px 60px 140px !important;
     "
   >
-    <div class="mt-3" style="text-align: left">마일리지 이름</div>
+    <div class="mt-5" style="text-align: left">마일리지 이름</div>
     <input
       v-model="mileageName"
       type="text"
@@ -95,16 +95,19 @@
 
 <script>
 import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 import SearchModal from './SearchModal.vue';
 import axios from 'axios';
+
 export default {
   name: 'MileageRequestWriteAdd',
   components: { SearchModal },
 
-  methods: {},
-
   setup() {
+    const store = useStore();
+    const loginInfo = computed(() => store.getters['login/getLoginInfo']); // Access loginInfo from Vuex store
+
     const request = ref(2);
     const mileageName = ref('');
     const annualLimit = ref('');
@@ -168,11 +171,10 @@ export default {
       );
     };
 
-    const submitForm = () => {
+    const submitForm = async () => {
       let hasError = false;
 
       // Perform validation checks
-
       if (!isRowsValid.value) {
         Swal.fire({
           icon: 'error',
@@ -198,11 +200,13 @@ export default {
         ),
         request_etc: additionalNotes.value,
         request_no: request.value, // Accessing request value using request.value
+        user_no: loginInfo.value.user_no, // Adding user_no from loginInfo
+        mile_no: loginInfo.value.mile_no,
       };
 
       try {
         // Send form data to the server
-        const response = axios.post(
+        const response = await axios.post(
           'http://localhost:8090/user/requestAdd',
           formData
         );
@@ -245,6 +249,7 @@ export default {
       isCommonMileageValid,
       isRowsValid,
       validateRows,
+      loginInfo, // Include loginInfo to access user_no
     };
   },
 };

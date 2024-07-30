@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
-    <div class="content cards" @click="handleClick">
+    <div class="content cards">
       <div>
         <h2>마일리지 요청</h2>
       </div>
       <br /><br /><br /><br /><br />
       <div class="notice-count-container">
-        <div class="notice-count">총 1건</div>
+        <div class="notice-count">총 {{ filteredNotices.length }}건</div>
         <label class="checkbox-container">
           <input
             type="checkbox"
-            v-model="sortByViews"
-            @change="handleCheckboxChange('views')"
+            v-model="filters.processing"
+            @change="applyFilters"
           />
           <span class="custom-checkbox"></span>
           <span class="checkbox-label">처리중</span>
@@ -19,20 +19,25 @@
         <label class="checkbox-container">
           <input
             type="checkbox"
-            v-model="sortByDateAsc"
-            @change="handleCheckboxChange('date')"
+            v-model="filters.completed"
+            @change="applyFilters"
           />
           <span class="custom-checkbox"></span>
-          <span class="checkbox-label">승인</span>
+          <span class="checkbox-label">처리완료</span>
         </label>
         <label class="checkbox-container">
           <input
             type="checkbox"
-            v-model="sortByDateAsc"
-            @change="handleCheckboxChange('date')"
+            v-model="filters.rejected"
+            @change="applyFilters"
           />
           <span class="custom-checkbox"></span>
           <span class="checkbox-label">거절</span>
+        </label>
+        <label class="checkbox-container">
+          <input type="checkbox" v-model="filters.all" @change="applyFilters" />
+          <span class="custom-checkbox"></span>
+          <span class="checkbox-label">전체</span>
         </label>
       </div>
       <div>
@@ -49,37 +54,65 @@
           placeholder="제목 및 내용을 검색하세요"
           class="input-search"
         />
-        <button class="search-button" @click="searchNotices">
+        <button class="search-button" @click="applyFilters">
           <i class="bi bi-search"></i>
         </button>
       </div>
 
-      <div class="notice-list">
-        <div>
+      <div class="notice-list" style="text-align: center">
+        <div v-for="(notice, index) in paginatedNotices" :key="index">
           <div class="input-base list-wrapper">
             <div class="notice-details">
-              <div class="notice-new">1</div>
-              <div class="notice-num">1</div>
-              <div class="notice-mile">마일리지</div>
-              <div class="notice-title">제목</div>
-              <div class="notice-date">날짜</div>
+              <div class="notice-new">{{ index + 1 }}</div>
+              <div class="notice-num">
+                {{ getRequestType(notice.request) }}
+              </div>
+              <div class="notice-title">
+                {{ notice.request_mile_name || notice.mile_name }}
+              </div>
+              <div class="notice-mile">
+                {{ getStatus(notice.request_status) }}
+              </div>
+              <div class="notice-date">{{ notice.mileage_request_date }}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="pagination"></div>
+      <div class="pagination">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          @click="currentPage = page"
+          :class="{ active: currentPage === page }"
+        >
+          {{ page }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 
 export default {
   data() {
-    return {};
+    return {
+      requestList: [],
+      searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
+      filters: {
+        processing: false,
+        completed: false,
+        rejected: false,
+        all: true,
+      },
+    };
   },
+
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
@@ -89,17 +122,108 @@ export default {
     isChecked() {
       return this.getIsChecked;
     },
+    filteredNotices() {
+      let filtered = this.requestList;
+
+      if (this.searchQuery) {
+        filtered = filtered.filter((notice) => {
+          return (
+            notice.mile_name.includes(this.searchQuery) ||
+            (notice.request_mile_name &&
+              notice.request_mile_name.includes(this.searchQuery))
+          );
+        });
+      }
+
+      if (this.filters.all) {
+        return filtered;
+      } else {
+        return filtered.filter((notice) => {
+          if (this.filters.processing && notice.request_status === 0)
+            return true;
+          if (this.filters.completed && notice.request_status === 1)
+            return true;
+          if (this.filters.rejected && notice.request_status === 2) return true;
+          return false;
+        });
+      }
+    },
+    paginatedNotices() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredNotices.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
+    },
   },
+
   methods: {
     goToWritePage() {
       this.$router.push('/mileageRequestWrite');
     },
+    async fetchRequestList() {
+      try {
+        const response = await axios.post(
+          'http://localhost:8090/user/requestList',
+          null,
+          { params: { user_no: this.getLoginInfo.user_no } }
+        );
+        this.requestList = response.data;
+      } catch (error) {
+        console.error('문제', error);
+        this.requestList = [];
+      }
+    },
+    getRequestType(type) {
+      if (type === 1) return '추가';
+      if (type === 2) return '수정';
+      if (type === 3) return '삭제';
+      return '';
+    },
+    getStatus(status) {
+      if (status === 0) return '처리중';
+      if (status === 1) return '처리완료';
+      if (status === 2) return '거절';
+      return '';
+    },
+    applyFilters() {
+      this.currentPage = 1; // Reset to the first page whenever filters are applied
+    },
+    searchNotices() {
+      this.applyFilters();
+    },
   },
-  mounted() {},
+  mounted() {
+    this.fetchRequestList();
+  },
 };
 </script>
 
 <style scoped>
+.notice-list[data-v-60d28a9d] {
+  display: flex;
+  flex-direction: column;
+  width: 1200px;
+}
+.pagination button {
+  background-color: #ffffff;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin: 0 5px;
+  border-radius: 5px;
+  font-size: 18px;
+  font-family: 'KB_s4', sans-serif;
+}
+
+.pagination button.active {
+  background-color: #43c2a0;
+  color: white;
+}
+
+.pagination button:hover {
+  background-color: #e1e3e4;
+}
 html,
 body {
   margin: 0;
@@ -152,30 +276,6 @@ h2::after {
   margin: auto;
 }
 
-.content.cards {
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 60px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  max-width: 1300px;
-  margin: 0 auto;
-}
-
-.category-button {
-  background-color: #f9f9f9;
-  border-radius: 25px;
-  padding: 12px 40px;
-  cursor: pointer;
-  margin-bottom: 80px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* 공지사항과 카테고리 버튼 사이의 간격 */
-  display: inline-block;
-  font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
-  opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
-}
-
 .search-container {
   display: flex;
   align-items: center;
@@ -213,12 +313,6 @@ h2::after {
 
 .search-button .bi-search {
   font-size: 25px; /* 아이콘 크기 조정 */
-}
-
-.notice-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 .notice-count {

@@ -1,17 +1,22 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.LoginHistory;
+import com.kbstar.mileEasy.dto.Mileage_request;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
 import com.kbstar.mileEasy.service.user.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.util.*;
 
 import static java.util.Collections.replaceAll;
@@ -30,6 +35,7 @@ public class UserController {
 
     @Autowired
     private RequestService requestService;
+
 
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
@@ -139,10 +145,38 @@ public class UserController {
         String admin = requestBody.get("request_admin");
         String etc =  requestBody.get("request_etc");
         int request_no = Integer.parseInt(requestBody.get("request_no"));
+        String user_no =  requestBody.get("user_no");
+        int mile_no = Integer.parseInt(requestBody.get("mile_no"));
+
+        System.out.println(is_branch);
+        System.out.println(mile_name);
+        System.out.println(mil_max);
+        System.out.println(admin);
+        System.out.println(etc);
+
+        System.out.println(request_no);
+        System.out.println(user_no);
+        System.out.println(mile_no);
+
+
+
+
+
+
+
+
+
         admin = admin.replace("[", "");
         admin = admin.replace("]", "");
         admin = admin.replace("\"", "");
-        requestService.insertRequestMileage(is_branch,mile_name,mil_max,admin,etc,request_no);
+        requestService.insertRequestMileage(is_branch,mile_name,mil_max,admin,etc,request_no,user_no,mile_no);
+    }
+
+
+    @PostMapping("/requestList")
+    public ArrayList<Mileage_request> requestList(@RequestParam("user_no") String user_no) {
+        // userNo를 사용하여 필요한 데이터 처리
+        return requestService.requestList(user_no);
     }
 
 }
