@@ -9,7 +9,17 @@
       </button>
     </div>
     <div class="p-4 mt-5">
-      <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">마일리지 항목</h3>
+      <div class="d-flex justify-content-between">
+        <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">마일리지 항목</h3>
+        <div class="d-flex justify-content-end align-items-center">
+          <input type="radio" class="btn-check" name="job_name" id="공통" value="공통" v-model="selectedJob" autocomplete="off" checked>
+          <label class="btn custom-radio-btn" for="공통" style="width:5vw; font-size: 15pt; font-family: 'KB_C3';">공통</label>
+          <input type="radio" class="btn-check" name="job_name" id="개인" value="개인" v-model="selectedJob" autocomplete="off">
+          <label class="btn custom-radio-btn" for="개인" style="width:5vw; font-size: 15pt; font-family: 'KB_C3';">개인</label>
+          <input type="radio" class="btn-check" name="job_name" id="기업" value="기업" v-model="selectedJob" autocomplete="off">
+          <label class="btn custom-radio-btn" for="기업" style="width:5vw; font-size: 15pt; font-family: 'KB_C3';">기업</label>
+        </div>
+      </div>
       <div class="p-4">
         <div class="input-gray p-4">
           <input type="text" class="lg2" v-model="mile_title" style="width: 100%; text-align: left;"/>
@@ -50,15 +60,20 @@ export default {
       mile_content: '',
       file: null,
       before_mile_route: '',
-      mile_introduce_no: null
+      mile_introduce_no: null,
+      mile_no: '',
+      selectedJob: ''
     }
   },
   computed:{
     ...mapGetters('mile', ['getMileDetail']),
-    
+    ...mapGetters('login', ['getLoginInfo']),
     mileDetail(){
       return this.getMileDetail;
-    }
+    },
+    loginInfo(){
+      return this.getLoginInfo;
+    },
   },
   methods: {
     ...mapActions('mile', ['getMileModify', 'updateMile']),
@@ -73,6 +88,7 @@ export default {
       const mileInfo = new FormData();
       mileInfo.append('mile_introduce_no', this.mile_introduce_no);
       mileInfo.append('mile_title', this.mile_title);
+      mileInfo.append('job_name', this.selectedJob);
       mileInfo.append('mile_content', this.mile_content);
       mileInfo.append('file', this.file ? this.file : this.before_mile_route); 
       const response = await this.updateMile(mileInfo);
@@ -95,12 +111,17 @@ export default {
     },
   },
   async created(){
+    this.mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
     this.mile_introduce_no = this.$route.query.mile_introduce_no;
-    if(this.mile_introduce_no){
-      await this.getMileModify(this.mile_introduce_no);
+    if(this.mile_introduce_no && this.mile_no){
+      await this.getMileModify({
+        mile_introduce_no: this.mile_introduce_no,
+        mile_no: this.mile_no
+      });
       const mileDetail = this.getMileDetail;
       if(mileDetail){
         this.mile_title = mileDetail.mile_title;
+        this.selectedJob = mileDetail.job_name;
         this.mile_content = mileDetail.mile_content;
         this.before_mile_route = mileDetail.mile_route; // 기존 파일명을 가져와서 표시
       }else{
@@ -119,5 +140,25 @@ export default {
   height: 100%;
   /* height: 800px; */
   margin-top: 5%;
+}
+
+/* 기본 버튼 스타일 */
+.custom-radio-btn {
+  border: 1px solid transparent;
+  transition: background-color 0.3s ease;
+}
+
+/* 선택된 버튼 스타일 */
+.btn-check:checked + .custom-radio-btn {
+  /* border-color: #19c99b; */
+  background-color: #19c99b;
+  color:#fff;
+  font-weight: 600;
+}
+
+.btn-check:hover + .custom-radio-btn:hover {
+  background-color: #19c99b;
+  color:#fff;
+  font-weight: 600;
 }
 </style>

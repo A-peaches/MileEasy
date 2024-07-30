@@ -29,17 +29,23 @@ public class ManagerService {
     public int addMileage(String mile_no, String mile_title, String mile_content, String mile_route) {
         return managerDao.insertMile(Integer.parseInt(mile_no), mile_title, mile_content, mile_route);
     }
-
+    public int addMileageDetail(String mile_no, String mile_title, String job_name){
+        return managerDao.insertMileDetail(mile_no, mile_title, job_name);
+    }
     public int deleteMile(String mile_introduce_no) {
         return managerDao.deleteMile(mile_introduce_no);
     }
-
-    public MileIntroduce mileModifyDetail(String mile_introduce_no) {
-        return managerDao.selectModifyMile(mile_introduce_no);
+    public int deleteMileDetail(String mile_introduce_no) { return managerDao.deleteMileDetail(mile_introduce_no);}
+    public MileIntroduce mileModifyDetail(String mile_introduce_no, String mile_no) {
+        return managerDao.selectModifyMile(mile_introduce_no, mile_no);
     }
 
     public int updateMileage(String mile_title, String mile_content, String mile_route, String mile_introduce_no) {
         return managerDao.updateMile(mile_title, mile_content, mile_route, Integer.parseInt(mile_introduce_no));
+    }
+
+    public int updateMileageDetail(String mile_introduce_no, String job_name){
+        return managerDao.updateMileDetail(mile_introduce_no, job_name);
     }
 
     public int updateMileRecommand(String mile_mention, String mile_recommand_no){
