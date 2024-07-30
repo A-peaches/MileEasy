@@ -4,6 +4,7 @@ import com.kbstar.mileEasy.beans.MileByAge;
 import com.kbstar.mileEasy.beans.MileByJob;
 import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.*;
+import com.kbstar.mileEasy.mapper.MileageDao;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -13,6 +14,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.quartz.QuartzTransactionManager;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -69,6 +72,8 @@ public class MileageController {
     private String mileScoreUploadPath;
     @Value("${project.uploadpath.document}")
     private String documentUploadPath;
+    @Autowired
+    private MileageDao mileageDao;
 
     //마일리지 테이블 가지고오기
     @GetMapping("/getMileage")
@@ -113,11 +118,24 @@ public class MileageController {
                 // 파일 저장
                 mile_excel_file = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
                 Path path = Paths.get(uploadPath, mile_excel_file); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+
+                // 파일명이 중복될 경우 서버 내부적으로 파일명 변경
+                String newFileName = mile_excel_file;
+                int count = 1;
+                while(Files.exists(path)){
+                    int dotIndex = mile_excel_file.lastIndexOf(".");
+                    String nameWithoutExtension = (dotIndex == -1) ? mile_excel_file : mile_excel_file.substring(0, dotIndex);
+                    String extension = (dotIndex == -1) ? "" : mile_excel_file.substring(dotIndex);
+                    newFileName = nameWithoutExtension + "_" + count + extension;
+                    path = Paths.get(uploadPath, newFileName);
+                    count++;
+                }
+
                 Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
                 Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
 
                 // 엑셀 파일 데이터 추출
-                FileInputStream fis = new FileInputStream(new File(uploadPath, mile_excel_file));
+                FileInputStream fis = new FileInputStream(new File(uploadPath, newFileName));
                 Workbook workbook = new XSSFWorkbook(fis);
                 Sheet sheet = workbook.getSheetAt(0); // 첫번째 시트만 처리
 
@@ -125,23 +143,53 @@ public class MileageController {
                 Cell cell = sheet.getRow(0).getCell(0);
                 String mile_score_date="";
 
-                if (cell.getCellType() == CellType.NUMERIC) {
-                    if (DateUtil.isCellDateFormatted(cell)) {
-                        // 셀이 날짜 형식인 경우
-                        Date date = cell.getDateCellValue();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        mile_score_date = dateFormat.format(date);
+                if(cell != null){
+                    CellType cellType = cell.getCellType();
+
+                    if (cell.getCellType() == CellType.NUMERIC) {
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            // 셀이 날짜 형식인 경우
+                            Date date = cell.getDateCellValue();
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            mile_score_date = dateFormat.format(date);
+                        } else {
+                            // 셀이 숫자 형식인 경우
+                            Date date = DateUtil.getJavaDate(cell.getNumericCellValue());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            mile_score_date = dateFormat.format(date);
+                        }
+                    } else if (cell.getCellType() == CellType.STRING) {
+                        // 셀이 문자열 형식인 경우
+                        String cellValue = cell.getStringCellValue();
+                        if (cellValue.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                            mile_score_date = cellValue;
+                        } else {
+                            throw new IllegalStateException("String cell is not in date format.");
+                        }
                     } else {
-                        // 셀이 숫자 형식인 경우
-                        double numericValue = cell.getNumericCellValue();
-                        mile_score_date = String.valueOf(numericValue);
+                        // 기타 셀 형식 처리
+                        throw new IllegalStateException("지원하지 않는 날짜 형식입니다.");
                     }
-                } else if (cell.getCellType() == CellType.STRING) {
-                    // 셀이 문자열 형식인 경우
-                    mile_score_date = cell.getStringCellValue();
-                } else {
-                    // 기타 셀 형식 처리
-                    throw new IllegalStateException("Unsupported cell type for mile_score_date");
+                }
+
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    dateFormat.setLenient(false);
+                    Date parsedDate = dateFormat.parse(mile_score_date);
+
+                    // 현재 날짜와 비교
+                    if (parsedDate.after(new Date())) {
+                        throw new IllegalArgumentException("Future date is not allowed");
+                    }
+
+                    // 1900년 이전의 날짜는 거부
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(parsedDate);
+                    if (cal.get(Calendar.YEAR) < 1900) {
+                        throw new IllegalArgumentException("Date before 1900 is not allowed");
+                    }
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException("Invalid date format: " + mile_score_date);
                 }
 
                 // 제목행 추출(두번째 행)
@@ -197,19 +245,44 @@ public class MileageController {
         }
     }
 
-    // mileExcelFiles 마일리지 점수 엑셀파일 리스트 가져오기 (매개변수: 선택된 날짜)
+    // mileExcelFiles 마일리지 점수 엑셀파일 리스트 가져오기 (매개변수: 선택된 날짜, mile_no, page, itemsPerPage)
     @GetMapping("/mileExcelFiles")
-    public List<MileExcel> mileExcelFiles(@RequestParam("date") String date){
+    public List<MileExcel> mileExcelFiles(
+            @RequestParam("date") String date,
+            @RequestParam("mile_no") String mile_no,
+            @RequestParam int page,
+            @RequestParam int itemsPerPage
+    ){
+        int offset = (page - 1) * itemsPerPage;
+        int limit = itemsPerPage;
         String selectedDate = date.split("T")[0]; // yyyy-MM-dd 형식으로 변환
-        List<MileExcel> mileExcelList = mileScoreService.getMileExcel(selectedDate);
+        List<MileExcel> mileExcelList = mileScoreService.getMileExcel(selectedDate, mile_no, limit, offset);
         return mileExcelList;
     }
 
-    // totalMileExcel 마일리지 점수 엑셀파일 리스트 가져오기 (매개변수: mile_no)
+    // totalMileExcel 마일리지 점수 엑셀파일 리스트 가져오기 (매개변수: mile_no, page, itemsPerPage)
     @GetMapping("/totalMileExcel/{mile_no}")
-    public List<MileExcel> totalMileExcel(@PathVariable String mile_no){
-        List<MileExcel> mileExcelList = mileScoreService.totalExcel(mile_no);
+    public List<MileExcel> totalMileExcel(
+            @PathVariable String mile_no,
+            @RequestParam int page,
+            @RequestParam int itemsPerPage)
+    {
+        int offset = (page - 1) * itemsPerPage;
+        int limit = itemsPerPage;
+        List<MileExcel> mileExcelList = mileScoreService.totalExcel(mile_no, limit, offset);
         return mileExcelList;
+    }
+
+    // countList 마일리지 점수 엑셀파일 총 개수 가져오기(매개변수: mile_no)
+    @GetMapping("/countList/{mile_no}")
+    public int countList(@PathVariable String mile_no){
+        return mileScoreService.getCount(mile_no);
+    }
+
+    // countListDocuments 마일리지 문서 파일 총 개수 가져오기(매개변수: mile_no)
+    @GetMapping("/countListDocuments/{mile_no}")
+    public int countListDocuments(@PathVariable String mile_no){
+        return mileScoreService.getCountDocuments(mile_no);
     }
 
     // downloadExcelFile 마일리지 점수 엑셀파일 다운로드 (매개변수: 엑셀 파일 명)
@@ -295,6 +368,13 @@ public class MileageController {
         }
     }
 
+    // totalLists 마일리지 문서 리스트 전체 불러오기(매개변수: mile_no)
+    @GetMapping("/totalLists/{mile_no}")
+    public List<DocumentMile> totalLists(@PathVariable String mile_no){
+        List<DocumentMile> documentMileList = mileScoreService.documentsForSearch(mile_no);
+        return documentMileList;
+    }
+
     //totalMileDocument 마일리지 문서 리스트 형식으로 불러오기 (매개변수: mile_no, page, itemsPerPage)
     @GetMapping("/totalMileDocument/{mile_no}")
     public List<DocumentMile> totalMileDocument(
@@ -304,7 +384,7 @@ public class MileageController {
     ) {
         int offset = (page - 1) * itemsPerPage;
         // offset은 SQL 쿼리에서 페이징 처리 시 시작 위치를 지정하는데 사용.
-        // 예를 들어, 페이지 당 10개 항목 표시 하고 3번째 페이지를 요청하는 경우, offsetdms 20이 되어
+        // 예를 들어, 페이지 당 10개 항목 표시 하고 3번째 페이지를 요청하는 경우, offset은 20이 되어
         // DB에서 21번째 항목부터 10개의 항목을 가져오게 된다.
         int limit = itemsPerPage;
         List<DocumentMile> documentMileList = mileScoreService.totalDocument(mile_no, limit, offset);
@@ -457,6 +537,9 @@ public class MileageController {
         System.out.println("직무별 차트 " + mileByJob);
         return mileByJob;
     }
+
+
+
 
 }
 

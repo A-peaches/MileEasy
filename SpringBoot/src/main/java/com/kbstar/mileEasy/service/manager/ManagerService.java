@@ -1,8 +1,7 @@
 package com.kbstar.mileEasy.service.manager;
 
-import com.kbstar.mileEasy.dto.MileIntroduce;
-import com.kbstar.mileEasy.dto.MileRecommand;
-import com.kbstar.mileEasy.dto.User;
+import com.kbstar.mileEasy.beans.PageCount;
+import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.mapper.ManagerDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,5 +52,20 @@ public class ManagerService {
 
     public int deleteMileRecommand(String mile_recommand_no){
         return managerDao.deleteRecommand(mile_recommand_no);
+    }
+
+
+
+
+
+    public ArrayList<PageCount> visitCount(String startDate, String mile_no) {return managerDao.visitCount(startDate, mile_no);
+    }
+
+    public ArrayList<MileScore> mileageCount(String startDate, String mile_no) {return managerDao.mileageCount(startDate, mile_no);
+    }
+
+    public ArrayList<HitMile> mileCount(String start, String end, String mile) {return managerDao.mileCount(start,
+            end,
+            mile);
     }
 }

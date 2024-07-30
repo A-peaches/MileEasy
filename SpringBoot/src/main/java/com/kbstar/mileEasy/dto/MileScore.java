@@ -23,5 +23,9 @@ public class MileScore {
     private String user_name;
     private String score_increase;
     private String base_date;
+    private int total_current_month_points;
+    private int total_previous_month_points;
+    private Date date;
+
 
 }

@@ -5,7 +5,9 @@ const state = {
   arrayMileScore: [],
   mileAges: null,
   milePosition : null,
-  mileJob : null
+  mileJob : null,
+  myMile : null,
+  mileStatus : null
 };
 
 const mutations = {
@@ -23,6 +25,12 @@ const mutations = {
   },
   setMileJob(state, payload) {
     state.mileJob = payload;
+  },
+  setMyMile(state, payload) {
+    state.myMile = payload;
+  },
+  setMileStatus(state, payload) {
+    state.mileStatus = payload;
   },
 };
 
@@ -55,11 +63,26 @@ const actions = {
     try {
       const response = await axios.get(`http://localhost:8090/mileage/getMileJob/${user_no}`);
       commit('setMileJob', response.data);
-      console.log('뀨웅', response.data);
     } catch (error) {
       console.error('Error getting MileJob data:', error);
     }
   },
+  async getMyMiles({ commit },user_no) {
+    try {
+      const response = await axios.get(`http://localhost:8090/myMile/getMyMiles/${user_no}`);
+      commit('setMyMile', response.data);
+    } catch (error) {
+      console.error('Error getting MileJob data:', error);
+    }
+  },
+  async getMyMileStatus({ commit },{ user_no,mile_no }) {
+    try {
+      const response = await axios.get(`http://localhost:8090/myMile/getMileStatus/${user_no}/${mile_no}`);
+      commit('setMileStatus', response.data);
+    } catch (error) {
+      console.error('Error getting MileJob data:', error);
+    }
+  }
 };
 
 const getters = {
@@ -68,6 +91,8 @@ const getters = {
   getMileAges: (state) => state.mileAges,
   getMilePositions: (state) => state.milePosition,
   getMileJobs: (state) => state.mileJob,
+  getMyMile: (state) => state.myMile,
+  getMileStatus: (state) => state.mileStatus,
 };
 
 export default {

@@ -62,31 +62,47 @@ export default {
   methods: {
     ...mapActions("attendance", ["getAttendance"]),
     ...mapActions("attendance", ["addAttendance"]),
-
+    preventScroll() {
+    document.body.style.overflow = 'hidden';
+  },
+  allowScroll() {
+    document.body.style.overflow = '';
+  },
     async handleAddAttendance() {
-      // 오늘 날짜를 문자열 형식으로 생성
-      const today = new Date().toISOString().split("T")[0];
-      // getArrayAttendance 배열에서 오늘 날짜가 포함되어 있는지 확인
-      const hasTodayAttendance = this.getArrayAttendance.some(
-        (event) => event.start.split(" ")[0] === today
-      );
+    const today = new Date().toLocaleDateString();
+    const hasTodayAttendance = this.getArrayAttendance.some(
+      (event) => new Date(event.start).toLocaleDateString() === today
+    );
 
-      if (hasTodayAttendance) {
-        this.warningAlert();
-        return; //함수종료
-      }
-      try {
-        await this.addAttendance(this.getLoginInfo.user_no);
-        this.succesAlert();
-      } catch (error) {
-        console.error("출석 체크 실패:", error);
-      }
-    },
+    if (hasTodayAttendance) {
+      this.warningAlert();
+      return;
+    }
+
+    try {
+      await this.addAttendance(this.getLoginInfo.user_no);
+      await this.getAttendance(this.getLoginInfo.user_no);
+      this.succesAlert();
+    } catch (error) {
+      console.error("출석 체크 실패:", error);
+      this.errorAlert();
+    }
+  },
+  errorAlert() {
+    this.$swal({
+      title: "오류",
+      text: "출석 체크 중 문제가 발생했습니다. 다시 시도해 주세요.",
+      icon: "error",
+      scrollbarPadding: false
+    });
+  },
     warningAlert() {
       this.$swal({
         title: "경고",
         text: "출석체크는 하루에 한번만 가능합니다.",
         icon: "warning",
+        scrollbarPadding: false,
+        
       });
     },
     succesAlert() {
@@ -94,6 +110,7 @@ export default {
         title: "성공",
         text: "출석체크가 완료되었습니다.",
         icon: "success",
+        scrollbarPadding: false
       });
     },
   },
@@ -101,6 +118,12 @@ export default {
     await this.getAttendance(this.getLoginInfo.user_no);
     this.dataLoaded = true;
   },
+  mounted() {
+  this.preventScroll();
+},
+beforeUnmount() {
+  this.allowScroll();
+}
 };
 </script>
 
@@ -125,4 +148,9 @@ export default {
   color: white;
   background-position: 5px 9px; /* 이미지를 오른쪽으로 5px 이동 */
 }
+
+body.alret-open {
+  overflow: hidden;
+}
+
 </style>

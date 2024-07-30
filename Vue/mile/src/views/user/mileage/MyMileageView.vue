@@ -1,52 +1,90 @@
 <template>
-  <div class="cards page-back mx-auto" style="color: #4B4A4A">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">나의 마일리지</h2>
+  <div class="cards page-back mx-auto" style="color: #4b4a4a">
 
-    <div class="row mx-2" style="margin-top: 100px">
-      <div
-        v-for="(card, index) in mileageCards"
-        :key="index"
-        class="col-6 mb-3"
-      >
+    <h2 class="bold-x-lg my-5 ml-5 help-icon "  ref="helpIcon" style="font-family: KB_C3">
+      나의 마일리지
+      <i
+        class="bi bi-question-circle"
+        @click="toggleHelpPopover"
+        style="font-size: 20pt"
+      ></i>
+    </h2>
+    
+    <div v-if="showHelpPopover" class="help-popover" ref="helpPopover">
+      <div style="font-size: 12pt">
+        <span
+          >이것은 마일리지 카드입니다. 여기에서 귀하의 마일리지 포인트와 최대 마일리지,   <br />
+          그리고 다른 사용자들과 비교한 귀하의 위치를 확인할 수 있습니다.</span
+        >
+      </div>
+    </div>
+    <div class="row mx-2" style="margin-top: 100px" v-if="dataLoaded">
+      <div v-for="(card, index) in filteredMyMile" :key="index" class="col-6 mb-3">
         <div
           class="cards mx-3 fade-up-item"
-          style="background-color: #f9f9f9; height: 280px; position: relative;"
+          style="background-color: #f9f9f9; height: 280px; position: relative"
         >
-         <div class="flex-between">
-          <div class= "flex mb-2">
-            <div class="text-start KB_C3 fw-bolder" style="font-size: 18pt; margin: 0;">
-              {{ card.title }}
+          <div class="flex-between">
+            <div class="flex mb-2">
+              <div
+                class="text-start KB_C3 fw-bolder"
+                style="font-size: 18pt; margin: 0"
+              >
+                {{ card.mile_name }}
+              </div>
+              <div class="text-end" style="top: -12px; position: relative">
+                <router-link
+                  :to="{ name: 'mileageDetail', params: { mile_no: card.mile_no } }"
+                  class="KB_C3 brown"
+                  style="text-decoration: none; font-size: 12pt"
+                >
+                  <strong>바로가기 ></strong>
+                </router-link>
+              </div>
             </div>
-            <div class="text-end " style="top:-12px; position:relative; ">
-              <a class=" KB_C3 brown"  style="text-decoration: none; font-size: 12pt;
-              "><strong>바로가기 ></strong></a>
-            </div>
-          </div>
           </div>
           <div
             class="flex justify-content-between align-items-center"
             style="padding-bottom: 60px"
           >
-            <div style="width: 55%; font-size: 32pt; position: relative;">
-              <span class="KB_C2"> 
-                <span class="KB_C2 highlight">{{ card.current }}</span> 
-                / {{ card.total }}</span>
+            <div style="width: 55%; font-size: 32pt; position: relative">
+              <span class="KB_C2">
+                <span class="KB_C2 highlight">{{ card.user_point }}</span>
+                / {{ card.mile_max != 0 ? card.mile_max : "-" }}</span
+              >
               <div class="text-start recent-update">
-                ( 최근 업데이트 : 2024-07-15 )
+                ( 최근 업데이트 : {{ card.mile_date }} )
               </div>
             </div>
-            <div class="flex progress-container" style="width: 43%; height: 105%; position: relative;
-            padding-right: 5%">
+            <div
+              class="flex progress-container"
+              style="
+                width: 43%;
+                height: 105%;
+                position: relative;
+                padding-right: 5%;
+              "
+            >
               <div class="progress-bar mb-4">
                 <div
                   class="progress"
-                  :style="{ height: getProgressHeight(card.current, card.total) }"
+                  :style="{
+                    height: getProgressHeight(card.user_point, card.all_point),
+                  }"
                 ></div>
-                <div class="marker top"><i class="bi bi-caret-right-fill"></i>&nbsp;상위 20%</div>
-                <div class="marker middle"><i class="bi bi-caret-right-fill"></i>&nbsp;상위 60%</div>
-                <div class="marker bottom"><i class="bi bi-caret-right-fill"></i>&nbsp;상위 100%</div>
+                <div class="marker top">
+                  <i class="bi bi-caret-right-fill"></i>&nbsp;상위 20%
+                </div>
+                <div class="marker middle">
+                  <i class="bi bi-caret-right-fill"></i>&nbsp;상위 60%
+                </div>
+                <div class="marker bottom">
+                  <i class="bi bi-caret-right-fill"></i>&nbsp;상위 100%
+                </div>
               </div>
-              <div class="below-text mb-2 ml-">&lt; 총 평균 대비 상위 그래프 &gt;</div>
+              <div class="below-text mb-2 ml-">
+                &lt; 총 평균 대비 상위 그래프 &gt;
+              </div>
             </div>
           </div>
         </div>
@@ -57,90 +95,119 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "MyMileageView",
-  computed: {
-    ...mapGetters("login", ["getLoginInfo"]),
-    loginInfo() {
-      return this.getLoginInfo;
-    },
-  },
+
   data() {
     return {
-      mileageCards: [
-        {
-          title: "연수 마일리지",
-          current: 100,
-          total: 200
-        },
-        {
-          title: "Hot TIP 마일리지",
-          current: 50,
-          total: "-"
-        },
-        {
-          title: "Monthly Best 마일리지",
-          current: 100,
-          total: 500
-        },
-        {
-          title: "Monthly Base 마일리지",
-          current: 300,
-          total: 700
-        },
-        {
-          title: "Best PG 마일리지",
-          current: 100,
-          total: "-"
-        },
-        {
-          title: "Best 지점 마일리지",
-          current: 180,
-          total: 200
-        },
-        {
-          title: "리그데이블 마일리지",
-          current: 20,
-          total: 200
-        },
-        {
-          title: "소비자 지원부 마일리지",
-          current: 70,
-          total: 400
-        },
-      ],
+      showHelpPopover: false,
+      dataLoaded: false,
     };
   },
   methods: {
+    ...mapActions("mileScore", ["getMyMiles"]),
+
     getProgressHeight(current, total) {
-      if (total === "-") total = 200;
+      if (total === "-") total = 1;
       const percentage = (current / total) * 100;
       return `${percentage}%`;
     },
-    
+
     setTransitionDelay(el, index) {
-      el.style.setProperty('--index', index);
-    }
+      el.style.setProperty("--index", index);
+    },
+    applyFadeUpEffect() {
+  console.log("Applying fade-up effect");
+  const items = this.$el.querySelectorAll(".fade-up-item");
+  console.log(`Found ${items.length} items to animate`);
+  
+  items.forEach((item, index) => {
+    item.style.setProperty("--index", index);
+    item.style.setProperty("z-index", items.length - index);
+    
+    // 모든 항목에 대해 약간의 기본 지연 시간을 설정
+    const baseDelay = 50;
+    const delay = baseDelay + (50 * index);
+    
+    setTimeout(() => {
+      item.classList.add("fade-up-active");
+    }, delay);
+  });
+},
+    toggleHelpPopover(event) {
+      event.stopPropagation(); // 이벤트 전파 중지
+      console.log('toggleHelpPopover 클릭');
+      this.showHelpPopover = !this.showHelpPopover;
+      console.log('showHelpPopover:', this.showHelpPopover); // 추가
+      if (this.showHelpPopover) {
+        document.addEventListener('click', this.handleClickOutside);
+      } else {
+        document.removeEventListener('click', this.handleClickOutside);
+      }
+    },
+    handleClickOutside(event) {
+      console.log('handleClickOutside 실행');
+      if (this.$refs.helpPopover && !this.$refs.helpPopover.contains(event.target) && 
+          !this.$refs.helpIcon.contains(event.target)) {
+        console.log('팝오버 닫기');
+        this.showHelpPopover = false;
+        document.removeEventListener('click', this.handleClickOutside);
+      }
+    },
   },
-  mounted() {
-    this.$nextTick(() => {
-      const items = this.$el.querySelectorAll('.fade-up-item');
-      items.forEach((item, index) => {
-        item.style.setProperty('--index', index);
-        item.style.setProperty('z-index', 10 - index); // z-index 설정
-        setTimeout(() => {
-          item.classList.add('fade-up-active');
-        }, 100 * index); // 각 아이템마다 지연 시간을 다르게 설정
-      });
-    });
+  mounted() {},
+  computed: {
+    ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters("mileScore", ["getMyMile"]),
+
+    filteredMyMile() {
+      if (this.getLoginInfo.job_no == '기획') {
+        return this.getMyMile.filter(item => item.mile_is_branch == false);
+      }
+      return this.getMyMile;
+    },
   },
-  created() {},
+  watch: {
+    getLoginInfo: {
+      immediate: true,
+      handler(newLoginInfo) {
+        if (newLoginInfo && newLoginInfo.user_no) {
+          this.getMyMiles(newLoginInfo.user_no).then(() => {
+            this.dataLoaded = true;
+            this.$nextTick(() => {
+              this.applyFadeUpEffect();
+            });
+          });
+        }
+      },
+    },
+  },
 };
 </script>
 
 <style scoped>
+.help-icon {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+
+.help-popover {
+  position: absolute;
+  left: 980px; /* 조정 가능 */
+  top: 335px; /* 조정 가능 */
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  width: 600px;
+  margin-left: 10px; /* 아이콘과의 간격 */
+  display: block; /* 추가 */
+  background-color: white; /* 임시로 눈에 띄는 색상 사용 */
+  border: 2px solid #e4e4e4;
+}
 .page-back {
   width: 70%;
   height: 100%;
@@ -166,7 +233,7 @@ export default {
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 10px; /* 모서리 둥글게 */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 살짝의 그림자 추가 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 살짝의 그림자 추가 */
 }
 
 .flex {
@@ -197,7 +264,7 @@ export default {
 
 .progress {
   width: 100%;
-  background-color: #FFCA05;
+  background-color: #ffca05;
   position: absolute;
   border-radius: 5px;
   bottom: 0;
@@ -240,7 +307,7 @@ export default {
 }
 
 .highlight {
-  background-color: #FFF6D4;
+  background-color: #fff6d4;
   border-radius: 30px; /* 둥근 모서리 */
   padding: 4px 8spx; /* 내부 여백을 추가하여 크기 조절 */
   display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
@@ -257,5 +324,4 @@ export default {
   opacity: 1;
   transform: translateY(0);
 }
-
 </style>

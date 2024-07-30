@@ -6,52 +6,24 @@
         class="input-base input-search d-flex justify-content-center mx-auto my-3"
         style="width: 500px; background: #ebebeb"
       >
-        <!-- Add 'active' class to make this button appear selected -->
-        <button class="tab-container lg2 fw-bold active">마일리지 수정</button>
-        <button class="tab-container lg2 fw-bold">개발요청</button>
-      </div>
-    </div>
-    <div style="padding: 0 5%">
-      <div class="p-4 mt-5 mx-auto">
-        <div
-          class="cards-container mx-auto"
-          :style="{ height: computedHeight }"
+        <button
+          class="tab-container lg2 fw-bold"
+          :class="{ active: isModifyActive }"
+          @click="showModify"
         >
-          <div
-            v-for="(card, index) in mileageLabel"
-            :key="index"
-            class="card-item"
-          >
-            <div
-              class="cards"
-              :class="card.pyramidClass"
-              style="background-color: #f9f9f9; height: 80px; width: 500px"
-            >
-              <div class="card-header">
-                <h3 class="text-start KB_S5" style="font-size: 16pt">
-                  {{ card.mile_name }}
-                </h3>
-                <span class="edit-delete brown">
-                  <a
-                    :href="'/mileageModifyAdminView?mile_no=' + card.mile_no"
-                    class="brown"
-                    >수정</a
-                  >
-                  &nbsp;&nbsp;
-                  <a @click="deleteMile(card.mile_no)">삭제</a>
-                </span>
-              </div>
-              <div
-                class="flex justify-content-between align-items-center"
-                style="padding-bottom: 10px"
-              >
-                <div style="width: 48%; font-size: 30pt"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="my-3"></div>
+          마일리지 수정
+        </button>
+        <button
+          class="tab-container lg2 fw-bold"
+          :class="{ active: !isModifyActive }"
+          @click="showCoding"
+        >
+          개발요청
+        </button>
       </div>
+      <!-- 동적 컴포넌트 전환 -->
+      <modiy v-if="isModifyActive" />
+      <coding v-if="!isModifyActive" />
     </div>
   </div>
 </template>
@@ -60,29 +32,30 @@
 import { mapActions, mapGetters } from 'vuex';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import modiy from '@/components/admin/MileageModify.vue';
+import coding from '@/components/admin/CodingList.vue';
 
 export default {
   name: 'KingMain',
-
+  components: { modiy, coding },
+  data() {
+    return {
+      isModifyActive: true, // 초기에는 '마일리지 수정'이 활성화됨
+    };
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getArrayMileage']),
-
     loginInfo() {
       return this.getLoginInfo;
     },
-
     mileageLabel() {
-      // Access Vuex getter directly
       return this.getArrayMileage;
     },
   },
-
   methods: {
     ...mapActions('mileage', ['getMileage']),
-
     async deleteMile(mile_no) {
-      // SweetAlert2를 사용하여 삭제 확인 다이얼로그 표시
       const { value: confirmed } = await Swal.fire({
         title: '삭제 확인',
         text: '정말로 이 마일리지를 삭제하시겠습니까?',
@@ -94,16 +67,15 @@ export default {
         cancelButtonText: '취소',
       });
 
-      // 사용자가 삭제를 확인한 경우에만 삭제 요청을 보냄
       if (confirmed) {
         try {
           const response = await axios.post(
             'http://localhost:8090/admin/deleteMile',
             null,
             {
-              params: { mile_no: mile_no }, // URL 쿼리 파라미터로 mile_no 전송
+              params: { mile_no: mile_no },
               headers: {
-                'Content-Type': 'application/x-www-form-urlencoded', // 이 경우 Content-Type 설정이 필요 없음
+                'Content-Type': 'application/x-www-form-urlencoded',
               },
             }
           );
@@ -122,8 +94,14 @@ export default {
         console.log('삭제 취소됨');
       }
     },
+    showModify() {
+      this.isModifyActive = true; // '마일리지 수정' 활성화
+    },
+    showCoding() {
+      this.isModifyActive = false; // '개발요청' 활성화
+      this.getMileage();
+    },
   },
-
   mounted() {
     this.getMileage(); // Fetch mileage data on component mount
   },
@@ -134,7 +112,7 @@ export default {
 .page-back {
   width: 70%;
   margin-top: 5%;
-  min-height: 800px; /* Adjusted to fit content and avoid too small height */
+  min-height: 800px;
 }
 
 .tab-container:hover {
@@ -159,12 +137,12 @@ export default {
 .cards-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px; /* Space between the cards */
+  gap: 16px;
 }
 
 .card-item {
   box-sizing: border-box;
-  flex: 1 1 calc(50% - 16px); /* Ensures two cards per row, with spacing */
+  flex: 1 1 calc(50% - 16px);
 }
 
 .card-header {

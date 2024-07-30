@@ -69,7 +69,7 @@
         </p>
         <div class="favorite-options">
           <div
-            v-for="(item, index) in mileageInfo"
+            v-for="(item, index) in filteredMileageInfo"
             :key="index"
             class="btn-favorite favorite-item KB_C2"
             :class="{ selected: selectedFavorites.includes(item.mile_name) }"
@@ -117,7 +117,12 @@ export default {
     ...mapGetters("favorite", ["getArrayFavorite"]),
     ...mapGetters("login", ["getLoginInfo"]),
     ...mapGetters("mileScore", ["getArrayMileScore"]),
-    mileageInfo() {
+    filteredMileageInfo() {
+      // loginInfo.job_no가 '기획'인 경우 item.is_branch가 0인 항목만 반환
+      if (this.loginInfo.job_no == '기획') {
+        return this.getArrayMileage.filter(item => item.mile_is_branch == false);
+      }
+      // 그렇지 않은 경우 모든 항목을 반환
       return this.getArrayMileage;
     },
     favoriteList() {
@@ -153,10 +158,12 @@ export default {
   
     },
     openModal() {
+      document.body.style.overflow = 'hidden';
       this.isModalOpen = true;
       this.selectedFavorites = this.favoriteList.map((fav) => fav.mile_no);
     },
     closeModal() {
+      document.body.style.overflow = '';
       this.isModalOpen = false;
     },
     toggleFavorite(mileName) {
@@ -177,6 +184,7 @@ export default {
         title: "경고",
         text: "즐겨찾기는 최대 4개까지 선택할 수 있습니다.",
         icon: "warning",
+        scrollbarPadding: false
       });
     },
     updateFavorites() {
