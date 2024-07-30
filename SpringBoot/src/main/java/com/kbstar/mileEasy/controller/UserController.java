@@ -5,6 +5,7 @@ import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
+import com.kbstar.mileEasy.service.user.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+
+import static java.util.Collections.replaceAll;
 
 @RestController
 @RequestMapping("/user") // 'http://localhost:8090/user/allUser'  /user 부분!
@@ -24,6 +27,9 @@ public class UserController {
 
     @Autowired
     private MileService mileService;
+
+    @Autowired
+    private RequestService requestService;
 
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
@@ -123,6 +129,20 @@ public class UserController {
         System.out.println("들어왔따!");
         System.out.println(mileService.levelChartData(date));
         return mileService.levelChartData(date);
+    }
+
+    @PostMapping("/requestAdd")
+    public void requestAdd(@RequestBody Map<String, String> requestBody) {
+        boolean is_branch = Boolean.parseBoolean(requestBody.get("request_is_branch"));
+        String mile_name = requestBody.get("request_mile_name");
+        String mil_max = requestBody.get("request_mil_max");
+        String admin = requestBody.get("request_admin");
+        String etc =  requestBody.get("request_etc");
+        int request_no = Integer.parseInt(requestBody.get("request_no"));
+        admin = admin.replace("[", "");
+        admin = admin.replace("]", "");
+        admin = admin.replace("\"", "");
+        requestService.insertRequestMileage(is_branch,mile_name,mil_max,admin,etc,request_no);
     }
 
 }

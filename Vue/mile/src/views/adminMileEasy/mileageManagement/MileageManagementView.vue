@@ -46,6 +46,7 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getArrayMileage']),
+    ...mapGetters(''),
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -99,7 +100,6 @@ export default {
     },
     showCoding() {
       this.isModifyActive = false; // '개발요청' 활성화
-      this.getMileage();
     },
   },
   mounted() {
