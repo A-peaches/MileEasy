@@ -25,7 +25,7 @@ public interface ManagerDao {
     ArrayList<HitMile> mileCount(String start, String end, String mile);
 
 
-    ArrayList<PageCount> visitCount(String startDate, String mile_no);
+    List<PageCount> visitCount(String mile_no);
 
-    ArrayList<MileScore> mileageCount(String startDate, String mile_no);
+    ArrayList<MileScore> mileageCount(String mile_no);
 }

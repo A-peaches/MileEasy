@@ -27,5 +27,9 @@ public class MileScore {
     private int total_previous_month_points;
     private Date date;
 
+    private String month; // 쿼리 결과의 month를 저장
+    private int score_points; // 쿼리 결과의 score_points를 저장
+    private int history_points; // 쿼리 결과의 history_points를 저장
+    private int total_points; // 쿼리 결과의 total_points를 저장
 
 }

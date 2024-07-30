@@ -158,7 +158,7 @@ public class ManagerController {
     public ResponseEntity<?> deleteMileDetail(@PathVariable String mile_introduce_no) {
         int result2 = managerService.deleteMileDetail(mile_introduce_no);
         int result = managerService.deleteMile(mile_introduce_no);
-        
+
         if (result+result2 > 1) {
             return ResponseEntity.ok().body("{\"success\":true}");
         } else {
@@ -240,24 +240,24 @@ public class ManagerController {
 
 
     @PostMapping("/mileageCount")
-    public ArrayList<MileScore> mileageCount(
-            @RequestParam("startDate") String startDate,
+    public ResponseEntity<Map<String, List<MileScore>>> mileageCount(
             @RequestParam("mile_no") String mile_no) {
 
         System.out.println("여기는 마일리지");
 
-        return managerService.mileageCount(startDate,mile_no);
+        Map<String, List<MileScore>> mileageCounts = managerService.mileageCount(mile_no);
+        return ResponseEntity.ok(mileageCounts);
     }
 
 
     @PostMapping("/visitCount")
-    public ArrayList<PageCount> visitCount(
-            @RequestParam("startDate") String startDate,
+    public ResponseEntity<Map<String, List<PageCount>>> visitCount(
             @RequestParam("mile_no") String mile_no) {
 
 
 
-        return managerService.visitCount(startDate,mile_no);
+        Map<String, List<PageCount>> visitCounts = managerService.visitCount(mile_no);
+        return ResponseEntity.ok(visitCounts);
     }
 
 }

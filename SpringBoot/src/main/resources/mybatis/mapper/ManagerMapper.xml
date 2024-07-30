@@ -111,97 +111,46 @@
 
     <select id="visitCount" resultType="com.kbstar.mileEasy.beans.PageCount">
         SELECT
-            -- 현재 월 방문자 수
-            COALESCE(SUM(CASE
-                             WHEN DATE_FORMAT(hit_date, '%Y-%m') = #{startDate} THEN hit_count
-                             ELSE 0
-                END), 0) AS current_month_visits,
-
-            -- 이전 월 방문자 수
-            COALESCE(SUM(CASE
-                             WHEN DATE_FORMAT(hit_date, '%Y-%m') = DATE_FORMAT(DATE_SUB(STR_TO_DATE(#{startDate}, '%Y-%m'), INTERVAL 1 MONTH), '%Y-%m') THEN hit_count
-                             ELSE 0
-                END), 0) AS previous_month_visits
-
+            DATE_FORMAT(hit_date, '%Y-%m') AS month,
+    COALESCE(SUM(hit_count), 0) AS visits
         FROM
             hit_mile
         WHERE
             mile_no = #{mile_no}
-          AND DATE_FORMAT(hit_date, '%Y-%m') IN (#{startDate}, DATE_FORMAT(DATE_SUB(STR_TO_DATE(#{startDate}, '%Y-%m'), INTERVAL 1 MONTH), '%Y-%m'));
+          AND YEAR(hit_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
+        GROUP BY
+            DATE_FORMAT(hit_date, '%Y-%m')
+        ORDER BY
+            month;
     </select>
 
 
     <select id="mileageCount" resultType="com.kbstar.mileEasy.dto.MileScore">
-    <![CDATA[
+         <![CDATA[
         SELECT
-            COALESCE(current_month_score_points, 0) + COALESCE(current_month_history_points, 0) AS total_current_month_points,
-            COALESCE(previous_month_score_points, 0) + COALESCE(previous_month_history_points, 0) AS total_previous_month_points
-        FROM
+            CASE
+                WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN '0000-00'
+                ELSE DATE_FORMAT(date, '%Y-%m')
+                END AS month,
+            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_score_point END), 0) AS score_points,
+            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_history_point END), 0) AS history_points,
+            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_score_point END), 0) +
+            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_history_point END), 0) AS total_points
+        FROM (
+            SELECT mile_no, mile_score_point, mile_score_date AS date, NULL AS mile_history_point
+            FROM mile_score
+            WHERE mile_no = #{mile_no}
+            AND YEAR(mile_score_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
 
-            (SELECT
-                 mile_no,
-                 SUM(mile_score_point) AS current_month_score_points
-             FROM mile_score
-             WHERE mile_score_date = (
-                 SELECT MAX(mile_score_date)
-                 FROM mile_score
-                 WHERE mile_score_date LIKE CONCAT(#{startDate}, '%')
-                   AND mile_no = #{mile_no}
-             )
-               AND mile_no = #{mile_no}
-             GROUP BY mile_no
-            ) AS latest_score
+            UNION ALL
 
-                LEFT JOIN
-            (SELECT
-                 mile_no,
-                 SUM(mile_history_point) AS current_month_history_points
-             FROM mile_history
-             WHERE mile_history_date = (
-                 SELECT MAX(mile_history_date)
-                 FROM mile_history
-                 WHERE mile_history_date LIKE CONCAT(#{startDate}, '%')
-                   AND mile_no = #{mile_no}
-             )
-               AND mile_no = #{mile_no}
-             GROUP BY mile_no
-            ) AS latest_history
-            ON latest_score.mile_no = latest_history.mile_no
-
-                LEFT JOIN
-
-            (SELECT
-                 mile_no,
-                 SUM(mile_score_point) AS previous_month_score_points
-             FROM mile_score
-             WHERE mile_score_date = (
-                 SELECT MAX(mile_score_date)
-                 FROM mile_score
-                 WHERE mile_score_date LIKE CONCAT(DATE_FORMAT(DATE_SUB(CONCAT(#{startDate}, '-01'), INTERVAL 1 MONTH), '%Y-%m'), '%')
-                   AND mile_no = #{mile_no}
-             )
-               AND mile_no = #{mile_no}
-             GROUP BY mile_no
-            ) AS previous_month_score
-            ON latest_score.mile_no = previous_month_score.mile_no
-
-                LEFT JOIN
-
-            (SELECT
-                 mile_no,
-                 SUM(mile_history_point) AS previous_month_history_points
-             FROM mile_history
-             WHERE mile_history_date = (
-                 SELECT MAX(mile_history_date)
-                 FROM mile_history
-                 WHERE mile_history_date LIKE CONCAT(DATE_FORMAT(DATE_SUB(CONCAT(#{startDate}, '-01'), INTERVAL 1 MONTH), '%Y-%m'), '%')
-                   AND mile_no = #{mile_no}
-             )
-               AND mile_no = #{mile_no}
-             GROUP BY mile_no
-            ) AS previous_month_history
-            ON latest_score.mile_no = previous_month_history.mile_no
+            SELECT mile_no, NULL AS mile_score_point, mile_history_point, mile_history_date AS date
+            FROM mile_history
+            WHERE mile_no = #{mile_no}
+            AND YEAR(mile_history_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
+            ) AS combined
+        GROUP BY month
+        ORDER BY month
         ]]>
-</select>
-
+    </select>
 </mapper>

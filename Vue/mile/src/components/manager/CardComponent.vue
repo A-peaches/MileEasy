@@ -2,7 +2,7 @@
   <div class="cards" style="background-color: #f9f9f9; height: 400px">
     <p class="text-left lg2 KB_C2">{{ title }}</p>
     <div class="flex">
-      <div class="cards favorite-card">
+      <div class="favorite-card">
         <div class="dateround" style="text-align: right; margin-bottom: 20px">
           <input
             type="date"
@@ -129,7 +129,7 @@ export default {
       }
     },
     renderCharts(counts) {
-      this.chartIds.forEach((chartId, index) => {
+      this.chartIds.forEach((chartId) => {
         const ctx = document.getElementById(chartId)?.getContext('2d');
 
         if (!ctx) {
@@ -142,18 +142,18 @@ export default {
         }
 
         this.managerChart1[chartId] = new Chart(ctx, {
-          type: 'line',
+          type: 'bar',
           data: {
             labels: this.weekDays(),
             datasets: [
               {
-                label: `Dataset ${index + 1}`,
-                borderColor: '#FFCC00',
-                backgroundColor: '#FFCC00',
+                label: `방문자 수`,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
                 data: counts,
                 fill: true,
-                tension: 0.4, // Line tension to round the line edges
-                borderRadius: 5, // Border radius to round the line edges
+                
               },
             ],
           },
@@ -161,19 +161,39 @@ export default {
             responsive: true,
             plugins: {
               legend: {
-                display: false,
+                display: true,
+                position: 'right',
+                padding: 2
               },
               title: {
                 display: false,
+                
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleFont: {
+                  size: 14,
+                },
+                bodyFont: {
+                  size: 12,
+                },
+                padding: 10,
+                cornerRadius: 5,
+                displayColors: false,
               },
             },
             scales: {
               y: {
+                beginAtZero: true,
                 ticks: {
-                  display: false,
+                  display: true,
+                  font: {
+                    size: 10,
+                  },
                 },
                 grid: {
-                  display: false,
+                  color: 'rgba(0, 0, 0, 0.1)',
+                  drawBorder: false,
                 },
               },
               x: {
@@ -181,6 +201,10 @@ export default {
                   display: false,
                 },
               },
+            },
+            animation: {
+              duration: 1500,
+              easing: 'easeOutQuart',
             },
           },
         });
@@ -198,7 +222,7 @@ export default {
       ) {
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        daysArray.push(`${month}-${day}`);
+        daysArray.push(`${month}.${day}`);
       }
 
       return daysArray;

@@ -25,7 +25,7 @@
         <button class="btn-yellow KB_C2" disabled>마일리지 관리자</button>
       </div>
       <CardComponent
-        title="최근 일주일 간 방문자 수"
+        title="기간별 방문자 수"
         class="fade-up-item"
         style="width: 70%; margin-left: 6%"
       />
@@ -93,7 +93,7 @@
         </div>
       </div>
       <CompareChar
-        title="전년도 비교"
+        title="마일리지 및 방문자 수 전년도 동일 월 비교"
         class="fade-up-item"
         style="width: 70%; margin-left: 6%; margin-top: 3%"
       />

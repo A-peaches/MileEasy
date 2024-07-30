@@ -6,6 +6,7 @@ import com.kbstar.mileEasy.mapper.ManagerDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
 import java.util.*;
 
 @Service
@@ -64,10 +65,58 @@ public class ManagerService {
 
 
 
-    public ArrayList<PageCount> visitCount(String startDate, String mile_no) {return managerDao.visitCount(startDate, mile_no);
+    public Map<String, List<PageCount>> visitCount(String mile_no) {
+        List<PageCount> visitCounts = managerDao.visitCount(mile_no);
+
+        List<PageCount> thisYearVisits = new ArrayList<>();
+        List<PageCount> lastYearVisits = new ArrayList<>();
+
+        int currentYear = Year.now().getValue();
+        int lastYear = currentYear - 1;
+
+        for (PageCount count : visitCounts) {
+            String[] yearMonth = count.getMonth().split("-");
+            int year = Integer.parseInt(yearMonth[0]);
+
+            if (year == currentYear) {
+                thisYearVisits.add(count);
+            } else if (year == lastYear) {
+                lastYearVisits.add(count);
+            }
+        }
+
+        Map<String, List<PageCount>> result = new HashMap<>();
+        result.put("thisYear", thisYearVisits);
+        result.put("lastYear", lastYearVisits);
+
+        return result;
     }
 
-    public ArrayList<MileScore> mileageCount(String startDate, String mile_no) {return managerDao.mileageCount(startDate, mile_no);
+    public  Map<String, List<MileScore>> mileageCount(String mile_no) {
+        List<MileScore> mileageCounts = managerDao.mileageCount(mile_no);
+
+        List<MileScore> thisYearPoints = new ArrayList<>();
+        List<MileScore> lastYearPoints = new ArrayList<>();
+
+        int currentYear = Year.now().getValue();
+        int lastYear = currentYear - 1;
+
+        for (MileScore points : mileageCounts) {
+            String[] yearMonth = points.getMonth().split("-");
+            int year = Integer.parseInt(yearMonth[0]);
+
+            if (year == currentYear) {
+                thisYearPoints.add(points);
+            } else if (year == lastYear) {
+                lastYearPoints.add(points);
+            }
+        }
+
+        Map<String, List<MileScore>> result = new HashMap<>();
+        result.put("thisYear", thisYearPoints);
+        result.put("lastYear", lastYearPoints);
+
+        return result;
     }
 
     public ArrayList<HitMile> mileCount(String start, String end, String mile) {return managerDao.mileCount(start,
