@@ -31,33 +31,40 @@
     </div>
 
     <!-- 여기서 전체메뉴 -->
-    <div class="w-100 mt-5" style="padding-left: 190px; color : #5E5E5E">
-      <div class="w-100 mx-auto text-start">
-        <span class="menu-title">My Mileage</span> |
-        <span class="menu">HRD</span>
-        <span class="menu">Monthly Best</span>
-        <span class="menu">Monthly Base</span>
-        <span class="menu">HotTip</span>
-        <span class="menu">Best PG</span>
-        <span class="menu">Best Branch</span>
-        <span class="menu">소비자 지원</span>
-        <span class="menu">리그 테이블</span>
+    <div class="container-fuild mt-5" style=" color : #5E5E5E">
+      <div class="row justify-content-center mx-auto w-100">
+
+      <div class="col-lg-2 " style="width:8%" >
+        <div class="menu">나의 마일리지</div>
+        <div class="menu">HRD</div>
+        <div class="menu">Monthly Best</div>
+        <div class="menu">Monthly Base</div>
+        <div class="menu">HotTip</div>
+
       </div>
-      <div class="w-100 mx-auto text-start">
-        <span class="menu-title">Info Zone</span> |
-        <span class="menu">문서모아</span>
-        <span class="menu">M-Tip</span>
-        <span class="menu">공지사항</span>
+
+      <div class="col-md-2" style="width:8%">
+        <div class="menu">Best PG</div>
+        <div class="menu">Best Branch</div>
+        <div class="menu">소비자 지원</div>
+        <div class="menu">리그 테이블</div>
       </div>
-      <div class="w-100 mx-auto text-start">
-        <span class="menu-title">Help Desk</span> |
-        <span class="menu">Q&A</span>
-        <span class="menu">업무별 연락처</span>
-        <span class="menu">담당자 연락처</span>
+
+
+      <div class="col-md-2" style="width:8%">
+        <div class="menu">문서모아</div>
+        <div class="menu">M-Tip</div>
+        <div class="menu">공지사항</div>
+      </div>
+
+      <div class="col-md-1" style="width:8%">
+        <div class="menu">Q&A</div>
+        <div class="menu">업무별 연락처</div>
+        <div class="menu">담당자 연락처</div>
       </div>
     </div>
-
-    <div class="text-start mt-4" style="padding-left: 190px">
+  </div>
+    <div class="text-start mt-5" style="padding-left: 190px">
       <div class="contact-info">
         <p><i class="bi bi-send-plus icon"></i> 마일리지 요청</p>
       </div>
@@ -65,7 +72,7 @@
         <p><i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959</p>
       </div>
       <div class="contact-info">
-        <p><i class="bi bi-envelope-at icon"></i> mileage@kbfg.com</p>
+        <p><i class="bi bi-envelope-at icon"></i> mileEasy@kbfg.com</p>
       </div>
       <span class="text-end" style="float: right; padding-right: 190px">
         <span class="circle"><i class="bi bi-chat-left-dots"></i></span>
@@ -253,12 +260,13 @@ export default {
 .menu-title {
   display: inline-block;
   width: 120px; /* 원하는 너비 설정 */
-  text-align: left;
+  text-align: center;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .menu {
-  margin-left: 30px;
+  margin: 0px 5px;
 }
 
 .contact-info {
