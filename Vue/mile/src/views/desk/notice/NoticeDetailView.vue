@@ -23,17 +23,17 @@
         </div>
         <div class="main-content">
           <div class="body">
-            <p>{{ notice.notice_board_content }}</p>
+            <pre><p>{{ notice.notice_board_content }}</p></pre>
           </div>
-          <div class="file cards">
+          <div class="file cards d-flex">
             <h2>첨부파일</h2>
             <div v-if="notice.notice_board_file">
               <a @click.prevent="downloadFile" href="#" class="file-download-link">
-                {{  getDisplayFileName(notice.notice_board_file)  }} 다운로드
+                {{  getDisplayFileName(notice.notice_board_file)  }}
               </a>
             </div>
             <div v-else>
-              <p style="color: #4b4a4a;">첨부된 파일이 없습니다. 필요시 관리자에게 문의하세요.</p>
+              <span style="color: #4b4a4a; font-family: 'KB_h5', sans-serif; margin-left: 20%; width: 300px; white-space: nowrap;">파일이 존재하지 않습니다.</span>
             </div>
           </div>
         </div>
@@ -188,6 +188,10 @@ export default {
 
 
 <style scoped>
+ .body pre {
+    white-space: pre-wrap; /* 줄바꿈과 공백을 유지하여 표시 */
+    word-wrap: break-word; /* 길이가 길 경우 줄바꿈 */
+  }
 .app-container {
   width: 100%;
   padding: 0px;

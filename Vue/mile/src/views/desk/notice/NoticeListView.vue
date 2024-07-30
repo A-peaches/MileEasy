@@ -54,7 +54,7 @@
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
                 <div class="notice-mile">{{ notice.mile_name }} 마일리지</div>
                 <div class="notice-title">{{ notice.notice_board_title }}</div>
-                <div class="notice-date">{{ formatDate(notice.notice_board_date) }}</div>
+                <pre class="notice-date">{{ formatDate(notice.notice_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
                 <div class="notice-views">{{ notice.notice_board_hit }} <i class="fa fa-eye"></i></div>
               </div>

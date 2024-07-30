@@ -19,10 +19,6 @@
       <div class="notice-count-container">
         <div class="notice-count">총 {{ filteredNotices.length }}건</div>
         <label class="checkbox-container">
-          <input type="checkbox" v-model="sortByViews" @change="handleCheckboxChange('views')">
-          <span class="custom-checkbox"></span> <span class="checkbox-label">조회 수</span>
-        </label>
-        <label class="checkbox-container">
           <input type="checkbox" v-model="sortByDateAsc" @change="handleCheckboxChange('date')">
           <span class="custom-checkbox"></span> <span class="checkbox-label">최신순</span>
         </label>
