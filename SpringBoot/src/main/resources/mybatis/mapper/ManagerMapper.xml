@@ -26,16 +26,36 @@
         insert into mile_introduce (mile_no, mile_title, mile_content, mile_route) values (#{mile_no}, #{mile_title}, #{mile_content}, #{mile_route});
     </insert>
 
+    <insert id="insertMileDetail">
+        insert into mileage_detail (mile_no, mile_score_name, job_name) values (#{mile_no}, #{mile_title}, #{job_name});
+    </insert>
+
     <delete id="deleteMile">
         delete from mile_introduce where mile_introduce_no=#{mile_introduce_no};
     </delete>
 
+    <delete id="deleteMileDetail">
+        DELETE md FROM mileage_detail md
+        JOIN mile_introduce mi ON md.mile_score_name = mi.mile_title
+        WHERE mi.mile_introduce_no = #{mile_introduce_no};
+    </delete>
+
     <select id="selectModifyMile" resultType="com.kbstar.mileEasy.dto.MileIntroduce">
-        select * from mile_introduce where mile_introduce_no = #{mile_introduce_no};
+        select mile_title, mile_content, mile_route, mile_detail_no, job_name
+        from mile_introduce mi
+            join mileage_detail md on mile_score_name = mile_title
+        where mi.mile_no=#{mile_no} and mi.mile_introduce_no=#{mile_introduce_no};
     </select>
 
     <update id="updateMile">
         update mile_introduce set mile_title=#{mile_title}, mile_content=#{mile_content}, mile_route=#{mile_route} where mile_introduce_no=#{mile_introduce_no};
+    </update>
+
+    <update id="updateMileDetail">
+        UPDATE mileage_detail md
+            JOIN mile_introduce mi ON md.mile_score_name = mi.mile_title
+            SET md.job_name = #{job_name}
+        where mi.mile_introduce_no = #{mile_introduce_no};
     </update>
 
     <select id="selectMileRecommand" resultType="com.kbstar.mileEasy.dto.MileRecommand">

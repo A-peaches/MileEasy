@@ -15,4 +15,5 @@ public class DocumentMile {
     private String document_file;
     private String document_title;
     private String document_content;
+    private String mile_name;
 }

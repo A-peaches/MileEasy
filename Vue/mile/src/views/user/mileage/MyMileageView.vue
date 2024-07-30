@@ -1,7 +1,10 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
-
-    <h2 class="bold-x-lg my-5 ml-5 help-icon "  ref="helpIcon" style="font-family: KB_C3">
+    <h2
+      class="bold-x-lg my-5 ml-5 help-icon"
+      ref="helpIcon"
+      style="font-family: KB_C3"
+    >
       나의 마일리지
       <i
         class="bi bi-question-circle"
@@ -9,17 +12,22 @@
         style="font-size: 20pt"
       ></i>
     </h2>
-    
+
     <div v-if="showHelpPopover" class="help-popover" ref="helpPopover">
       <div style="font-size: 12pt">
         <span
-          >이것은 마일리지 카드입니다. 여기에서 귀하의 마일리지 포인트와 최대 마일리지,   <br />
+          >이것은 마일리지 카드입니다. 여기에서 귀하의 마일리지 포인트와 최대
+          마일리지, <br />
           그리고 다른 사용자들과 비교한 귀하의 위치를 확인할 수 있습니다.</span
         >
       </div>
     </div>
     <div class="row mx-2" style="margin-top: 100px" v-if="dataLoaded">
-      <div v-for="(card, index) in filteredMyMile" :key="index" class="col-6 mb-3">
+      <div
+        v-for="(card, index) in filteredMyMile"
+        :key="index"
+        class="col-6 mb-3"
+      >
         <div
           class="cards mx-3 fade-up-item"
           style="background-color: #f9f9f9; height: 280px; position: relative"
@@ -34,7 +42,10 @@
               </div>
               <div class="text-end" style="top: -12px; position: relative">
                 <router-link
-                  :to="{ name: 'mileageDetail', params: { mile_no: card.mile_no } }"
+                  :to="{
+                    name: 'mileageDetail',
+                    params: { mile_no: card.mile_no },
+                  }"
                   class="KB_C3 brown"
                   style="text-decoration: none; font-size: 12pt"
                 >
@@ -90,7 +101,7 @@
         </div>
       </div>
     </div>
-    <div class="my-3"></div>
+    <div class="my-5"></div>
   </div>
 </template>
 
@@ -119,41 +130,44 @@ export default {
       el.style.setProperty("--index", index);
     },
     applyFadeUpEffect() {
-  console.log("Applying fade-up effect");
-  const items = this.$el.querySelectorAll(".fade-up-item");
-  console.log(`Found ${items.length} items to animate`);
-  
-  items.forEach((item, index) => {
-    item.style.setProperty("--index", index);
-    item.style.setProperty("z-index", items.length - index);
-    
-    // 모든 항목에 대해 약간의 기본 지연 시간을 설정
-    const baseDelay = 50;
-    const delay = baseDelay + (50 * index);
-    
-    setTimeout(() => {
-      item.classList.add("fade-up-active");
-    }, delay);
-  });
-},
+      console.log("Applying fade-up effect");
+      const items = this.$el.querySelectorAll(".fade-up-item");
+      console.log(`Found ${items.length} items to animate`);
+
+      items.forEach((item, index) => {
+        item.style.setProperty("--index", index);
+        item.style.setProperty("z-index", items.length - index);
+
+        // 모든 항목에 대해 약간의 기본 지연 시간을 설정
+        const baseDelay = 50;
+        const delay = baseDelay + 50 * index;
+
+        setTimeout(() => {
+          item.classList.add("fade-up-active");
+        }, delay);
+      });
+    },
     toggleHelpPopover(event) {
       event.stopPropagation(); // 이벤트 전파 중지
-      console.log('toggleHelpPopover 클릭');
+      console.log("toggleHelpPopover 클릭");
       this.showHelpPopover = !this.showHelpPopover;
-      console.log('showHelpPopover:', this.showHelpPopover); // 추가
+      console.log("showHelpPopover:", this.showHelpPopover); // 추가
       if (this.showHelpPopover) {
-        document.addEventListener('click', this.handleClickOutside);
+        document.addEventListener("click", this.handleClickOutside);
       } else {
-        document.removeEventListener('click', this.handleClickOutside);
+        document.removeEventListener("click", this.handleClickOutside);
       }
     },
     handleClickOutside(event) {
-      console.log('handleClickOutside 실행');
-      if (this.$refs.helpPopover && !this.$refs.helpPopover.contains(event.target) && 
-          !this.$refs.helpIcon.contains(event.target)) {
-        console.log('팝오버 닫기');
+      console.log("handleClickOutside 실행");
+      if (
+        this.$refs.helpPopover &&
+        !this.$refs.helpPopover.contains(event.target) &&
+        !this.$refs.helpIcon.contains(event.target)
+      ) {
+        console.log("팝오버 닫기");
         this.showHelpPopover = false;
-        document.removeEventListener('click', this.handleClickOutside);
+        document.removeEventListener("click", this.handleClickOutside);
       }
     },
   },
@@ -163,8 +177,12 @@ export default {
     ...mapGetters("mileScore", ["getMyMile"]),
 
     filteredMyMile() {
-      if (this.getLoginInfo.job_no == '기획') {
-        return this.getMyMile.filter(item => item.mile_is_branch == false);
+      const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
+      if (!jobNo) {
+        return [];
+      }
+      if (jobNo === "기획") {
+        return this.getMyMile.filter((item) => item.mile_is_branch === false);
       }
       return this.getMyMile;
     },
@@ -180,6 +198,9 @@ export default {
               this.applyFadeUpEffect();
             });
           });
+        } else {
+          // 로그인 정보가 없을 때 데이터 초기화
+          this.dataLoaded = false;
         }
       },
     },

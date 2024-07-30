@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="actions">
-        <h1 class="title">공지사항 작성</h1>
+        <h1 class="title">공지사항 수정</h1>
       </div>
       <form @submit.prevent="submitForm">
         <div class="form-group">
@@ -35,53 +35,65 @@
           <textarea id="content" v-model="form.content" placeholder="내용을 입력해주세요"></textarea>
         </div>
         <div class="form-group file-upload">
-          <label for="file">첨부파일</label>
-          <div class="p-4">
-            <div>
-              <input type="file" @change="handleFileUpload" class="md" style="width: 100%; text-align: right; padding-right: 70px;" />
-            </div>
-            <div v-if="uploadedFileName">
-              <a @click.prevent="downloadFile" href="#" class="file-download-link">
-                {{ uploadedFileName }} 다운로드
-              </a>
-            </div>
-          </div>
+    <label for="file">첨부파일</label>
+    <div class="custom-file-upload">
+      <div v-if="uploadedFileName">
+        <div class="file-info">
+          <span>{{ getDisplayFileName(uploadedFileName) }}</span>
+          <button @click="triggerFileInput" type="button" class="file-modify-button">파일 수정</button>
         </div>
-        <div class="btn-yellow-container">
-          <button type="submit" class="btn-yellow">수정</button>
-        </div>
+        <input type="file" @change="handleFileUpload" ref="fileInput" style="display: none;" />
+      </div>
+      <div v-else>
+        <input type="file" @change="handleFileUpload" ref="fileInput" />
+      </div>
+    </div>
+  </div>
+<div class="btn-yellow-container">
+  <button type="submit" class="btn-yellow">수정</button>
+</div>
       </form>
     </div>
   </div>
 </template>
-             
 
 <script>
-import axios from 'axios'; // axios를 정의합니다.
+import axios from 'axios';
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'NoticeWriteAdminView',
+  name: 'NoticeModifyAdminView',
   data() {
     return {
       form: {
+        notice_board_no: '',
         title: '',
         mile_no: '',
-        kind: '',
         file: null,
         content: '',
-        category: '',
-        selectedKind: ''
       },
+      uploadedFileName: '',
+      displayFileName: '',
+      originalMileNo: '',
       mileages: [],
       showCategory: false,
-      showKind: false,
+      selectedCategory: '',
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+    decodedFileName() {
+    if (this.uploadedFileName) {
+      const parts = this.uploadedFileName.split('_', 2);
+      if (parts.length > 1) {
+        return decodeURIComponent(parts[1]);
+      }
+    }
+    return '';
+  },
   },
   mounted() {
+    this.fetchNoticeDetails();
     this.fetchMileages();
     this.setUserInfo();
     document.addEventListener('click', this.handleClickOutside);
@@ -90,26 +102,26 @@ export default {
     document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
+
+    getDisplayFileName(fileName) {
+      if (fileName) {
+        const parts = fileName.split('_');
+        return parts.length > 1 ? parts.slice(1).join('_') : fileName;
+      }
+      return '';
+    },
+
     goBack() {
       this.$router.go(-1);
     },
     toggleCategory() {
       this.showCategory = !this.showCategory;
-      this.showKind = false;
-    },
-    toggleKind() {
-      this.showKind = !this.showKind;
-      this.showCategory = false;
     },
     selectCategory(mile_no, mile_name, event) {
       event.stopPropagation();
       this.selectedCategory = mile_name;
       this.form.mile_no = mile_no;
       this.showCategory = false;
-    },
-    selectKind(kind) {
-      this.form.kind = kind;
-      this.showKind = false;
     },
     handleClickOutside(event) {
       if (
@@ -120,13 +132,13 @@ export default {
       ) {
         this.showCategory = false;
       }
-      if (
-        this.$refs.dropdownKindMenu &&
-        !this.$refs.dropdownKindMenu.contains(event.target) &&
-        this.$refs.kindButton &&
-        !this.$refs.kindButton.contains(event.target)
-      ) {
-        this.showKind = false;
+    },
+    triggerFileInput() {
+      const fileInput = this.$refs.fileInput;
+      if (fileInput) {
+        fileInput.click();
+      } else {
+        console.error("fileInput reference is not available.");
       }
     },
     async handleFileUpload(event) {
@@ -142,64 +154,72 @@ export default {
             'Content-Type': 'multipart/form-data'
           }
         });
-        this.uploadedFileName = response.data;
-        this.form.file = this.uploadedFileName;
+        this.uploadedFileName = response.data; // UUID가 포함된 파일명
+        this.displayFileName = this.getDisplayFileName(response.data); // 화면에 표시할 파일명
+        this.form.file = file; // 실제 파일 객체 저장
       } catch (error) {
         console.error('파일 업로드 중 오류 발생:', error);
         this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
       }
     },
     async downloadFile() {
-      if (!this.uploadedFileName) return;
+  if (!this.currentNotice.notice_board_file) return;
 
-      try {
-        const response = await axios.get(`http://localhost:8090/notice/download/${this.uploadedFileName}`, {
-          responseType: 'blob'
-        });
-        
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', this.uploadedFileName.split('_').pop()); // UUID 제거
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error('파일 다운로드 중 오류 발생:', error);
-        this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
+  try {
+    const response = await axios({
+      url: `http://localhost:8090/notice/download/${this.currentNotice.notice_board_file}`,
+      method: 'GET',
+      responseType: 'blob',
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', this.getFileName(this.currentNotice.notice_board_file));
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('파일 다운로드 중 오류 발생:', error);
+    // 에러 처리 (예: 사용자에게 알림)
+  }
+},
+async submitForm() {
+  const formData = new FormData();
+  formData.append('notice_board_no', this.form.notice_board_no);
+  formData.append('notice_board_title', this.form.title);
+  formData.append('mile_name', this.selectedCategory);
+  formData.append('notice_board_content', this.form.content);
+  formData.append('user_no', this.form.user_no);
+  formData.append('user_name', this.form.user_name);
+
+  if (this.form.file) {
+    // UUID가 포함된 파일명으로 서버에 파일 업로드
+    formData.append('file', this.form.file, this.uploadedFileName);
+    
+    // UUID가 제외된 파일명을 DB에 저장하기 위해 별도로 전송
+    const originalFileName = this.getDisplayFileName(this.uploadedFileName);
+    formData.append('originalFileName', originalFileName);
+  }
+
+  try {
+    const response = await axios.post('http://localhost:8090/notice/update', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
       }
-    },
-    async submitForm() {
-      const formData = new FormData();
-      formData.append('title', this.form.title);
-      formData.append('mile_no', this.form.mile_no);
-      formData.append('kind', this.form.kind);
-      formData.append('content', this.form.content);
-      formData.append('user_no', this.form.user_no);
-      formData.append('user_name', this.form.user_name);
+    });
 
-      if (this.uploadedFileName) {
-        formData.append('file', this.uploadedFileName);
-      }
-
-      try {
-        const response = await axios.post('http://localhost:8090/notice/write', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-
-        if (response.status === 200) {
-          this.showAlert('공지사항이 등록되었습니다.', 'success');
-          this.$router.push('/noticeListView');
-        } else {
-          this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
-        }
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
-      }
-    },
+    if (response.status === 200) {
+      this.showAlert('공지사항이 수정되었습니다.', 'success');
+      this.$router.push('/noticeListView');
+    } else {
+      this.showAlert('공지사항 수정 중 오류가 발생했습니다.', 'error');
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    this.showAlert('공지사항 수정 중 오류가 발생했습니다.', 'error');
+  }
+},
     setUserInfo() {
       const loginInfo = this.getLoginInfo;
       if (loginInfo) {
@@ -207,7 +227,23 @@ export default {
         this.form.user_name = loginInfo.user_name;
       }
     },
-    
+    fetchNoticeDetails() {
+      const noticeId = this.$route.params.id;
+      axios.get(`http://localhost:8090/notice/${noticeId}`)
+        .then(response => {
+          const notice = response.data;
+          this.form.notice_board_no = notice.notice_board_no;
+          this.form.title = notice.notice_board_title;
+          this.form.mile_no = notice.mile_no;
+          this.originalMileNo = notice.mile_no;
+          this.selectedCategory = notice.mile_name;
+          this.form.content = notice.notice_board_content;
+          this.uploadedFileName = notice.notice_board_file;
+        })
+        .catch(error => {
+          console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+        });
+    },
     async fetchMileages() {
       try {
         const response = await axios.get('http://localhost:8090/notice/mileage');
@@ -222,45 +258,16 @@ export default {
         icon: icon,
         confirmButtonText: '확인',
         confirmButtonColor: '#4b4a4a',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false,
-        stopKeydownPropagation: false,
-        scrollbarPadding: false,
-        backdrop: true,
-        didOpen: () => {
-          document.body.classList.add('no-scroll');
-          document.documentElement.style.overflow = 'hidden';
-        },
-        willClose: () => {
-          document.body.classList.remove('no-scroll');
-          document.documentElement.style.overflow = '';
-          window.scrollTo(0, scrollY);
-        }
       });
     },
-    handleClick(event) {
-      this.handleClickOutside(event);
-    },
   },
-  watch: {
-    selectedCategory(newCategory) {
-      this.form.category = newCategory;
-    }
-  }
 };
 </script>
 
-<style scoped>
-.file-download-link {
-  color: #19c99b;
-  text-decoration: underline;
-  cursor: pointer;
-}
 
-.file-download-link:hover {
-  color: #32ab8b;
-}
+
+<style scoped>
+
 .no-scroll {
   overflow: hidden;
   height: 100%; /* 높이를 고정하여 스크롤을 방지 */
@@ -505,7 +512,7 @@ form {
   padding: 10px; /* 안쪽 여백 추가 */
   width: 920px; /* 가로로 늘림 */
   height: auto; /* 세로로 늘림 */
-  max-height: 400px; /* 최대 높이 설정 */
+  max-height:2000px; /* 최대 높이 설정 */
 }
 .menu-items {
   display: flex;
@@ -564,4 +571,34 @@ form {
   height: 6vh;
   font-family: 'KB_s5', sans-serif;
 }
+
+.file-modify-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-modify-button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 </style>

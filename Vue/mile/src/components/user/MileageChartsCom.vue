@@ -1,5 +1,5 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 450px">
+  <div class="cards" style="background-color: #f9f9f9; height: 450px; ">
     <div class="container d-flex justify-content-between">
       <div class="title lg2 KB_C2">
         별별 마일리지

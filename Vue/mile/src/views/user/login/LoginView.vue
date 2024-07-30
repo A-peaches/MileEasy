@@ -10,6 +10,11 @@
     style="height: 100vh"
   >
     <div class="d-flex flex-column align-items-center">
+
+      <div class="KB_C1 mr-2 logofont" style="font-size:48pt; color:#ffffff;   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      margin-bottom:24px">
+        <img src="@/assets/img/logo.png" class='mr-5 mb-2 ' style="
+        width:10%">MileEasy</div>
       <div>
         <input
           type="text"
@@ -154,3 +159,5 @@ export default {
   z-index: 0;
 }
 </style>
+
+
