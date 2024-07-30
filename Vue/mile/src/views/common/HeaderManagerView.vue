@@ -4,8 +4,8 @@
     <div class="header">
       <div class="logo lg">
         <a href="/manager" class="a_link">
-          <span class="logo-text" style="font-size:20pt">
-            <i class="bi bi-apple mr-3"></i>MileEasy
+          <span class="logo-text" style="font-size: 20pt">
+            <img src="@/assets/img/mini_logo.png" class="mb-2 mr-3 ml-2" style="width:33px">MileEasy
           </span>
         </a>
       </div>

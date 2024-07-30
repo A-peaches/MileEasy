@@ -51,36 +51,56 @@
     <div class="w-100 mt-5" style="padding-left: 190px; color: #5e5e5e">
       <div class="w-100 mx-auto text-start mb-2">
         <span class="menu-title">My Mileage</span>
-        <span class="menu">HRD</span>
-        <span class="menu">Monthly Best</span>
-        <span class="menu">Monthly Base</span>
-        <span class="menu">HotTip</span>
-        <span class="menu">Best PG</span>
-        <span class="menu">Best Branch</span>
-        <span class="menu">소비자 지원</span>
-        <span class="menu">리그 테이블</span>
+        <span
+          v-for="(item, index) in filteredMileageInfo"
+          :key="index"
+          class="menu"
+        >
+          <router-link
+            :to="{
+              name: 'mileageDetail',
+              params: { mile_no: item.mile_no },
+            }"
+            class="link-menu"
+          >
+            {{ item.mile_name }}</router-link
+          >
+        </span>
       </div>
       <div class="w-100 mx-auto text-start mb-2">
         <span class="menu-title">Info Zone</span>
-        <span class="menu">문서모아</span>
-        <span class="menu">M-Tip</span>
-        <span class="menu">공지사항</span>
+        <span class="menu"
+          ><a href="/documentsView" class="link-menu">문서모아</a></span
+        >
+        <span class="menu"
+          ><a href="/m_TipMainView" class="link-menu">M-Tip</a></span
+        >
+        <span class="menu"
+          ><a href="/noticeListView" class="link-menu">공지사항</a></span
+        >
       </div>
       <div class="w-100 mx-auto text-start">
         <span class="menu-title">Help Desk</span>
-        <span class="menu">Q&A</span>
-        <span class="menu">업무별 연락처</span>
-        <span class="menu">담당자 연락처</span>
+        <span class="menu"
+          ><a href="/qnaListView" class="link-menu">Q&A</a></span
+        >
+        <span class="menu"
+          ><a href="/mileEasyContactView" class="link-menu"
+            >업무별 연락처</a
+          ></span
+        >
+        <!-- <span class="menu"><a>담당자 연락처</a></span> -->
       </div>
     </div>
 
     <div class="text-start" style="padding-left: 190px; margin-top: 50px">
       <!-- <div class="contact-info"> -->
       <span class="text-end" style="float: right; padding-right: 190px">
-        <p class="contact-info">
-          <i class="bi bi-send-plus icon"></i> 마일리지 요청
+        <p class="contact-info" style="cursor: pointer">
+          <i class="bi bi-send-plus icon"></i> <a href="/mileageRequesList"
+          style="text-decoration:none; color: #989898">마일리지 요청</a>
         </p>
-        <p class="contact-info">
+        <p class="contact-info" style="cursor: pointer" @click="connecting">
           <i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959
         </p>
         <!-- <p class="contact-info"><i class="bi bi-envelope-at icon"></i> mileage@kbfg.com</p> -->
@@ -102,8 +122,11 @@
     <div style="margin-top: 130px; margin-bottom: 10px">
       <!-- <img src="@/assets/img/logo.png" alt="MileEasy Logo" style="height: 40px" />
         -->
-        <img src="@/assets/img/mini_logo2.png" class="mr-2 mb-2" style="width:1.2%;
-        color:black;">MileEasy 
+      <img
+        src="@/assets/img/mini_logo2.png"
+        class="mr-2 mb-2"
+        style="width: 1.2%; color: black"
+      />MileEasy
     </div>
     <div>&copy; 2024 MileEasy. All rights reserved.</div>
   </footer>
@@ -122,14 +145,27 @@ export default {
       pausedTime: 0,
       currentIndex: 0,
       autoSlide: null,
+      loginInfoLoaded: false,
     };
   },
   async mounted() {
     await this.getFooterNotice();
-    console.log("Footer notices:", this.getFooterNotices); // 데이터 확인
+
+    // loginInfo가 로드될 때까지 기다린다.
+    const checkLoginInfo = async () => {
+      while (!this.getLoginInfo) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      this.loginInfoLoaded = true;
+      await this.$store.dispatch("mileage/getMileage"); // mileage 스토어의 getMileage 액션 디스패치
+    };
+
+    await checkLoginInfo();
+
     if (this.getFooterNotices.length > 0) {
       this.startAutoSlide();
     }
+
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
   },
   beforeUnmount() {
@@ -140,28 +176,31 @@ export default {
     );
   },
   computed: {
-    ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
     ...mapGetters("notice", ["getFooterNotices"]),
+    ...mapGetters("mileage", ["getArrayMileage"]),
+    filteredMileageInfo() {
+      if (!this.loginInfoLoaded || !this.getLoginInfo) {
+        return [];
+      }
+
+      if (this.getLoginInfo.job_no === "기획") {
+        return this.getArrayMileage.filter(
+          (item) => item.mile_is_branch === false
+        );
+      }
+      return this.getArrayMileage;
+    },
     currentNotice() {
       return this.getFooterNotices[this.currentIndex] || {};
     },
     currentNoticeId() {
       return this.currentNotice.notice_board_no || null;
     },
-    filteredMyMile() {
-      const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
-      if (!jobNo) {
-        return [];
-      }
-      if (jobNo === "기획") {
-        return this.getMyMile.filter((item) => item.mile_is_branch === false);
-      }
-      return this.getMyMile;
-    },
   },
   methods: {
     ...mapActions("notice", ["getFooterNotice"]),
-    ...mapActions("mileScore", ["getMyMiles"]),
+    ...mapActions("mileage", ["getMileage"]), // mileage 스토어의 액션 매핑
     next() {
       if (this.getFooterNotices.length > 0) {
         this.currentIndex =
@@ -206,6 +245,50 @@ export default {
       this.$nextTick(() => {
         this.startAutoSlide();
       });
+    },
+    connecting() {
+     this.connectAlret();
+   },
+   connectAlret() {
+    let timerInterval;
+    let timeLeft = 3; // 3초부터 시작
+    
+    this.$swal({
+      title: "+82 02-2073-5959",
+      html: "<b>${timeLeft}</b>초 후에 연결됩니다....",
+      timer: 3000,
+      timerProgressBar: true,
+      scrollbarPadding: false,
+      didOpen: () => {
+        const popup = this.$swal.getPopup();
+        popup.style.height = '200px'; // 원하는 높이로 조정
+
+        this.$swal.showLoading();
+        const timer = this.$swal.getHtmlContainer().querySelector("b");
+        timer.textContent = `${timeLeft}`; // 초기 시간 설정
+        timerInterval = setInterval(() => {
+          timeLeft -= 1;
+          timer.textContent = `${timeLeft}`;
+          if (timeLeft === 0) {
+            clearInterval(timerInterval);
+          }
+        }, 1000); // 1초마다 업데이트
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    }).then((result) => {
+      if (result.dismiss === this.$swal.DismissReason.timer) {
+        console.log("I was closed by the timer");
+      }
+    });
+   },
+  },
+  watch: {
+    getLoginInfo(newVal) {
+      if (!newVal) {
+        this.loginInfoLoaded = false; // 로그아웃 시 loginInfoLoaded를 false로 설정
+      }
     },
   },
 };
@@ -316,6 +399,12 @@ export default {
 
 .menu {
   margin-left: 30px;
+  cursor: pointer;
+}
+
+.link-menu {
+  text-decoration: none;
+  color: #5e5e5e;
 }
 
 .contact-info {
@@ -354,4 +443,6 @@ export default {
   text-align: center;
   line-height: 1;
 }
+
+
 </style>
