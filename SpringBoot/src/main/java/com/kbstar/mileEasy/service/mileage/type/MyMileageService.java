@@ -3,6 +3,7 @@ package com.kbstar.mileEasy.service.mileage.type;
 import com.kbstar.mileEasy.beans.ExcelNotice;
 import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
+import com.kbstar.mileEasy.dto.DocumentMile;
 import com.kbstar.mileEasy.mapper.MileageDao;
 import com.kbstar.mileEasy.mapper.MyMileDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,12 @@ public class MyMileageService {
         return myMileDao.getMileStatus(userNo,mileNo);
     }
 
+
     public List<ExcelNotice> getExcelNotice() {
         return myMileDao.getExcelNotice();
     }
+
+    public List<DocumentMile> documnetList(){ return myMileDao.selectMileDocument(); }
+    public int getTotal(){return myMileDao.selectCount();}
+
 }

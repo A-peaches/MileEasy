@@ -21,7 +21,7 @@ public interface NoticeDao {
     List<Notice> selectAllNotices();
     /* 게시글 리스트 */
 
-    @Select("select mile_no,mile_name from mileage")
+    @Select("select mile_no,mile_name from mileage WHERE mile_is_delete = 0")
     List<Mileage> selectAllMileage();
     /* 카테고리 리스트 */
 
@@ -38,5 +38,28 @@ public interface NoticeDao {
     List<Notice> getFooterNotice();
     /* 게시글 상세보기 */
 
+    @Update({
+            "UPDATE notice",
+            "SET notice_board_title = #{notice_board_title},",
+            "    notice_board_content = #{notice_board_content},",
+            "    notice_board_file = #{notice_board_file, jdbcType=VARCHAR},",
+            "    mile_no = #{mile_no}",
+            "WHERE notice_board_no = #{notice_board_no}"
+    })
+    void updateNotice(Notice notice);
+    /* 게시글 수정*/
+
+    @Select("SELECT mile_no FROM mileage WHERE mile_name = #{mileName} AND mile_is_delete = 0")
+    int findMileNoByName(String mileName);
+
+    @Select("SELECT * FROM notice WHERE notice_board_no = #{id} AND notice_board_is_delete = 0")
+    Notice findById(Long id);
+
+    @Update("UPDATE notice SET notice_board_is_delete = 1 WHERE notice_board_no = #{id}")
+    void deleteNotice(Notice notice);
+
 
 }
+
+
+

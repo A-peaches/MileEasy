@@ -1,5 +1,4 @@
 package com.kbstar.mileEasy.controller;
-
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.service.admin.AdminService;
@@ -8,64 +7,31 @@ import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.mileage.type.*;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
-import com.kbstar.mileEasy.service.mileage.info.HitMileService;
-import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
-import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
-import com.kbstar.mileEasy.service.mileage.info.MileService;
-import com.kbstar.mileEasy.service.mileage.type.*;
-
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.core.io.UrlResource;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.StringUtils;
-
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
 

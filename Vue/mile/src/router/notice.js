@@ -10,7 +10,7 @@ export default [
   },
   {
     // 공지사항 상세보기
-    path: '/notice/:id',
+    path: '/noticeDetailView/:id',
     name: 'noticeDetailView',
     component: () => import('../views/desk/notice/NoticeDetailView.vue'),
     meta: { requiresAuth: true },
@@ -18,10 +18,11 @@ export default [
   },
   {
     //관리자 : 공지사항 수정하기
-    path: '/noticeModifyAdminView',
+    path: '/oticeModifyAdminView/:id',
     name: 'noticeModifyAdminView',
     component: () => import('../views/desk/notice/NoticeModifyAdminView.vue'),
     meta: { requiresAuth: true },
+    props : true,
   },
   {
     //관리자 : 공지사항 작성하기

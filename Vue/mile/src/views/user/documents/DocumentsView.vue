@@ -1,25 +1,25 @@
 <template>
-  <!-- <div class="about">
-    <h1>문서모아</h1>
-    <h3>카테고리별 검색기능</h3>
-    <h3>검색 기능</h3>
-    <a href="/documentsDetailView"><h3>문서 상세보기</h3></a>
-  </div> -->
   <div class="cards page-back mx-auto" :style="{height:computedHeight}">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">문서모아<hr style="width: 13%; border:0; height: 2px; background: black" class="mx-auto"></h2>
+    <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">문서모아
+      <hr style="width: 13%; border:0; height: 2px; background: black" class="mx-auto">
+    </h2>
+
+    <!-- 카테고리 목록 -->
     <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button list-wrapper">카테고리</div>
-        <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
-          <div class="menu-items">
-            <a @click="filterByCategory(null)">전체</a>
-            <a v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
-              {{ mileage.mile_name }} 마일리지
-            </a>
-          </div>
+      <div class="category-button list-wrapper" style="width: 10vw;">{{ selectedCategory ? selectedCategory : '카테고리' }}</div>
+      <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
+        <div class="menu-items">
+          <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
+          <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
+            {{ mileage.mile_name }} 마일리지
+          </a>
         </div>
       </div>
+    </div>
+
+    
     <div class="d-flex justify-content-between align-items-center">
-      <div class="lg2" style="padding: 3em">총 {{ documentSum }}건</div>
+      <div class="lg2" style="padding: 3em">총 {{ countList }}건</div>
       <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
         <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
           <input type="text" v-model="searchQuery" @input="onSearch" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
@@ -27,23 +27,22 @@
         </div>
       </div>
     </div>
-    
-    <!-- 마일리지 문서 리스트 -->
-    <div v-if="filteredDocuments.length>0" class="pr-5 pl-5 pb-5 pt-4" style="margin-top: 10vh;">
+
+    <!-- 문서 리스트 불러오기 -->
+    <div v-if="filteredDocuments.length>0" class="pr-5 pl-5 pb-5 pt-2" style="margin-top: 8vh;">
       <div v-for="document in paginatedDocuments" :key="document.documnet_mile_no" 
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
-        :class="{activeDelete: deleteArray.includes(document)}"
-        @click="addDeleteDocuArray(document)"
-        style="width:90%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
+        style="width:95%; height: 5em; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); background-color: #FBFBFB;">
         <div class="d-flex align-items-center justify-content-between">
-          <button style="width: 80%; text-align: left;">
+          <button style="width: 90%; text-align: left;">
             <div class="d-flex align-items-center justify-content-start">
               <div v-if="isNew(document.document_date)" style="width:5%; padding-left: 3%;">
-                <span class="md" style="color: #edbb00;">NEW</span>
+                <span class="md" style="color: #edbb00; font-family: 'KB_C2';">NEW</span>
               </div>
               <div class="d-flex align-items-center justify-content-between" style="width: 100%;">
-                <span class="lg2 pl-5" style="margin-left: 3%; text-align: left; font-family: KB_C2;">{{ document.document_file }}</span>
-                <span class="md pl-3" style="width:15%; margin-right: 2%; text-align: right; font-family: KB_C3">{{ formatDate(document.document_date) }}</span>
+                <span class="pl-4" style="width:20%; margin-left: 3%; text-align: left; font-family: 'KB_C2'; font-size: 14pt; color: #9c8480;">{{ document.mile_name }}</span>
+                <span class="lg2 " style="width:65%; margin-left: 3%; text-align: center; font-family: 'KB_C2';">{{ document.document_file }}</span>
+                <span class="md pl-3" style="width:15%; margin-right: 3%; text-align: right; font-family: 'KB_C3';">{{ formatDate(document.document_date) }}</span>
               </div>
             </div>
           </button>
@@ -57,13 +56,13 @@
       <p class="lg2" style="text-align: center; color:#aeaeb2; font-family: KB_C2;">검색 결과가 없습니다.</p>
     </div>
 
-    <!-- 로드 버튼 -->
-    <div style="margin-bottom: 3%;" v-if="showLoadButton">
-      <button @click="loadDocuments" class="lg2" style="font-family: 'KB_C1';">
-        <i class="bi bi-arrow-clockwise lg2"></i>&nbsp;더보기
-      </button>
+    <!-- 페이지네이션 -->
+    <div class="pagination">
+      <button @click="prevPage" :disabled="currentPage === 1">〈</button>
+      <button v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page}">{{ page }}</button>
+      <button @click="nextPage" :disabled="currentPage === totalPages">〉</button>
     </div>
- </div>
+  </div>
 </template>
 
 <script>
@@ -74,9 +73,7 @@ export default {
   name: 'DocumentsView',
   data(){
     return{
-      isModalOpen: false,
-      file: null,
-      deleteArray: [],
+      mileages: [],
       baseHeight: 90,
       increment: 10,
       buttonHeight: 10,
@@ -85,22 +82,16 @@ export default {
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
       allDocuments: [], // 모든 문서 데이터 
       countList: 0,
-      lastInputTime: 0 // 마지막 입력 시간
+      lastInputTime: 0, // 마지막 입력 시간
+      selectedCategory: '', // 선택된 카테고리
+      showCategory: false, // 카테고리: 전체
+      totalPages: 0, // 총 페이지 수
     }
   },
   computed:{
-    ...mapGetters('mile', ['getMileInfo']),
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileExcel', ['getArrayMileDocument', 'getDocumentSum']),
-    loginInfo(){
-      return this.getLoginInfo;
-    },
-    mileInfo() {
-      return this.getMileInfo;
-    },
-    arrayMileDocument(){
-      return this.getArrayMileDocument;
-    },
+    
     computedHeight(){
       let height = this.baseHeight + this.paginatedDocuments.length * this.increment;
       if(this.paginatedDocuments.length % this.itemsPerPage === 0 && this.paginatedDocuments.length >0){
@@ -114,28 +105,21 @@ export default {
       return this.getDocumentSum;
     },
     filteredDocuments(){ // 검색어에 따라 문서 필터링 
-      return this.allDocuments.filter(document => document.document_file.includes(this.searchQuery));
+      let documents = this.allDocuments;
+      if(this.selectedCategory && this.selectedCategory !== 'null'){
+        documents = documents.filter(document => document.mile_name === this.selectedCategory);
+      }
+      return documents.filter(document => document.document_file.includes(this.searchQuery));
     },
     paginatedDocuments(){
-      return this.filteredDocuments.slice(0, this.currentPage * this.itemsPerPage);
+      return this.filteredDocuments.slice((this.currentPage - 1) * this.itemsPerPage, this.currentPage * this.itemsPerPage);
     },
-    showLoadButton(){
-      const condition1 = this.filteredDocuments.length % this.itemsPerPage === 0;
-      const condition2 = this.filteredDocuments.length > 0;
-      const condition3 = this.filteredDocuments.length !== this.countList;
-      
-      return condition1 && condition2 && condition3;
-    }
   },
   methods:{
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
-    ...mapActions('mileExcel', ['mileDocumentLists', 'downloadDocument', 'deleteMileDocument', 'getMileDocumentSum']),
-    openModal() {
-      this.isModalOpen = true;
-    },
-    closeModal() {
-      this.isModalOpen = false;
-    },
+    ...mapActions('mileExcel', ['downloadDocument']),
+    ...mapActions('mileDocument', ['fetchMileDocument']),
+  
     formatDate(dateString){
       return moment(dateString).format('YYYY-MM-DD');
     },
@@ -161,72 +145,22 @@ export default {
         }
       })
     },
-    onFileChange(event){
-      this.file = event.target.files[0];
-    },
-    async uploadDocument(){
-      const formData = new FormData();
-      formData.append('file', this.file);
-      formData.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
-      try{
-        const response = await axios.post(`http://localhost:8090/mileage/uploadDocument`, formData, {
-          headers: {
-            'Content-Type':'multipart/form-data',
-          },
-        });
-        if(response.data.success){
-          this.showAlert('마일리지 문서 업로드 성공', 'success', '#');
-        }else{
-          this.showAlert('마일리지 문서 업로드 실패', 'error', '#');
-        }
-      }catch(error){
-        console.error('Error uploading document', error);
-        console.log('이건 에러 상태 response status:', error.response.status);
-        if(error.response && error.response.status === 409){
-          this.showAlert('중복된 파일명이 있습니다', 'info', '#');
-        }else{
-          this.showAlert('마일리지 문서 업로드 실패', 'error', '#');
-        }
-      }
-    },
     downloadDocu(document_file){
       this.downloadDocument({ document_file });
     },
-    addDeleteDocuArray(document){
-      if(!this.deleteArray.includes(document)){
-        this.deleteArray.push(document);
-        console.log(this.deleteArray);
-      }else{
-        this.deleteArray = this.deleteArray.filter(item => item !== document);
-      }
-    },
-    async deleteDocu(){
-      if(this.deleteArray!=null){
-        const response = await this.deleteMileDocument(this.deleteArray);
-        if(response && response.data.success){
-            console.log('마일리지 문서 파일 삭제 완료');
-            this.showAlert('마일리지 문서가 삭제되었습니다', 'success', '#');
-            this.deleteArray = [];
-        }else{
-          console.log('마일리지 문서 파일 삭제 실패');
-          this.showAlert('마일리지 문서 삭제가 실패했습니다', 'error', '#');
-        }
-      }
-    },
-    async loadDocuments(){
-      const response = await this.mileDocumentLists({
-        mile_no: this.loginInfo.mile_no,
-        page: this.currentPage,
-        itemsPerPage: this.itemsPerPage
-      });
-      this.allDocuments.push(...response.data);
-      this.currentPage++;
+    async loadDocuments(){ // 문서 리스트 가져오기(페이지네이션 처리) 
       
-      const mile_no = this.loginInfo.mile_no;
-      const countList = await axios.get(`http://localhost:8090/mileage/countListDocuments/${mile_no}`);
+      const response = await this.fetchMileDocument();
+      this.allDocuments = response.data;
+      console.log('이건 서버에서 가져온 리스트', response.data);
+      console.log('이건 allDocuments 리스트', this.allDocuments);
+      
+      const countList = await axios.get(`http://localhost:8090/myMile/countListDocuments`);
       this.countList = countList.data;
+
+      this.totalPages = Math.ceil(this.countList / this.itemsPerPage);
     },
-    onSearch(){
+    onSearch(){ // 검색 
       const currentTime = Date.now();
       const timeSinceLastInput = currentTime - this.lastInputTime;
 
@@ -234,21 +168,67 @@ export default {
         this.lastInputTime = currentTime;
         this.loadDocuments();
       }
+    },
+    async fetchMileages() { // 마일리지 카테고리 가져오기
+      try {
+        const response = await axios.get('http://localhost:8090/notice/mileage');
+        console.log('Fetched mileages:', response.data);
+        this.mileages = response.data;
+      } catch (error) {
+        console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
+      }
+    },
+    toggleCategory() {
+      this.showCategory = !this.showCategory;
+    },
+    closeDropdown() {
+      this.showCategory = false;
+    },
+    handleClickOutside(event) {
+      if (
+        this.$refs.dropdownMenu &&
+        !this.$refs.dropdownMenu.contains(event.target) &&
+        this.$refs.categoryButton &&
+        !this.$refs.categoryButton.contains(event.target)
+      ) {
+        this.closeDropdown();
+      }
+    },
+    filterByCategory(category) {
+      this.selectedCategory = category !== null ? category : '';
+      this.currentPage = 1;
+      this.loadDocuments();
+    },
+    prevPage(){
+      if(this.currentPage > 1){
+        this.currentPage--;
+        this.loadDocuments();
+      }
+    },
+    nextPage(){
+      if(this.currentPage < this.totalPages){
+        this.currentPage++;
+        this.loadDocuments();
+      }
+    },
+    goToPage(page){
+      this.currentPage = page;
+      this.loadDocuments();
     }
   },
   created(){
-    const user_no = this.loginInfo ? this.loginInfo.user_no : null;
+    const user_no = this.getLoginInfo ? this.getLoginInfo.user_no : null;
     if(user_no){
-      this.mileInfo = this.fetchMileInfo(user_no);
+      this.fetchMileInfo(user_no);
     }else{
       console.error('user_no이 유효하지 않습니다.');
     }
 
-    const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
+    const mile_no = this.getLoginInfo ? this.getLoginInfo.mile_no : null;
     if(mile_no){
       this.getMileDetail(mile_no);
       this.loadDocuments(); // 첫 페이지 로드 
-      this.getMileDocumentSum(mile_no);
+      this.fetchMileages(); 
     }else{
       console.error('mile_no이 유효하지 않습니다.');
     }
@@ -266,10 +246,44 @@ export default {
 .page-back {
   width: 70%;
   height: 90vh;
-  /* height: 800px; */
   margin-top: 5%;
 }
 
+/* 드롭다운 메뉴 스타일 */
+.QnA {
+  position: relative;
+  display: inline-block;
+}
+.category-button {
+  background-color: #f9f9f9;
+  border-radius: 25px;
+  padding: 12px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  font-size: 17pt;
+  font-family: 'KB_S5', sans-serif;
+  opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+}
+.category-button:hover {
+  cursor: pointer;
+  /* background-color: #E1E3E4 !important; */
+  transition: background-color 0.3s ease;
+}
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.list-wrapper {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.list-wrapper:hover {
+  cursor: pointer;
+  background-color: #e1e3e4 !important;
+  transition: background-color 0.3s ease;
+}
 /* 드롭다운 메뉴 스타일 */
 .QnA {
   position: relative;
@@ -279,15 +293,15 @@ export default {
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 100%;
+  top: 350%;
   left: 50%;
   z-index: 1;
-  border: none; /* 테두리 제거 */
+  border-color: #eeeeee;
   background-color: rgba(255, 255, 255, 0.69);
-  border-radius: 30px;
+  border-radius: 15px;
   cursor: pointer;
   width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
-  transform: translate(-50%, -16%); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
+  transform: translate(-50%, -17%); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
 }
 
 .QnA:hover .dropdown-menu,
@@ -307,7 +321,7 @@ export default {
   text-decoration: none;
   color: #4b4a4a;
   font-family: 'KB_S5', sans-serif;
-  font-size: 18px; /* 텍스트 크기를 픽셀 단위로 설정 */
+  font-size: 13pt; /* 텍스트 크기를 픽셀 단위로 설정 */
 }
 
 .menu-items a:hover {
@@ -316,22 +330,43 @@ export default {
   border-radius: 25px;
   width: auto; /* 너비를 자동으로 설정 */
 }
-.category-button {
-  background-color: #f9f9f9;
-  border-radius: 25px;
-  padding: 12px 40px;
-  cursor: pointer;
-  margin-bottom: 80px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* 공지사항과 카테고리 버튼 사이의 간격 */
-  display: inline-block;
-  font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
-  opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+/* 페이지 네이션 및 글쓰기 버튼 스타일 */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
 }
-.list-wrapper:hover {
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+  gap: 5px;
+}
+
+.pagination button {
+  background-color: #ffffff;
+  padding: 10px 20px;
   cursor: pointer;
-  background-color: #E1E3E4 !important;
-  transition: background-color 0.3s ease;
+  margin: 0 5px;
+  border-radius: 5px;
+  font-size: 18px; /* 숫자의 폰트 크기 */
+  font-family: 'KB_s4', sans-serif; /* 숫자의 폰트 */
+}
+
+.pagination button:disabled {
+  background-color: #d5e9e3;
+  cursor: not-allowed;
+  color: white;
+}
+
+.pagination button.active {
+  background-color: #43c2a0;
+  color: white;
+}
+
+.pagination button.arrow-button {
+  font-size: 18px; /* 화살표의 폰트 크기 */
 }
 </style>

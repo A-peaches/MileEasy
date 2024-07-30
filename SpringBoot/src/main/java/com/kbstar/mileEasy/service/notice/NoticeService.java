@@ -7,6 +7,7 @@ import com.kbstar.mileEasy.mapper.NoticeDao;
 import com.kbstar.mileEasy.mapper.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -64,6 +65,34 @@ public class NoticeService {
         noticeDao.insertNotice(notice);
     }
 
+    @Transactional
+    public void updateNotice(Notice notice) {
+        int mileNo = noticeDao.findMileNoByName(notice.getMile_name());
+        notice.setMile_no(mileNo);
+
+        // 파일명에서 UUID 제거
+        if (notice.getNotice_board_file() != null && !notice.getNotice_board_file().isEmpty()) {
+            String[] parts = notice.getNotice_board_file().split("_", 2);
+            String actualFileName = parts.length > 1 ? parts[1] : notice.getNotice_board_file();
+            notice.setNotice_board_file(actualFileName);
+        }
+
+        noticeDao.updateNotice(notice);
+    }
+
+    public Notice findById(Long id) {
+        return noticeDao.findById(id);
+    }
+
+    public void deleteNotice(Long id) {
+        Notice notice = noticeDao.findById(id);
+        if (notice != null) {
+            notice.setNotice_board_is_delete(true); // 논리 삭제
+            noticeDao.deleteNotice(notice);
+        } else {
+            throw new RuntimeException("Notice not found");
+        }
+    }
 
     public List<Notice> getFooterNotice() {
         return noticeDao.getFooterNotice();
