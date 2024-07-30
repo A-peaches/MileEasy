@@ -10,7 +10,7 @@
         <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
           <div class="actions">
             <button class="edit-button" @click="goToModifyView">수정</button>
-            <button class="delete-button">삭제</button>
+            <button class="delete-button" @click="deleteNotice">삭제</button>
           </div>
         </div>
       </div>
@@ -23,17 +23,17 @@
         </div>
         <div class="main-content">
           <div class="body">
-            <p>{{ notice.notice_board_content }}</p>
+            <pre><p>{{ notice.notice_board_content }}</p></pre>
           </div>
-          <div class="file cards">
+          <div class="file cards d-flex">
             <h2>첨부파일</h2>
             <div v-if="notice.notice_board_file">
               <a @click.prevent="downloadFile" href="#" class="file-download-link">
-                {{  getDisplayFileName(notice.notice_board_file)  }} 다운로드
+                {{  getDisplayFileName(notice.notice_board_file)  }}
               </a>
             </div>
             <div v-else>
-              <p style="color: #4b4a4a;">첨부된 파일이 없습니다. 필요시 관리자에게 문의하세요.</p>
+              <span style="color: #4b4a4a; font-family: 'KB_h5', sans-serif; margin-left: 20%; width: 300px; white-space: nowrap;">파일이 존재하지 않습니다.</span>
             </div>
           </div>
         </div>
@@ -52,20 +52,69 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import axios from 'axios';
+import { mapActions, mapGetters } from 'vuex';
+import Swal from 'sweetalert2';
 
 export default {
   props: ['id'],
   methods: {
     ...mapActions('notice', ['fetchNoticeDetail', 'incrementViews']),
+    async deleteNotice() {
+      Swal.fire({
+        title: '정말로 삭제하시겠습니까?',
+        text: '다시 되돌릴 수 없습니다.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+        reverseButtons: false,
+      }).then(async result => {
+        if (result.isConfirmed) {
+          try {
+            await axios.delete(`http://localhost:8090/notice/delete/${this.notice.notice_board_no}`);
+            Swal.fire('게시글이 성공적으로 삭제되었습니다.', '좋은 하루 보내세요', 'success').then(() => {
+              this.$router.push('/noticeListView');
+            });
+          } catch (error) {
+            console.error('게시글 삭제 중 오류가 발생했습니다.', error);
+            Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
+          }
+        }
+      });
+    },
+    showAlert(message, icon) {
+      this.$swal({
+        title: message,
+        icon: icon,
+        confirmButtonText: '확인',
+        confirmButtonColor: '#4b4a4a',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        stopKeydownPropagation: false,
+        scrollbarPadding: false,
+        backdrop: true,
+        didOpen: () => {
+          document.body.classList.add('no-scroll');
+          document.documentElement.style.overflow = 'hidden';
+        },
+        willClose: () => {
+          document.body.classList.remove('no-scroll');
+          document.documentElement.style.overflow = '';
+        }
+      });
+    },
+    
     getDisplayFileName(fileName) {
-    if (fileName) {
-      const parts = fileName.split('_');
-      return parts.length > 1 ? parts.slice(1).join('_') : fileName;
-    }
-    return '';
-  },
+      if (fileName) {
+        const parts = fileName.split('_');
+        return parts.length > 1 ? parts.slice(1).join('_') : fileName;
+      }
+      return '';
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -84,30 +133,28 @@ export default {
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
     async downloadFile() {
-    if (!this.notice.notice_board_file) return;
+      if (!this.notice.notice_board_file) return;
 
-    try {
-      const encodedFileName = encodeURIComponent(this.notice.notice_board_file);
-      console.log("Encoded file name: " + encodedFileName); // 로그 추가
-      const response = await axios({
-        url: `http://localhost:8090/notice/download/${encodedFileName}`,
-        method: 'GET',
-        responseType: 'blob',
-      });
+      try {
+        const encodedFileName = encodeURIComponent(this.notice.notice_board_file);
+        const response = await axios({
+          url: `http://localhost:8090/notice/download/${encodedFileName}`,
+          method: 'GET',
+          responseType: 'blob',
+        });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', this.notice.notice_board_file); // UUID 제거하여 다운로드
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error('파일 다운로드 중 오류 발생:', error);
-      // 에러 처리 (예: 사용자에게 알림)
-    }
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', this.notice.notice_board_file);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('파일 다운로드 중 오류 발생:', error);
+      }
+    },
   },
-},
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('notice', ['getNotice']),
@@ -133,9 +180,7 @@ export default {
     },
   },
   mounted() {
-    const noticeId = this.$route.params.id;
-    this.fetchNoticeDetail(noticeId);
-    console.log('Notice Detail:', this.notice); // Notice 객체 콘솔 출력
+    this.fetchNoticeDetail(this.id);
   },
 };
 </script>
@@ -143,6 +188,10 @@ export default {
 
 
 <style scoped>
+ .body pre {
+    white-space: pre-wrap; /* 줄바꿈과 공백을 유지하여 표시 */
+    word-wrap: break-word; /* 길이가 길 경우 줄바꿈 */
+  }
 .app-container {
   width: 100%;
   padding: 0px;

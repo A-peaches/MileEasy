@@ -130,25 +130,25 @@ export default {
       }
     },
     async handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    const files = event.target.files;
+    if (!files.length) return;
 
-      const formData = new FormData();
-      formData.append('file', file);
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
 
-      try {
-        const response = await axios.post('http://localhost:8090/notice/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        this.uploadedFileName = response.data;
-        this.form.file = this.uploadedFileName;
-      } catch (error) {
-        console.error('파일 업로드 중 오류 발생:', error);
-        this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
-      }
-    },
+    try {
+      const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('Uploaded files:', response.data);
+    } catch (error) {
+      console.error('파일 업로드 중 오류 발생:', error);
+    }
+  },
     async downloadFile() {
       if (!this.uploadedFileName) return;
 

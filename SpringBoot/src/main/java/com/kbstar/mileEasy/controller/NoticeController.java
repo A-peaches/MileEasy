@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,27 +83,36 @@ public class NoticeController {
 //    }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotice(@PathVariable Long id) {
+    // DELETE 요청을 처리하는 엔드포인트
+    @DeleteMapping("/delete/{noticeId}")
+    public ResponseEntity<String> deleteNotice(@PathVariable Long noticeId) {
         try {
-            noticeService.deleteNotice(id);
-            return ResponseEntity.ok().build();
+            noticeService.deleteNotice(noticeId);
+            return ResponseEntity.ok("Notice deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error deleting notice: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice: " + e.getMessage());
         }
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") List<MultipartFile> files) {
+        List<String> fileNames = new ArrayList<>();
         try {
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadPath).resolve(fileName);
-            Files.copy(file.getInputStream(), filePath);
-            return ResponseEntity.ok(fileName);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body("파일 업로드 실패");
+            for (MultipartFile file : files) {
+                String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                Path path = Paths.get(uploadPath + fileName);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                fileNames.add(fileName);
+            }
+            return ResponseEntity.ok().body(fileNames);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
     @GetMapping("/download/{encodedFileName}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String encodedFileName) {

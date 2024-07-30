@@ -80,15 +80,11 @@ public class NoticeService {
         noticeDao.updateNotice(notice);
     }
 
-    public Notice findById(Long id) {
-        return noticeDao.findById(id);
-    }
 
     public void deleteNotice(Long id) {
         Notice notice = noticeDao.findById(id);
         if (notice != null) {
-            notice.setNotice_board_is_delete(true); // 논리 삭제
-            noticeDao.deleteNotice(notice);
+            noticeDao.deleteNotice(id);
         } else {
             throw new RuntimeException("Notice not found");
         }
