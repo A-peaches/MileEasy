@@ -167,7 +167,12 @@
           <div
             style="display: flex; justify-content: flex-end; margin-top: 10px"
           >
-            <button class="btn-yellow KB_S4">채택하기</button>
+            <button
+              class="btn-yellow KB_S4"
+              onclick="location.href='/KingPickView'"
+            >
+              채택하기
+            </button>
           </div>
         </div>
       </div>

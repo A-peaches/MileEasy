@@ -1,30 +1,47 @@
 <template>
-  <div class="cards page-back mx-auto">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 관리</h2>
-    <div>
-      <div
-        class="input-base input-search d-flex justify-content-center mx-auto my-3"
-        style="width: 500px; background: #ebebeb"
-      >
-        <button
-          class="tab-container lg2 fw-bold"
-          :class="{ active: isModifyActive }"
-          @click="showModify"
+  <div style="padding: 0 5%">
+    <div class="p-4 mt-5 mx-auto">
+      <div class="cards-container mx-auto" :style="{ height: computedHeight }">
+        <div
+          v-for="(card, index) in mileageLabel"
+          :key="index"
+          class="card-item"
         >
-          마일리지 수정
-        </button>
-        <button
-          class="tab-container lg2 fw-bold"
-          :class="{ active: !isModifyActive }"
-          @click="showCoding"
-        >
-          개발요청
-        </button>
+          <div
+            class="cards"
+            :class="card.pyramidClass"
+            style="background-color: #f9f9f9; height: 80px; width: 500px"
+          >
+            <div class="card-header">
+              <h3 class="text-start KB_S5" style="font-size: 16pt">
+                {{ card.mile_name }}
+              </h3>
+              <span class="edit-delete brown">
+                <a @click.stop="openModal(card.mile_name, card.mile_no)"
+                  >수정</a
+                >
+                &nbsp;&nbsp;
+                <a @click="deleteMile(card.mile_no)">삭제</a>
+              </span>
+            </div>
+            <div
+              class="flex justify-content-between align-items-center"
+              style="padding-bottom: 10px"
+            >
+              <div style="width: 48%; font-size: 30pt"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <!-- 동적 컴포넌트 전환 -->
-      <modiy v-if="isModifyActive" />
-      <coding v-if="!isModifyActive" />
+      <div class="my-3"></div>
     </div>
+    <SearchModal
+      v-if="isModalOpen"
+      :mileName="selectedMileName"
+      :mileNo="selectedMileNo"
+      :isOpen="isModalOpen"
+      @close="closeModal"
+    />
   </div>
 </template>
 
@@ -32,29 +49,46 @@
 import { mapActions, mapGetters } from 'vuex';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import modiy from '@/components/admin/MileageModify.vue';
-import coding from '@/components/admin/CodingList.vue';
+import SearchModal from '../admin/SearchModal.vue';
 
 export default {
-  name: 'KingMain',
-  components: { modiy, coding },
+  name: 'MileageModify',
+  components: { SearchModal },
   data() {
     return {
-      isModifyActive: true, // 초기에는 '마일리지 수정'이 활성화됨
+      isModalOpen: false,
+      selectedMileName: null,
+      selectedMileNo: null,
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getArrayMileage']),
+
     loginInfo() {
       return this.getLoginInfo;
     },
+
     mileageLabel() {
       return this.getArrayMileage;
     },
   },
+
   methods: {
     ...mapActions('mileage', ['getMileage']),
+
+    openModal(mileName, mileNo) {
+      this.selectedMileName = mileName;
+      this.selectedMileNo = mileNo;
+      this.isModalOpen = true;
+      this.getMileage();
+    },
+
+    closeModal() {
+      this.isModalOpen = false;
+      this.getMileage();
+    },
+
     async deleteMile(mile_no) {
       const { value: confirmed } = await Swal.fire({
         title: '삭제 확인',
@@ -94,16 +128,10 @@ export default {
         console.log('삭제 취소됨');
       }
     },
-    showModify() {
-      this.isModifyActive = true; // '마일리지 수정' 활성화
-    },
-    showCoding() {
-      this.isModifyActive = false; // '개발요청' 활성화
-      this.getMileage();
-    },
   },
+
   mounted() {
-    this.getMileage(); // Fetch mileage data on component mount
+    this.getMileage();
   },
 };
 </script>

@@ -2,21 +2,11 @@ export default [
   //🚨운영관리자 : 마왕 관련 라우터
   {
     //마왕 채택하기
-    path: '/kingSelectAdminView',
-    name: 'kingSelectAdminView',
-    component: () =>
-      import('../views/adminMileEasy/king/KingSelectAdminView.vue'),
+    path: '/kingPickView',
+    name: 'kingPickView',
+    component: () => import('../views/adminMileEasy/king/KingPickView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
-  {
-    //마왕 배지 디자인 변경
-    path: '/kingBadgeOptionAdminView',
-    name: 'kingBadgeOptionAdminView',
-    component: () =>
-      import('../views/adminMileEasy/king/KingBadgeOptionAdminView.vue'),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
-
   //마왕관리
   {
     path: '/kingMain',
@@ -38,7 +28,7 @@ export default [
   },
   //마일리지 수정
   {
-    path: '/mileageModifyAdminView',
+    path: '/mileageModifyAdminView/:mile_no',
     name: 'mileageModifyAdminView',
     component: () =>
       import(

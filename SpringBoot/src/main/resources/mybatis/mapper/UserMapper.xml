@@ -99,5 +99,114 @@
         GROUP BY l.level_no
         ORDER BY l.level_no;
     </select>
+    
+    <select id="getileageAdminList" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT
+            u.user_no,
+            u.user_email,
+            u.user_pw,
+            u.user_name,
+            u.user_profile,
+            u.user_year,
+            u.user_birth,
+            d.dp_name AS dp_no,
+            l.level_name AS level_no,
+            j.job_name AS job_no,
+            p.position_name AS position_no,
+            u.user_is_delete,
+            u.user_is_manager,
+            u.user_is_admin,
+            u.mile_no
+        FROM
+            user u
+                JOIN department d ON u.dp_no = d.dp_no
+                JOIN level l ON u.level_no = l.level_no
+                JOIN job j ON u.job_no = j.job_no
+                JOIN position p ON u.position_no = p.position_no
+        WHERE
+           u.user_is_manager = 1
+          AND u.mile_no = #{mile_no};
+    </select>
+
+    <select id="searchUser" resultType="com.kbstar.mileEasy.dto.User">
+        SELECT
+            u.user_no,
+            u.user_email,
+            u.user_pw,
+            u.user_name,
+            u.user_profile,
+            u.user_year,
+            u.user_birth,
+            d.dp_name AS dp_no,
+            l.level_name AS level_no,
+            j.job_name AS job_no,
+            p.position_name AS position_no,
+            u.user_is_delete,
+            u.user_is_manager,
+            u.user_is_admin,
+            u.mile_no
+        FROM
+            user u
+                JOIN department d ON u.dp_no = d.dp_no
+                JOIN level l ON u.level_no = l.level_no
+                JOIN job j ON u.job_no = j.job_no
+                JOIN position p ON u.position_no = p.position_no
+        WHERE
+            u.user_is_manager = 0;
+
+    </select>
+
+    <update id="clearManager">
+        UPDATE user
+        SET mile_no = NULL,
+            user_is_manager = 0
+        WHERE mile_no = #{mileNo}
+          AND user_is_manager = 1
+    </update>
+
+    <update id="newManager">
+        UPDATE user
+        SET
+        user_is_manager = 1,
+        mile_no = #{mileNo}
+        WHERE
+        user_no IN
+        <foreach collection="adminList" item="userNo" open="(" separator="," close=")">
+            #{userNo}
+        </foreach>
+        AND user_is_manager = 0
+    </update>
+
+
+    <insert id="insertMonthlyKings">
+        INSERT INTO monthly_king (user_no, is_king, monthly_king_date)
+        VALUES
+        <foreach collection="king" item="userNo" separator=",">
+            (#{userNo}, 1, CURDATE())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_king = VALUES(is_king),
+        monthly_king_date = VALUES(monthly_king_date);
+    </insert>
+
+    <insert id="insertMonthlyJumps">
+        INSERT INTO monthly_king (user_no, is_jump, monthly_king_date)
+        VALUES
+        <foreach collection="jump" item="userNo" separator=",">
+            (#{userNo}, 1, CURDATE())
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_jump = VALUES(is_jump),
+        monthly_king_date = VALUES(monthly_king_date);
+    </insert>
+
+
+
+
+
+
+
+
+
 
 </mapper>
