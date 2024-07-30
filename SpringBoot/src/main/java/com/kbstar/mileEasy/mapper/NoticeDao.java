@@ -17,9 +17,11 @@ public interface NoticeDao {
 
     @Select("SELECT n.notice_board_no, n.user_no, n.user_name, n.notice_board_title, n.notice_board_content, n.notice_board_file, n.notice_board_date, n.notice_board_hit, m.mile_name " +
             "FROM notice n " +
-            "JOIN mileage m ON n.mile_no = m.mile_no")
+            "JOIN mileage m ON n.mile_no = m.mile_no " +
+            "WHERE n.notice_board_is_delete = 0")
     List<Notice> selectAllNotices();
     /* 게시글 리스트 */
+
 
     @Select("select mile_no,mile_name from mileage WHERE mile_is_delete = 0")
     List<Mileage> selectAllMileage();
@@ -56,7 +58,9 @@ public interface NoticeDao {
     Notice findById(Long id);
 
     @Update("UPDATE notice SET notice_board_is_delete = 1 WHERE notice_board_no = #{id}")
-    void deleteNotice(Notice notice);
+    void deleteNotice(Long id);
+
+
 
 
 }
