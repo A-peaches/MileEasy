@@ -17,7 +17,7 @@ const mutations = {
   INCREMENT_VIEWS(state, noticeId) {
     const notice = state.notices.find(n => n.notice_board_no === noticeId);
     if (notice) {
-      notice.notice_board_hit += 1;
+      notice.notice_board_hit = (notice.notice_board_hit || 0) + 1;
     }
   },
 };
@@ -28,7 +28,7 @@ const actions = {
       const response = await axios.get('http://localhost:8090/notice/list');
       commit('SET_NOTICES', response.data);
     } catch (error) {
-      console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+      console.error('Error fetching notices:', error);
     }
   },
   async fetchNoticeDetail({ commit }, noticeId) {
@@ -44,7 +44,7 @@ const actions = {
       await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
       commit('INCREMENT_VIEWS', noticeId);
     } catch (error) {
-      console.error('Error incrementing views:', error.response ? error.response.data : error.message);
+      console.error('Error incrementing views:', error);
     }
   },
   async addNotice({ commit }, formData) {
@@ -65,9 +65,7 @@ const actions = {
 
 
 const getters = {
-  getNotices(state) {
-    return state.notices;
-  },
+  getNotices: state => state.notices,
   getNotice(state) {
     return state.notice;
   },
