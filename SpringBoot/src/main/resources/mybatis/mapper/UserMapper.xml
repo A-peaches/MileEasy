@@ -152,7 +152,8 @@
                 JOIN job j ON u.job_no = j.job_no
                 JOIN position p ON u.position_no = p.position_no
         WHERE
-            u.user_is_manager = 0;
+            u.user_is_manager = 0 and
+            u.user_is_admin=0;
 
     </select>
 
@@ -200,13 +201,9 @@
         monthly_king_date = VALUES(monthly_king_date);
     </insert>
 
-
-
-
-
-
-
-
-
+    <insert id="insertRequestMileage">
+        INSERT INTO mileage_request (request_is_branch, request_mile_name, request_mil_max, request_admin, request_etc, request)
+        VALUES (#{isBranch}, #{mileName}, #{milMax}, #{admin}, #{etc}, #{request_no})
+    </insert>
 
 </mapper>

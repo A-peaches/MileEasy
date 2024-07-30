@@ -48,9 +48,9 @@ const actions = {
       console.error('Error get mile detail:', error);
     }
   },
-  async getMileModify({commit}, mile_introduce_no){
+  async getMileModify({commit}, {mile_introduce_no, mile_no}){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/mileModifyDetail/${mile_introduce_no}`)
+      const response = await axios.get(`http://localhost:8090/manager/mileModifyDetail/${mile_introduce_no}?mile_no=${mile_no}`)
       commit('setMileDetail', response.data);
     }catch(error){
       console.error('Error get modify mile detail:', error);
