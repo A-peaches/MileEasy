@@ -69,6 +69,14 @@ public class NoticeService {
     public void updateNotice(Notice notice) {
         int mileNo = noticeDao.findMileNoByName(notice.getMile_name());
         notice.setMile_no(mileNo);
+
+        // 파일명에서 UUID 제거
+        if (notice.getNotice_board_file() != null && !notice.getNotice_board_file().isEmpty()) {
+            String[] parts = notice.getNotice_board_file().split("_", 2);
+            String actualFileName = parts.length > 1 ? parts[1] : notice.getNotice_board_file();
+            notice.setNotice_board_file(actualFileName);
+        }
+
         noticeDao.updateNotice(notice);
     }
 

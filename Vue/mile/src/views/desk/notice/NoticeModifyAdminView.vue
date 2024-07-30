@@ -35,20 +35,20 @@
           <textarea id="content" v-model="form.content" placeholder="내용을 입력해주세요"></textarea>
         </div>
         <div class="form-group file-upload">
-  <label for="file">첨부파일</label>
-  <div class="custom-file-upload">
-    <div v-if="uploadedFileName">
-      <div class="file-info">
-        <span>{{ uploadedFileName }}</span>
-        <button @click="triggerFileInput" type="button" class="file-modify-button">파일 수정</button>
+    <label for="file">첨부파일</label>
+    <div class="custom-file-upload">
+      <div v-if="uploadedFileName">
+        <div class="file-info">
+          <span>{{ getDisplayFileName(uploadedFileName) }}</span>
+          <button @click="triggerFileInput" type="button" class="file-modify-button">파일 수정</button>
+        </div>
+        <input type="file" @change="handleFileUpload" ref="fileInput" style="display: none;" />
       </div>
-      <input type="file" @change="handleFileUpload" ref="fileInput" style="display: none;" />
-    </div>
-    <div v-else>
-      <input type="file" @change="handleFileUpload" ref="fileInput" />
+      <div v-else>
+        <input type="file" @change="handleFileUpload" ref="fileInput" />
+      </div>
     </div>
   </div>
-</div>
 <div class="btn-yellow-container">
   <button type="submit" class="btn-yellow">수정</button>
 </div>
@@ -73,6 +73,7 @@ export default {
         content: '',
       },
       uploadedFileName: '',
+      displayFileName: '',
       originalMileNo: '',
       mileages: [],
       showCategory: false,
@@ -144,9 +145,22 @@ export default {
       const file = event.target.files[0];
       if (!file) return;
 
-      this.form.file = file;
-      this.uploadedFileName = file.name;
-      console.log('File selected:', file);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        this.uploadedFileName = response.data; // UUID가 포함된 파일명
+        this.displayFileName = this.getDisplayFileName(response.data); // 화면에 표시할 파일명
+        this.form.file = file; // 실제 파일 객체 저장
+      } catch (error) {
+        console.error('파일 업로드 중 오류 발생:', error);
+        this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
+      }
     },
     async downloadFile() {
   if (!this.currentNotice.notice_board_file) return;
@@ -170,7 +184,7 @@ export default {
     // 에러 처리 (예: 사용자에게 알림)
   }
 },
-    async submitForm() {
+async submitForm() {
   const formData = new FormData();
   formData.append('notice_board_no', this.form.notice_board_no);
   formData.append('notice_board_title', this.form.title);
@@ -180,8 +194,12 @@ export default {
   formData.append('user_name', this.form.user_name);
 
   if (this.form.file) {
-    const encodedFileName = encodeURIComponent(this.form.file.name);
-    formData.append('file', this.form.file, encodedFileName);
+    // UUID가 포함된 파일명으로 서버에 파일 업로드
+    formData.append('file', this.form.file, this.uploadedFileName);
+    
+    // UUID가 제외된 파일명을 DB에 저장하기 위해 별도로 전송
+    const originalFileName = this.getDisplayFileName(this.uploadedFileName);
+    formData.append('originalFileName', originalFileName);
   }
 
   try {

@@ -29,7 +29,7 @@
             <h2>첨부파일</h2>
             <div v-if="notice.notice_board_file">
               <a @click.prevent="downloadFile" href="#" class="file-download-link">
-                {{ notice.notice_board_file }} 다운로드
+                {{  getDisplayFileName(notice.notice_board_file)  }} 다운로드
               </a>
             </div>
             <div v-else>
@@ -59,6 +59,13 @@ export default {
   props: ['id'],
   methods: {
     ...mapActions('notice', ['fetchNoticeDetail', 'incrementViews']),
+    getDisplayFileName(fileName) {
+    if (fileName) {
+      const parts = fileName.split('_');
+      return parts.length > 1 ? parts.slice(1).join('_') : fileName;
+    }
+    return '';
+  },
     goBack() {
       this.$router.go(-1);
     },

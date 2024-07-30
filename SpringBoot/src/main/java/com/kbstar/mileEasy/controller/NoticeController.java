@@ -59,7 +59,7 @@ public class NoticeController {
                 String fileName = UUID.randomUUID().toString() + "_" + decodedFileName;
                 Path filePath = Paths.get(uploadPath).resolve(fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                notice.setNotice_board_file(fileName);
+                notice.setNotice_board_file(decodedFileName); // DB에는 UUID를 제외한 파일명만 저장
             }
 
             noticeService.updateNotice(notice);
