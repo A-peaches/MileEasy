@@ -65,6 +65,7 @@ public class NoticeService {
     }
 
 
-
-
+    public List<Notice> getFooterNotice() {
+        return noticeDao.getFooterNotice();
+    }
 }

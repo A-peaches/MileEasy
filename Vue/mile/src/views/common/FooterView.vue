@@ -17,13 +17,30 @@
       </div>
       <div class="notice-item-wrapper">
         <transition name="slide">
-          <div class="notice-item" :key="currentIndex">
+          <router-link
+            :to="
+              currentNoticeId
+                ? { name: 'noticeDetailView', params: { id: currentNoticeId } }
+                : ''
+            "
+            class="notice-item"
+            :key="currentIndex"
+            v-if="currentNoticeId !== null"
+            style="text-decoration: none; color: #4b4b4b"
+          >
             <span class="notice-title">
-              {{ notices[currentIndex].title }}&nbsp; &nbsp; &nbsp;
-              <span class="notice-date" style="color: gray; font-size: 10pt">{{
-                notices[currentIndex].date
-              }}</span>
+              {{ currentNotice.notice_board_title }}&nbsp; &nbsp; &nbsp;
+              <span class="notice-date" style="color: gray; font-size: 10pt">
+                {{
+                  currentNotice.notice_board_date
+                    ? currentNotice.notice_board_date.substring(0, 10)
+                    : ""
+                }}
+              </span>
             </span>
+          </router-link>
+          <div v-else class="notice-item" :key="currentIndex">
+            공지사항이 없습니다.
           </div>
         </transition>
       </div>
@@ -31,9 +48,9 @@
     </div>
 
     <!-- 여기서 전체메뉴 -->
-    <div class="w-100 mt-5" style="padding-left: 190px; color : #5E5E5E">
+    <div class="w-100 mt-5" style="padding-left: 190px; color: #5e5e5e">
       <div class="w-100 mx-auto text-start mb-2">
-        <span class="menu-title">My Mileage</span> 
+        <span class="menu-title">My Mileage</span>
         <span class="menu">HRD</span>
         <span class="menu">Monthly Best</span>
         <span class="menu">Monthly Base</span>
@@ -44,27 +61,28 @@
         <span class="menu">리그 테이블</span>
       </div>
       <div class="w-100 mx-auto text-start mb-2">
-        <span class="menu-title">Info Zone</span> 
+        <span class="menu-title">Info Zone</span>
         <span class="menu">문서모아</span>
         <span class="menu">M-Tip</span>
         <span class="menu">공지사항</span>
       </div>
       <div class="w-100 mx-auto text-start">
-        <span class="menu-title">Help Desk</span> 
+        <span class="menu-title">Help Desk</span>
         <span class="menu">Q&A</span>
         <span class="menu">업무별 연락처</span>
         <span class="menu">담당자 연락처</span>
       </div>
     </div>
 
-
-
-    <div class="text-start" style="padding-left: 190px; margin-top:50px">
+    <div class="text-start" style="padding-left: 190px; margin-top: 50px">
       <!-- <div class="contact-info"> -->
-        <span class="text-end " style="float: right; padding-right: 190px">
-
-        <p class="contact-info"><i class="bi bi-send-plus icon"></i> 마일리지 요청</p>
-        <p class="contact-info"><i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959</p>
+      <span class="text-end" style="float: right; padding-right: 190px">
+        <p class="contact-info">
+          <i class="bi bi-send-plus icon"></i> 마일리지 요청
+        </p>
+        <p class="contact-info">
+          <i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959
+        </p>
         <!-- <p class="contact-info"><i class="bi bi-envelope-at icon"></i> mileage@kbfg.com</p> -->
       </span>
       <!-- </div> -->
@@ -84,7 +102,8 @@
     <div style="margin-top: 130px; margin-bottom: 10px">
       <!-- <img src="@/assets/img/logo.png" alt="MileEasy Logo" style="height: 40px" />
         -->
-      <i class="bi bi-apple mr-3"></i>MileEasy
+        <img src="@/assets/img/mini_logo2.png" class="mr-2 mb-2" style="width:1.2%;
+        color:black;">MileEasy 
     </div>
     <div>&copy; 2024 MileEasy. All rights reserved.</div>
   </footer>
@@ -99,20 +118,18 @@ export default {
   name: "FooterView",
   data() {
     return {
-      notices: [
-        { date: "2024.01.22", title: "이것은 공지사항 입니다1" },
-        { date: "2024.01.23", title: "공지를 공지공지 합니다2" },
-        { date: "2024.01.24", title: "공지를 숑숑숑숑 떄립니다3" },
-      ],
       lastUpdateTime: Date.now(),
       pausedTime: 0,
       currentIndex: 0,
       autoSlide: null,
     };
   },
-  mounted() {
-    this.startAutoSlide();
-    this.getFooterNotice();
+  async mounted() {
+    await this.getFooterNotice();
+    console.log("Footer notices:", this.getFooterNotices); // 데이터 확인
+    if (this.getFooterNotices.length > 0) {
+      this.startAutoSlide();
+    }
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
   },
   beforeUnmount() {
@@ -125,7 +142,12 @@ export default {
   computed: {
     ...mapGetters("login", ["getLoginInfo"]),
     ...mapGetters("notice", ["getFooterNotices"]),
-
+    currentNotice() {
+      return this.getFooterNotices[this.currentIndex] || {};
+    },
+    currentNoticeId() {
+      return this.currentNotice.notice_board_no || null;
+    },
     filteredMyMile() {
       const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
       if (!jobNo) {
@@ -140,14 +162,22 @@ export default {
   methods: {
     ...mapActions("notice", ["getFooterNotice"]),
     ...mapActions("mileScore", ["getMyMiles"]),
-    prev() {
-      this.currentIndex =
-        (this.currentIndex - 1 + this.notices.length) % this.notices.length;
-    },
     next() {
-      this.currentIndex = (this.currentIndex + 1) % this.notices.length;
+      if (this.getFooterNotices.length > 0) {
+        this.currentIndex =
+          (this.currentIndex + 1) % this.getFooterNotices.length;
+      }
+    },
+    prev() {
+      if (this.getFooterNotices.length > 0) {
+        this.currentIndex =
+          (this.currentIndex - 1 + this.getFooterNotices.length) %
+          this.getFooterNotices.length;
+      }
     },
     startAutoSlide() {
+      if (this.getFooterNotices.length === 0) return;
+
       this.stopAutoSlide();
       this.lastUpdateTime = Date.now();
       this.autoSlide = setInterval(() => {
@@ -324,6 +354,4 @@ export default {
   text-align: center;
   line-height: 1;
 }
-
-
 </style>
