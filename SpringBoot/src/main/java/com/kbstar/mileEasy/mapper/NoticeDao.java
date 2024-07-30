@@ -34,6 +34,8 @@ public interface NoticeDao {
             "JOIN mileage m ON n.mile_no = m.mile_no " +
             "WHERE n.notice_board_no = #{noticeId}")
     Notice getNoticeDetails(int noticeId);
+
+    List<Notice> getFooterNotice();
     /* 게시글 상세보기 */
 
     @Update({

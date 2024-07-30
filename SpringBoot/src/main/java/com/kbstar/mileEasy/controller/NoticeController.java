@@ -225,6 +225,16 @@ public class NoticeController {
         }
     }
 
+
+
+    @GetMapping("/getFooterNotice")
+    public List<Notice> getFooterNotice() {
+        List<Notice> notices =  noticeService.getFooterNotice();
+        System.out.println(notices);
+        return notices;
+    }
+
+
 }
 
 

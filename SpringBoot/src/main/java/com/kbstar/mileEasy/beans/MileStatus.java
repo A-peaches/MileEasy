@@ -14,5 +14,5 @@ public class MileStatus {
     private String mile_name;
     private String mile_date;
     private String prev_date;
-
+    private String job_name;
 }

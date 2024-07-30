@@ -1,4 +1,5 @@
 package com.kbstar.mileEasy.mapper;
+import com.kbstar.mileEasy.beans.ExcelNotice;
 import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
 import com.kbstar.mileEasy.dto.DocumentMile;
@@ -15,6 +16,10 @@ public interface MyMileDao {
 
     List<MileStatus>  getMileStatus(String userNo, int mileNo);
 
+
+    List<ExcelNotice> getExcelNotice();
+
     List<DocumentMile> selectMileDocument();
     int selectCount();
+
 }
