@@ -5,6 +5,7 @@ const state = {
   objectLoginHistory: null,
   notices: [],
   notice: null,
+  footerNotices :[]
 };
 
 const mutations = {
@@ -20,6 +21,9 @@ const mutations = {
       notice.notice_board_hit += 1;
     }
   },
+  setFooterNotices(state, payload) {
+    state.footerNotices = payload;
+  }
 };
 
 const actions = {
@@ -60,7 +64,18 @@ const actions = {
     } catch (error) {
       console.error('Error adding notice:', error.response ? error.response.data : error.message);
     }
-  }
+  },
+  async getFooterNotice({ commit }) {
+    try {
+      const response = await axios.get(
+        'http://localhost:8090/notice/getFooterNotice'
+      );
+      console.log(response.data);
+      commit('getFooterNotice', response.data);
+    } catch (error) {
+      console.error('Error getting footer Notice data:', error);
+    }
+  },
 };
 
 
@@ -71,6 +86,9 @@ const getters = {
   getNotice(state) {
     return state.notice;
   },
+  getFooterNotices(state) {
+    return state.footerNotices;
+  }
 };
 
 

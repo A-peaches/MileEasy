@@ -31,57 +31,57 @@
     </div>
 
     <!-- 여기서 전체메뉴 -->
-    <div class="container-fuild mt-5" style=" color : #5E5E5E">
-      <div class="row justify-content-center mx-auto w-100">
-
-      <div class="col-lg-2 " style="width:8%" >
-        <div class="menu">나의 마일리지</div>
-        <div class="menu">HRD</div>
-        <div class="menu">Monthly Best</div>
-        <div class="menu">Monthly Base</div>
-        <div class="menu">HotTip</div>
-
+    <div class="w-100 mt-5" style="padding-left: 190px; color : #5E5E5E">
+      <div class="w-100 mx-auto text-start mb-2">
+        <span class="menu-title">My Mileage</span> 
+        <span class="menu">HRD</span>
+        <span class="menu">Monthly Best</span>
+        <span class="menu">Monthly Base</span>
+        <span class="menu">HotTip</span>
+        <span class="menu">Best PG</span>
+        <span class="menu">Best Branch</span>
+        <span class="menu">소비자 지원</span>
+        <span class="menu">리그 테이블</span>
       </div>
-
-      <div class="col-md-2" style="width:8%">
-        <div class="menu">Best PG</div>
-        <div class="menu">Best Branch</div>
-        <div class="menu">소비자 지원</div>
-        <div class="menu">리그 테이블</div>
+      <div class="w-100 mx-auto text-start mb-2">
+        <span class="menu-title">Info Zone</span> 
+        <span class="menu">문서모아</span>
+        <span class="menu">M-Tip</span>
+        <span class="menu">공지사항</span>
       </div>
-
-
-      <div class="col-md-2" style="width:8%">
-        <div class="menu">문서모아</div>
-        <div class="menu">M-Tip</div>
-        <div class="menu">공지사항</div>
-      </div>
-
-      <div class="col-md-1" style="width:8%">
-        <div class="menu">Q&A</div>
-        <div class="menu">업무별 연락처</div>
-        <div class="menu">담당자 연락처</div>
+      <div class="w-100 mx-auto text-start">
+        <span class="menu-title">Help Desk</span> 
+        <span class="menu">Q&A</span>
+        <span class="menu">업무별 연락처</span>
+        <span class="menu">담당자 연락처</span>
       </div>
     </div>
-  </div>
-    <div class="text-start mt-5" style="padding-left: 190px">
-      <div class="contact-info">
-        <p><i class="bi bi-send-plus icon"></i> 마일리지 요청</p>
+
+
+
+    <div class="text-start" style="padding-left: 190px; margin-top:50px">
+      <!-- <div class="contact-info"> -->
+        <span class="text-end " style="float: right; padding-right: 190px">
+
+        <p class="contact-info"><i class="bi bi-send-plus icon"></i> 마일리지 요청</p>
+        <p class="contact-info"><i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959</p>
+        <!-- <p class="contact-info"><i class="bi bi-envelope-at icon"></i> mileage@kbfg.com</p> -->
+      </span>
+      <!-- </div> -->
+      <!-- <div class="contact-info">
+       
       </div>
       <div class="contact-info">
-        <p><i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959</p>
-      </div>
-      <div class="contact-info">
-        <p><i class="bi bi-envelope-at icon"></i> mileEasy@kbfg.com</p>
-      </div>
-      <span class="text-end" style="float: right; padding-right: 190px">
+       
+      </div> -->
+      <!-- <span class="text-end" style="float: right; padding-right: 190px">
         <span class="circle"><i class="bi bi-chat-left-dots"></i></span>
         <span class="circle"><i class="bi bi-cloud-check"></i></span>
         <span class="circle"><i class="bi bi-wifi"></i></span>
-      </span>
+      </span> -->
     </div>
 
-    <div style="margin-top: 50px; margin-bottom: 10px">
+    <div style="margin-top: 130px; margin-bottom: 10px">
       <!-- <img src="@/assets/img/logo.png" alt="MileEasy Logo" style="height: 40px" />
         -->
       <i class="bi bi-apple mr-3"></i>MileEasy
@@ -93,6 +93,8 @@
 
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "FooterView",
   data() {
@@ -110,6 +112,7 @@ export default {
   },
   mounted() {
     this.startAutoSlide();
+    this.getFooterNotice();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
   },
   beforeUnmount() {
@@ -119,7 +122,24 @@ export default {
       this.handleVisibilityChange
     );
   },
+  computed: {
+    ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters("notice", ["getFooterNotices"]),
+
+    filteredMyMile() {
+      const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
+      if (!jobNo) {
+        return [];
+      }
+      if (jobNo === "기획") {
+        return this.getMyMile.filter((item) => item.mile_is_branch === false);
+      }
+      return this.getMyMile;
+    },
+  },
   methods: {
+    ...mapActions("notice", ["getFooterNotice"]),
+    ...mapActions("mileScore", ["getMyMiles"]),
     prev() {
       this.currentIndex =
         (this.currentIndex - 1 + this.notices.length) % this.notices.length;
@@ -260,13 +280,12 @@ export default {
 .menu-title {
   display: inline-block;
   width: 120px; /* 원하는 너비 설정 */
-  text-align: center;
+  text-align: left;
   font-weight: bold;
-  margin-bottom: 10px;
 }
 
 .menu {
-  margin: 0px 5px;
+  margin-left: 30px;
 }
 
 .contact-info {
