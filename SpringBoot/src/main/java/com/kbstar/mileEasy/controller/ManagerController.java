@@ -96,7 +96,8 @@ public class ManagerController {
                                          @RequestParam("mile_no") String mile_no,
                                          @RequestParam("mile_title") String mile_title,
                                          @RequestParam("mile_content") String mile_content,
-                                         @RequestParam(value = "file", required = false) MultipartFile file
+                                         @RequestParam(value = "file", required = false) MultipartFile file,
+                                         @RequestParam("job_name") String job_name
     ) {
         try {
             String mile_route = null; // 파일 경로를 저장할 변수를 선언
@@ -112,7 +113,8 @@ public class ManagerController {
             }
 
             int result = managerService.addMileage(mile_no, mile_title, mile_content, mile_route);
-            if (result > 0) {
+            int result2 = managerService.addMileageDetail(mile_no, mile_title, job_name);
+            if (result+result2 > 1) {
                 return ResponseEntity.ok().body(Map.of("success", true));
             } else {
                 return ResponseEntity.status(400).body(Map.of("success", false, "message", "마일리지 추가 실패"));

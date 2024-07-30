@@ -29,7 +29,9 @@ public class ManagerService {
     public int addMileage(String mile_no, String mile_title, String mile_content, String mile_route) {
         return managerDao.insertMile(Integer.parseInt(mile_no), mile_title, mile_content, mile_route);
     }
-
+    public int addMileageDetail(String mile_no, String mile_title, String job_name){
+        return managerDao.insertMileDetail(mile_no, mile_title, job_name);
+    }
     public int deleteMile(String mile_introduce_no) {
         return managerDao.deleteMile(mile_introduce_no);
     }

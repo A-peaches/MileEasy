@@ -152,8 +152,6 @@ export default {
       
       const response = await this.fetchMileDocument();
       this.allDocuments = response.data;
-      console.log('이건 서버에서 가져온 리스트', response.data);
-      console.log('이건 allDocuments 리스트', this.allDocuments);
       
       const countList = await axios.get(`http://localhost:8090/myMile/countListDocuments`);
       this.countList = countList.data;

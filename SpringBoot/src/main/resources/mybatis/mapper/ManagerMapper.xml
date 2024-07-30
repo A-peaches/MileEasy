@@ -26,6 +26,10 @@
         insert into mile_introduce (mile_no, mile_title, mile_content, mile_route) values (#{mile_no}, #{mile_title}, #{mile_content}, #{mile_route});
     </insert>
 
+    <insert id="insertMileDetail">
+        insert into mileage_detail (mile_no, mile_score_name, job_name) values (#{mile_no}, #{mile_title}, #{job_name});
+    </insert>
+
     <delete id="deleteMile">
         delete from mile_introduce where mile_introduce_no=#{mile_introduce_no};
     </delete>

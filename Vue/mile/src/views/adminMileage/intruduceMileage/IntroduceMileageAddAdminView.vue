@@ -9,7 +9,19 @@
       </button>
     </div>
     <div class="p-4 mt-5">
-      <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">마일리지 항목</h3>
+      <div class="d-flex justify-content-between">
+        <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">마일리지 항목<span style="font-size: 12pt;">&nbsp;(항목별 세부 분야를 같이 선택해주세요. '공통' 분야가 기본으로 선택됩니다.)</span></h3>
+        
+        <div class="d-flex justify-content-end align-items-center">
+          <input type="radio" class="btn-check" name="job_name" id="공통" value="공통" v-model="selectedJob" autocomplete="off" checked>
+          <label class="btn custom-radio-btn" for="공통" style="width:5vw; font-size: 15pt; font-family: 'KB_C3';">공통</label>
+          <input type="radio" class="btn-check" name="job_name" id="개인" value="개인" v-model="selectedJob" autocomplete="off">
+          <label class="btn custom-radio-btn" for="개인" style="width:5vw; font-size: 15pt; font-family: 'KB_C3';">개인</label>
+          <input type="radio" class="btn-check" name="job_name" id="기업" value="기업" v-model="selectedJob" autocomplete="off">
+          <label class="btn custom-radio-btn" for="기업" style="width:5vw; font-size: 15pt; font-family: 'KB_C3';">기업</label>
+        </div>
+        
+      </div>
       <div class="p-4">
         <div class="input-gray p-4">
           <input type="text" class="lg2" v-model="mile_title" placeholder="추가할 마일리지 항목을 입력하세요" style="width: 100%; text-align: left;"/>
@@ -58,7 +70,8 @@ export default {
       mile_content: '',
       mile_no: '',
       mile_route: '',
-      file: null
+      file: null,
+      selectedJob: '' // 기본값 설정 
     }
   },
   methods: {
@@ -76,7 +89,8 @@ export default {
       mileInfo.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
       mileInfo.append('mile_title', this.mile_title);
       mileInfo.append('mile_content', this.mile_content);
-      mileInfo.append('file', this.file || ''); // 파일이 없을 때도 file 필드를  추가한다. 
+      mileInfo.append('file', this.file || ''); // 파일이 없을 때도 file 필드를 추가한다.
+      mileInfo.append('job_name', this.selectedJob); 
       
       const response = await this.addMile(mileInfo);
 
@@ -116,5 +130,25 @@ export default {
   height: 140vh;
   margin-top: 5%;
 }
-</style>
 
+/* 기본 버튼 스타일 */
+.custom-radio-btn {
+  border: 1px solid transparent;
+  transition: background-color 0.3s ease;
+}
+
+/* 선택된 버튼 스타일 */
+.btn-check:checked + .custom-radio-btn {
+  /* border-color: #19c99b; */
+  background-color: #19c99b;
+  color:#fff;
+  font-weight: 600;
+}
+
+.btn-check:hover + .custom-radio-btn:hover {
+  background-color: #19c99b;
+  color:#fff;
+  font-weight: 600;
+}
+
+</style>
