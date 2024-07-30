@@ -54,7 +54,9 @@ public interface NoticeDao {
     Notice findById(Long id);
 
     @Update("UPDATE notice SET notice_board_is_delete = 1 WHERE notice_board_no = #{id}")
-    void deleteNotice(Notice notice);
+    void deleteNotice(Long id);
+
+
 
 
 }
