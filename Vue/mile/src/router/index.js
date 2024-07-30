@@ -10,6 +10,7 @@ import ContactRoutes from './contact';
 import QnaRoutes from './qna';
 import MileEasyAdminRoutes from './mileEasyAdmin';
 import MileageAdminRoutes from './mileageAdmin';
+import RequestRoutes from './request';
 
 const routes = [
   ...userRoutes,
@@ -22,6 +23,7 @@ const routes = [
   ...QnaRoutes,
   ...MileEasyAdminRoutes,
   ...MileageAdminRoutes,
+  ...RequestRoutes,
   {
     path: '/login',
     name: 'LoginView',

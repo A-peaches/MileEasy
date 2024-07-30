@@ -5,11 +5,13 @@
       <div style="padding: 0 5%">
         <div class="p-4 mt-5 mx-auto">
           <div>
+            <!--마일리지 이름, 마일리지 이름 폼-->
             <div style="text-align: left">마일리지 이름</div>
             <div style="text-align: left">
               <input type="text" class="input-base input-gray" readonly />
             </div>
           </div>
+          <div><!--관리자--></div>
         </div>
       </div>
     </div>

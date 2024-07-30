@@ -39,4 +39,6 @@ public interface UserDao {
     void insertMonthlyKings(List<String> king);
 
     void insertMonthlyJumps(List<String> jump);
+
+    void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc, int request_no);
 }
