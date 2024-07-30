@@ -69,7 +69,7 @@ export default {
 }
 
 /* 출석 체크 컴포넌트에 대한 추가 스타일 */
-.left-container > :last-child {
-  margin-bottom: 20px; /* 하단 여백 추가 */
-}
+/* .left-container > :last-child {
+  margin-bottom: 20px; 
+} */
 </style>

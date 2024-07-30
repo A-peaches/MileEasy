@@ -24,7 +24,7 @@
       <router-view />
 
       <button @click="scrollToTop" class="top-button">
-        TOP
+        <i class="bi bi-chevron-up"></i>
       </button>
       <Footer />
       <!-- TOP 버튼 -->
