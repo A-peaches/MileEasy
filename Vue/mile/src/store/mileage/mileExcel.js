@@ -6,7 +6,8 @@ const state = {
   arrayMileExcel: [],
   arrayMileDocument: [],
   document_sum: 0,
-  totalDocuments: []
+  totalDocuments: [],
+  excelNotice : []
 };
 
 const mutations = {
@@ -24,6 +25,9 @@ const mutations = {
   },
   setTotaldocuments(state, payload) {
     state.totalDocuments = payload;
+  },
+  setExcelNotice(state, payload) {
+    state.excelNotice = payload;
   }
 };
 
@@ -131,6 +135,14 @@ const actions = {
     }catch(error){
       console.error('Error get document sum:', error);
     }
+  },
+  async getExcelNotices({commit}){
+    try{
+      const response = await axios.get(`http://localhost:8090/myMile/getExcelNotice`)
+      commit('setExcelNotice', response.data);
+    }catch(error){
+      console.error('Error get excelNotice :', error);
+    }
   }
 };
 
@@ -139,7 +151,8 @@ const getters = {
   getArrayMileExcel: (state) => state.arrayMileExcel,
   getArrayMileDocument: (state) => state.arrayMileDocument,
   getDocumentSum: (state) => state.documentSum,
-  getTotalDocuments: (state) => state.totalDocuments
+  getTotalDocuments: (state) => state.totalDocuments,
+  getExcelNotice: (state) => state.excelNotice
 };
 
 

@@ -1,5 +1,9 @@
 package com.kbstar.mileEasy.controller;
 
+
+import com.kbstar.mileEasy.beans.ExcelNotice;
+import com.kbstar.mileEasy.beans.MileByJob;
+
 import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
 import com.kbstar.mileEasy.dto.DocumentMile;
@@ -33,6 +37,13 @@ public class MyMileController {
         List<MileStatus> mileStatus = myMileageService.getMileStatus(user_no,mile_no);
         System.out.println("취득현황 " + mileStatus);
         return mileStatus;
+    }
+
+    @GetMapping("/getExcelNotice")
+    public List<ExcelNotice> getExcelNotice() {
+            List<ExcelNotice> excelNotices = myMileageService.getExcelNotice();
+            System.out.println("엑셀알림" + excelNotices);
+            return excelNotices;
     }
 
     // mileDocument 마일리지 전체 문서 가져오기
