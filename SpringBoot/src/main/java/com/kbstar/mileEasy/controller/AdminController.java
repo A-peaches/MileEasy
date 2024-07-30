@@ -2,6 +2,7 @@ package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.mapper.UserDao;
+import com.kbstar.mileEasy.service.admin.AdminService;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
@@ -104,6 +105,10 @@ public class AdminController {
     @Autowired
     private MileService mileService;
 
+    @Autowired
+    private AdminService adminService;
+
+
     @Value("${project.uploadpath.badge}")
     private String badgeUploadPath;
 
@@ -196,6 +201,56 @@ public class AdminController {
         System.out.println("삭제할 mile_no: " + mile_no);
         mileService.deleteMile(mile_no);
     }
+
+    @PostMapping("/getMileageAdminList")
+    public ArrayList<User> getileageAdminList(@RequestParam("mile_no") String mile_no) {
+        System.out.println("마일리지: " + mile_no);
+        System.out.println(adminService.getileageAdminList(mile_no));
+        return adminService.getileageAdminList(mile_no);
+    }
+
+
+    @PostMapping("/searchUser")
+    public ArrayList<User> searchUser() {
+        return adminService.searchUser();
+    }
+
+
+    @PostMapping("/newAdminList")
+    public void newAdminList(
+            @RequestParam("mile_no") String mileNo,
+            @RequestParam("final_admin_list") String finalAdminList,
+            @RequestParam("mileNameInput") String mileNameInput,
+            @RequestParam("mileMax") String mileMax) {
+        adminService.clearManager(mileNo);
+        List<String> adminList = Arrays.asList(finalAdminList.split(","));
+        adminService.newManager(mileNo,adminList);
+
+        if(mileNameInput !=null && !mileNameInput.isEmpty()) {
+            adminService.updateMilename(mileNameInput,mileNo);
+        }
+
+        if(mileMax !=null && !mileMax.isEmpty()) {
+            adminService.updateMileMax(mileMax,mileNo);
+        }
+    }
+
+    @GetMapping ("/lastUpdate")
+    public ArrayList<MileScore> lastUpdate() {
+        System.out.println("들어옴");
+       return  adminService.lastUpdate();
+    }
+
+
+    @PostMapping("/pickBadge")
+    public void pickBadge(
+            @RequestParam List<String> king,
+            @RequestParam List<String> jump) {
+        adminService.insertMonthlyKings(king,jump);
+    }
+
+
+
 
 
 
