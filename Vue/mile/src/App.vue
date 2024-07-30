@@ -26,7 +26,7 @@
       <button @click="scrollToTop" class="top-button">
         <i class="bi bi-chevron-up"></i>
       </button>
-      <Footer />
+      <Footer :key="$route.fullPath" />
       <!-- TOP 버튼 -->
     </main>
 
