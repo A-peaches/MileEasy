@@ -516,3 +516,30 @@ body.swal-open {
   overflow: hidden;
   width: 100%;
 }
+
+.back-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: #5b5b5b; /* 검은색 텍스트 */
+  font-size: 15px;
+  cursor: pointer;
+  /* margin-left: auto; 요소를 오른쪽으로 이동 */
+  margin-top: 60px;
+  font-family: "KB_S5", sans-serif;
+}
+
+.back-button .arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 40px;
+  border: 1px solid #ccc; /* 둥근 직사각형 */
+  border-radius: 5px; /* 둥근 모서리 */
+  margin-right: 8px;
+  font-size: 15px;
+  font-family: "KB_S5", sans-serif;
+}

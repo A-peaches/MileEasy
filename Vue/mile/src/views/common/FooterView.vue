@@ -48,8 +48,10 @@
     </div>
 
     <!-- 여기서 전체메뉴 -->
+    
     <div class="w-100 mt-5" style="padding-left: 190px; color: #5e5e5e">
       <div class="w-100 mx-auto text-start mb-2">
+        <span v-if="!getLoginInfo?.user_is_admin && !getLoginInfo?.user_is_manager">
         <span class="menu-title">My Mileage</span>
         <span
           v-for="(item, index) in filteredMileageInfo"
@@ -66,15 +68,32 @@
             {{ item.mile_name }}</router-link
           >
         </span>
+      </span>
+      <span v-else>
+        <span class="menu-title">Management</span>
+        <span v-if="getLoginInfo?.user_is_admin == true">
+          <span class="menu"><a href="/kingMain" class="link-menu">마왕 관리</a></span>
+          <span class="menu"><a href="/mileageManagementView" class="link-menu">마일리지 관리</a></span>
+          <span class="menu"><a href="/m_TipListView" class="link-menu">M-Tip 관리</a></span>
+        </span>
+        <span v-else>
+          <span class="menu"><a href="/introduceMileageAdminView" class="link-menu">마일리지 소개</a></span>
+          <span class="menu"><a href="/commentMieageeAdminView" class="link-menu">추천 멘트</a></span>
+          <span class="menu"><a href="/documentsMileageAdminView" class="link-menu">문서 관리</a></span>
+          <span class="menu"><a href="/scoreMileageAdminView" class="link-menu">점수 관리</a></span>
+        </span>
+      </span>
       </div>
       <div class="w-100 mx-auto text-start mb-2">
         <span class="menu-title">Info Zone</span>
+        <span v-if="!getLoginInfo?.user_is_admin && !getLoginInfo?.user_is_manager">
         <span class="menu"
           ><a href="/documentsView" class="link-menu">문서모아</a></span
         >
         <span class="menu"
           ><a href="/m_TipMainView" class="link-menu">M-Tip</a></span
         >
+        </span>
         <span class="menu"
           ><a href="/noticeListView" class="link-menu">공지사항</a></span
         >
@@ -96,14 +115,19 @@
     <div class="text-start" style="padding-left: 190px; margin-top: 50px">
       <!-- <div class="contact-info"> -->
       <span class="text-end" style="float: right; padding-right: 190px">
+        <span v-if="getLoginInfo?.user_is_admin == true">
+           <p class="contact-info" @click="sendEmail" style="cursor: pointer"><i class="bi bi-envelope-at icon" ></i> mileage@kbfg.com</p>
+        </span>
+        <span v-if="getLoginInfo?.user_is_admin != true">
         <p class="contact-info" style="cursor: pointer">
           <i class="bi bi-send-plus icon"></i> <a href="/mileageRequesList"
           style="text-decoration:none; color: #989898">마일리지 요청</a>
         </p>
+        </span>
         <p class="contact-info" style="cursor: pointer" @click="connecting">
           <i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959
         </p>
-        <!-- <p class="contact-info"><i class="bi bi-envelope-at icon"></i> mileage@kbfg.com</p> -->
+
       </span>
       <!-- </div> -->
       <!-- <div class="contact-info">
@@ -119,7 +143,7 @@
       </span> -->
     </div>
 
-    <div style="margin-top: 130px; margin-bottom: 10px">
+    <div style="margin-top: 120px; margin-bottom: 10px">
       <!-- <img src="@/assets/img/logo.png" alt="MileEasy Logo" style="height: 40px" />
         -->
       <img
@@ -286,6 +310,17 @@ export default {
       }
     });
    },
+   sendEmail() {
+      const email = "mileage@kbfg.com"; // 수신자 이메일 주소
+      const subject = "MileEasy 관련하여 문의드립니다.";
+      const body = "직원번호 : \n 이름: \n 문의 주제 : \n 내용 : ";
+
+      // mailto 링크 생성
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      // 새 창으로 mailto 링크 열기
+      window.location.href = mailtoLink;
+    }
   },
   watch: {
     getLoginInfo(newVal) {

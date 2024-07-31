@@ -23,7 +23,7 @@
             >
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" href="/m_TipListView">M-tip관리</a>
+            <a class="nav-link hover" href="/m_TipListView">M-Tip관리</a>
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
