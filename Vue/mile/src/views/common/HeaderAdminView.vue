@@ -58,7 +58,7 @@
             <a class="dropdown-item" aria-current="page" @click="Logout"
               >로그아웃</a
             >
-            <a class="dropdown-item" href="/passwordChangeView"
+            <a class="dropdown-item" href="/passwordChange"
               >비밀번호 변경</a
             >
           </div>

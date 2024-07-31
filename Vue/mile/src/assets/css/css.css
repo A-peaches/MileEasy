@@ -481,6 +481,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 9000;
 }
 
 .top-button:hover {
@@ -509,4 +510,9 @@ main {
   font-weight: 600;
   font-style: normal;
 
+}
+
+body.swal-open {
+  overflow: hidden;
+  width: 100%;
 }
