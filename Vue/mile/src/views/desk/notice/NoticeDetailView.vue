@@ -25,15 +25,15 @@
         <div class="body">
           <pre><p>{{ notice.notice_board_content }}</p></pre> <!-- 줄 바꿈 -->
         </div>
-        <div class="file cards">
-          <h2>첨부파일</h2>
-          <div v-if="notice.notice_board_file">
+        <div class="file cards" >
+          <div style="display: flex; align-items: center;">
+              <h2 style="margin-right: 10px;">첨부파일</h2>
+              <span v-if="!notice.notice_board_file" style="color: #4b4a4a; font-family: 'KB_S5',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
+            </div>
+          <div v-if="notice.notice_board_file" style="margin-top: 10px;">
             <a @click.prevent="downloadFile" href="#" class="file-download-link">
               {{ getDisplayFileName(notice.notice_board_file) }} 
             </a>
-          </div>
-          <div v-else>
-            <span style="color: #4b4a4a; font-family: 'KB_S5', sans-serif; margin-left: 20%; width: 300px; white-space: nowrap;">파일이 존재하지 않습니다.</span>
           </div>
         </div>
       </div>
@@ -390,11 +390,11 @@ export default {
 
 .new-label {
   color: #ffca05;
-  margin-left: 10px;
+  /* margin-left: 5px; */
   text-align: center;
   font-size:18px;
   font-family: 'KB_S3', sans-serif;
-  margin-left:-1%;
+  margin-left:0%;
   display: inline-block;
   margin-bottom: 8px;
 }
