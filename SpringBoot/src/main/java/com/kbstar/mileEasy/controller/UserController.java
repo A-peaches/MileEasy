@@ -145,4 +145,17 @@ public class UserController {
         requestService.insertRequestMileage(is_branch,mile_name,mil_max,admin,etc,request_no);
     }
 
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> requestBody) {
+        String password = requestBody.get("password");
+        String user_no = requestBody.get("user_no");
+        boolean result = requestService.changePassword(password,user_no);
+
+        if(result){
+            return ResponseEntity.ok().body("{\"success\":true}");
+        }else{
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"password changed error.\"}");
+        }
+    }
+
 }

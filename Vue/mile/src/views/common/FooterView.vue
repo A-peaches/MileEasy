@@ -247,7 +247,9 @@ export default {
       });
     },
     connecting() {
+      document.body.classList.add('swal-open');
      this.connectAlret();
+     document.body.classList.remove('swal-open');
    },
    connectAlret() {
     let timerInterval;
@@ -259,6 +261,7 @@ export default {
       timer: 3000,
       timerProgressBar: true,
       scrollbarPadding: false,
+      
       didOpen: () => {
         const popup = this.$swal.getPopup();
         popup.style.height = '200px'; // 원하는 높이로 조정

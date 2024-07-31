@@ -45,7 +45,7 @@
                 JOIN job j ON u.job_no = j.job_no
                 JOIN position p ON u.position_no = p.position_no
         WHERE
-            u.user_no = #{user_no} AND u.user_pw = #{user_pw};
+            u.user_no = #{user_no}
     </select>
 
     <select id ="selectUserByEmail" resultType="com.kbstar.mileEasy.dto.User">
@@ -206,4 +206,8 @@
         VALUES (#{isBranch}, #{mileName}, #{milMax}, #{admin}, #{etc}, #{request_no})
     </insert>
 
+
+    <update id="changPassword">
+        update user set user_pw=#{encryptedPassword} where user_no = #{userNo}
+    </update>
 </mapper>
