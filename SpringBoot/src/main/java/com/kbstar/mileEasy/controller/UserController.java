@@ -149,13 +149,10 @@ public class UserController {
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
         String user_no = requestBody.get("user_no");
-        boolean result = requestService.changePassword(password,user_no);
+        List<String> result = requestService.changePassword(password,user_no);
 
-        if(result){
-            return ResponseEntity.ok().body("{\"success\":true}");
-        }else{
-            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"password changed error.\"}");
-        }
+        return ResponseEntity.ok().body("{\"success\":" + result.get(0).equals("성공") + ", \"message\":\"" + result.get(1) + "\"}");
+
     }
 
 }

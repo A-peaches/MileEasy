@@ -44,8 +44,8 @@
 </template>
    
    <script>
- import { mapGetters } from 'vuex';
-import axios from 'axios';
+import { mapGetters } from "vuex";
+import axios from "axios";
 
 export default {
   name: "PasswordReissueView",
@@ -53,11 +53,11 @@ export default {
     return {
       password: "",
       confirm_password: "",
-      msg : "",
+      msg: "",
     };
   },
-  computed :{
-    ...mapGetters('login', ["getLoginInfo"]),
+  computed: {
+    ...mapGetters("login", ["getLoginInfo"]),
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -66,78 +66,88 @@ export default {
     async changePassword() {
       const inputInfo = {
         password: this.password,
-        user_no: this.loginInfo.user_no
+        user_no: this.loginInfo.user_no,
       };
 
       console.log(inputInfo);
 
- // 입력 여부 확인
- if (!this.password || !this.confirm_password) {
-      this.msg = "비밀번호를 모두 입력해주세요."
-      this.warningAlert();
-      return;
-    }
-
-    // 일치 여부 확인
-    if (this.password !== this.confirm_password) {
-      this.msg = "비밀번호가 일치하지 않습니다."
-      this.errorAlert();
-      return;
-    }
-
-
-    // 조건: 길이 8자리 이상
-  if (this.password.length < 8) {
-    this.msg = "비밀번호 유의사항을 확인해주세요."
-    this.warningAlert();
+      // 입력 여부 확인
+      if (!this.password || !this.confirm_password) {
+        this.msg = "비밀번호를 모두 입력해주세요.";
+        this.warningAlert();
         return;
-    }
+      }
 
-
-    // 조건: 영문자, 숫자, 특수문자 최소 1자리 이상 혼합
-    const hasLetter = /[a-zA-Z]/.test(this.password);
-    const hasDigit = /\d/.test(this.password);
-    const hasSpecialChar = /[~`!@#$%^&*(),.?":{}|<>]/.test(this.password);
-
-    if (!hasLetter || !hasDigit || !hasSpecialChar) {
-      this.msg = "비밀번호 유의사항을 확인해주세요."
-      this.warningAlert();
-      console.log('password pattern Error!');
+      // 일치 여부 확인
+      if (this.password !== this.confirm_password) {
+        this.msg = "비밀번호가 일치하지 않습니다.";
+        this.errorAlert();
         return;
-    }
+      }
 
-    // 조건: 사용금지 - 연속 문자 4자리
-    if (/(\w)\1\1\1/.test(this.password)) {
-      this.msg = "비밀번호 유의사항을 확인해주세요."
-      this.warningAlert();
-      console.log('password continuous Error!');
+      // 조건: 길이 8자리 이상
+      if (this.password.length < 8) {
+        this.msg = "비밀번호 유의사항을 확인해주세요.";
+        this.warningAlert();
+        return;
+      }
+
+      // 조건: 영문자, 숫자, 특수문자 최소 1자리 이상 혼합
+      const hasLetter = /[a-zA-Z]/.test(this.password);
+      const hasDigit = /\d/.test(this.password);
+      const hasSpecialChar = /[~`!@#$%^&*(),.?":{}|<>]/.test(this.password);
+
+      if (!hasLetter || !hasDigit || !hasSpecialChar) {
+        this.msg = "비밀번호 유의사항을 확인해주세요.";
+        this.warningAlert();
+        console.log("password pattern Error!");
+        return;
+      }
+
+      // 조건: 사용금지 - 연속 문자 4자리
+      if (/(\w)\1\1\1/.test(this.password)) {
+        this.msg = "비밀번호 유의사항을 확인해주세요.";
+        this.warningAlert();
+        console.log("password continuous Error!");
         return false;
-    }
+      }
 
-    // 대표단어 확인
-    const forbiddenWords = ['kbstar', 'kbfng', 'kbfg', 'kbcard'];
-    if (forbiddenWords.some(word => this.password.toLowerCase().includes(word))) {
-      this.msg = "비밀번호 유의사항을 확인해주세요."
-      this.warningAlert();
-      console.log('password words contain Error!');
-      return;
-    }
+      // 대표단어 확인
+      const forbiddenWords = ["kbstar", "kbfng", "kbfg", "kbcard"];
+      if (
+        forbiddenWords.some((word) =>
+          this.password.toLowerCase().includes(word)
+        )
+      ) {
+        this.msg = "비밀번호 유의사항을 확인해주세요.";
+        this.warningAlert();
+        console.log("password words contain Error!");
+        return;
+      }
 
-    // 비밀번호 변경 로직 실행
-    // ...
+      // 비밀번호 변경 로직 실행
+      // ...
 
-    const response = await axios.post('http://localhost:8090/user/changePassword',inputInfo);
+      try {
+        const response = await axios.post(
+          "http://localhost:8090/user/changePassword",
+          inputInfo
+        );
 
-    console.log('비밀번호 변경완료' , response.data);
+        console.log("비밀번호 변경완료", response.data);
 
-    if(response.data.success) {
-      this.msg="비밀번호 변경이 완료되었습니다."
-      this.successAlert();
-    } else {
-       this.msg="비밀번호 변경에 실패하였습니다."
-      this.errorAlert();
-    }
-
+        if (response.data.success) {
+          this.msg = response.data.message;
+          this.successAlert();
+        } else {
+          this.msg = response.data.message;
+          this.errorAlert();
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        this.msg = "서버 오류가 발생했습니다.";
+        this.errorAlert();
+      }
     },
     goBack() {
       this.$router.back(-1);
@@ -165,8 +175,8 @@ export default {
         icon: "success",
         scrollbarPadding: false,
       });
-    }
-  }
+    },
+  },
 };
 </script>
    

@@ -177,15 +177,18 @@ export default {
     ...mapGetters("mileScore", ["getMyMile"]),
 
     filteredMyMile() {
-      const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
-      if (!jobNo) {
-        return [];
-      }
-      if (jobNo === "기획") {
-        return this.getMyMile.filter((item) => item.mile_is_branch === false);
-      }
-      return this.getMyMile;
-    },
+  const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
+  if (!jobNo) {
+    return [];
+  }
+  let filteredData = jobNo === "기획" 
+    ? this.getMyMile.filter((item) => item.mile_is_branch === false)
+    : this.getMyMile;
+  
+  // 고유 식별자를 사용한 중복 제거
+  const uniqueData = Array.from(new Map(filteredData.map(item => [item.mile_no, item])).values());
+  return uniqueData;
+}
   },
   watch: {
     getLoginInfo: {
