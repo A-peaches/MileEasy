@@ -1,6 +1,6 @@
 <template>
   <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">
-    마일리지 삭제
+    마일리지 수정
   </h3>
   <div
     class="p-2"
@@ -16,7 +16,7 @@
       type="text"
       class="input-base input-white"
       style="width: 800px; text-align: left"
-      placeholder="추가 마일리지 이름을 입력하세요."
+      readonly
     /><br />
 
     <div class="mt-3" style="text-align: left">기타사항</div>
@@ -25,17 +25,7 @@
       class="input-base input-white"
       style="width: 800px; height: 200px; text-align: left"
       placeholder="기타 요청사항을 입력하세요."
-    />
-
-    <!-- 모달 컴포넌트 -->
-    <SearchModal
-      v-if="isModalOpen"
-      :isOpen="isModalOpen"
-      :mileName="selectedRow?.name"
-      :mileNo="selectedRow?.id"
-      @user-selected="updateRow"
-      @close="closeModal"
-    />
+    ></textarea>
   </div>
   <div style="text-align: right">
     <button class="btn-yellow mt-5 KB_S4" @click="submitForm">요청하기</button>
@@ -43,111 +33,46 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import Swal from 'sweetalert2';
-import SearchModal from './SearchModal.vue';
-import axios from 'axios';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default {
-  name: 'MileageRequestWriteAdd',
-  components: { SearchModal },
-
+  name: 'MileageRequestWriteDelete',
   setup() {
     const store = useStore();
-    const loginInfo = computed(() => store.getters['login/getLoginInfo']); // Use Vuex store getter
+    const loginInfo = computed(() => store.getters['login/getLoginInfo']);
+    const mileageLabel = computed(
+      () => store.getters['mileage/getArrayMileage']
+    );
 
     const request = ref(3);
     const mileageName = ref('');
-    const annualLimit = ref('');
-    const commonMileage = ref('');
     const additionalNotes = ref('');
-    const rows = ref([
-      {
-        id: '',
-        name: '',
-        department: '',
-        position: '',
-      },
-    ]);
-    const isModalOpen = ref(false);
-    const selectedRow = ref(null);
-    const selectedRowIndex = ref(null);
 
-    const isMileageNameValid = computed(() => mileageName.value.trim() !== '');
-    const isAnnualLimitValid = computed(() => annualLimit.value.trim() !== '');
-    const isCommonMileageValid = computed(() => commonMileage.value !== '');
-    const isRowsValid = computed(() => validateRows());
-
-    const addRow = () => {
-      rows.value.push({ id: '', name: '', department: '', position: '' });
-    };
-
-    const removeRow = (index) => {
-      if (rows.value.length > 1) {
-        rows.value.splice(index, 1);
-      }
-    };
-
-    const openModal = (row) => {
-      selectedRow.value = row;
-      selectedRowIndex.value = rows.value.indexOf(row);
-      isModalOpen.value = true;
-    };
-
-    const closeModal = () => {
-      isModalOpen.value = false;
-      selectedRow.value = null;
-      selectedRowIndex.value = null;
-    };
-
-    const updateRow = (user) => {
-      if (selectedRowIndex.value !== null) {
-        rows.value[selectedRowIndex.value] = {
-          id: user.user_no || '',
-          name: user.user_name || '',
-          department: user.dp_no || '부서 정보 없음',
-          position: user.position_no || '직급 정보 없음',
-        };
-      } else {
-        console.error('선택된 행이 없습니다.');
-      }
-    };
-
-    const validateRows = () => {
-      return rows.value.some(
-        (row) => row.id.trim() !== '' && row.name.trim() !== ''
+    const getMileageNamePlaceholder = computed(() => {
+      const mileNo = loginInfo.value.mile_no;
+      const mileage = mileageLabel.value.find(
+        (item) => item.mile_no.toString() === mileNo.toString()
       );
-    };
+      return mileage
+        ? `${mileage.mile_name}`
+        : '추가 마일리지 이름을 입력하세요.';
+    });
 
     const submitForm = async () => {
-      // Perform validation checks
-      if (!isMileageNameValid.value) {
-        Swal.fire({
-          icon: 'error',
-          title: '입력 오류',
-          text: '마일리지 이름을 입력하세요.',
-          scrollbarPadding: false,
-        });
-        return;
-      }
-
-      // If all validations pass, proceed with the form submission
       const formData = {
-        request_is_branch: commonMileage.value === '1',
         request_mile_name: mileageName.value,
-        request_mil_max: parseInt(annualLimit.value, 10),
-        request_admin: JSON.stringify(
-          rows.value.map((row) => row.id) // Extract only user_no
-        ),
+        request_mil_max: 0,
+        request_admin: ' ',
         request_etc: additionalNotes.value,
-        request_no: request.value, // Accessing request value using request.value
-        user_no: loginInfo.value.user_no, // Adding user_no from loginInfo
+        request_no: request.value,
+        user_no: loginInfo.value.user_no,
         mile_no: loginInfo.value.mile_no,
       };
 
       try {
-        // Send form data to the server
         const response = await axios.post(
           'http://localhost:8090/user/requestAdd',
           formData
@@ -171,68 +96,51 @@ export default {
       }
     };
 
+    onMounted(() => {
+      mileageName.value = getMileageNamePlaceholder.value;
+    });
+
     return {
       mileageName,
-      annualLimit,
-      commonMileage,
       additionalNotes,
-      rows,
-      isModalOpen,
-      selectedRow,
-      selectedRowIndex,
-      addRow,
-      removeRow,
-      openModal,
-      closeModal,
-      updateRow,
+      getMileageNamePlaceholder,
       submitForm,
-      isMileageNameValid,
-      isAnnualLimitValid,
-      isCommonMileageValid,
-      isRowsValid,
-      validateRows,
-      loginInfo, // Ensure it's included only once
     };
   },
 };
 </script>
 
 <style scoped>
+.input-base {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.input-white {
+  background-color: #fff;
+}
+
 .btn-yellow {
+  background-color: #ffc107;
+  border: none;
+  padding: 10px 20px;
+  color: #fff;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.remove-icon {
-  color: red;
-  cursor: pointer;
-  background-color: transparent;
+.btn-yellow:hover {
+  background-color: #e0a800;
 }
-.input-base {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-.input-white {
-  background-color: white;
-}
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.table-bordered td {
-  border: 1px solid #ddd;
-}
+
 .error-text {
   color: red;
   font-size: 12px;
-  margin-left: 10px;
 }
-.required-label {
+
+.remove-icon {
+  cursor: pointer;
   color: red;
-  font-size: 12px;
-}
-.form-check-input:checked {
-  background-color: #ffc107;
-  border-color: #ffc107;
 }
 </style>

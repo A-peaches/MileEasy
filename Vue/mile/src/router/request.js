@@ -11,4 +11,10 @@ export default [
     component: () => import('../views/MileageRequest/MileageRequestWrite.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/mileageRequesDetail',
+    name: 'mileageRequesDetail',
+    component: () => import('../views/MileageRequest/MileageRequestDetail.vue'),
+    meta: { requiresAuth: true },
+  },
 ];

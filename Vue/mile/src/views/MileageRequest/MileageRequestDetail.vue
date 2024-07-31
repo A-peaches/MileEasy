@@ -7,62 +7,35 @@
     </div>
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 요청</h2>
     <div style="padding: 0 5%">
-      <!-- mile_no가 있을 때만 라디오 버튼 그룹을 표시 -->
-      <div
-        v-if="hasMileageNumber"
-        style="text-align: left; margin-left: 25px; display: flex"
-      >
-        <label class="checkbox-container">
+      <div>
+        <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">
+          마일리지 수정
+        </h3>
+        <div
+          class="p-2"
+          style="
+            text-align: left;
+            background-color: #f6f6f6;
+            padding: 10px 140px 60px 140px !important;
+          "
+        >
+          <div class="mt-5" style="text-align: left">마일리지 이름</div>
           <input
-            type="radio"
-            name="action"
-            value="add"
-            v-model="selectedAction"
-          />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">추가</span>
-        </label>
-        <label class="checkbox-container">
-          <input
-            type="radio"
-            name="action"
-            value="modify"
-            v-model="selectedAction"
-          />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">수정</span>
-        </label>
-        <label class="checkbox-container">
-          <input
-            type="radio"
-            name="action"
-            value="delete"
-            v-model="selectedAction"
-          />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">삭제</span>
-        </label>
-      </div>
+            v-model="mileageName"
+            type="text"
+            class="input-base input-white"
+            style="width: 800px; text-align: left"
+            readonly
+          /><br />
 
-      <!-- mile_no가 없을 때 자동으로 WriteAdd 렌더링 -->
-      <div v-if="!hasMileageNumber" class="p-4">
-        <WriteAdd style="width: 70%; margin-left: 3%" />
-      </div>
-
-      <!-- mile_no가 있는 경우 라디오 버튼에 따라 컴포넌트를 렌더링 -->
-      <div v-if="hasMileageNumber" class="p-4">
-        <WriteAdd
-          v-if="selectedAction === 'add'"
-          style="width: 70%; margin-left: 3%"
-        />
-        <WriteModify
-          v-if="selectedAction === 'modify'"
-          style="width: 70%; margin-left: 3%"
-        />
-        <WriteDelete
-          v-if="selectedAction === 'delete'"
-          style="width: 70%; margin-left: 3%"
-        />
+          <div class="mt-3" style="text-align: left">기타사항</div>
+          <textarea
+            v-model="additionalNotes"
+            class="input-base input-white"
+            style="width: 800px; height: 200px; text-align: left"
+            placeholder="기타 요청사항을 입력하세요."
+          ></textarea>
+        </div>
       </div>
     </div>
   </div>
@@ -70,18 +43,12 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import WriteAdd from '@/components/mileageRequest/MileageRequestWriteAdd';
-import WriteModify from '@/components/mileageRequest/MileageRequestWriteModify';
-import WriteDelete from '@/components/mileageRequest/MileageRequestWriteDelete';
 
 export default {
-  name: 'MileageRequestWrite',
-  components: { WriteAdd, WriteModify, WriteDelete },
+  name: 'MileageRequestDetail',
 
   data() {
-    return {
-      selectedAction: 'add', // 초기값을 'add'로 설정하여 '추가'가 기본 선택되도록
-    };
+    return {};
   },
 
   computed: {
@@ -90,17 +57,9 @@ export default {
     loginInfo() {
       return this.getLoginInfo;
     },
-
-    hasMileageNumber() {
-      // 로그인 정보에서 mile_no가 있는지 확인
-      return this.loginInfo && this.loginInfo.mile_no;
-    },
   },
 
   methods: {
-    handleCheckboxChange() {
-      // 체크박스 상태 변경 처리
-    },
     goBack() {
       this.$router.go(-1);
     },

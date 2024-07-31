@@ -1,4 +1,5 @@
 <template>
+  <!-- Existing template code -->
   <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">
     마일리지 수정
   </h3>
@@ -16,21 +17,20 @@
       type="text"
       class="input-base input-white"
       style="width: 800px; text-align: left"
-      placeholder="추가 마일리지 이름을 입력하세요."
+      :placeholder="getMileageNamePlaceholder"
     /><br />
 
     <div class="mt-3" style="text-align: left">마일리지 연간 최고 한도</div>
     <input
-      v-model="annualLimit"
+      v-model="mileMax"
       type="text"
       class="input-base input-white"
       style="width: 800px; text-align: left"
-      placeholder="마일리지 연간 최고 한도를 입력하세요."
+      :placeholder="getMileMaxPlaceholder"
     />
 
     <div class="mt-3" style="text-align: left">
       담당자 설정
-
       <i class="bi bi-plus-lg" @click="addRow"></i>
       <span v-if="!isRowsValid" class="error-text"
         >최소 한 명의 담당자를 설정해야 합니다.</span
@@ -92,9 +92,8 @@
     <button class="btn-yellow mt-5 KB_S4" @click="submitForm">요청하기</button>
   </div>
 </template>
-
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 import SearchModal from './SearchModal.vue';
@@ -103,14 +102,16 @@ import axios from 'axios';
 export default {
   name: 'MileageRequestWriteAdd',
   components: { SearchModal },
-
   setup() {
     const store = useStore();
-    const loginInfo = computed(() => store.getters['login/getLoginInfo']); // Access loginInfo from Vuex store
+    const loginInfo = computed(() => store.getters['login/getLoginInfo']);
+    const mileageLabel = computed(
+      () => store.getters['mileage/getArrayMileage']
+    );
 
     const request = ref(2);
     const mileageName = ref('');
-    const annualLimit = ref('');
+    const mileMax = ref('');
     const commonMileage = ref('');
     const additionalNotes = ref('');
     const rows = ref([
@@ -126,9 +127,32 @@ export default {
     const selectedRowIndex = ref(null);
 
     const isMileageNameValid = computed(() => mileageName.value.trim() !== '');
-    const isAnnualLimitValid = computed(() => annualLimit.value.trim() !== '');
+    const isMileMaxValid = computed(() => mileMax.value.trim() !== '');
     const isCommonMileageValid = computed(() => commonMileage.value !== '');
     const isRowsValid = computed(() => validateRows());
+
+    const getMileageNamePlaceholder = computed(() => {
+      const mileNo = loginInfo.value.mile_no;
+      const mileage = mileageLabel.value.find(
+        (item) => item.mile_no.toString() === mileNo.toString()
+      );
+      return mileage
+        ? `현재 마일리지 이름: ${mileage.mile_name}`
+        : '추가 마일리지 이름을 입력하세요.';
+    });
+
+    const getMileMaxPlaceholder = computed(() => {
+      const mileNo = loginInfo.value.mile_no;
+      const mileage = mileageLabel.value.find(
+        (item) => item.mile_no.toString() === mileNo.toString()
+      );
+      console.log('mileNo:', mileNo);
+      console.log('mileageLabel:', mileageLabel.value);
+      console.log('mileage:', mileage);
+      return mileage
+        ? `현재 연간 최고 한도: ${mileage.mile_max || '0'}`
+        : '마일리지 연간 최고 한도를 입력하세요.';
+    });
 
     const addRow = () => {
       rows.value.push({ id: '', name: '', department: '', position: '' });
@@ -194,7 +218,7 @@ export default {
       const formData = {
         request_is_branch: commonMileage.value === '1',
         request_mile_name: mileageName.value,
-        request_mil_max: parseInt(annualLimit.value, 10),
+        request_mil_max: parseInt(mileMax.value, 10), // Updated to use mileMax
         request_admin: JSON.stringify(
           rows.value.map((row) => row.id) // Extract only user_no
         ),
@@ -229,9 +253,39 @@ export default {
       }
     };
 
+    // Fetch initial admin list when component is mounted
+    onMounted(() => {
+      getMileageAdminList();
+    });
+
+    const getMileageAdminList = async () => {
+      try {
+        const response = await axios.post(
+          'http://localhost:8090/admin/getMileageAdminList',
+          null,
+          {
+            params: {
+              mile_no: loginInfo.value.mile_no,
+            },
+          }
+        );
+        console.log('담당자 리스트:', response.data);
+        if (response.data.length > 0) {
+          rows.value = response.data.map((admin) => ({
+            id: admin.user_no,
+            name: admin.user_name,
+            department: admin.dp_no || '부서 정보 없음',
+            position: admin.position_no || '직급 정보 없음',
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching admin list:', error);
+      }
+    };
+
     return {
       mileageName,
-      annualLimit,
+      mileMax,
       commonMileage,
       additionalNotes,
       rows,
@@ -245,11 +299,15 @@ export default {
       updateRow,
       submitForm,
       isMileageNameValid,
-      isAnnualLimitValid,
+      isMileMaxValid,
       isCommonMileageValid,
       isRowsValid,
       validateRows,
-      loginInfo, // Include loginInfo to access user_no
+      loginInfo,
+      mileageLabel,
+      getMileageNamePlaceholder,
+      getMileMaxPlaceholder,
+      getMileageAdminList, // Add getMileageAdminList to return object
     };
   },
 };

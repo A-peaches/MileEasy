@@ -262,7 +262,7 @@ export default {
         ),
         request_etc: additionalNotes.value,
         request_no: request.value,
-        mile_no: loginInfo.value.mile_no,
+        mile_no: loginInfo.value.mile_no || 0,
         user_no: loginInfo.value.user_no, // Add user_no from loginInfo
       };
 

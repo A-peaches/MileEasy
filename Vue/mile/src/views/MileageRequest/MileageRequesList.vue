@@ -10,8 +10,17 @@
         <label class="checkbox-container">
           <input
             type="checkbox"
+            v-model="filters.all"
+            @change="onCheckboxChange('all')"
+          />
+          <span class="custom-checkbox"></span>
+          <span class="checkbox-label">전체</span>
+        </label>
+        <label class="checkbox-container">
+          <input
+            type="checkbox"
             v-model="filters.processing"
-            @change="applyFilters"
+            @change="onCheckboxChange('processing')"
           />
           <span class="custom-checkbox"></span>
           <span class="checkbox-label">처리중</span>
@@ -20,7 +29,7 @@
           <input
             type="checkbox"
             v-model="filters.completed"
-            @change="applyFilters"
+            @change="onCheckboxChange('completed')"
           />
           <span class="custom-checkbox"></span>
           <span class="checkbox-label">처리완료</span>
@@ -29,15 +38,10 @@
           <input
             type="checkbox"
             v-model="filters.rejected"
-            @change="applyFilters"
+            @change="onCheckboxChange('rejected')"
           />
           <span class="custom-checkbox"></span>
           <span class="checkbox-label">거절</span>
-        </label>
-        <label class="checkbox-container">
-          <input type="checkbox" v-model="filters.all" @change="applyFilters" />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">전체</span>
         </label>
       </div>
       <div>
@@ -58,22 +62,29 @@
           <i class="bi bi-search"></i>
         </button>
       </div>
-
-      <div class="notice-list" style="text-align: center">
-        <div v-for="(notice, index) in paginatedNotices" :key="index">
-          <div class="input-base list-wrapper">
-            <div class="notice-details">
-              <div class="notice-new">{{ index + 1 }}</div>
-              <div class="notice-num">
-                {{ getRequestType(notice.request) }}
+      <div style="text-align: center; justify-content: center">
+        <div class="notice-list" style="text-align: center">
+          <div v-if="paginatedNotices.length === 0" class="no-results">
+            검색 결과가 없습니다.
+          </div>
+          <div v-else v-for="(notice, index) in paginatedNotices" :key="index">
+            <div
+              class="input-base list-wrapper"
+              @click="viewNotice(notice.mileage_request_no)"
+            >
+              <div class="notice-details">
+                <div class="notice-new">{{ index + 1 }}</div>
+                <div class="notice-num">
+                  {{ getRequestType(notice.request) }}
+                </div>
+                <div class="notice-title">
+                  {{ notice.request_mile_name || notice.mile_name }}
+                </div>
+                <div class="notice-mile">
+                  {{ getStatus(notice.request_status) }}
+                </div>
+                <div class="notice-date">{{ notice.mileage_request_date }}</div>
               </div>
-              <div class="notice-title">
-                {{ notice.request_mile_name || notice.mile_name }}
-              </div>
-              <div class="notice-mile">
-                {{ getStatus(notice.request_status) }}
-              </div>
-              <div class="notice-date">{{ notice.mileage_request_date }}</div>
             </div>
           </div>
         </div>
@@ -137,16 +148,24 @@ export default {
 
       if (this.filters.all) {
         return filtered;
-      } else {
+      }
+
+      if (
+        this.filters.processing ||
+        this.filters.completed ||
+        this.filters.rejected
+      ) {
         return filtered.filter((notice) => {
-          if (this.filters.processing && notice.request_status === 0)
-            return true;
-          if (this.filters.completed && notice.request_status === 1)
-            return true;
-          if (this.filters.rejected && notice.request_status === 2) return true;
-          return false;
+          const status = notice.request_status;
+          return (
+            (this.filters.processing && status === 0) ||
+            (this.filters.completed && status === 1) ||
+            (this.filters.rejected && status === 2)
+          );
         });
       }
+
+      return filtered;
     },
     paginatedNotices() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -188,24 +207,37 @@ export default {
       return '';
     },
     applyFilters() {
-      this.currentPage = 1; // Reset to the first page whenever filters are applied
+      this.currentPage = 1;
     },
-    searchNotices() {
+    onCheckboxChange(checkbox) {
+      Object.keys(this.filters).forEach((key) => {
+        this.filters[key] = false;
+      });
+      this.filters[checkbox] = true;
       this.applyFilters();
     },
+    viewNotice(mileageRequestNo) {
+      console.log(mileageRequestNo);
+      // this.$router.push({
+      //   path: '/mileageRequesDetail',
+      //   query: { mileage_request_no: mileageRequestNo },
+      // });
+    },
   },
+
   mounted() {
     this.fetchRequestList();
   },
 };
 </script>
-
 <style scoped>
-.notice-list[data-v-60d28a9d] {
+.notice-list {
   display: flex;
   flex-direction: column;
   width: 1200px;
+  margin-left: 30px;
 }
+
 .pagination button {
   background-color: #ffffff;
   padding: 10px 20px;
@@ -229,37 +261,37 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Arial, sans-serif';
-  overflow-x: hidden; /* 수평 스크롤바 제거 */
-  height: 100%; /* 페이지 높이를 100%로 설정 */
+  overflow-x: hidden;
+  height: 100%;
 }
 
 body {
-  overflow-y: scroll; /* 수직 스크롤바 유지 */
+  overflow-y: scroll;
 }
 
 h2 {
   font-family: 'KB_S4', sans-serif;
   font-size: 40px;
   margin-top: 30px;
-  display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
+  display: inline-block;
   position: relative;
 }
 
 h2::after {
   content: '';
   display: block;
-  width: 120%; /* 텍스트보다 긴 밑줄을 위해 조정 */
-  height: 1px; /* 밑줄 두께 */
-  background-color: #8d8d8d; /* 밑줄 색상 */
+  width: 120%;
+  height: 1px;
+  background-color: #8d8d8d;
   position: absolute;
-  bottom: -5px; /* 텍스트와 밑줄 사이의 간격을 위해 조정 */
-  left: -10%; /* 중앙 정렬을 위해 조정 */
+  bottom: -5px;
+  left: -10%;
 }
 
 .app-container {
   width: 100%;
   padding: 0;
-  min-height: 100vh; /* 최소 높이를 설정하여 페이지 전체를 채움 */
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -279,23 +311,23 @@ h2::after {
 .search-container {
   display: flex;
   align-items: center;
-  position: relative; /* 상대 위치 */
+  position: relative;
   margin-bottom: 40px;
-  justify-content: flex-end; /* 오른쪽 정렬 */
-  opacity: 1; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+  justify-content: flex-end;
+  opacity: 1;
 }
 
 .input-search {
   border-radius: 30px;
-  padding-right: 50px; /* 아이콘 공간 확보 */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+  padding-right: 50px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   outline: none;
   font-size: 19px;
   font-family: 'KB_S5', sans-serif;
   width: 28%;
   border: none;
   margin: 5px;
-  height: 60px; /* 높이를 조금 높여줌 */
+  height: 60px;
 }
 
 .search-button {
@@ -306,20 +338,20 @@ h2::after {
   background: none;
   border: none;
   cursor: pointer;
-  width: 80px; /* 높이를 조금 높여줌 */
-  height: 80px; /* 높이를 조금 높여줌 */
-  opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+  width: 80px;
+  height: 80px;
+  opacity: 0.8;
 }
 
 .search-button .bi-search {
-  font-size: 25px; /* 아이콘 크기 조정 */
+  font-size: 25px;
 }
 
 .notice-count {
   margin-bottom: 10px;
   font-size: 19px;
   font-family: 'KB_S5', sans-serif;
-  text-align: left; /* 왼쪽 정렬 */
+  text-align: left;
   padding-left: 3%;
 }
 
@@ -334,11 +366,11 @@ h2::after {
   align-items: center;
   cursor: pointer;
   position: relative;
-  top: -5px; /* 위치를 살짝 위로 올립니다 */
+  top: -5px;
 }
 
 .checkbox-container input[type='checkbox'] {
-  display: none; /* 기본 체크박스를 숨깁니다 */
+  display: none;
 }
 
 .checkbox-container .custom-checkbox {
@@ -353,8 +385,8 @@ h2::after {
 }
 
 .checkbox-container input[type='checkbox']:checked + .custom-checkbox {
-  background-color: #f6a319; /* 체크된 상태일 때 배경색 변경 (노란색) */
-  border: none; /* 체크된 상태일 때 테두리 제거 */
+  background-color: #f6a319;
+  border: none;
 }
 
 .checkbox-container input[type='checkbox']:checked + .custom-checkbox::after {
@@ -367,7 +399,7 @@ h2::after {
 }
 
 .checkbox-label {
-  margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
+  margin-left: 10px;
   font-family: 'KB_S5', sans-serif;
   font-size: 20px;
 }
@@ -376,10 +408,10 @@ h2::after {
   width: 100%;
   height: 65px;
   background-color: #f9f9f9;
-  text-align: center; /* 가로 정렬 */
-  line-height: 65px; /* 세로 정렬 */
+  text-align: center;
+  line-height: 65px;
   font-size: 20px;
-  margin-bottom: 20px; /*글 목록 사이 공간*/
+  margin-bottom: 20px;
 }
 
 .list-wrapper:hover {
@@ -397,7 +429,7 @@ h2::after {
 .notice-title {
   flex: 1 1 150%;
   text-align: center;
-  letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
+  letter-spacing: 1px;
   font-size: 20px;
   font-family: 'KB_S5', sans-serif;
 }
@@ -405,14 +437,14 @@ h2::after {
 .notice-num {
   flex: 1 1 20%;
   text-align: center;
-  letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
+  letter-spacing: 1px;
   font-size: 12pt;
   font-family: 'KB_S5', sans-serif;
 }
 .notice-new {
   flex: 1 1 20%;
   text-align: center;
-  letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
+  letter-spacing: 1px;
   font-size: 12pt;
   font-family: 'KB_S5', sans-serif;
   color: #edbb00;
@@ -420,23 +452,23 @@ h2::after {
 .notice-mile {
   flex: 1 1 50%;
   text-align: left;
-  letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
+  letter-spacing: 1.5px;
   color: #745f40;
   font-family: 'KB_S5', sans-serif;
   font-size: 0.8em;
-  margin-left: 10px; /* 왼쪽 여백 추가 */
+  margin-left: 10px;
 }
 
 .notice-date {
   flex: 1 1 60%;
   text-align: center;
-  letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
+  letter-spacing: 1.5px;
   font-size: 16px;
   font-family: 'KB_S5', sans-serif;
 }
 
 .notice-views {
-  flex: 1 1 20%; /* flex-grow, flex-shrink, flex-basis */
+  flex: 1 1 20%;
   text-align: center;
   display: flex;
   align-items: center;
@@ -446,17 +478,16 @@ h2::after {
 
 .views-text {
   flex: 1;
-  text-align: right; /* 텍스트를 오른쪽 정렬 */
+  text-align: right;
   font-size: 18px;
   font-family: 'KB_S5', sans-serif;
 }
 
 .views-icon {
   flex: 1 1 30%;
-  margin-left: 1%; /* 텍스트와 아이콘 사이의 비율 간격 */
+  margin-left: 1%;
 }
 
-/* 드롭다운 메뉴 스타일 */
 .QnA {
   position: relative;
   display: inline-block;
@@ -468,15 +499,12 @@ h2::after {
   top: 100%;
   left: 50%;
   z-index: 1;
-  border: none; /* 테두리 제거 */
+  border: none;
   background-color: rgba(255, 255, 255, 0.69);
   border-radius: 30px;
   cursor: pointer;
-  width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
-  transform: translate(
-    -50%,
-    -16%
-  ); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
+  width: 230px;
+  transform: translate(-50%, -16%);
 }
 
 .QnA:hover .dropdown-menu,
@@ -492,21 +520,20 @@ h2::after {
 
 .menu-items a {
   display: block;
-  padding: 10px 20px; /* 상하 패딩과 좌우 패딩을 픽셀 단위로 설정 */
+  padding: 10px 20px;
   text-decoration: none;
   color: #4b4a4a;
   font-family: 'KB_S5', sans-serif;
-  font-size: 18px; /* 텍스트 크기를 픽셀 단위로 설정 */
+  font-size: 18px;
 }
 
 .menu-items a:hover {
   background-color: #f5f5f5;
-  border: none; /* 테두리 제거 */
+  border: none;
   border-radius: 25px;
-  width: auto; /* 너비를 자동으로 설정 */
+  width: auto;
 }
 
-/* 페이지 네이션 및 글쓰기 버튼 스타일 */
 .pagination-container {
   display: flex;
   justify-content: center;

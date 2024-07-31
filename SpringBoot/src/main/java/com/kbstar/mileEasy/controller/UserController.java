@@ -150,20 +150,17 @@ public class UserController {
 
         System.out.println(is_branch);
         System.out.println(mile_name);
+
+
         System.out.println(mil_max);
         System.out.println(admin);
+
+
         System.out.println(etc);
 
         System.out.println(request_no);
         System.out.println(user_no);
         System.out.println(mile_no);
-
-
-
-
-
-
-
 
 
         admin = admin.replace("[", "");
