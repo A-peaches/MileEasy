@@ -26,6 +26,7 @@
               <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="selectCategory(mileage.mile_no, mileage.mile_name, $event)">
                 {{ mileage.mile_name }} 마일리지
               </a>
+              <a class="dropdown-item" @click="selectCategory(null, '기타', $event)">기타</a>
             </div>
           </div>
           <div><i class="bi bi-caret-down-fill icon-right"></i></div>
@@ -34,12 +35,12 @@
           <label for="content">내용</label>
           <textarea id="content" v-model="form.content" placeholder="내용을 입력해주세요"></textarea>
         </div>
-        <div class="form-group file-upload">
+  <div class="form-group file-upload">
     <label for="file">첨부파일</label>
     <div class="custom-file-upload">
-      <div v-if="uploadedFileName">
+      <div v-if="displayFileName">
         <div class="file-info">
-          <span>{{ getDisplayFileName(uploadedFileName) }}</span>
+          <span>{{ displayFileName }}</span>
           <button @click="triggerFileInput" type="button" class="file-modify-button">파일 수정</button>
         </div>
         <input type="file" @change="handleFileUpload" ref="fileInput" style="display: none;" />
@@ -48,7 +49,7 @@
         <input type="file" @change="handleFileUpload" ref="fileInput" />
       </div>
     </div>
-  </div>
+</div>
 <div class="btn-yellow-container">
   <button type="submit" class="btn-yellow">수정</button>
 </div>
@@ -68,16 +69,17 @@ export default {
       form: {
         notice_board_no: '',
         title: '',
-        mile_no: '',
-        file: null,
+        mile_no: null,
+        file: '',
         content: '',
+        user_no: '',
+        user_name: '',
       },
       uploadedFileName: '',
       displayFileName: '',
-      originalMileNo: '',
       mileages: [],
       showCategory: false,
-      selectedCategory: '',
+      selectedCategory: null,
     };
   },
   computed: {
@@ -92,25 +94,97 @@ export default {
     return '';
   },
   },
+
+
   mounted() {
     this.fetchNoticeDetails();
     this.fetchMileages();
     this.setUserInfo();
     document.addEventListener('click', this.handleClickOutside);
   },
+
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
   },
+
   methods: {
+    
+    async handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    getDisplayFileName(fileName) {
-      if (fileName) {
-        const parts = fileName.split('_');
-        return parts.length > 1 ? parts.slice(1).join('_') : fileName;
+  const formData = new FormData();
+  formData.append('files', file);
+
+  try {
+    const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
       }
-      return '';
-    },
+    });
+    
+    console.log('서버 응답:', response.data);
+    
+    const [savedFileName, originalFileName] = response.data.split(',');
+    console.log('저장된 파일명:', savedFileName);
+    console.log('원본 파일명:', originalFileName);
+    
+    this.uploadedFileName = savedFileName;
+    this.displayFileName = originalFileName;
+    this.form.file = savedFileName;
+  } catch (error) {
+    console.error('파일 업로드 중 오류 발생:', error);
+    this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
+  }
+},
 
+  getDisplayFileName(fileName) {
+    if (fileName) {
+      const parts = fileName.split('_');
+      return parts.length > 1 ? parts.slice(1).join('_') : fileName;
+    }
+    return '';
+  },
+
+  async submitForm() {
+  const formData = new FormData();
+  formData.append('notice_board_no', this.form.notice_board_no);
+  formData.append('notice_board_title', this.form.title);
+  formData.append('mile_name', this.selectedCategory);
+  formData.append('notice_board_content', this.form.content);
+  formData.append('user_no', this.form.user_no);
+  formData.append('user_name', this.form.user_name);
+
+  if (this.form.file) {
+    formData.append('file', this.form.file);
+    formData.append('originalFileName', this.displayFileName);
+  }
+
+  // FormData 내용 확인
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+
+  try {
+    const response = await axios.post('http://localhost:8090/notice/update', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log('서버 응답:', response.data);
+
+    if (response.status === 200) {
+      this.showAlert('공지사항이 수정되었습니다.', 'success');
+      this.$router.push('/noticeListView');
+    } else {
+      this.showAlert('공지사항 수정 중 오류가 발생했습니다.', 'error');
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    this.showAlert('공지사항 수정 중 오류가 발생했습니다.', 'error');
+  }
+},
     goBack() {
       this.$router.go(-1);
     },
@@ -118,9 +192,9 @@ export default {
       this.showCategory = !this.showCategory;
     },
     selectCategory(mile_no, mile_name, event) {
-      event.stopPropagation();
-      this.selectedCategory = mile_name;
-      this.form.mile_no = mile_no;
+      if (event) event.stopPropagation();
+      this.selectedCategory = mile_name; // 항상 mile_name을 사용하도록 설정
+      this.form.mile_no = mile_no === null ? '기타' : mile_no; // mile_no가 null이면 '기타'로 설정
       this.showCategory = false;
     },
     handleClickOutside(event) {
@@ -141,85 +215,6 @@ export default {
         console.error("fileInput reference is not available.");
       }
     },
-    async handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const response = await axios.post('http://localhost:8090/notice/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        this.uploadedFileName = response.data; // UUID가 포함된 파일명
-        this.displayFileName = this.getDisplayFileName(response.data); // 화면에 표시할 파일명
-        this.form.file = file; // 실제 파일 객체 저장
-      } catch (error) {
-        console.error('파일 업로드 중 오류 발생:', error);
-        this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
-      }
-    },
-    async downloadFile() {
-  if (!this.currentNotice.notice_board_file) return;
-
-  try {
-    const response = await axios({
-      url: `http://localhost:8090/notice/download/${this.currentNotice.notice_board_file}`,
-      method: 'GET',
-      responseType: 'blob',
-    });
-
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', this.getFileName(this.currentNotice.notice_board_file));
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error('파일 다운로드 중 오류 발생:', error);
-    // 에러 처리 (예: 사용자에게 알림)
-  }
-},
-async submitForm() {
-  const formData = new FormData();
-  formData.append('notice_board_no', this.form.notice_board_no);
-  formData.append('notice_board_title', this.form.title);
-  formData.append('mile_name', this.selectedCategory);
-  formData.append('notice_board_content', this.form.content);
-  formData.append('user_no', this.form.user_no);
-  formData.append('user_name', this.form.user_name);
-
-  if (this.form.file) {
-    // UUID가 포함된 파일명으로 서버에 파일 업로드
-    formData.append('file', this.form.file, this.uploadedFileName);
-    
-    // UUID가 제외된 파일명을 DB에 저장하기 위해 별도로 전송
-    const originalFileName = this.getDisplayFileName(this.uploadedFileName);
-    formData.append('originalFileName', originalFileName);
-  }
-
-  try {
-    const response = await axios.post('http://localhost:8090/notice/update', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    if (response.status === 200) {
-      this.showAlert('공지사항이 수정되었습니다.', 'success');
-      this.$router.push('/noticeListView');
-    } else {
-      this.showAlert('공지사항 수정 중 오류가 발생했습니다.', 'error');
-    }
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    this.showAlert('공지사항 수정 중 오류가 발생했습니다.', 'error');
-  }
-},
     setUserInfo() {
       const loginInfo = this.getLoginInfo;
       if (loginInfo) {
@@ -227,7 +222,7 @@ async submitForm() {
         this.form.user_name = loginInfo.user_name;
       }
     },
-    fetchNoticeDetails() {
+    fetchNoticeDetails() { //detail 에서 정보 가지고 오기.
       const noticeId = this.$route.params.id;
       axios.get(`http://localhost:8090/notice/${noticeId}`)
         .then(response => {
@@ -236,9 +231,12 @@ async submitForm() {
           this.form.title = notice.notice_board_title;
           this.form.mile_no = notice.mile_no;
           this.originalMileNo = notice.mile_no;
-          this.selectedCategory = notice.mile_name;
+          this.selectedCategory = notice.mile_no === null ? '기타' : notice.mile_name; // 카테고리가 null이면 '기타'로 설정
           this.form.content = notice.notice_board_content;
           this.uploadedFileName = notice.notice_board_file;
+
+          console.log('detail 에서 정보 가지고 오기.:', notice); // 로그 추가
+          console.log('수정 카테고리 로그', this.selectedCategory); // 선택된 카테고리 로그 추가
         })
         .catch(error => {
           console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
