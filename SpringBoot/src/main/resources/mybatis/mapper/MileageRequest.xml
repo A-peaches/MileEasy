@@ -5,6 +5,7 @@
 
     <select id="requestList" resultType="com.kbstar.mileEasy.dto.Mileage_request">
         SELECT
+            mr.mileage_request_no,
             mr.request_is_branch,
             mr.request_mile_name,
             mr.request_mil_max,
@@ -23,10 +24,16 @@
             ON
                 mr.mile_no = m.mile_no
         WHERE
-            mr.user_no = #{user_no};
-
+            mr.user_no = #{user_no}
+        ORDER BY
+            mr.mileage_request_date DESC;
 
     </select>
+
+    <delete id="requestListDelete" >
+        DELETE FROM mileage_request
+        WHERE mileage_request_no = #{mileageRequestNo};
+    </delete>
 
 
 </mapper>

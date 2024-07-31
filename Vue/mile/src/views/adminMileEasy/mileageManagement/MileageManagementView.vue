@@ -11,14 +11,14 @@
           :class="{ active: isModifyActive }"
           @click="showModify"
         >
-          마일리지 수정
+          접수내역
         </button>
         <button
           class="tab-container lg2 fw-bold"
           :class="{ active: !isModifyActive }"
           @click="showCoding"
         >
-          개발요청
+          과거내역
         </button>
       </div>
       <!-- 동적 컴포넌트 전환 -->

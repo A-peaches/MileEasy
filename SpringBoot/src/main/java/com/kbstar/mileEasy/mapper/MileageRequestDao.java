@@ -9,4 +9,6 @@ import java.util.ArrayList;
 public interface MileageRequestDao {
 
     ArrayList<Mileage_request> requestList(String user_no);
+
+    void requestListDelete(String mileageRequestNo);
 }

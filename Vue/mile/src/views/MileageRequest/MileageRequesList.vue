@@ -7,41 +7,60 @@
       <br /><br /><br /><br /><br />
       <div class="notice-count-container">
         <div class="notice-count">총 {{ filteredNotices.length }}건</div>
-        <label class="checkbox-container">
+        <label class="radio-container">
           <input
-            type="checkbox"
-            v-model="filters.all"
-            @change="onCheckboxChange('all')"
+            type="radio"
+            name="status"
+            value="all"
+            v-model="selectedFilter"
+            @change="applyFilters"
           />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">전체</span>
+          <span class="custom-radio"></span>
+          <span class="radio-label">전체</span>
         </label>
-        <label class="checkbox-container">
+        <label class="radio-container">
           <input
-            type="checkbox"
-            v-model="filters.processing"
-            @change="onCheckboxChange('processing')"
+            type="radio"
+            name="status"
+            value="processing"
+            v-model="selectedFilter"
+            @change="applyFilters"
           />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">처리중</span>
+          <span class="custom-radio"></span>
+          <span class="radio-label">승인요청</span>
         </label>
-        <label class="checkbox-container">
+        <label class="radio-container">
           <input
-            type="checkbox"
-            v-model="filters.completed"
-            @change="onCheckboxChange('completed')"
+            type="radio"
+            name="status"
+            value="completed"
+            v-model="selectedFilter"
+            @change="applyFilters"
           />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">처리완료</span>
+          <span class="custom-radio"></span>
+          <span class="radio-label">승인중</span>
         </label>
-        <label class="checkbox-container">
+        <label class="radio-container">
           <input
-            type="checkbox"
-            v-model="filters.rejected"
-            @change="onCheckboxChange('rejected')"
+            type="radio"
+            name="status"
+            value="rejected"
+            v-model="selectedFilter"
+            @change="applyFilters"
           />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">거절</span>
+          <span class="custom-radio"></span>
+          <span class="radio-label">승인완료</span>
+        </label>
+        <label class="radio-container">
+          <input
+            type="radio"
+            name="status"
+            value="false"
+            v-model="selectedFilter"
+            @change="applyFilters"
+          />
+          <span class="custom-radio"></span>
+          <span class="radio-label">미승인</span>
         </label>
       </div>
       <div>
@@ -68,10 +87,7 @@
             검색 결과가 없습니다.
           </div>
           <div v-else v-for="(notice, index) in paginatedNotices" :key="index">
-            <div
-              class="input-base list-wrapper"
-              @click="viewNotice(notice.mileage_request_no)"
-            >
+            <div class="input-base list-wrapper" @click="toggleDetails(index)">
               <div class="notice-details">
                 <div class="notice-new">{{ index + 1 }}</div>
                 <div class="notice-num">
@@ -86,10 +102,48 @@
                 <div class="notice-date">{{ notice.mileage_request_date }}</div>
               </div>
             </div>
+            <div
+              v-if="selectedNotice === index"
+              class="notice-details-expanded"
+            >
+              <p
+                style="text-align: left; font-size: 15pt"
+                class="KB_S3 mt-3 ml-3"
+              >
+                요청사항
+              </p>
+              <hr />
+              <p style="text-align: left" class="ml-3">
+                마일리지 이름 :
+                {{ notice.request_mile_name || notice.mile_name }}
+              </p>
+              <p style="text-align: left" class="ml-3">
+                연간 최고 한도 : {{ notice.request_mil_max }}
+              </p>
+              <p style="text-align: left" class="ml-3">
+                담당자 : {{ notice.request_admin }}
+              </p>
+              <p style="text-align: left" class="ml-3">
+                기타요청: {{ notice.request_etc }}
+              </p>
+              <div
+                v-if="notice.request_status === 0"
+                style="text-align: right; margin-right: 10px"
+              >
+                <i
+                  class="bi bi-trash-fill"
+                  style="color: gray; font-size: larger"
+                ></i>
+                <span
+                  style="color: gray; font-size: larger"
+                  @click="deleteRequest(notice.mileage_request_no)"
+                  >삭제</span
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
       <div class="pagination">
         <button
           v-for="page in totalPages"
@@ -107,6 +161,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -115,12 +170,8 @@ export default {
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 10,
-      filters: {
-        processing: false,
-        completed: false,
-        rejected: false,
-        all: true,
-      },
+      selectedFilter: 'all', // 기본값을 'all'로 설정
+      selectedNotice: null,
     };
   },
 
@@ -146,26 +197,19 @@ export default {
         });
       }
 
-      if (this.filters.all) {
+      if (this.selectedFilter === 'all') {
         return filtered;
       }
 
-      if (
-        this.filters.processing ||
-        this.filters.completed ||
-        this.filters.rejected
-      ) {
-        return filtered.filter((notice) => {
-          const status = notice.request_status;
-          return (
-            (this.filters.processing && status === 0) ||
-            (this.filters.completed && status === 1) ||
-            (this.filters.rejected && status === 2)
-          );
-        });
-      }
-
-      return filtered;
+      return filtered.filter((notice) => {
+        const status = notice.request_status;
+        return (
+          (this.selectedFilter === 'processing' && status === 0) ||
+          (this.selectedFilter === 'completed' && status === 1) ||
+          (this.selectedFilter === 'rejected' && status === 2) ||
+          (this.selectedFilter === 'false' && status === 3)
+        );
+      });
     },
     paginatedNotices() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
@@ -194,6 +238,37 @@ export default {
         this.requestList = [];
       }
     },
+    async deleteRequest(mileage_request_no) {
+      const result = await Swal.fire({
+        title: '삭제 확인',
+        text: '정말로 요청을 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+      });
+
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.post(
+            'http://localhost:8090/user/requestListDelete',
+            null,
+            { params: { mileage_request_no: mileage_request_no } }
+          );
+          console.log(response.data);
+          Swal.fire('삭제 완료', '요청이 삭제되었습니다.', 'success').then(
+            () => {
+              window.location.reload(); // 페이지 새로고침
+            }
+          );
+        } catch (error) {
+          console.error('문제', error);
+          Swal.fire('오류', '요청 삭제에 실패했습니다.', 'error'); // 오류 메시지
+        }
+      }
+    },
     getRequestType(type) {
       if (type === 1) return '추가';
       if (type === 2) return '수정';
@@ -201,27 +276,21 @@ export default {
       return '';
     },
     getStatus(status) {
-      if (status === 0) return '처리중';
-      if (status === 1) return '처리완료';
-      if (status === 2) return '거절';
+      if (status === 0) return '승인요청';
+      if (status === 1) return '승인중';
+      if (status === 2) return '승인완료';
+      if (status === 3) return '거절';
       return '';
     },
     applyFilters() {
       this.currentPage = 1;
     },
-    onCheckboxChange(checkbox) {
-      Object.keys(this.filters).forEach((key) => {
-        this.filters[key] = false;
-      });
-      this.filters[checkbox] = true;
-      this.applyFilters();
-    },
-    viewNotice(mileageRequestNo) {
-      console.log(mileageRequestNo);
-      // this.$router.push({
-      //   path: '/mileageRequesDetail',
-      //   query: { mileage_request_no: mileageRequestNo },
-      // });
+    toggleDetails(index) {
+      if (this.selectedNotice === index) {
+        this.selectedNotice = null;
+      } else {
+        this.selectedNotice = index;
+      }
     },
   },
 
@@ -230,6 +299,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .notice-list {
   display: flex;
@@ -348,7 +418,6 @@ h2::after {
 }
 
 .notice-count {
-  margin-bottom: 10px;
   font-size: 19px;
   font-family: 'KB_S5', sans-serif;
   text-align: left;
@@ -596,6 +665,56 @@ h2::after {
 .write-button i.bi.bi-pencil {
   color: #32ab8b;
   font-size: 20px;
+}
+.notice-details-expanded {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.radio-container {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.radio-container input[type='radio'] {
+  display: none;
+}
+
+.radio-container .custom-radio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #43c2a0;
+  border-radius: 50%;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+.radio-container .custom-radio::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background-color: #43c2a0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.radio-container input[type='radio']:checked + .custom-radio::after {
+  opacity: 1;
+}
+
+.radio-label {
+  font-size: 16px;
+  cursor: pointer;
 }
 @import url('C:\MileEasy\Vue\mile\src\assets\css\css.css');
 </style>

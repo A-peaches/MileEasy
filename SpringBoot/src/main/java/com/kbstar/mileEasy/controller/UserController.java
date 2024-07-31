@@ -176,4 +176,11 @@ public class UserController {
         return requestService.requestList(user_no);
     }
 
+    @PostMapping("/requestListDelete")
+    public void  requestListDelete(@RequestParam("mileage_request_no") String mileage_request_no) {
+        // userNo를 사용하여 필요한 데이터 처리
+        System.out.println(mileage_request_no);
+        requestService.requestListDelete(mileage_request_no);
+    }
+
 }
