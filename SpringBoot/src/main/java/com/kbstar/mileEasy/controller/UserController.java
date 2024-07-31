@@ -183,4 +183,14 @@ public class UserController {
         requestService.requestListDelete(mileage_request_no);
     }
 
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> requestBody) {
+        String password = requestBody.get("password");
+        String user_no = requestBody.get("user_no");
+        List<String> result = requestService.changePassword(password,user_no);
+
+        return ResponseEntity.ok().body("{\"success\":" + result.get(0).equals("성공") + ", \"message\":\"" + result.get(1) + "\"}");
+
+    }
+
 }

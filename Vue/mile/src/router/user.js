@@ -41,4 +41,17 @@ export default [
     component: () => import('../views/user/login/PasswordReissueView.vue'),
     meta: { hideHeader: true },
   },
+  //비밀번호 변경
+  {
+    path: '/passwordChange',
+    name: 'passwordChange',
+    component: () => import('../views/user/login/PasswordChangeView.vue'),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
+  {
+    path: '/badgeStatusView',
+    name: 'badgeStatusView',
+    component: () => import('../views/user/documents/BadgeStatusView.vue'),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
 ];

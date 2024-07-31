@@ -10,7 +10,8 @@
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
             <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
-              {{ mileage.mile_name }} 마일리지
+              <span v-if="mileage.mile_name === '기타'">{{ mileage.mile_name }}</span>
+              <span v-else>{{ mileage.mile_name }} 마일리지</span>
             </a>
           </div>
         </div>
@@ -53,7 +54,7 @@
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
                 <div class="notice-mile">{{ notice.mile_name }} 마일리지</div>
                 <div class="notice-title">{{ notice.notice_board_title }}</div>
-                <div class="notice-date">{{ formatDate(notice.notice_board_date) }}</div>
+                <pre class="notice-date">{{ formatDate(notice.notice_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
                 <div class="notice-views">{{ notice.notice_board_hit }} <i class="fa fa-eye"></i></div>
               </div>

@@ -71,7 +71,7 @@
         ORDER BY
             me.mile_excel_date DESC;
     </select>
-    
+
     <select id="selectMileDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
         select mile_name, document_file, date(document_date) as document_date
         from Document_mile dm

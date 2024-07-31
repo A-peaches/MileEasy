@@ -23,7 +23,7 @@
             >
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" href="/m_TipListView">M-tip관리</a>
+            <a class="nav-link hover" href="/m_TipListView">M-Tip관리</a>
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
@@ -58,7 +58,7 @@
             <a class="dropdown-item" aria-current="page" @click="Logout"
               >로그아웃</a
             >
-            <a class="dropdown-item" href="/passwordChangeView"
+            <a class="dropdown-item" href="/passwordChange"
               >비밀번호 변경</a
             >
           </div>
