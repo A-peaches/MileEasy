@@ -90,7 +90,16 @@ export default {
       mileInfo.append('mile_title', this.mile_title);
       mileInfo.append('job_name', this.selectedJob);
       mileInfo.append('mile_content', this.mile_content);
-      mileInfo.append('file', this.file ? this.file : this.before_mile_route); 
+      if(this.file){
+        mileInfo.append('file', this.file);
+      } else {
+        const response = await fetch(this.before_mile_route);
+        const blob = await response.blob();
+        const fileName = this.before_mile_route.split('/').pop();
+        const file = new File([blob], fileName, {type: blob.type});
+        mileInfo.append('file', file);
+      }
+
       const response = await this.updateMile(mileInfo);
       if(response && response.data.success){
         this.showAlert('마일리지가 수정되었습니다', 'success', '/IntroduceMileageAdminView');
