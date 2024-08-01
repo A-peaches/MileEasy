@@ -1,4 +1,5 @@
 package com.kbstar.mileEasy.mapper;
+import com.kbstar.mileEasy.beans.BadgeData;
 import com.kbstar.mileEasy.beans.ExcelNotice;
 import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
@@ -22,4 +23,5 @@ public interface MyMileDao {
     List<DocumentMile> selectMileDocument();
     int selectCount();
 
+    List<BadgeData> loadBadgeData(String userNo);
 }

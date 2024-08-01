@@ -1,11 +1,8 @@
 package com.kbstar.mileEasy.controller;
 
 
-import com.kbstar.mileEasy.beans.ExcelNotice;
-import com.kbstar.mileEasy.beans.MileByJob;
+import com.kbstar.mileEasy.beans.*;
 
-import com.kbstar.mileEasy.beans.MileStatus;
-import com.kbstar.mileEasy.beans.MyMiles;
 import com.kbstar.mileEasy.dto.DocumentMile;
 import com.kbstar.mileEasy.service.mileage.type.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +60,13 @@ public class MyMileController {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    @GetMapping("/loadBadgeData/{user_no}")
+    public List<BadgeData> loadBadgeData(@PathVariable String user_no) {
+        List<BadgeData> badgeData = myMileageService.loadBadgeData(user_no);
+        System.out.println("badgeData" + badgeData);
+        return badgeData;
     }
 
 }
