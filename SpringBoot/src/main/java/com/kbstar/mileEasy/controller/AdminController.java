@@ -7,6 +7,7 @@ import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
 import com.kbstar.mileEasy.service.mileage.info.MileScoreService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.mileage.type.*;
+import com.kbstar.mileEasy.service.user.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -73,6 +74,9 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private RequestService requestService;
 
 
     @Value("${project.uploadpath.badge}")
@@ -213,6 +217,13 @@ public class AdminController {
             @RequestParam List<String> king,
             @RequestParam List<String> jump) {
         adminService.insertMonthlyKings(king,jump);
+    }
+
+    @GetMapping ("/requestList")
+    public ArrayList<Mileage_request> requestList() {
+        // userNo를 사용하여 필요한 데이터 처리
+        System.out.println("처리");
+        return requestService.requestListAdmin();
     }
 
 

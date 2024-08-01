@@ -11,18 +11,18 @@
           :class="{ active: isModifyActive }"
           @click="showModify"
         >
-          마일리지 수정
+          접수내역
         </button>
         <button
           class="tab-container lg2 fw-bold"
           :class="{ active: !isModifyActive }"
           @click="showCoding"
         >
-          개발요청
+          과거내역
         </button>
       </div>
       <!-- 동적 컴포넌트 전환 -->
-      <modiy v-if="isModifyActive" />
+      <requestList v-if="isModifyActive" />
       <coding v-if="!isModifyActive" />
     </div>
   </div>
@@ -32,12 +32,12 @@
 import { mapActions, mapGetters } from 'vuex';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import modiy from '@/components/admin/MileageModify.vue';
-import coding from '@/components/admin/CodingList.vue';
+import requestList from '@/components/mileageRequest/MileageRequestListAdmin.vue';
+import coding from '@/components/mileageRequest/MileageRequestPastListAdmin.vue';
 
 export default {
   name: 'KingMain',
-  components: { modiy, coding },
+  components: { requestList, coding },
   data() {
     return {
       isModifyActive: true, // 초기에는 '마일리지 수정'이 활성화됨

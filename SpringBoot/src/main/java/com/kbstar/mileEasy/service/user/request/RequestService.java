@@ -1,6 +1,11 @@
 package com.kbstar.mileEasy.service.user.request;
 
+
+import com.kbstar.mileEasy.dto.Mileage_request;
+import com.kbstar.mileEasy.mapper.MileageRequestDao;
+
 import com.kbstar.mileEasy.dto.User;
+
 import com.kbstar.mileEasy.mapper.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+
+
 import java.util.List;
 
 @Service
@@ -19,8 +26,18 @@ public class RequestService {
     private UserDao userDao;
     private PasswordEncoder passwordEncoder;
 
-    public void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc ,int request_no) {
-        userDao.insertRequestMileage(isBranch,mileName,milMax,admin,etc,request_no);
+    @Autowired
+    private MileageRequestDao mileageRequestDao;
+
+    public ArrayList<Mileage_request> requestList(String user_no) { return mileageRequestDao.requestList(user_no);
+    }
+
+
+    public void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc ,int request_no, String user_no, int mile_no) {
+        userDao.insertRequestMileage(isBranch,mileName,milMax,admin,etc,request_no,user_no,mile_no);
+    }
+
+    public void requestListDelete(String mileageRequestNo) {mileageRequestDao.requestListDelete(mileageRequestNo);
     }
 
 
@@ -50,5 +67,8 @@ public class RequestService {
       }
 
       return result;
+    }
+
+    public ArrayList<Mileage_request> requestListAdmin() { return mileageRequestDao.requestListAdmin();
     }
 }

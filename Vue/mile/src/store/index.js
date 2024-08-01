@@ -24,6 +24,7 @@ import mileRecommand from './mileage/mileRecommand';
 import mile from './userInfo/mile';
 import badge from './badge/badge';
 import mileDocument from './mileage/mileDocument';
+import request from './admin/request';
 
 export default createStore({
   modules: {
@@ -51,5 +52,6 @@ export default createStore({
     mile,
     badge,
     mileDocument,
+    request,
   },
 });
