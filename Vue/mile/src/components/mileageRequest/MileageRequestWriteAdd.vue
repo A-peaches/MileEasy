@@ -136,7 +136,7 @@
 import { ref, computed } from 'vue';
 import Swal from 'sweetalert2';
 import SearchModal from './SearchModal.vue';
-import axios from 'axios';
+import api from '@/api/axios';
 import { useStore } from 'vuex';
 
 export default {
@@ -267,8 +267,8 @@ export default {
       };
 
       try {
-        const response = await axios.post(
-          'http://localhost:8090/user/requestAdd',
+        const response = await api.post(
+          '/user/requestAdd',
           formData
         );
         Swal.fire({

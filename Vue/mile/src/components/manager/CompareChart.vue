@@ -74,7 +74,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
-import axios from 'axios';
+import api from '@/api/axios';
 Chart.register(...registerables);
 
 export default {
@@ -159,8 +159,8 @@ export default {
     async mileageCount() {
       const mile_no = this.loginInfo.mile_no;
       try {
-        const response = await axios.post(
-          'http://localhost:8090/manager/mileageCount',
+        const response = await api.post(
+          '/manager/mileageCount',
           null,
           {
             params: {
@@ -187,8 +187,8 @@ export default {
       const mile_no = this.loginInfo.mile_no;
 
       try {
-        const response = await axios.post(
-          'http://localhost:8090/manager/visitCount',
+        const response = await api.post(
+          '/manager/visitCount',
           null,
           {
             params: {

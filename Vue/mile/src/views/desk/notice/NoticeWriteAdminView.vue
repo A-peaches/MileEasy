@@ -53,7 +53,7 @@
              
 
 <script>
-import axios from 'axios'; // axios를 정의합니다.
+import api from '@/api/axios'; // axios를 정의합니다.
 import { mapGetters } from 'vuex';
 
 export default {
@@ -96,7 +96,7 @@ export default {
     formData.append('files', file);
 
     try {
-      const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+      const response = await api.post('/notice/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -151,7 +151,7 @@ getDisplayFileName(fileName) {
 
     try {
       
-      const response = await axios.post('http://localhost:8090/notice/write', formData, {
+      const response = await api.post('/notice/write', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -219,7 +219,7 @@ getDisplayFileName(fileName) {
 
 //   try {
 //     console.log('업로드할 파일:', files); // 로그 추가
-//     const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+//     const response = await api.post('/notice/upload', formData, {
 //       headers: {
 //         'Content-Type': 'multipart/form-data'
 //       }
@@ -249,7 +249,7 @@ getDisplayFileName(fileName) {
 //     }
 
 //     try {
-//       const response = await axios.post('http://localhost:8090/notice/write', formData, {
+//       const response = await api.post('/notice/write', formData, {
 //         headers: {
 //           'Content-Type': 'multipart/form-data'
 //         }
@@ -275,7 +275,7 @@ getDisplayFileName(fileName) {
 
 //   try {
 //     console.log("파일 :", this.uploadedFileName);
-//     const response = await axios.get(`http://localhost:8090/notice/download/${this.uploadedFileName}`, {
+//     const response = await api.get(`/notice/download/${this.uploadedFileName}`, {
 //       responseType: 'blob'
 //     });
     
@@ -303,7 +303,7 @@ getDisplayFileName(fileName) {
     
     async fetchMileages() {
       try {
-        const response = await axios.get('http://localhost:8090/notice/mileage');
+        const response = await api.get('/notice/mileage');
         this.mileages = response.data;
       } catch (error) {
         console.error('Error fetching mileages:', error.response ? error.response.data : error.message);

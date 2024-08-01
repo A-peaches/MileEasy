@@ -107,7 +107,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+import api from '@/api/axios';
 
 Chart.register(...registerables);
 
@@ -179,8 +179,8 @@ export default {
       const end = this.endDate.trim();
 
       try {
-        const response = await axios.post(
-          'http://localhost:8090/user/loginHistoryCountArray',
+        const response = await api.post(
+          '/user/loginHistoryCountArray',
           null,
           {
             params: {

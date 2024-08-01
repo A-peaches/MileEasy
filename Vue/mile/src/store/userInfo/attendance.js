@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   objectAttendance: null,
@@ -16,14 +16,14 @@ const mutations = {
 
 const actions = {
   async getAttendance({ commit }, user_no) {
-    const response = await axios.get(`http://localhost:8090/attendance/getAttendance/${user_no}`);
+    const response = await api.get(`/attendance/getAttendance/${user_no}`);
     const attendanceData = response.data;
     console.log("출석정보 :",attendanceData);
     commit('setArrayAttendance', attendanceData);
   },
   async addAttendance({ dispatch }, user_no) {
     try {
-      await axios.get(`http://localhost:8090/attendance/addAttendance/${user_no}`);
+      await api.get(`/attendance/addAttendance/${user_no}`);
       await dispatch('getAttendance', user_no);
     } catch (error) {
       console.error("출석 추가 실패:", error);

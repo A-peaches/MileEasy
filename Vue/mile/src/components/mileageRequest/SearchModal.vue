@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api/axios';
 
 export default {
   props: {
@@ -56,8 +56,8 @@ export default {
   methods: {
     async searchUser() {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/admin/searchUser',
+        const response = await api.post(
+          '/admin/searchUser',
           null,
           {
             params: {},

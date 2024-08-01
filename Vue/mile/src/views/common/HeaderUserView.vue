@@ -105,7 +105,7 @@
           <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
             <img
               v-if="loginInfo && loginInfo.user_no"
-              :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+    :src="profileImageUrl"
               class="profile-small my-3"
               alt="Profile Picture"
               @error="setDefaultImage"
@@ -147,6 +147,12 @@ export default {
   computed: {
     ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
     ...mapGetters("mileExcel", ["getExcelNotice"]),
+    profileImageUrl() {
+      if (this.loginInfo && this.loginInfo.user_no) {
+        return `${process.env.VUE_APP_IMAGE_URL}/profile/${this.loginInfo.user_no}.jpg`;
+      }
+      return ''; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },

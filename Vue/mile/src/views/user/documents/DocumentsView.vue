@@ -67,7 +67,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 import moment from 'moment';
 export default {
   name: 'DocumentsView',
@@ -153,7 +153,7 @@ export default {
       const response = await this.fetchMileDocument();
       this.allDocuments = response.data;
       
-      const countList = await axios.get(`http://localhost:8090/myMile/countListDocuments`);
+      const countList = await api.get(`/myMile/countListDocuments`);
       this.countList = countList.data;
 
       this.totalPages = Math.ceil(this.countList / this.itemsPerPage);
@@ -169,7 +169,7 @@ export default {
     },
     async fetchMileages() { // 마일리지 카테고리 가져오기
       try {
-        const response = await axios.get('http://localhost:8090/notice/mileage');
+        const response = await api.get('/notice/mileage');
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {

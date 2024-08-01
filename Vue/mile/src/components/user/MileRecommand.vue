@@ -25,7 +25,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import axios from "axios";
+import api from '@/api/axios';
 
 export default {
   name: "MileRecommand",
@@ -56,8 +56,8 @@ export default {
     async getRecommand() {
       console.log('Fetching recommand data...');
       try {
-        const response = await axios.get(
-          `http://localhost:8090/mileage/getRecommand/${this.loginInfo.user_no}`
+        const response = await api.get(
+          `/mileage/getRecommand/${this.loginInfo.user_no}`
         );
         this.recommand = response.data;
         console.log('Recommand data:', this.recommand);

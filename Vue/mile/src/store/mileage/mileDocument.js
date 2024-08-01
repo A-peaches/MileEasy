@@ -1,5 +1,5 @@
 // src/store/modules/mileHistory.js
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
     objectMileDocument: null,
@@ -18,7 +18,7 @@ const state = {
   const actions = {
     async fetchMileDocument(){
         try{
-            const response = await axios.get(`http://localhost:8090/myMile/mileDocument`);
+            const response = await api.get(`/myMile/mileDocument`);
             return response;
         }catch(error){
             console.error('Error get mile document lists:', error);

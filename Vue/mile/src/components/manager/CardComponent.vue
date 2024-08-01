@@ -75,7 +75,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+import api from '@/api/axios';
 Chart.register(...registerables);
 
 export default {
@@ -193,8 +193,8 @@ export default {
       console.log('마일넘', mile_no);
 
       try {
-        const response = await axios.post(
-          'http://localhost:8090/manager/mileCount',
+        const response = await api.post(
+          '/manager/mileCount',
           null, // POST 요청의 본문을 비워둡니다.
           {
             params: {

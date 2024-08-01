@@ -160,7 +160,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 import Swal from 'sweetalert2';
 
 export default {
@@ -227,8 +227,8 @@ export default {
     },
     async fetchRequestList() {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/user/requestList',
+        const response = await api.post(
+          '/user/requestList',
           null,
           { params: { user_no: this.getLoginInfo.user_no } }
         );
@@ -252,8 +252,8 @@ export default {
 
       if (result.isConfirmed) {
         try {
-          const response = await axios.post(
-            'http://localhost:8090/user/requestListDelete',
+          const response = await api.post(
+            '/user/requestListDelete',
             null,
             { params: { mileage_request_no: mileage_request_no } }
           );
