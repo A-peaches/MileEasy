@@ -22,6 +22,7 @@ public class Mileage_request {
     private int mile_no;
     private String mileage_request_date;
     private String mile_name;
+    private String user_name;
 
 
 
