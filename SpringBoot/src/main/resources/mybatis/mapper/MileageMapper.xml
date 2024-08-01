@@ -475,7 +475,7 @@
                      WHEN u.job_no = 3 THEN ms.mile_score_point
                      ELSE 0
                 END) / NULLIF(COUNT(DISTINCT CASE
-                                                 WH EN u.job_no = 3 THEN u.user_no
+                                                 WHEN u.job_no = 3 THEN u.user_no
                                                  ELSE NULL
                 END), 0)) AS job3,
             (SELECT SUM(ms_target.mile_score_point)

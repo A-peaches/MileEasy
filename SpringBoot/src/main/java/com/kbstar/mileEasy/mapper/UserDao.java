@@ -13,7 +13,7 @@ public interface UserDao {
 
     ArrayList<User> selectAllUser();
 
-    User checkedUser(String user_no, String user_pw);
+    User checkedUser(String user_no);
 
     User selectUserByEmail(String user_no);
 
@@ -39,4 +39,12 @@ public interface UserDao {
     void insertMonthlyKings(List<String> king);
 
     void insertMonthlyJumps(List<String> jump);
+
+
+    void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc, int request_no, String user_no, int mile_no);
+
+   // void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc, int request_no);
+
+    boolean changPassword(String encryptedPassword, String userNo);
+
 }

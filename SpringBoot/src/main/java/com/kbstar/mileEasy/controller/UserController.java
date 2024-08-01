@@ -1,17 +1,25 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.LoginHistory;
+import com.kbstar.mileEasy.dto.Mileage_request;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
+import com.kbstar.mileEasy.service.user.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
 import java.util.*;
+
+import static java.util.Collections.replaceAll;
 
 @RestController
 @RequestMapping("/user") // 'http://localhost:8090/user/allUser'  /user 부분!
@@ -24,6 +32,10 @@ public class UserController {
 
     @Autowired
     private MileService mileService;
+
+    @Autowired
+    private RequestService requestService;
+
 
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
@@ -123,6 +135,62 @@ public class UserController {
         System.out.println("들어왔따!");
         System.out.println(mileService.levelChartData(date));
         return mileService.levelChartData(date);
+    }
+
+    @PostMapping("/requestAdd")
+    public void requestAdd(@RequestBody Map<String, String> requestBody) {
+        boolean is_branch = Boolean.parseBoolean(requestBody.get("request_is_branch"));
+        String mile_name = requestBody.get("request_mile_name");
+        String mil_max = requestBody.get("request_mil_max");
+        String admin = requestBody.get("request_admin");
+        String etc =  requestBody.get("request_etc");
+        int request_no = Integer.parseInt(requestBody.get("request_no"));
+        String user_no =  requestBody.get("user_no");
+        int mile_no = Integer.parseInt(requestBody.get("mile_no"));
+
+        System.out.println(is_branch);
+        System.out.println(mile_name);
+
+
+        System.out.println(mil_max);
+        System.out.println(admin);
+
+
+        System.out.println(etc);
+
+        System.out.println(request_no);
+        System.out.println(user_no);
+        System.out.println(mile_no);
+
+
+        admin = admin.replace("[", "");
+        admin = admin.replace("]", "");
+        admin = admin.replace("\"", "");
+        requestService.insertRequestMileage(is_branch,mile_name,mil_max,admin,etc,request_no,user_no,mile_no);
+    }
+
+
+    @PostMapping("/requestList")
+    public ArrayList<Mileage_request> requestList(@RequestParam("user_no") String user_no) {
+        // userNo를 사용하여 필요한 데이터 처리
+        return requestService.requestList(user_no);
+    }
+
+    @PostMapping("/requestListDelete")
+    public void  requestListDelete(@RequestParam("mileage_request_no") String mileage_request_no) {
+        // userNo를 사용하여 필요한 데이터 처리
+        System.out.println(mileage_request_no);
+        requestService.requestListDelete(mileage_request_no);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> requestBody) {
+        String password = requestBody.get("password");
+        String user_no = requestBody.get("user_no");
+        List<String> result = requestService.changePassword(password,user_no);
+
+        return ResponseEntity.ok().body("{\"success\":" + result.get(0).equals("성공") + ", \"message\":\"" + result.get(1) + "\"}");
+
     }
 
 }

@@ -21,7 +21,6 @@ const actions = {
       const response = await axios.get(
         'http://localhost:8090/mileage/getMileage'
       );
-      console.log(response.data);
       commit('setArrayMileage', response.data);
     } catch (error) {
       console.error('Error getting all mileage data:', error);

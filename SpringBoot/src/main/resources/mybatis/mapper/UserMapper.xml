@@ -45,7 +45,7 @@
                 JOIN job j ON u.job_no = j.job_no
                 JOIN position p ON u.position_no = p.position_no
         WHERE
-            u.user_no = #{user_no} AND u.user_pw = #{user_pw};
+            u.user_no = #{user_no}
     </select>
 
     <select id ="selectUserByEmail" resultType="com.kbstar.mileEasy.dto.User">
@@ -152,7 +152,8 @@
                 JOIN job j ON u.job_no = j.job_no
                 JOIN position p ON u.position_no = p.position_no
         WHERE
-            u.user_is_manager = 0;
+            u.user_is_manager = 0 and
+            u.user_is_admin=0;
 
     </select>
 
@@ -200,13 +201,13 @@
         monthly_king_date = VALUES(monthly_king_date);
     </insert>
 
+    <insert id="insertRequestMileage">
+        INSERT INTO mileage_request (request_is_branch, request_mile_name, request_mil_max, request_admin, request_etc, request,user_no,mile_no,mileage_request_date)
+        VALUES (#{isBranch}, #{mileName}, #{milMax}, #{admin}, #{etc}, #{request_no},#{user_no},#{mile_no},  current_timestamp)
+    </insert>
 
 
-
-
-
-
-
-
-
+    <update id="changPassword">
+        update user set user_pw=#{encryptedPassword} where user_no = #{userNo}
+    </update>
 </mapper>

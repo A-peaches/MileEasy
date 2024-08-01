@@ -48,33 +48,51 @@
     </div>
 
     <!-- 여기서 전체메뉴 -->
+
     <div class="w-100 mt-5" style="padding-left: 190px; color: #5e5e5e">
       <div class="w-100 mx-auto text-start mb-2">
-        <span class="menu-title">My Mileage</span>
-        <span
-          v-for="(item, index) in filteredMileageInfo"
-          :key="index"
-          class="menu"
-        >
-          <router-link
-            :to="{
-              name: 'mileageDetail',
-              params: { mile_no: item.mile_no },
-            }"
-            class="link-menu"
+        <template v-if="getIsChecked == false">
+          <span class="menu-title">My Mileage</span>
+          <span
+            v-for="(item, index) in filteredMileageInfo"
+            :key="index"
+            class="menu"
           >
-            {{ item.mile_name }}</router-link
-          >
-        </span>
+            <router-link
+              :to="{
+                name: 'mileageDetail',
+                params: { mile_no: item.mile_no },
+              }"
+              class="link-menu"
+            >
+              {{ item.mile_name }}</router-link
+            >
+          </span>
+        </template>
+        <template v-else-if="getLoginInfo?.user_is_admin">
+          <span class="menu-title">Management</span>
+          <span class="menu"><a href="/kingMain" class="link-menu">마왕 관리</a></span>
+          <span class="menu"><a href="/mileageManagementView" class="link-menu">마일리지 관리</a></span>
+          <span class="menu"><a href="/m_TipListView" class="link-menu">M-Tip 관리</a></span>
+        </template>
+        <template v-else-if="getLoginInfo?.user_is_manager">
+          <span class="menu-title">Management</span>
+          <span class="menu"><a href="/introduceMileageAdminView" class="link-menu">마일리지 소개</a></span>
+          <span class="menu"><a href="/commentMieageeAdminView" class="link-menu">추천 멘트</a></span>
+          <span class="menu"><a href="/documentsMileageAdminView" class="link-menu">문서 관리</a></span>
+          <span class="menu"><a href="/scoreMileageAdminView" class="link-menu">점수 관리</a></span>
+        </template>
       </div>
       <div class="w-100 mx-auto text-start mb-2">
         <span class="menu-title">Info Zone</span>
-        <span class="menu"
-          ><a href="/documentsView" class="link-menu">문서모아</a></span
-        >
-        <span class="menu"
-          ><a href="/m_TipMainView" class="link-menu">M-Tip</a></span
-        >
+        <template v-if="getIsChecked == false">
+          <span class="menu"
+            ><a href="/documentsView" class="link-menu">문서모아</a></span
+          >
+          <span class="menu"
+            ><a href="/m_TipMainView" class="link-menu">M-Tip</a></span
+          >
+        </template>
         <span class="menu"
           ><a href="/noticeListView" class="link-menu">공지사항</a></span
         >
@@ -89,39 +107,27 @@
             >업무별 연락처</a
           ></span
         >
-        <!-- <span class="menu"><a>담당자 연락처</a></span> -->
       </div>
     </div>
 
     <div class="text-start" style="padding-left: 190px; margin-top: 50px">
-      <!-- <div class="contact-info"> -->
       <span class="text-end" style="float: right; padding-right: 190px">
-        <p class="contact-info" style="cursor: pointer">
-          <i class="bi bi-send-plus icon"></i> <a href="/mileageRequesList"
-          style="text-decoration:none; color: #989898">마일리지 요청</a>
-        </p>
+        <template v-if="getLoginInfo?.user_is_admin">
+          <p class="contact-info" @click="sendEmail" style="cursor: pointer"><i class="bi bi-envelope-at icon" ></i> mileage@kbfg.com</p>
+        </template>
+        <template v-else>
+          <p class="contact-info" style="cursor: pointer">
+            <i class="bi bi-send-plus icon"></i> <a href="/mileageRequesList"
+            style="text-decoration:none; color: #989898">마일리지 요청</a>
+          </p>
+        </template>
         <p class="contact-info" style="cursor: pointer" @click="connecting">
           <i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959
         </p>
-        <!-- <p class="contact-info"><i class="bi bi-envelope-at icon"></i> mileage@kbfg.com</p> -->
       </span>
-      <!-- </div> -->
-      <!-- <div class="contact-info">
-       
-      </div>
-      <div class="contact-info">
-       
-      </div> -->
-      <!-- <span class="text-end" style="float: right; padding-right: 190px">
-        <span class="circle"><i class="bi bi-chat-left-dots"></i></span>
-        <span class="circle"><i class="bi bi-cloud-check"></i></span>
-        <span class="circle"><i class="bi bi-wifi"></i></span>
-      </span> -->
     </div>
 
-    <div style="margin-top: 130px; margin-bottom: 10px">
-      <!-- <img src="@/assets/img/logo.png" alt="MileEasy Logo" style="height: 40px" />
-        -->
+    <div style="margin-top: 120px; margin-bottom: 10px">
       <img
         src="@/assets/img/mini_logo2.png"
         class="mr-2 mb-2"
@@ -131,8 +137,6 @@
     <div>&copy; 2024 MileEasy. All rights reserved.</div>
   </footer>
 </template>
-
-
 
 <script>
 import { mapGetters, mapActions } from "vuex";
@@ -197,6 +201,9 @@ export default {
     currentNoticeId() {
       return this.currentNotice.notice_board_no || null;
     },
+    isChecked() {
+      return this.getIsChecked;
+    },
   },
   methods: {
     ...mapActions("notice", ["getFooterNotice"]),
@@ -247,7 +254,9 @@ export default {
       });
     },
     connecting() {
+      document.body.classList.add('swal-open');
      this.connectAlret();
+     document.body.classList.remove('swal-open');
    },
    connectAlret() {
     let timerInterval;
@@ -259,6 +268,7 @@ export default {
       timer: 3000,
       timerProgressBar: true,
       scrollbarPadding: false,
+      
       didOpen: () => {
         const popup = this.$swal.getPopup();
         popup.style.height = '200px'; // 원하는 높이로 조정
@@ -283,6 +293,17 @@ export default {
       }
     });
    },
+   sendEmail() {
+      const email = "mileage@kbfg.com"; // 수신자 이메일 주소
+      const subject = "MileEasy 관련하여 문의드립니다.";
+      const body = "직원번호 : \n 이름: \n 문의 주제 : \n 내용 : ";
+
+      // mailto 링크 생성
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      // 새 창으로 mailto 링크 열기
+      window.location.href = mailtoLink;
+    }
   },
   watch: {
     getLoginInfo(newVal) {

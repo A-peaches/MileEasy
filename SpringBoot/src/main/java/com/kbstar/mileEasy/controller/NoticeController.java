@@ -14,14 +14,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
+
 
 @RestController
 @RequestMapping("/notice")
@@ -34,121 +38,76 @@ public class NoticeController {
     @Value("${project.uploadpath.notice}")
     private String uploadPath;
 
-    // 게시글 수정
-    @PostMapping("/update")
-    public ResponseEntity<?> updateNotice(
-            @RequestParam("notice_board_no") int noticeBoardNo,
-            @RequestParam("notice_board_title") String title,
-            @RequestParam("mile_name") String mileName,
-            @RequestParam("notice_board_content") String content,
-            @RequestParam("user_no") String userNo,
-            @RequestParam("user_name") String userName,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
+        Notice notice = noticeService.findById(id);
+        if (notice != null) {
+            return ResponseEntity.ok(notice);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // 게시글 등록
+    @PostMapping("/write")
+    public ResponseEntity<?> writeNotice(@RequestParam("title") String title,
+                                         @RequestParam(value = "mile_no", required = false) String mileNoStr,
+                                         @RequestParam("content") String content,
+                                         @RequestParam("user_no") String userNo,
+                                         @RequestParam("user_name") String userName,
+                                         @RequestParam(value = "file", required = false) String fileInfo) {
         try {
             Notice notice = new Notice();
-            notice.setNotice_board_no(noticeBoardNo);
             notice.setNotice_board_title(title);
-            notice.setMile_name(mileName);
+
+            Integer mileNo = null;
+            if (mileNoStr != null && !mileNoStr.isEmpty() && !mileNoStr.equalsIgnoreCase("null") && !mileNoStr.equals("기타")) {
+                mileNo = Integer.valueOf(mileNoStr);
+            }
+            notice.setMile_no(mileNo);
+
             notice.setNotice_board_content(content);
-            notice.setUser_no(userNo);
+            notice.setUser_no(userNo);  // String 타입으로 설정
             notice.setUser_name(userName);
 
-            if (file != null && !file.isEmpty()) {
-                String originalFileName = file.getOriginalFilename();
-                String decodedFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8.toString());
-                String fileName = UUID.randomUUID().toString() + "_" + decodedFileName;
-                Path filePath = Paths.get(uploadPath).resolve(fileName);
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                notice.setNotice_board_file(decodedFileName); // DB에는 UUID를 제외한 파일명만 저장
-            }
-
-            noticeService.updateNotice(notice);
-            return ResponseEntity.ok("Notice updated successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating notice: " + e.getMessage());
-        }
-    }
-
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
-//        Notice notice = noticeService.findById(id);
-//        if (notice != null) {
-//            return ResponseEntity.ok(notice);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotice(@PathVariable Long id) {
-        try {
-            noticeService.deleteNotice(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice");
-        }
-    }
-
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(uploadPath).resolve(fileName);
-            Files.copy(file.getInputStream(), filePath);
-            return ResponseEntity.ok(fileName);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body("파일 업로드 실패");
-        }
-    }
-
-    @GetMapping("/download/{encodedFileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String encodedFileName) {
-        try {
-            String decodedFileName = URLDecoder.decode(encodedFileName, StandardCharsets.UTF_8.name());
-            System.out.println("Decoded file name: " + decodedFileName); // 로그 추가
-
-            // UUID를 포함한 파일 이름 찾기
-            Path dirPath = Paths.get(uploadPath);
-            String matchingFileName = null;
-
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath)) {
-                for (Path path : stream) {
-                    if (path.getFileName().toString().endsWith("_" + decodedFileName)) {
-                        matchingFileName = path.getFileName().toString();
-                        break;
-                    }
+            if (fileInfo != null && !fileInfo.isEmpty()) {
+                String[] fileNames = fileInfo.split(","); // 파일명과 원본 파일명을 분리
+                if (fileNames.length < 2) {
+                    throw new IllegalArgumentException("Invalid fileInfo format: " + fileInfo);
                 }
+                String savedFileName = fileNames[0]; // 서버에 저장된 파일명 (UUID 포함)
+                String originalFileName = fileNames[1]; // 원본 파일명
+
+                notice.setNotice_board_file(originalFileName); // 원본 파일명을 DB에 저장
             }
 
-            if (matchingFileName == null) {
-                System.out.println("File not found");
-                return ResponseEntity.notFound().build();
-            }
+            noticeService.createNotice(notice);
 
-            Path filePath = dirPath.resolve(matchingFileName);
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists() || resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLEncoder.encode(decodedFileName, StandardCharsets.UTF_8.toString()) + "\"")
-                        .body(resource);
-            } else {
-                System.out.println("Resource not readable");
-                return ResponseEntity.notFound().build();
-            }
-        } catch (IOException e) {
+            return ResponseEntity.ok().body("공지사항이 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(500).body("공지사항 등록 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
+    //글쓰기에서 new 파일 등록하기
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("files") MultipartFile file) {
+        try {
+            String originalFileName = file.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String savedFileName = uuid + "_" + originalFileName;
 
+            Path filePath = Paths.get(uploadPath).resolve(savedFileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-
+            // 여기서는 파일명만 반환하고, 데이터베이스 저장은 별도의 서비스 로직에서 처리
+            return ResponseEntity.ok().body(savedFileName + "," + originalFileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     //게시글 리스트
     @GetMapping("/list")
@@ -169,6 +128,7 @@ public class NoticeController {
         List<Mileage> mileages = noticeService.getAllMilesge();
         return ResponseEntity.ok(mileages);
     }
+
     // 게시글 조회수
     @PostMapping("/increment-views/{noticeId}")
     public ResponseEntity<Void> incrementNoticeViews(@PathVariable("noticeId") int noticeId) {
@@ -182,46 +142,114 @@ public class NoticeController {
     }
 
     //게시글 상세보기
-    @GetMapping("/{noticeId}")
+    @GetMapping("/details/{noticeId}")
     public ResponseEntity<Notice> getNoticeDetails(@PathVariable int noticeId) {
+        System.out.println("details with ID: " + noticeId); // 로그 추가
         Notice notice = noticeService.getNoticeDetails(noticeId);
         if (notice != null) {
             System.out.println("Notice details: " + notice); // 로그 추가
             System.out.println("File name: " + notice.getNotice_board_file()); // 파일 이름 로그 추가
+            System.out.println("Mile no: " + notice.getMile_no()); // mile_no 로그 추가
+            System.out.println("Mile name: " + notice.getMile_name()); // mile_name 로그 추가
             return ResponseEntity.ok(notice);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-    // 게시글 등록
-    @PostMapping("/write")
-    public ResponseEntity<?> writeNotice(@RequestParam("title") String title,
-                                         @RequestParam("mile_no") int mileNo,
-                                         @RequestParam("content") String content,
-                                         @RequestParam("user_no") String userNo,
-                                         @RequestParam("user_name") String userName,
-                                         @RequestParam(value = "file", required = false) String fileName) {
+
+    //파일 다운로드
+    @GetMapping("/download/{originalFileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String originalFileName) throws IOException {
+        // 파일명 디코딩
+        originalFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8.toString());
+
+        // 서버에 저장된 파일 이름을 찾기
+        String savedFileName = findSavedFileName(originalFileName);
+
+        if (savedFileName == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 파일 경로 설정 (실제 경로로 수정 필요)
+        Path filePath = Paths.get(uploadPath).resolve(savedFileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (resource.exists()) {
+            // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
+            String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
+            // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
+            String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
+            // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build(); // 파일이 존재하지 않으면 404응답 반환
+        }
+    }
+
+    // 서버에 저장된 파일 이름을 찾는 메서드 (예시)
+    private String findSavedFileName(String originalFileName) throws IOException {
+        try (Stream<Path> paths = Files.walk(Paths.get(uploadPath))) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> name.endsWith("_" + originalFileName))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateNotice(
+            @RequestParam("notice_board_no") int noticeBoardNo,
+            @RequestParam("notice_board_title") String title,
+            @RequestParam("mile_name") String mileName,
+            @RequestParam("notice_board_content") String content,
+            @RequestParam("user_no") String userNo,
+            @RequestParam("user_name") String userName,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "originalFileName", required = false) String originalFileName) {
         try {
+
             Notice notice = new Notice();
+            notice.setNotice_board_no(noticeBoardNo);
             notice.setNotice_board_title(title);
-            notice.setMile_no(mileNo);
+            notice.setMile_name(mileName);
             notice.setNotice_board_content(content);
             notice.setUser_no(userNo);
             notice.setUser_name(userName);
 
-            if (fileName != null && !fileName.isEmpty()) {
-                // 파일 이름에서 UUID 부분을 제거하고 실제 파일 이름만 저장합니다.
-                String[] parts = fileName.split("_", 2);  // "_" 문자로 문자열을 분리합니다.
-                String actualFileName = parts.length > 1 ? parts[1] : fileName;  // 실제 파일 이름을 가져옵니다.
-                notice.setNotice_board_file(actualFileName);
+            if (file != null && !file.isEmpty()) {
+                String savedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+                Path filePath = Paths.get(uploadPath).resolve(savedFileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                notice.setNotice_board_file(originalFileName); // DB에는 원본 파일명만 저장
+            } else if (originalFileName != null && !originalFileName.isEmpty()) {
+                notice.setNotice_board_file(originalFileName);
             }
 
-            noticeService.createNotice(notice);
-
-            return ResponseEntity.ok().body("공지사항이 성공적으로 등록되었습니다.");
+            noticeService.updateNotice(notice);
+            return ResponseEntity.ok("Notice updated successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("공지사항 등록 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating notice: " + e.getMessage());
+        }
+    }
+
+
+    // DELETE 요청을 처리하는 엔드포인트
+    @DeleteMapping("/delete/{noticeId}")
+    public ResponseEntity<String> deleteNotice(@PathVariable Long noticeId) {
+        try {
+            noticeService.deleteNotice(noticeId);
+            return ResponseEntity.ok("Notice deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error deleting notice: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice: " + e.getMessage());
         }
     }
 
@@ -233,8 +261,7 @@ public class NoticeController {
         System.out.println(notices);
         return notices;
     }
-
-
 }
+
 
 

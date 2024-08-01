@@ -70,7 +70,6 @@ const actions = {
       const response = await axios.get(
         'http://localhost:8090/notice/getFooterNotice'
       );
-      console.log('푸터노티스',response.data);
       commit('setFooterNotices', response.data);
     } catch (error) {
       console.error('Error getting footer Notice data:', error);

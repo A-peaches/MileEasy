@@ -45,7 +45,7 @@
           </a>
           <div class="dropdown-menu dropdown-menu-end profile-dropdown" :class="{ 'show': isHovered }">
             <a class="dropdown-item" aria-current="page" @click="Logout">로그아웃</a>
-            <a class="dropdown-item" href="/passwordChangeView">비밀번호 변경</a>
+            <a class="dropdown-item" href="/passwordChange">비밀번호 변경</a>
           </div>
         </div>
       </div>

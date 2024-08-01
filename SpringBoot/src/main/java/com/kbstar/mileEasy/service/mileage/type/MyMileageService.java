@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.mileage.type;
 
+import com.kbstar.mileEasy.beans.BadgeData;
 import com.kbstar.mileEasy.beans.ExcelNotice;
 import com.kbstar.mileEasy.beans.MileStatus;
 import com.kbstar.mileEasy.beans.MyMiles;
@@ -34,4 +35,7 @@ public class MyMileageService {
     public List<DocumentMile> documnetList(){ return myMileDao.selectMileDocument(); }
     public int getTotal(){return myMileDao.selectCount();}
 
+    public List<BadgeData> loadBadgeData(String userNo) {
+        return myMileDao.loadBadgeData(userNo);
+    }
 }
