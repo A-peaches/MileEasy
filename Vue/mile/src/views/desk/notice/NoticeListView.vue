@@ -10,9 +10,9 @@
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
             <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
-              <span v-if="mileage.mile_name === '기타'">{{ mileage.mile_name }}</span>
-              <span v-else>{{ mileage.mile_name }} 마일리지</span>
+              {{ mileage.mile_name }} 마일리지
             </a>
+            <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
         </div>
       </div>
@@ -20,7 +20,7 @@
         <div class="notice-count">총 {{ filteredNotices.length }}건</div>
         <label class="checkbox-container">
           <input type="checkbox" v-model="sortByViews" @change="handleCheckboxChange('views')">
-          <span class="custom-checkbox"></span> <span class="checkbox-label">조회 수</span>
+          <span class="custom-checkbox"></span> <span class="checkbox-label">조회수</span>
         </label>
         <label class="checkbox-container">
           <input type="checkbox" v-model="sortByDateAsc" @change="handleCheckboxChange('date')">
@@ -52,7 +52,7 @@
               <div class="notice-details">
                 <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
-                <div class="notice-mile">{{ notice.mile_name }} 마일리지</div>
+                <div class="notice-mile">{{ notice.mile_name ? notice.mile_name + ' 마일리지' : '기타' }}</div>
                 <div class="notice-title">{{ notice.notice_board_title }}</div>
                 <pre class="notice-date">{{ formatDate(notice.notice_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
@@ -97,8 +97,15 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
+    uniqueMileages() {
+    return [...new Set(this.notices.filter(notice => notice.mile_name).map(notice => notice.mile_name))];
+    },
     filteredNotices() {
-    let result = this.notices;
+      let result = this.notices;
+      // .map(notice => ({
+    // ...notice,
+    // mile_name: notice.mile_no === null ? '기타' : notice.mile_name
+    // }));
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       result = result.filter(notice => 
@@ -107,10 +114,12 @@ export default {
       );
     }
     if (this.selectedCategory !== null) {
-      result = result.filter(notice => 
-        notice.mile_name === this.selectedCategory
-      );
+      if (this.selectedCategory === '기타') {
+      result = result.filter(notice => !notice.mile_name);
+    } else {
+      result = result.filter(notice => notice.mile_name === this.selectedCategory);
     }
+  }
     if (this.sortByViews) {
       result.sort((a, b) => b.notice_board_hit - a.notice_board_hit || new Date(b.notice_board_date) - new Date(a.notice_board_date));
     } else if (this.sortByDateAsc) {
@@ -194,11 +203,11 @@ export default {
       this.$router.push({ name: 'noticeWriteAdminView' });
     },
     async fetchNotices() {
-      console.log('fetchNotices method called'); // 이 로그가 출력되는지 확인합니다.
+      console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
         const response = await axios.get('http://localhost:8090/notice/list');
-        console.log('Fetched notices:', response.data);
         this.notices = response.data;
+        console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
         console.error('Error fetching notices:', error.response ? error.response.data : error.message);
       }
@@ -213,37 +222,49 @@ export default {
       }
     },
     async handleNoticeClick(notice) {
-      if (this.isProcessing) return;
-      this.isProcessing = true;
-      try {
-        const response = await axios.post(`http://localhost:8090/notice/increment-views/${notice.notice_board_no}`);
-        console.log('Increment views response:', response.data);
+  console.log("notice:", notice);
+  if (this.isProcessing) return;
+  this.isProcessing = true;
+  try {
+    console.log("게시글 상세보기+조회수 메소드 도달", notice);
+    // 조회수 증가 요청
+    await axios.post(`http://localhost:8090/notice/increment-views/${notice.notice_board_no}`);
+    
+    // 게시글 상세 정보 요청
+    const response = await axios.get(`http://localhost:8090/notice/details/${notice.notice_board_no}`);
+    console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
+    const noticeDetails = response.data;
+    console.log('Fetched notice details:', noticeDetails);
 
-        const noticeIndex = this.notices.findIndex(n => n.notice_board_no === notice.notice_board_no);
-        if (noticeIndex !== -1) {
-          this.notices[noticeIndex] = {
-            ...this.notices[noticeIndex],
-            notice_board_hit: (this.notices[noticeIndex].notice_board_hit || 0) + 1
-          };
-        }
+    // 조회수 업데이트
+    notice.notice_board_hit += 1;
 
-        this.$router.push({
-          name: 'noticeDetailView',
-          params: { 
-            id: notice.notice_board_no, 
-            notice: {
-              ...notice,
-              mile_no: notice.mile_no,
-              mile_name: notice.mile_name
-            }
-          }
-        });
-      } catch (error) {
-        console.error('Error incrementing views:', error.response ? error.response.data : error.message);
-      } finally {
-        this.isProcessing = false;
+    const noticeToPass = {
+      ...noticeDetails,
+      mile_no: noticeDetails.mile_no,
+      mile_name: noticeDetails.mile_name,
+      file: noticeDetails.file || null,
+      notice_board_hit: notice.notice_board_hit // 업데이트된 조회수 사용
+    };
+
+    console.log('Navigating to noticeDetailView with notice:', {
+      id: notice.notice_board_no,
+      notice: noticeToPass
+    });
+
+    this.$router.push({
+      name: 'noticeDetailView',
+      params: { 
+        id: notice.notice_board_no, 
+        notice: noticeToPass
       }
-    },
+    });
+  } catch (error) {
+    console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+  } finally {
+    this.isProcessing = false;
+  }
+},
 
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -252,8 +273,8 @@ export default {
     searchNotices() {
       this.currentPage = 1;
     },
-    filterByCategory(mileName) {
-      this.selectedCategory = mileName;
+    filterByCategory(category) {
+      this.selectedCategory = category;
       this.currentPage = 1;
     },
     refreshPage() {
@@ -293,7 +314,7 @@ body {
 }
 
 h2 {
-  font-family: 'KB_S4', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   font-size: 40px;
   margin-top: 30px;
   display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
@@ -352,7 +373,7 @@ h2::after {
   margin-top: 20px; /* 공지사항과 카테고리 버튼 사이의 간격 */
   display: inline-block;
   font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
 }
 
@@ -371,7 +392,7 @@ h2::after {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
   outline: none;
   font-size: 19px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
   width: 28%;
   border: none;
   margin: 5px;
@@ -404,7 +425,7 @@ h2::after {
 .notice-count {
   margin-bottom: 10px;
   font-size: 19px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
   text-align: left; /* 왼쪽 정렬 */
   padding-left: 3%;
 }
@@ -484,8 +505,8 @@ h2::after {
   flex: 1 1 150%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
-  font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
+  font-size: 18px;
+  font-family: 'KB_C3', sans-serif;
 }
 
 .notice-num {
@@ -493,14 +514,14 @@ h2::after {
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
   font-size: 12pt;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 .notice-new{
   flex: 1 1 20%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
   font-size: 12pt;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
   color: #edbb00;
 }
 .notice-mile {
@@ -508,8 +529,8 @@ h2::after {
   text-align: left;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
   color: #745F40;
-  font-family: 'KB_S5', sans-serif;
-  font-size: 0.8em;
+  font-family: 'KB_C3', sans-serif;
+  font-size: 0.75em;
   margin-left: 10px; /* 왼쪽 여백 추가 */
 }
 
@@ -518,7 +539,7 @@ h2::after {
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
   font-size: 16px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 
 .notice-views {
@@ -527,14 +548,15 @@ h2::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
+  font-size: 17px;
+  margin-bottom:10%;
 }
 
 .views-text {
   flex: 1;
   text-align: right; /* 텍스트를 오른쪽 정렬 */
   font-size: 18px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 
 .views-icon {
@@ -578,7 +600,7 @@ h2::after {
   padding: 10px 20px; /* 상하 패딩과 좌우 패딩을 픽셀 단위로 설정 */
   text-decoration: none;
   color: #4b4a4a;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
   font-size: 18px; /* 텍스트 크기를 픽셀 단위로 설정 */
 }
 
@@ -611,7 +633,7 @@ h2::after {
   margin: 0 5px;
   border-radius: 5px;
   font-size: 18px; /* 숫자의 폰트 크기 */
-  font-family: 'KB_s4', sans-serif; /* 숫자의 폰트 */
+  font-family: 'KB_C3', sans-serif; /* 숫자의 폰트 */
 }
 
 .pagination button:disabled {

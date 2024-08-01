@@ -22,21 +22,21 @@
           <span class="date">{{ formatDate(notice.notice_board_date) }}</span>
         </div>
         <div class="main-content">
-          <div class="body">
-            <pre><p>{{ notice.notice_board_content }}</p></pre>
-          </div>
-          <div class="file cards d-flex">
-            <h2>첨부파일</h2>
-            <div v-if="notice.notice_board_file">
-              <a @click.prevent="downloadFile" href="#" class="file-download-link">
-                {{  getDisplayFileName(notice.notice_board_file)  }}
-              </a>
+        <div class="body">
+          <pre><p>{{ notice.notice_board_content }}</p></pre> <!-- 줄 바꿈 -->
+        </div>
+        <div class="file cards" >
+          <div style="display: flex; align-items: center;">
+              <h2 style="margin-right: 10px;">첨부파일</h2>
+              <span v-if="!notice.notice_board_file" style="color: #4b4a4a; font-family: 'KB_S5',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
             </div>
-            <div v-else>
-              <span style="color: #4b4a4a; font-family: 'KB_h5', sans-serif; margin-left: 20%; width: 300px; white-space: nowrap;">파일이 존재하지 않습니다.</span>
-            </div>
+          <div v-if="notice.notice_board_file" style="margin-top: 10px;">
+            <a @click.prevent="downloadFile" href="#" class="file-download-link">
+              {{ getDisplayFileName(notice.notice_board_file) }} 
+            </a>
           </div>
         </div>
+      </div>
         <div class="icon-container">
           <div class="views-icon">
             <i class="bi bi-eye"></i>
@@ -60,6 +60,7 @@ export default {
   props: ['id'],
   methods: {
     ...mapActions('notice', ['fetchNoticeDetail', 'incrementViews']),
+
     async deleteNotice() {
       Swal.fire({
         title: '정말로 삭제하시겠습니까?',
@@ -75,7 +76,7 @@ export default {
         if (result.isConfirmed) {
           try {
             await axios.delete(`http://localhost:8090/notice/delete/${this.notice.notice_board_no}`);
-            Swal.fire('게시글이 성공적으로 삭제되었습니다.', '좋은 하루 보내세요', 'success').then(() => {
+            Swal.fire('게시글 삭제 완료', '게시글이 삭제 되었습니다.', 'success').then(() => {
               this.$router.push('/noticeListView');
             });
           } catch (error) {
@@ -85,6 +86,7 @@ export default {
         }
       });
     },
+
     showAlert(message, icon) {
       this.$swal({
         title: message,
@@ -109,16 +111,27 @@ export default {
     },
     
     getDisplayFileName(fileName) {
-      if (fileName) {
-        const parts = fileName.split('_');
-        return parts.length > 1 ? parts.slice(1).join('_') : fileName;
-      }
-      return '';
-    },
+  // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
+  const UUID_LENGTH = 36 + 1;
+
+  // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
+  if (!fileName || fileName.length <= UUID_LENGTH) {
+    return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
+  }
+
+  // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
+  if (fileName.charAt(UUID_LENGTH - 1) === '_') {
+    return fileName.substring(UUID_LENGTH);
+  }
+  
+  return fileName;
+},
+
     goBack() {
       this.$router.go(-1);
     },
     goToModifyView() {
+      console.log('id ;',this.notice.notice_board_no);
       this.$router.push({ name: 'noticeModifyAdminView', params: { id: this.notice.notice_board_no } });
     },
     isNew(dateString) {
@@ -132,29 +145,31 @@ export default {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
+
+
     async downloadFile() {
-      if (!this.notice.notice_board_file) return;
+    try {
+      console.log("글쓰기 상세보기 fileName :",this.notice.notice_board_file);
+      const fileName = encodeURIComponent(this.notice.notice_board_file);
+      const response = await axios({
+        url: `http://localhost:8090/notice/download/${fileName}`,
+        method: 'GET',
+        responseType: 'blob',
+      });
 
-      try {
-        const encodedFileName = encodeURIComponent(this.notice.notice_board_file);
-        const response = await axios({
-          url: `http://localhost:8090/notice/download/${encodedFileName}`,
-          method: 'GET',
-          responseType: 'blob',
-        });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', this.notice.notice_board_file);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error('파일 다운로드 중 오류 발생:', error);
-      }
-    },
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', this.notice.notice_board_file); // 서버에서 받은 파일명을 그대로 사용
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error('파일 다운로드 중 오류 발생:', error);
+    this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
+    }
   },
+},
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('notice', ['getNotice']),
@@ -342,14 +357,14 @@ export default {
 .file h2 {
   text-align: left;
   font-size: 21px;
-  font-family: 'KB_h5', sans-serif;
+  font-family: 'KB_S5', sans-serif;
   color: #4b4a4a;
 }
 
 .file a {
   text-align: left;
   font-size: 19px;
-  font-family: 'KB_h5', sans-serif;
+  font-family: 'KB_S5', sans-serif;
   margin-left: 3%;
   display: block; /* 변경된 부분 */
 }
@@ -377,18 +392,18 @@ export default {
   flex: 0 0 auto;
   text-align: left;
   font-size: 1.5vw;
-  font-family: 'KB_s5', sans-serif;
+  font-family: 'KB_S5', sans-serif;
   color: #4b4a4a;
   margin-left: 0.8vw;
 }
 
 .new-label {
   color: #ffca05;
-  margin-left: 10px;
+  /* margin-left: 5px; */
   text-align: center;
   font-size:18px;
   font-family: 'KB_S3', sans-serif;
-  margin-left:-1%;
+  margin-left:0%;
   display: inline-block;
   margin-bottom: 8px;
 }
