@@ -83,4 +83,24 @@
         select count(*) from Document_mile;
 
     </select>
+
+
+    <select id="loadBadgeData" resultType="com.kbstar.mileEasy.beans.BadgeData">
+        SELECT
+            is_king AS mile_is_king ,
+            is_jump AS mile_is_jump,
+            monthly_king_date AS start_date,
+            LAST_DAY(monthly_king_date) AS end_date,
+            CASE
+                WHEN MONTH(monthly_king_date) = MONTH(CURDATE()) AND YEAR(monthly_king_date) = YEAR(CURDATE()) THEN 'Y'
+        ELSE 'N'
+        END AS current_month
+FROM
+    monthly_king
+WHERE
+    user_no = #{userNo}
+order by
+	start_date desc;
+
+    </select>
 </mapper>
