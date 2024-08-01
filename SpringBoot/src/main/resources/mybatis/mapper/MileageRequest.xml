@@ -35,5 +35,30 @@
         WHERE mileage_request_no = #{mileageRequestNo};
     </delete>
 
+    <select id="requestListAdmin" resultType="com.kbstar.mileEasy.dto.Mileage_request">
+        SELECT
+            mr.mileage_request_no,
+            mr.request_is_branch,
+            mr.request_mile_name,
+            mr.request_mil_max,
+            mr.request_admin,
+            mr.request_etc,
+            mr.request,
+            mr.user_no,
+            mr.mileage_request_date,
+            mr.request_status,
+            m.mile_no,
+            m.mile_name
+        FROM
+            mileage_request mr
+                JOIN
+            mileage m
+            ON
+                mr.mile_no = m.mile_no;
+
+    </select>
+
+
+
 
 </mapper>

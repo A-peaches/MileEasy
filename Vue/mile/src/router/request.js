@@ -12,7 +12,7 @@ export default [
     meta: { requiresAuth: true },
   },
   {
-    path: '/mileageRequesDetail',
+    path: '/mileageRequesDetail/:requestNo',
     name: 'mileageRequesDetail',
     component: () => import('../views/MileageRequest/MileageRequestDetail.vue'),
     meta: { requiresAuth: true },

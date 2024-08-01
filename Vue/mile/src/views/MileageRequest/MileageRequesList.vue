@@ -276,10 +276,10 @@ export default {
       return '';
     },
     getStatus(status) {
-      if (status === 0) return '승인요청';
-      if (status === 1) return '승인중';
+      if (status === 0) return '접수요청';
+      if (status === 1) return '접수완료';
       if (status === 2) return '승인완료';
-      if (status === 3) return '거절';
+      if (status === 3) return '승인거절';
       return '';
     },
     applyFilters() {

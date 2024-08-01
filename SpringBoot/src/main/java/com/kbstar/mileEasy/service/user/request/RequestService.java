@@ -68,4 +68,7 @@ public class RequestService {
 
       return result;
     }
+
+    public ArrayList<Mileage_request> requestListAdmin() { return mileageRequestDao.requestListAdmin();
+    }
 }

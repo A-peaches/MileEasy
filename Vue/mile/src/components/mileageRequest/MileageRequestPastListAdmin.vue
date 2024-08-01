@@ -8,26 +8,25 @@
             <input
               type="radio"
               name="status"
-              value="접수요청"
+              value="승인완료"
               v-model="selectedFilter"
               @change="applyFilters"
             />
             <span class="custom-radio"></span>
-            <span class="radio-label">접수요청</span>
+            <span class="radio-label">승인완료</span>
           </label>
           <label class="radio-container">
             <input
               type="radio"
               name="status"
-              value="접수완료"
+              value="승인거절"
               v-model="selectedFilter"
               @change="applyFilters"
             />
             <span class="custom-radio"></span>
-            <span class="radio-label">접수완료</span>
+            <span class="radio-label">승인거절</span>
           </label>
         </div>
-        <div></div>
         <div class="search-container">
           <input
             type="text"
@@ -41,27 +40,32 @@
         </div>
         <div style="text-align: center; justify-content: center">
           <div class="notice-list" style="text-align: center">
-            <div
-              v-for="(notice, index) in paginatedRequestList"
-              :key="notice.mileage_request_no"
-            >
+            <div v-if="filteredRequestList.length === 0">
+              <p>해당 내용이 없습니다.</p>
+            </div>
+            <div v-else>
               <div
-                class="input-base list-wrapper"
-                @click="toggleDetails(index)"
+                v-for="(notice, index) in paginatedRequestList"
+                :key="notice.mileage_request_no"
               >
-                <div class="notice-details">
-                  <div class="notice-new">{{ index + 1 }}</div>
-                  <div class="notice-num">
-                    {{ getRequestAction(notice.request) }}
-                  </div>
-                  <div class="notice-title">
-                    {{ notice.request_mile_name || notice.mile_name }}
-                  </div>
-                  <div class="notice-mile">
-                    {{ getRequestStatus(notice.request_status) }}
-                  </div>
-                  <div class="notice-date">
-                    {{ notice.mileage_request_date || '날짜 없음' }}
+                <div
+                  class="input-base list-wrapper"
+                  @click="toggleDetails(index)"
+                >
+                  <div class="notice-details">
+                    <div class="notice-new">{{ index + 1 }}</div>
+                    <div class="notice-num">
+                      {{ getRequestAction(notice.request) }}
+                    </div>
+                    <div class="notice-title">
+                      {{ notice.request_mile_name || notice.mile_name }}
+                    </div>
+                    <div class="notice-mile">
+                      {{ getRequestStatus(notice.request_status) }}
+                    </div>
+                    <div class="notice-date">
+                      {{ notice.mileage_request_date || '날짜 없음' }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -91,7 +95,7 @@ export default {
 
   data() {
     return {
-      selectedFilter: '접수요청',
+      selectedFilter: '승인완료',
       searchQuery: '',
       currentPage: 1,
       noticesPerPage: 10,
@@ -113,13 +117,12 @@ export default {
       if (!this.getRequestList) return [];
 
       let filteredList = [...this.getRequestList];
-      console.log('여기', filteredList);
 
       // 상태 필터링 로직
       filteredList = filteredList.filter((notice) => {
         return (
-          (this.selectedFilter === '접수요청' && notice.request_status === 0) ||
-          (this.selectedFilter === '접수완료' && notice.request_status === 1)
+          (this.selectedFilter === '승인완료' && notice.request_status === 2) ||
+          (this.selectedFilter === '승인거절' && notice.request_status === 3)
         );
       });
 
@@ -137,7 +140,6 @@ export default {
                 .includes(this.searchQuery.toLowerCase()))
         );
       }
-      console.log(filteredList);
       return filteredList;
     },
     paginatedRequestList() {
