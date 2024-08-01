@@ -47,3 +47,9 @@ configurations.all {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+bootJar {
+    archiveBaseName = '-'
+    archiveFileName = 'vue_springboot.jar'
+    archiveVersion ='0.0.0'
+}

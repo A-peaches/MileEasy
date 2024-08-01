@@ -2,9 +2,9 @@ export default [
   //🚨M-Tip 관련 라우터
   {
     //사용자 :  m-tip 메인 화면
-    path: '/m_TipMainView',
-    name: 'm_TipMainView',
-    component: () => import('../views/m_Tip/M_TipMainView.vue'),
+    path: '/M-Tip',
+    name: 'M-TipMainView',
+    component: () => import('../views/m_Tip/user/M_TipMainView.vue'),
     meta: { requiresAuth: true },
   },
   {
@@ -12,13 +12,6 @@ export default [
     path: '/myM_TipView',
     name: 'myM_TipView',
     component: () => import('../views/m_Tip/MyM_TipView.vue'),
-    meta: { requiresAuth: true },
-  },
-  {
-    //사용자 : m-tip 리스트 화면
-    path: '/m_TipListView',
-    name: 'm_TipListView',
-    component: () => import('../views/m_Tip/M_TipListView.vue'),
     meta: { requiresAuth: true },
   },
   {
@@ -53,7 +46,7 @@ export default [
     //관리자 : m-tip 메인 화면
     path: '/m_TipMainAdminView',
     name: 'm_TipMainAdminView',
-    component: () => import('../views/m_Tip/M_TipMainAdminView.vue'),
+    component: () => import('../views/m_Tip/admin/M_TipMainAdminView.vue'),
     meta: { requiresAuth: true },
   },
   {
