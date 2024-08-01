@@ -50,10 +50,15 @@ public class NoticeService {
 
     // 공지사항 작성
     public void createNotice(Notice notice) {
-        User user = userDao.selectUserById(notice.getUser_no());
-        if (user == null) {
+        if (notice.getUser_no() == null || notice.getUser_no().isEmpty()) {
             throw new IllegalArgumentException("Invalid user_no: " + notice.getUser_no());
         }
+
+        // User 검증이 필요한 경우 (옵션)
+        // User user = userDao.selectUserById(notice.getUser_no());
+        // if (user == null) {
+        //     throw new IllegalArgumentException("User not found for user_no: " + notice.getUser_no());
+        // }
 
         // 파일 이름이 null이 아닌 경우에만 설정
         if (notice.getNotice_board_file() != null && !notice.getNotice_board_file().isEmpty()) {
@@ -67,16 +72,6 @@ public class NoticeService {
 
     @Transactional
     public void updateNotice(Notice notice) {
-        int mileNo = noticeDao.findMileNoByName(notice.getMile_name());
-        notice.setMile_no(mileNo);
-
-        // 파일명에서 UUID 제거
-        if (notice.getNotice_board_file() != null && !notice.getNotice_board_file().isEmpty()) {
-            String[] parts = notice.getNotice_board_file().split("_", 2);
-            String actualFileName = parts.length > 1 ? parts[1] : notice.getNotice_board_file();
-            notice.setNotice_board_file(actualFileName);
-        }
-
         noticeDao.updateNotice(notice);
     }
 
@@ -93,4 +88,10 @@ public class NoticeService {
     public List<Notice> getFooterNotice() {
         return noticeDao.getFooterNotice();
     }
+
+    // ID로 공지사항 찾기
+    public Notice findById(Long id) {
+        return noticeDao.findById(id);
+    }
+
 }
