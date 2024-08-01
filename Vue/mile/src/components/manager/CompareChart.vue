@@ -17,22 +17,56 @@
         >
       </div>
     </div>
-    <div class="chart-wrapper d-flex justify-content-evenly">
-      <div v-if="selectedTab==='mileage'" class="chart-container">
+    <div v-if="isLoading" class="loading-indicator">데이터 로딩 중...</div>
+    <div v-else class="chart-wrapper d-flex justify-content-evenly">
+      <div v-if="selectedTab==='mileage'" class="chart-container" style="margin-right: 3%;" >
         <canvas id="mileageChart"></canvas>
       </div>
-      <div v-if="selectedTab==='visitor'" class="chart-container">
+      <div v-if="selectedTab==='visitor'" class="chart-container" style="margin-right: 3%;">
         <canvas id="visitsChart"></canvas>
       </div>
-      <div class="" style="width: 30%; height: 80%;">
-        <div class="stats-container d-flex justify-content-between" style="height: 100%;">
-          <div class="stats-content ml-4">
-            <span class="md" style="display: block; margin-bottom: 10px; color: #333; font-weight: bold;">전월 대비 5% 증가했습니다.</span>
-            <span class="" style="display: block; font-size: 9pt; color: #666;">(작년 동월 대비)</span>
-          </div>
+      <div class="" style="width: 35%; height: 80%;">
+        <div class="stats-container" style="height: 100%;">
+          <table style="border: 1px solid #EBEBEB; background-color: #fff; width: 100%; height:100%;">
+            <tr class="md" style="border: 1px solid #EBEBEB;">
+              <th>기준</th>
+              <th>{{ selectedTab === 'mileage' ? '마일리지 총점' : '방문자 수' }}</th>
+            </tr>
+            <tr >
+              <td class="md" style="font-size: 15pt;">전년도 대비</td>
+              <td class="lg2" style="font-family: 'KB_S4';">
+                <i
+                  :class="yearOverYearChange >= 0 ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"
+                  :style="{ color: yearOverYearChange >= 0 ? '#F28080' : '#808BF2', fontSize: '20pt' }"
+                ></i>
+                {{ Math.abs(yearOverYearChange) }}%
+              </td>
+            </tr>
+            <tr >
+              <td class="md" style="font-size: 15pt;">전월 대비</td>
+              <td class="lg2" style="font-family: 'KB_S4';">
+                <i
+                  :class="monthOverMonthChange >= 0 ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"
+                  :style="{ color: monthOverMonthChange >= 0 ? '#F28080' : '#808BF2', fontSize: '20pt' }"
+                ></i>
+                {{ Math.abs(monthOverMonthChange) }}%
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div  class="text-end w-100 mt-5">
+         <span  style="
+                    position: absolute;
+                    top: 90%;
+                    right : -40px;
+                    transform: translateX(-50%);
+                    z-index: 0;
+                    
+                  font-size:10pt; color:gray;">( 기준일자 : {{ startDate}} )</span>
         </div>
       </div>
-      <img src="@/assets/imoji/lamu/라무다짐.png" style="width: 3vw; margin-top: 20px; align-self: flex-end;"/>
+      
+      <!-- <img src="@/assets/imoji/ago/아거다짐.png" style="width: 5vw; align-self: flex-end;"/> -->
     </div>
   </div>
 </template>
@@ -58,8 +92,15 @@ export default {
       chartIds: ['mileageChart', 'visitsChart'],
       thisYearData: [],
       lastYearData: [],
-      selectedTab: 'mileage'
+      selectedTab: 'mileage',
+      isLoading: true,
+      mileageCountData: null,
+      visitCountData: null,
     };
+  },
+  created() {
+    this.setDefaultDates();
+    this.loadData();
   },
   mounted() {
     this.setDefaultDates();
@@ -71,9 +112,33 @@ export default {
     loginInfo() {
       return this.getLoginInfo;
     },
+    lastMonthIndex() {
+      const currentMonth = new Date().getMonth();
+      return currentMonth === 0 ? 11 : currentMonth - 1;
+    },
+    currentYearTotal() {
+      const key = this.selectedTab === 'mileage' ? 'total_points' : 'visits';
+      return this.thisYearData.reduce((sum, item) => sum + (item[key] || 0), 0);
+    },
+    previousYearTotal() {
+      const key = this.selectedTab === 'mileage' ? 'total_points' : 'visits';
+      return this.lastYearData.reduce((sum, item) => sum + (item[key] || 0), 0);
+    },
+    yearOverYearChange() {
+      if (this.previousYearTotal === 0) return 0;
+      return ((this.currentYearTotal - this.previousYearTotal) / this.previousYearTotal * 100).toFixed(2);
+    },
+    monthOverMonthChange() {
+      const key = this.selectedTab === 'mileage' ? 'total_points' : 'visits';
+      const thisMonth = this.thisYearData[this.lastMonthIndex]?.[key] || 0;
+      const lastMonth = this.thisYearData[this.lastMonthIndex - 1]?.[key] || 0;
+      if (lastMonth === 0) return 0;
+      return ((thisMonth - lastMonth) / lastMonth * 100).toFixed(2);
+    }
   },
   watch: {
     selectedTab(){
+      this.updateTotals();
       this.$nextTick(() => {
         this.renderCharts();
       });
@@ -154,17 +219,47 @@ export default {
     },
     // 작년, 올해 월별로 데이터 가져오기 
     processData(mileageCountData, visitCountData) {
-      this.thisYearData = mileageCountData.thisYear.map((data, index) => ({
+      // 기본 데이터 구조 설정
+      const defaultData = this.getDefaultMonthlyData();
+
+      // mileageCountData와 visitCountData가 올바른 구조인지 확인
+      const mileageThisYear = mileageCountData?.thisYear || defaultData;
+      const mileageLastYear = mileageCountData?.lastYear || defaultData;
+      const visitThisYear = visitCountData?.thisYear || defaultData;
+      const visitLastYear = visitCountData?.lastYear || defaultData;
+
+      this.thisYearData = mileageThisYear.map((data, index) => ({
         month: data.month,
-        total_points: data.total_points,
-        visits: visitCountData.thisYear[index] ? visitCountData.thisYear[index].visits : 0,
+        total_points: data.total_points || 0,
+        visits: visitThisYear[index]?.visits || 0,
       }));
 
-      this.lastYearData = mileageCountData.lastYear.map((data, index) => ({
+      this.lastYearData = mileageLastYear.map((data, index) => ({
         month: data.month,
-        total_points: data.total_points,
-        visits: visitCountData.lastYear[index] ? visitCountData.lastYear[index].visits : 0,
+        total_points: data.total_points || 0,
+        visits: visitLastYear[index]?.visits || 0,
       }));
+
+      this.updateTotals();
+      
+    },
+    updateTotals() {
+      const key = this.selectedTab === 'mileage' ? 'total_points' : 'visits';
+      this.thisYearTotal = this.thisYearData.reduce((sum, item) => sum + (item[key] || 0), 0);
+      this.lastYearTotal = this.lastYearData.reduce((sum, item) => sum + (item[key] || 0), 0);
+    },
+    async loadData() {
+      this.isLoading = true;
+      try {
+        this.mileageCountData = await this.mileageCount();
+        this.visitCountData = await this.visitCount();
+        this.processData(this.mileageCountData, this.visitCountData);
+        this.renderCharts();
+      } catch (error) {
+        console.error('loadData error:', error);
+      } finally {
+        this.isLoading = false;
+      }
     },
     // 차트 렌더링 
     renderCharts() {
@@ -175,14 +270,14 @@ export default {
           title: '마일리지',
           dataKey: 'total_points',
           yAxisLabel: '마일리지',
-          colors: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)']
+          colors: ['rgba(255, 170, 231, 1)', 'rgba(192, 192, 192, 1)']
         },
         {
           id: 'visitsChart',
           title: '방문자 수',
           dataKey: 'visits',
           yAxisLabel: '방문자 수',
-          colors: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)']
+          colors: ['rgba(170, 204, 255, 1)', 'rgba(192, 192, 192, 1)']
         }
       ]
 
@@ -229,7 +324,7 @@ export default {
             plugins: {
               legend: {
                 display: true,
-                position: 'right',
+                position: 'top',
                 labels: {
                   font: {
                     family: 'KB_C2',
@@ -294,10 +389,19 @@ export default {
     },
     setDefaultDates() {
       const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
 
-      this.startDate = `${year}-${month}`;
+      // 주말인 경우 금요일로 설정
+      while (yesterday.getDay() === 0 || yesterday.getDay() === 6) {
+        yesterday.setDate(yesterday.getDate() - 1);
+      }
+
+      const year = yesterday.getFullYear();
+      const month = String(yesterday.getMonth() + 1).padStart(2, '0');
+      const date = String(yesterday.getDate()).padStart(2, '0');
+
+      this.startDate = `${year}-${month}-${date}`;
     },
   },
 };
@@ -324,8 +428,8 @@ export default {
   height: 280px;
 }
 .chart-container {
-  width: 60%;
-  height: 100%;
+  width: 48%;
+  height: 120%;
   padding-top: 20px
 }
 .date {
@@ -356,16 +460,18 @@ export default {
 }
 .stats-container {
   width: 100%; 
-  height: 80%; 
+  height: 100%; 
   display: flex; 
   flex-direction: column; 
   justify-content: center; 
   align-items: center;
+  margin-right: 5%;
 }
 .stats-content {
-  text-align: center; 
-  background-color: #f0f0f0; 
+  width: 100%;
+  height: 70%;
   padding: 15px; 
+  background-color: #f5f6f5; 
   border-radius: 10px; 
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

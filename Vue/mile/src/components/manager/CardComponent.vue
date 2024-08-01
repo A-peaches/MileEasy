@@ -23,8 +23,8 @@
       </div>
       <div class="date-selector" style="width: 35%;">
         <div class="d-flex justify-content-between align-items-center" style="width: 80%;">
-          <span class="md highlight">시작일자</span>
-          <span class="md highlight">종료일자</span>
+          <span class="md  highlight fw-bold">시작일자</span>
+          <span class="md highlight  fw-bold">종료일자</span>
         </div>
         <div class="date-inputs" style="width: 100%; margin-top: 5%;">
           <input
@@ -42,13 +42,32 @@
             v-model="endDate"
             @change="updateCharts"
           />
+        </div><br>
+        <div class="total-visitors mt-4" style="text-align: center; font-family: 'KB_S5'; font-size:14pt">
+          <!-- 조회 기간의 총 방문자 수는 {{ total }}명 입니다.<br><br> -->
+          조회 기간 중 직원들이 가장 많이 방문한 날짜는
+          <div class="mt-2"></div>
+          <span class="date-text">
+            <sup><img src="@/assets/img/left-quote.png" class="quote" style="width:6%;" /></sup>
+            {{ maxcountDate }}
+            <sup><img src="@/assets/img/right-quote.png" class="quote" style="width:6%;" /></sup>
+          </span> 입니다. 
         </div>
-        <div class="total-visitors md" style="text-align: center; margin-left: 12%;">
-          조회 기간의 총 방문자 수는 {{ total }}명 입니다.<br><br>
-          조회 기간 중 가장 많이 방문한 날짜는<br><span class="lg">" {{ maxcountDate }}일 "</span> 입니다. 
+ 
+        <div  class="text-end w-100 mt-5">
+         <span  style="
+                    position: absolute;
+                    top: 90%;
+                    right : -60px;
+                    transform: translateX(-50%);
+                    z-index: 0;
+                    
+                  font-size:10pt; color:gray;">( 최대 조회 가능일 : 전영업일 )</span>
         </div>
       </div>
+
     </div>
+
   </div>
 </template>
 
@@ -146,16 +165,26 @@ export default {
       }
 
       try {
-        const counts = await this.chartDataCount();
+        const {counts, dates} = await this.chartDataCount();
+        this.dates = dates;
         this.total = counts.reduce((acc, cur) => acc + cur, 0);
         this.maxcount = Math.max(...counts);
         this.mincount = Math.min(...counts);
-        this.maxcountDate = this.dates[counts.indexOf(this.maxcount)];
-        this.mincountDate = this.dates[counts.indexOf(this.mincount)];
+        const maxIndex = counts.indexOf(this.maxcount);
+        const minIndex = counts.indexOf(this.mincount);
+        this.maxcountDate = this.formatted(new Date(dates[maxIndex]));
+        this.mincountDate = this.formatted(new Date(dates[minIndex]));
         this.renderCharts(counts);
       } catch (error) {
         console.error('오잉:', error);
       }
+    },
+    formatted(date){
+      // const year = date.getFullYear();
+      const month = String(date.getMonth()+1).padStart(2, '0'); // 01, 02... 형식
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${month}월 ${day}일`;
+      // return `${day}`;
     },
     async chartDataCount() {
       const start = this.startDate.trim();
@@ -199,14 +228,20 @@ export default {
         }
 
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(255, 175, 170, 1)');  // 밝은 코랄 색상
-        gradient.addColorStop(1, 'rgba(255, 175, 170, 0.2)');  // 옅은 코랄 색상
+        // gradient.addColorStop(0, 'rgba(255, 170, 231, 1)');  // 핑크색 
+        // gradient.addColorStop(1, 'rgba(255, 170, 231, 0.2)'); 
 
-        // gradient.addColorStop(0, 'rgba(255, 99, 132, 1)');  // 밝은 붉은색
-        // gradient.addColorStop(1, 'rgba(255, 99, 132, 0.2)');  // 옅은 붉은색
+        // gradient.addColorStop(0, 'rgba(228, 228, 228, 1)');  // 회색
+        // gradient.addColorStop(1, 'rgba(228, 228, 228, 0.2)'); 
 
-        // gradient.addColorStop(0, 'rgba(75, 192, 192, 1)');
-        // gradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)');
+        gradient.addColorStop(0, 'rgba(255, 231, 143, 1)');  // 노란색
+        gradient.addColorStop(1, 'rgba(255, 231, 143, 1)'); 
+
+        // gradient.addColorStop(0, 'rgba(159, 237, 209, 1)');  // 초록색
+        // gradient.addColorStop(1, 'rgba(159, 237, 209, 1)'); 
+
+        // gradient.addColorStop(0, 'rgba(170, 204, 255, 1)');  // 파란색
+        // gradient.addColorStop(1, 'rgba(170, 204, 255, 1)'); 
 
         this.managerChart1[chartId] = new Chart(ctx, {
           type: 'bar',
@@ -217,7 +252,7 @@ export default {
                 label: `방문자 수`,
                 backgroundColor: gradient,
                 data: counts,
-                borderRadius: 5,
+                // borderRadius: 5,
                 maxBarThickness: 30, // 막대의 너비를 설정합니다.
                 
               },
@@ -229,8 +264,14 @@ export default {
             plugins: {
               legend: {
                 display: true,
-                position: 'bottom',
-                padding: 2
+                position: 'top',
+                // padding: 2,
+                labels: {
+                  font: {
+                    family: 'KB_C2',
+                    size: 14
+                  }
+                }
               },
               // title: {
               //   display: false,
@@ -247,7 +288,7 @@ export default {
                   size: 12,
                 },
                 padding: 10,
-                cornerRadius: 5,
+                // cornerRadius: 5,
                 displayColors: false,
               },
             },
@@ -331,8 +372,9 @@ export default {
 }
 
 .chart-wrapper {
-  width: 50%;
-  height: 100%;
+  width: 45%;
+  height: 120%;
+  padding-top: 20px;
 }
 
 .date-selector {
@@ -366,15 +408,15 @@ export default {
 
 .total-visitors {
   margin-top: 20px;
-  font-family: 'KB_C2';
-  font-size: 16px;
+  /* font-family: 'KB_C2';
+  font-size: 16px; */
   /* font-weight: bold; */
 }
 
 .highlight {
-  background-color: #fff6d4;
+  background-color: #e1fcef;
   border-radius: 30px; /* 둥근 모서리 */
-  padding: 4px 8spx; /* 내부 여백을 추가하여 크기 조절 */
+  padding: 3px 10px; /* 내부 여백을 추가하여 크기 조절 */
   display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
 }
 
@@ -397,5 +439,10 @@ export default {
   display: block; /* 추가 */
   background-color: white; /* 임시로 눈에 띄는 색상 사용 */
   border: 2px solid #e4e4e4;
+}
+
+.date-text {
+  font-size : 18pt;
+  font-family: 'KB_C2'
 }
 </style>
