@@ -537,6 +537,20 @@ public class MileageController {
         System.out.println("직무별 차트 " + mileByJob);
         return mileByJob;
     }
+    @GetMapping("/jumpData")
+    public ArrayList<MileScore> jumpData(){
+        return mileScoreService.jumpData();
+    }
+    @GetMapping("/kingDataSelect")
+    public ArrayList<MileScore> kingDataSelect(){
+        return mileScoreService.kingDataSelect();
+    }
+
+    @GetMapping("/jumpDataSelect")
+    public ArrayList<MileScore> jumpDataSelect(){
+        return mileScoreService.jumpDataSelect();
+    }
+
 
 
 

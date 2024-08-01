@@ -47,7 +47,7 @@
             >
               <div
                 class="input-base list-wrapper"
-                @click="toggleDetails(index)"
+                @click="toggleDetails(notice.mileage_request_no)"
               >
                 <div class="notice-details">
                   <div class="notice-new">{{ index + 1 }}</div>
@@ -179,6 +179,9 @@ export default {
         default:
           return '';
       }
+    },
+    toggleDetails(mileage_request_no) {
+      this.$router.push(`/mileageRequesDetail/${mileage_request_no}`);
     },
   },
 

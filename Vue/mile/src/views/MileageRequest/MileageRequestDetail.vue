@@ -5,36 +5,57 @@
         <span class="arrow">❮</span> 이전
       </button>
     </div>
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 요청</h2>
+    <h2 class="bold-x-lg" style="font-family: KB_C3">{{ mileageAction }}</h2>
+    <h6 class="mb-5">
+      {{ formattedRequestDate }} {{ userName }}({{ userNo }})
+    </h6>
     <div style="padding: 0 5%">
       <div>
-        <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">
-          마일리지 수정
-        </h3>
-        <div
-          class="p-2"
-          style="
-            text-align: left;
-            background-color: #f6f6f6;
-            padding: 10px 140px 60px 140px !important;
-          "
-        >
-          <div class="mt-5" style="text-align: left">마일리지 이름</div>
-          <input
-            v-model="mileageName"
-            type="text"
-            class="input-base input-white"
-            style="width: 800px; text-align: left"
-            readonly
-          /><br />
+        <div style="text-align: right" class="my-2">
+          <span>승인완료</span>
+          &nbsp;
+          <span>승인거절</span>
+        </div>
+        <div class="p-2 form-container" style="background-color: #f6f6f6">
+          <div class="form-group">
+            <label class="mt-3">마일리지 이름</label>
+            <input
+              v-model="mileageName"
+              type="text"
+              class="input-base input-white"
+            />
+          </div>
 
-          <div class="mt-3" style="text-align: left">기타사항</div>
-          <textarea
-            v-model="additionalNotes"
-            class="input-base input-white"
-            style="width: 800px; height: 200px; text-align: left"
-            placeholder="기타 요청사항을 입력하세요."
-          ></textarea>
+          <div class="form-group">
+            <label>마일리지 연간 최고 한도</label>
+            <input
+              v-model="mileageLimit"
+              type="text"
+              class="input-base input-white"
+              readonly
+            />
+          </div>
+
+          <div class="form-group">
+            <label>담당자 설정</label>
+            <input
+              v-model="manager"
+              type="text"
+              class="input-base input-white"
+              readonly
+            />
+          </div>
+
+          <div class="form-group">
+            <label>기타사항</label>
+            <textarea
+              v-model="additionalNotes"
+              class="input-base input-white"
+            ></textarea>
+          </div>
+          <div class="button-wrapper">
+            <button class="btn-yellow">등록</button>
+          </div>
         </div>
       </div>
     </div>
@@ -42,30 +63,93 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'MileageRequestDetail',
-
+  props: ['mileage_request_no'],
   data() {
-    return {};
+    return {
+      mileageName: '',
+      mileageLimit: '',
+      manager: '',
+      additionalNotes: '',
+    };
   },
 
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('request', ['getRequestList']),
 
     loginInfo() {
       return this.getLoginInfo;
     },
-  },
 
-  methods: {
-    goBack() {
-      this.$router.go(-1);
+    requestNo() {
+      return this.$route.params.mileage_request_no;
+    },
+
+    currentRequest() {
+      if (!this.getRequestList) return null;
+
+      const requestNoStr = String(this.requestNo);
+      return this.getRequestList.find(
+        (request) => String(request.mileage_request_no) === requestNoStr
+      );
+    },
+
+    formattedRequestDate() {
+      if (this.currentRequest && this.currentRequest.mileage_request_date) {
+        const date = new Date(this.currentRequest.mileage_request_date);
+        return date.toISOString().split('T')[0]; // yyyy-mm-dd format
+      }
+      return '';
+    },
+
+    userName() {
+      return this.currentRequest ? this.currentRequest.user_name : '';
+    },
+
+    userNo() {
+      return this.currentRequest ? this.currentRequest.user_no : '';
+    },
+
+    mileageAction() {
+      if (this.currentRequest) {
+        switch (this.currentRequest.request) {
+          case 1:
+            return '마일리지 추가';
+          case 2:
+            return '마일리지 수정';
+          case 3:
+            return '마일리지 삭제';
+        }
+      }
+      return '마일리지 정보';
     },
   },
 
-  mounted() {},
+  methods: {
+    ...mapActions('request', ['requestList']),
+
+    goBack() {
+      this.$router.go(-1);
+    },
+
+    setFormData() {
+      if (this.currentRequest) {
+        this.mileageName = this.currentRequest.request_mile_name || '';
+        this.mileageLimit = this.currentRequest.request_mil_max || '';
+        this.manager = this.currentRequest.request_admin || '';
+        this.additionalNotes = this.currentRequest.request_etc || '';
+      }
+    },
+  },
+
+  async mounted() {
+    await this.requestList(); // Fetch the request list
+    this.setFormData(); // Set form data after request list is fetched
+  },
 };
 </script>
 
@@ -76,16 +160,48 @@ export default {
   height: auto;
 }
 
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  width: 800px;
+}
+
+.form-group label {
+  margin-bottom: 5px; /* Adjust spacing between label and input */
+  text-align: left;
+  font-family: 'KB_C2', sans-serif;
+}
+
+.input-base {
+  width: 100%;
+  text-align: left;
+}
+
+.input-white {
+  background-color: white;
+}
+
+textarea.input-base {
+  height: 200px;
+}
+
 .checkbox-container {
   display: flex;
   align-items: center;
   cursor: pointer;
   position: relative;
-  top: -5px; /* 위치를 살짝 위로 올립니다 */
+  top: -5px; /* Slightly adjust position */
 }
 
 .checkbox-container input[type='radio'] {
-  display: none; /* 기본 라디오 버튼을 숨깁니다 */
+  display: none; /* Hide default radio button */
 }
 
 .checkbox-container .custom-checkbox {
@@ -100,8 +216,8 @@ export default {
 }
 
 .checkbox-container input[type='radio']:checked + .custom-checkbox {
-  background-color: #f6a319; /* 체크된 상태일 때 배경색 변경 (노란색) */
-  border: none; /* 체크된 상태일 때 테두리 제거 */
+  background-color: #f6a319; /* Change background color when checked */
+  border: none; /* Remove border when checked */
 }
 
 .checkbox-container input[type='radio']:checked + .custom-checkbox::after {
@@ -117,16 +233,9 @@ export default {
 }
 
 .checkbox-label {
-  margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
+  margin-left: 10px; /* Space between checkbox and text */
   font-family: 'KB_S5', sans-serif;
   font-size: 20px;
-}
-
-.button-container {
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  flex: 1;
 }
 
 .back-button {
@@ -153,5 +262,12 @@ export default {
   margin-right: 8px;
   font-size: 17px;
   font-family: 'KB_S5', sans-serif;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  width: 100%; /* Use full width */
 }
 </style>
