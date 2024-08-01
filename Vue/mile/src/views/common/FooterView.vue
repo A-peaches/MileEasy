@@ -112,7 +112,7 @@
 
     <div class="text-start" style="padding-left: 190px; margin-top: 50px">
       <span class="text-end" style="float: right; padding-right: 190px">
-        <template v-if="getLoginInfo?.user_is_admin">
+        <template v-if="getLoginInfo?.user_is_admin && isChecked">
           <p class="contact-info" @click="sendEmail" style="cursor: pointer"><i class="bi bi-envelope-at icon" ></i> mileage@kbfg.com</p>
         </template>
         <template v-else>
