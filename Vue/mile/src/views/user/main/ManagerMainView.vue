@@ -22,10 +22,10 @@
         <p class="md" style="margin-bottom: 10px">
           {{ loginInfo ? loginInfo.dp_no : '' }}
         </p>
-        <button class="btn-yellow KB_C2" disabled>마일리지 관리자</button>
+        <button @click="goToMileageIntroView" class="btn-yellow KB_C2">{{ mile_name }}</button>
       </div>
       <CardComponent
-        title="최근 일주일 간 방문자 수"
+        title="기간별 페이지 방문자 수"
         class="fade-up-item"
         style="width: 70%; margin-left: 6%"
       />
@@ -92,7 +92,7 @@
           </a>
         </div>
       </div>
-      <CompareChar
+      <CompareChart
         title="전년도 비교"
         class="fade-up-item"
         style="width: 70%; margin-left: 6%; margin-top: 3%"
@@ -103,26 +103,50 @@
 
 <script>
 import CardComponent from '@/components/manager/CardComponent.vue';
-import CompareChar from '@/components/manager/CompareChart.vue';
-import { mapGetters } from 'vuex';
+import CompareChart from '@/components/manager/CompareChart.vue';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'ManagerMainView',
-  components: { CardComponent, CompareChar },
+  components: { CardComponent, CompareChart },
+  data(){
+    return{
+      mile_name: '',
+    }
+  },
   methods: {
+    ...mapActions('mile', ['fetchMileInfo']),
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
-    setTransitionDelay(el, index) {
-      el.style.setProperty('--index', index);
+    
+    goToMileageIntroView() {
+      this.$router.push('/introduceMileageAdminView');
     },
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
-
+    ...mapGetters('mile', ['getMileInfo']),
     loginInfo() {
       return this.getLoginInfo;
     },
+    mileInfo() {
+      return this.getMileInfo;
+    },
+  },
+  async created(){
+    const user_no = this.loginInfo ? this.loginInfo.user_no : null;
+    if(user_no){
+      await this.fetchMileInfo(user_no);
+      const mileInfo = this.getMileInfo;
+      if(mileInfo){
+        this.mile_name = mileInfo.mile_no;
+      }else{
+        console.error('마일리지 이름을 가져올 수 없습니다.');
+      }
+    }else{
+      console.error('user_no이 유효하지 않습니다.');
+    }
   },
   mounted() {
     this.$nextTick(() => {
@@ -172,5 +196,9 @@ export default {
 .fade-up-active {
   opacity: 1;
   transform: translateY(0);
+}
+.chart-display {
+  width: 100%;
+  height: 300px;
 }
 </style>

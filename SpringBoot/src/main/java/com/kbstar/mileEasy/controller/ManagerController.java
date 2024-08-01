@@ -108,6 +108,19 @@ public class ManagerController {
                 // 파일 저장
                 mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
                 Path path = Paths.get(uploadPath, mile_route); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+
+                // 파일명이 중복될 경우 서버 내부적으로 파일명 변경
+                String newFileName = mile_route;
+                int count = 1;
+                while(Files.exists(path)){
+                    int dotIndex = mile_route.lastIndexOf(".");
+                    String nameWithoutExtension = (dotIndex == -1) ? mile_route : mile_route.substring(0, dotIndex);
+                    String extension = (dotIndex == -1) ? "" : mile_route.substring(dotIndex);
+                    newFileName = nameWithoutExtension + "_" + count + extension;
+                    path = Paths.get(uploadPath, newFileName);
+                    count++;
+                }
+
                 Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
                 Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
             }
@@ -158,7 +171,7 @@ public class ManagerController {
     public ResponseEntity<?> deleteMileDetail(@PathVariable String mile_introduce_no) {
         int result2 = managerService.deleteMileDetail(mile_introduce_no);
         int result = managerService.deleteMile(mile_introduce_no);
-        
+
         if (result+result2 > 1) {
             return ResponseEntity.ok().body("{\"success\":true}");
         } else {
@@ -186,7 +199,7 @@ public class ManagerController {
         Path tempFilePath = null; // 임시 파일 경로를 저장할 변수를 선언
         try {
             String mile_route = null; // 파일 경로를 저장할 변수를 선언
-//            String uploadPath; // 파일 업로드 경로를 저장할 변수를 선언
+
             if (file != null && !file.isEmpty()) { // 파일이 존재하고 비어있지 않을 때만 파일을 저장
                 String uploadPath = miledetailUploadPath;
 
@@ -197,6 +210,19 @@ public class ManagerController {
                 // 파일 저장
                 mile_route = StringUtils.cleanPath(file.getOriginalFilename()); // 파일 이름을 클린업하여 불필요한 경로 요소가 제거
                 Path path = Paths.get(uploadPath, mile_route); // 업로드 경로와 파일 이름을 결합하여 파일의 절대 경로를 만든다
+
+                // 파일명이 중복될 경우 서버 내부적으로 파일명 변경
+                String newFileName = mile_route;
+                int count = 1;
+                while(Files.exists(path)){
+                    int dotIndex = mile_route.lastIndexOf(".");
+                    String nameWithoutExtension = (dotIndex == -1) ? mile_route : mile_route.substring(0, dotIndex);
+                    String extension = (dotIndex == -1) ? "" : mile_route.substring(dotIndex);
+                    newFileName = nameWithoutExtension + "_" + count + extension;
+                    path = Paths.get(uploadPath, newFileName);
+                    count++;
+                }
+
                 Files.createDirectories(path.getParent()); // 파일이 저장될 경로의 상위 디렉토리를 생성. 디렉토리가 이미 존재하면 무시한다.
                 Files.copy(file.getInputStream(), path); // 파일의 입력 스트림을 읽어 지정된 경로에 파일을 저장
             }
@@ -240,24 +266,24 @@ public class ManagerController {
 
 
     @PostMapping("/mileageCount")
-    public ArrayList<MileScore> mileageCount(
-            @RequestParam("startDate") String startDate,
+    public ResponseEntity<Map<String, List<MileScore>>> mileageCount(
             @RequestParam("mile_no") String mile_no) {
 
         System.out.println("여기는 마일리지");
 
-        return managerService.mileageCount(startDate,mile_no);
+        Map<String, List<MileScore>> mileageCounts = managerService.mileageCount(mile_no);
+        return ResponseEntity.ok(mileageCounts);
     }
 
 
     @PostMapping("/visitCount")
-    public ArrayList<PageCount> visitCount(
-            @RequestParam("startDate") String startDate,
+    public ResponseEntity<Map<String, List<PageCount>>> visitCount(
             @RequestParam("mile_no") String mile_no) {
 
 
 
-        return managerService.visitCount(startDate,mile_no);
+        Map<String, List<PageCount>> visitCounts = managerService.visitCount(mile_no);
+        return ResponseEntity.ok(visitCounts);
     }
 
 }
