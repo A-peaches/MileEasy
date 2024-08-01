@@ -10,7 +10,7 @@
       padding: 10px 140px 60px 140px !important;
     "
   >
-    <div class="mt-3" style="text-align: left">
+    <div class="mt-5" style="text-align: left">
       마일리지 공통여부
       <span v-if="!isCommonMileageValid" class="error-text">
         필수 선택 항목입니다.
@@ -137,12 +137,14 @@ import { ref, computed } from 'vue';
 import Swal from 'sweetalert2';
 import SearchModal from './SearchModal.vue';
 import axios from 'axios';
+import { useStore } from 'vuex';
 
 export default {
   name: 'MileageRequestWriteAdd',
   components: { SearchModal },
   setup() {
-    const request = ref(1); // `data`에서 가져온 request를 setup에서 ref로 정의
+    const store = useStore();
+    const request = ref(1);
     const mileageName = ref('');
     const annualLimit = ref('');
     const commonMileage = ref('');
@@ -158,6 +160,8 @@ export default {
     const isModalOpen = ref(false);
     const selectedRow = ref(null);
     const selectedRowIndex = ref(null);
+
+    const loginInfo = computed(() => store.getters['login/getLoginInfo']);
 
     const isMileageNameValid = computed(() => mileageName.value.trim() !== '');
     const isAnnualLimitValid = computed(() => annualLimit.value.trim() !== '');
@@ -208,7 +212,6 @@ export default {
     const submitForm = async () => {
       let hasError = false;
 
-      // Perform validation checks
       if (!isCommonMileageValid.value) {
         Swal.fire({
           icon: 'error',
@@ -246,12 +249,10 @@ export default {
         hasError = true;
       }
 
-      // If there are errors, prevent form submission
       if (hasError) {
         return;
       }
 
-      // Collect form data
       const formData = {
         request_is_branch: commonMileage.value === '1',
         request_mile_name: mileageName.value,
@@ -260,11 +261,12 @@ export default {
           rows.value.map((row) => row.id) // Extract only user_no
         ),
         request_etc: additionalNotes.value,
-        request_no: request.value, // Accessing request value using request.value
+        request_no: request.value,
+        mile_no: loginInfo.value.mile_no || 0,
+        user_no: loginInfo.value.user_no, // Add user_no from loginInfo
       };
 
       try {
-        // Send form data to the server
         const response = await axios.post(
           'http://localhost:8090/user/requestAdd',
           formData
@@ -309,6 +311,7 @@ export default {
       isCommonMileageValid,
       isRowsValid,
       validateRows,
+      loginInfo, // Return loginInfo to use in template if needed
     };
   },
 };

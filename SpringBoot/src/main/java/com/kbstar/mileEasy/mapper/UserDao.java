@@ -40,7 +40,11 @@ public interface UserDao {
 
     void insertMonthlyJumps(List<String> jump);
 
-    void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc, int request_no);
+
+    void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc, int request_no, String user_no, int mile_no);
+
+   // void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc, int request_no);
 
     boolean changPassword(String encryptedPassword, String userNo);
+
 }

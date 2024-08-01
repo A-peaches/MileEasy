@@ -202,8 +202,8 @@
     </insert>
 
     <insert id="insertRequestMileage">
-        INSERT INTO mileage_request (request_is_branch, request_mile_name, request_mil_max, request_admin, request_etc, request)
-        VALUES (#{isBranch}, #{mileName}, #{milMax}, #{admin}, #{etc}, #{request_no})
+        INSERT INTO mileage_request (request_is_branch, request_mile_name, request_mil_max, request_admin, request_etc, request,user_no,mile_no,mileage_request_date)
+        VALUES (#{isBranch}, #{mileName}, #{milMax}, #{admin}, #{etc}, #{request_no},#{user_no},#{mile_no},  current_timestamp)
     </insert>
 
 
