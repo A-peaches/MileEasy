@@ -84,6 +84,7 @@ export default {
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+
     decodedFileName() {
     if (this.uploadedFileName) {
       const parts = this.uploadedFileName.split('_', 2);
@@ -139,12 +140,21 @@ export default {
 },
 
   getDisplayFileName(fileName) {
-    if (fileName) {
-      const parts = fileName.split('_');
-      return parts.length > 1 ? parts.slice(1).join('_') : fileName;
-    }
-    return '';
-  },
+  // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
+  const UUID_LENGTH = 36 + 1;
+
+  // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
+  if (!fileName || fileName.length <= UUID_LENGTH) {
+    return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
+  }
+
+  // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
+  if (fileName.charAt(UUID_LENGTH - 1) === '_') {
+    return fileName.substring(UUID_LENGTH);
+  }
+  
+  return fileName;
+},
 
   async submitForm() {
   const formData = new FormData();
@@ -159,6 +169,10 @@ export default {
     formData.append('file', this.form.file);
     formData.append('originalFileName', this.displayFileName);
   }
+   // 파일이 업로드되지 않은 경우, 기존 파일명만 추가
+   else if (this.displayFileName) {
+        formData.append('originalFileName', this.displayFileName);
+      }
 
   // FormData 내용 확인
   for (let [key, value] of formData.entries()) {
@@ -233,7 +247,7 @@ export default {
           this.originalMileNo = notice.mile_no;
           this.selectedCategory = notice.mile_no === null ? '기타' : notice.mile_name; // 카테고리가 null이면 '기타'로 설정
           this.form.content = notice.notice_board_content;
-          this.uploadedFileName = notice.notice_board_file;
+          this.displayFileName = notice.notice_board_file;
 
           console.log('detail 에서 정보 가지고 오기.:', notice); // 로그 추가
           console.log('수정 카테고리 로그', this.selectedCategory); // 선택된 카테고리 로그 추가

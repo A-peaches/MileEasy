@@ -209,11 +209,9 @@ public class NoticeController {
             @RequestParam("notice_board_content") String content,
             @RequestParam("user_no") String userNo,
             @RequestParam("user_name") String userName,
-            @RequestParam(value = "file", required = false) String file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "originalFileName", required = false) String originalFileName) {
         try {
-            System.out.println("Received file: " + file);
-            System.out.println("Received originalFileName: " + originalFileName);
 
             Notice notice = new Notice();
             notice.setNotice_board_no(noticeBoardNo);
@@ -224,7 +222,12 @@ public class NoticeController {
             notice.setUser_name(userName);
 
             if (file != null && !file.isEmpty()) {
+                String savedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+                Path filePath = Paths.get(uploadPath).resolve(savedFileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 notice.setNotice_board_file(originalFileName); // DB에는 원본 파일명만 저장
+            } else if (originalFileName != null && !originalFileName.isEmpty()) {
+                notice.setNotice_board_file(originalFileName);
             }
 
             noticeService.updateNotice(notice);
