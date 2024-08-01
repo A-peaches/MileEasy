@@ -1,9 +1,14 @@
 <!--🚨사용자 m-tip 메인 화면-->
 <template>
-  <div>
-    <div class="d-felx mx-auto">
+  
+  <div class="mtip-container" >
+    <div class="row">
+      <div class="col-md-8" style="width:75%">
         <Banner/>
+      </div>
+      <div class="col-md">
         <Profile/>
+      </div>
     </div>
   </div>
 </template>
@@ -19,3 +24,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.mtip-container {
+  margin-left:190px;
+   margin-right:190px;
+}
+</style>

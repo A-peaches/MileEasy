@@ -7,14 +7,14 @@
     <div class="text-center w-60 mx-auto">
       <p>
         <!--<a href="https://www.flaticon.com/kr/free-icons/" title=" 아이콘"> 아이콘 제작자: Icon Mela - Flaticon</a>-->
-        <sup><img src="@/assets/img/left-quote.png" class="quote" /></sup>
+        <sup><img src="@/assets/img/left-quote.png" class="quote mb-2" /></sup>
         &nbsp;
         <span class="KB_C2 ageSpan"
           >{{ userData[0] + 0 + "대" }} 마일리지 총 평균 :  
         </span>
         <span class="KB_C2 ageSpan" style="font-size: 23px">
           <mark class=KB_C2 ageSpan>{{ ageChartData[userData[0]-2] }}점</mark></span>&nbsp;
-        <sup><img src="@/assets/img/right-quote.png" class="quote" /></sup>
+        <sup><img src="@/assets/img/right-quote.png" class="quote mb-2" /></sup>
       </p>
 
       <div style="font-size: 13pt" v-if=" userData[1] > ageChartData[userData[0]-2]">
