@@ -1,19 +1,38 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 400px">
-    <p class="text-left lg2 KB_C2">{{ title }}</p>
-    <div class="flex-container">
-      <!-- <div class="date-container" style="text-align: right; margin-bottom: 20px">
-        <input
-          type="month"
-          class="date"
-          id="startDate"
-          v-model="startDate"
-          @change="updateCharts"
-        />
-      </div> -->
-      <div class="chart-container">
-        <canvas :id="chartIds[0]"></canvas>
+  <div class="cards" style="background-color: #f9f9f9; height: 400px; padding: 20px;">
+    <div class="d-flex justify-content-between align-items-center">
+      <p class="text-left lg2 KB_C2">{{ title }}</p>
+      <div class="tabs text-end lg2 mr-3">
+        <span
+          @click="selectedTab = 'mileage'"
+          :class="{ active: selectedTab === 'mileage', chartTab: true }"
+          class="chartTab"
+          >마일리지 총점</span
+        >&nbsp;|&nbsp;
+        <span
+          @click="selectedTab = 'visitor'"
+          :class="{ active: selectedTab === 'visitor', chartTab: true }"
+          class="chartTab"
+          >방문자 수</span
+        >
       </div>
+    </div>
+    <div class="chart-wrapper d-flex justify-content-evenly">
+      <div v-if="selectedTab==='mileage'" class="chart-container">
+        <canvas id="mileageChart"></canvas>
+      </div>
+      <div v-if="selectedTab==='visitor'" class="chart-container">
+        <canvas id="visitsChart"></canvas>
+      </div>
+      <div class="" style="width: 30%; height: 80%;">
+        <div class="stats-container d-flex justify-content-between" style="height: 100%;">
+          <div class="stats-content ml-4">
+            <span class="md" style="display: block; margin-bottom: 10px; color: #333; font-weight: bold;">전월 대비 5% 증가했습니다.</span>
+            <span class="" style="display: block; font-size: 9pt; color: #666;">(작년 동월 대비)</span>
+          </div>
+        </div>
+      </div>
+      <img src="@/assets/imoji/lamu/라무다짐.png" style="width: 3vw; margin-top: 20px; align-self: flex-end;"/>
     </div>
   </div>
 </template>
@@ -36,15 +55,14 @@ export default {
     return {
       startDate: '',
       managerChart2: {},
-      chartIds: ['managerChart2'],
+      chartIds: ['mileageChart', 'visitsChart'],
       thisYearData: [],
-      lastYearData: []
+      lastYearData: [],
+      selectedTab: 'mileage'
     };
   },
   mounted() {
     this.setDefaultDates();
-    // this.mileageCount();
-    // this.visitCount();
     this.updateCharts(); // Ensure chart rendering happens after setting dates
   },
 
@@ -54,6 +72,13 @@ export default {
       return this.getLoginInfo;
     },
   },
+  watch: {
+    selectedTab(){
+      this.$nextTick(() => {
+        this.renderCharts();
+      });
+    }
+  },
   methods: {
     async updateCharts() {
       try {
@@ -62,10 +87,10 @@ export default {
         this.processData(mileageCountData, visitCountData);
         this.renderCharts();
       } catch (error) {
-        console.error('오잉:', error);
+        console.error('updateCharts error:', error);
       }
     },
-
+    // 마일리지 총합 (작년, 올해) 
     async mileageCount() {
       const mile_no = this.loginInfo.mile_no;
       try {
@@ -92,7 +117,7 @@ export default {
         };
       }
     },
-
+    // 방문자 수 (작년, 올해)
     async visitCount() {
       const mile_no = this.loginInfo.mile_no;
 
@@ -127,6 +152,7 @@ export default {
         visits: 0,
       }));
     },
+    // 작년, 올해 월별로 데이터 가져오기 
     processData(mileageCountData, visitCountData) {
       this.thisYearData = mileageCountData.thisYear.map((data, index) => ({
         month: data.month,
@@ -140,103 +166,128 @@ export default {
         visits: visitCountData.lastYear[index] ? visitCountData.lastYear[index].visits : 0,
       }));
     },
+    // 차트 렌더링 
     renderCharts() {
-      this.chartIds.forEach((chartId) => {
-        const ctx = document.getElementById(chartId)?.getContext('2d');
+      const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+      const chartConfigs = [
+        {
+          id: 'mileageChart',
+          title: '마일리지',
+          dataKey: 'total_points',
+          yAxisLabel: '마일리지',
+          colors: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)']
+        },
+        {
+          id: 'visitsChart',
+          title: '방문자 수',
+          dataKey: 'visits',
+          yAxisLabel: '방문자 수',
+          colors: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)']
+        }
+      ]
+
+      chartConfigs.forEach((config) => {
+        const ctx = document.getElementById(config.id)?.getContext('2d');
 
         if (!ctx) {
-          console.error(`Canvas element with id '${chartId}' not found.`);
+          console.error(`Canvas element with id '${config.id}' not found.`);
           return;
         }
 
-        if (this.managerChart2[chartId]) {
-          this.managerChart2[chartId].destroy();
+        if (this.managerChart2[config.id]) {
+          this.managerChart2[config.id].destroy();
         }
 
-        const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-
-        this.managerChart2[chartId] = new Chart(ctx, {
-          type: 'bar',
+        this.managerChart2[config.id] = new Chart(ctx, {
+          type: 'line',
           data: {
             labels: months,
             datasets: [
               {
-                label: '올해 마일리지',
-                data: this.thisYearData.map(item => item.total_points),
-                type: 'line',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                label: `올해 ${config.title}`,
+                data: this.thisYearData.map(item => item[config.dataKey]),
+                borderColor: config.colors[0],
+                backgroundColor: config.colors[0].replace('1)', '0.2)'),
                 borderWidth: 2,
                 fill: false,
-                yAxisID: 'y-axis-1',
+                tension: 0.4
               },
               {
-                label: '작년 마일리지',
-                data: this.lastYearData.map(item => item.total_points),
-                type: 'line',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                label: `작년 ${config.title}`,
+                data: this.lastYearData.map(item => item[config.dataKey]),
+                borderColor: config.colors[1],
+                backgroundColor: config.colors[1].replace('1)', '0.2)'),
                 borderWidth: 2,
                 fill: false,
-                yAxisID: 'y-axis-1',
-              },
-              {
-                label: '올해 방문자 수',
-                data: this.thisYearData.map(item => item.visits),
-                backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                yAxisID: 'y-axis-2',
-              },
-              {
-                label: '작년 방문자 수',
-                data: this.lastYearData.map(item => item.visits),
-                backgroundColor: 'rgba(255, 159, 64, 0.7)',
-                borderColor: 'rgba(255, 159, 64, 1)',
-                borderWidth: 1,
-                yAxisID: 'y-axis-2',
-              },
-            ],
-          },
+                tension: 0.4
+              }
+            ]
+          },              
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
               legend: {
                 display: true,
-                position: 'top',
+                position: 'right',
+                labels: {
+                  font: {
+                    family: 'KB_C2',
+                    size: 14
+                  }
+                }
               },
               tooltip: {
                 mode: 'index',
                 intersect: false,
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                titleFont: {
+                  family: 'KB_C2',
+                  size: 14
+                },
+                bodyFont: {
+                  family: 'KB_C2',
+                  size: 12
+                }
               },
             },
             scales: {
-              x: {
-                stacked: true,
-              },
-              'y-axis-1': {
-                type: 'linear',
-                display: true,
-                position: 'left',
+              y: {
+                beginAtZero: true,
                 title: {
-                  display: true,
-                  text: '마일리지',
+                  // display: true,
+                  // text: config.yAxisLabel,
+                  // font: {
+                  //   family: 'KB_C2',
+                  //   size: 14
+                  // }
                 },
-              },
-              'y-axis-2': {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                title: {
-                  display: true,
-                  text: '방문자 수',
+                ticks: {
+                  font: {
+                    family: 'KB_C2',
+                    size: 12
+                  }
                 },
                 grid: {
-                  drawOnChartArea: false,
+                  color: 'rgba(0, 0, 0, 0.1)'
+                }
+              },
+              x: {
+                grid: {
+                  display: false,
                 },
+                ticks: {
+                  font: {
+                    family: 'KB_C2',
+                    size: 12
+                  }
+                }
               },
             },
+            animation: {
+              duration: 1000,
+              easing: 'easeInOutQuart'
+            }
           },
         });
       });
@@ -252,34 +303,70 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .flex-container {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  height: 300px;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items:flex-start;
+  height: 400px;
 }
-
 .date-container {
   flex: 1;
   display: flex;
   justify-content: flex-start;
   padding-left: 20px;
 }
-
-.chart-container {
-  flex: 2;
-  height: 100%;
-  max-width: 60%;
+.chart-wrapper {
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  height: 280px;
 }
-
+.chart-container {
+  width: 60%;
+  height: 100%;
+  padding-top: 20px
+}
 .date {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-
 .addImg {
   width: 18%;
+}
+.chartTab {
+  cursor: pointer;
+  font-size: 16pt;
+  color: #4b4a4a;
+  font-family: "KB_C3";
+  transition: color 0.3s ease;
+}
+.chartTab.active {
+  font-family: "KB_C2";
+}
+.chart-display {
+  width: 100%;
+  height: 300px;
+}
+.tabs {
+  display: flex;
+  justify-content: flex-end;
+}
+.stats-container {
+  width: 100%; 
+  height: 80%; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center;
+}
+.stats-content {
+  text-align: center; 
+  background-color: #f0f0f0; 
+  padding: 15px; 
+  border-radius: 10px; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 </style>

@@ -3,7 +3,7 @@
     <div v-for="detail in arrayMiles" :key="detail.mile_introduce_no" style="padding:0 5%;">
       <div class="border-bottom p-4">
         <div class="d-flex align-items-center justify-content-between">
-          <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }}</h3>
+          <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }} 마일리지</h3>
         </div>
         <div class="d-flex justify-content-between align-items-center input-gray p-4">
           <span><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></span>

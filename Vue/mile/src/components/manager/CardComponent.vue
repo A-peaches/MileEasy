@@ -1,9 +1,32 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 400px">
-    <p class="text-left lg2 KB_C2">{{ title }}</p>
-    <div class="flex">
-      <div class="favorite-card">
-        <div class="dateround" style="text-align: right; margin-bottom: 20px">
+  <div class="cards" style="background-color: #f9f9f9; height: 400px; padding: 20px;">
+    <p class="text-left lg2 KB_C2">{{ title }}
+      <i
+        class="bi bi-question-circle"
+        @click="toggleHelpPopover"
+        style="font-size: 15pt"
+      ></i>
+    </p>
+   
+    <div v-if="showHelpPopover" class="help-popover" ref="helpPopover">
+      <div style="font-size: 12pt">
+        <span
+          >직원들이 조회한 기간 동안 해당 마일리지 페이지에 방문한 횟수를 보여줍니다.<br>
+          마일리지에 대한 직원들의 관심도를 알 수 있습니다.</span
+        >
+      </div>
+    </div>
+
+    <div class="chart-container" style="padding-top: 20px">
+      <div class="chart-wrapper">
+        <canvas :id="chartIds[0]"></canvas>
+      </div>
+      <div class="date-selector" style="width: 35%;">
+        <div class="d-flex justify-content-between align-items-center" style="width: 80%;">
+          <span class="md highlight">시작일자</span>
+          <span class="md highlight">종료일자</span>
+        </div>
+        <div class="date-inputs" style="width: 100%; margin-top: 5%;">
           <input
             type="date"
             class="date"
@@ -11,7 +34,7 @@
             v-model="startDate"
             @change="updateCharts"
           />
-          -
+          <span class="date-separator">-</span>
           <input
             type="date"
             class="date"
@@ -20,8 +43,9 @@
             @change="updateCharts"
           />
         </div>
-        <div class="chartWithTotalVisitors">
-          <canvas :id="chartIds[0]"></canvas>
+        <div class="total-visitors md" style="text-align: center; margin-left: 12%;">
+          조회 기간의 총 방문자 수는 {{ total }}명 입니다.<br><br>
+          조회 기간 중 가장 많이 방문한 날짜는<br><span class="lg">" {{ maxcountDate }}일 "</span> 입니다. 
         </div>
       </div>
     </div>
@@ -50,6 +74,13 @@ export default {
       managerChart1: {},
       chartIds: ['managerChart1'],
       mile_no: null,
+      total: 0,
+      maxcountDate: '',
+      mincountDate: '',
+      maxcount: 0,
+      mincount: 0,
+      dates: [],
+      showHelpPopover: false,
     };
   },
   mounted() {
@@ -81,6 +112,29 @@ export default {
       const endDateInput = document.getElementById('endDate');
       endDateInput.setAttribute('max', endDateFormatted);
     },
+    toggleHelpPopover(event) {
+      event.stopPropagation(); // 이벤트 전파 중지
+      console.log("toggleHelpPopover 클릭");
+      this.showHelpPopover = !this.showHelpPopover;
+      console.log("showHelpPopover:", this.showHelpPopover); // 추가
+      if (this.showHelpPopover) {
+        document.addEventListener("click", this.handleClickOutside);
+      } else {
+        document.removeEventListener("click", this.handleClickOutside);
+      }
+    },
+    handleClickOutside(event) {
+      console.log("handleClickOutside 실행");
+      if (
+        this.$refs.helpPopover &&
+        !this.$refs.helpPopover.contains(event.target) &&
+        !this.$refs.helpIcon.contains(event.target)
+      ) {
+        console.log("팝오버 닫기");
+        this.showHelpPopover = false;
+        document.removeEventListener("click", this.handleClickOutside);
+      }
+    },
     async updateCharts() {
       if (new Date(this.startDate) > new Date(this.endDate)) {
         Swal.fire({
@@ -96,6 +150,8 @@ export default {
         this.total = counts.reduce((acc, cur) => acc + cur, 0);
         this.maxcount = Math.max(...counts);
         this.mincount = Math.min(...counts);
+        this.maxcountDate = this.dates[counts.indexOf(this.maxcount)];
+        this.mincountDate = this.dates[counts.indexOf(this.mincount)];
         this.renderCharts(counts);
       } catch (error) {
         console.error('오잉:', error);
@@ -121,11 +177,12 @@ export default {
         );
         console.log('Response data:', response.data);
         const counts = response.data.map((item) => item.hit_count);
+        const dates = response.data.map((item) => item.hit_date);
         console.log('결과:', counts);
-        return counts;
+        return {counts, dates};
       } catch (error) {
         console.error('Error fetching login history:', error);
-        return [];
+        return {counts: [], dates: []};
       }
     },
     renderCharts(counts) {
@@ -141,6 +198,16 @@ export default {
           this.managerChart1[chartId].destroy();
         }
 
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(255, 175, 170, 1)');  // 밝은 코랄 색상
+        gradient.addColorStop(1, 'rgba(255, 175, 170, 0.2)');  // 옅은 코랄 색상
+
+        // gradient.addColorStop(0, 'rgba(255, 99, 132, 1)');  // 밝은 붉은색
+        // gradient.addColorStop(1, 'rgba(255, 99, 132, 0.2)');  // 옅은 붉은색
+
+        // gradient.addColorStop(0, 'rgba(75, 192, 192, 1)');
+        // gradient.addColorStop(1, 'rgba(75, 192, 192, 0.2)');
+
         this.managerChart1[chartId] = new Chart(ctx, {
           type: 'bar',
           data: {
@@ -148,33 +215,35 @@ export default {
             datasets: [
               {
                 label: `방문자 수`,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                backgroundColor: gradient,
                 data: counts,
-                fill: true,
+                borderRadius: 5,
+                maxBarThickness: 30, // 막대의 너비를 설정합니다.
                 
               },
             ],
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
               legend: {
                 display: true,
-                position: 'right',
+                position: 'bottom',
                 padding: 2
               },
-              title: {
-                display: false,
+              // title: {
+              //   display: false,
                 
-              },
+              // },
               tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 titleFont: {
+                  family: 'KB_C2',
                   size: 14,
                 },
                 bodyFont: {
+                  family: 'KB_C2',
                   size: 12,
                 },
                 padding: 10,
@@ -186,8 +255,9 @@ export default {
               y: {
                 beginAtZero: true,
                 ticks: {
-                  display: true,
+                  // display: true,
                   font: {
+                    family: 'KB_C2',
                     size: 10,
                   },
                 },
@@ -195,10 +265,25 @@ export default {
                   color: 'rgba(0, 0, 0, 0.1)',
                   drawBorder: false,
                 },
+                // title: {
+                //   display: true,
+                //   text: '방문자 수',
+                //   font: {
+                //     family: 'KB_C2',
+                //     size: 14,
+                //     weight: 'bold',
+                //   },
+                // }
               },
               x: {
                 grid: {
                   display: false,
+                },
+                ticks: {
+                  font: {
+                    family: 'KB_C2',
+                    size: 12,
+                  },
                 },
               },
             },
@@ -231,22 +316,86 @@ export default {
 };
 </script>
 
-<style>
-.favorite-card {
-  width: 100%;
-  height: 300px;
-  display: flex;
-  flex-direction: column; /* Arrange children vertically */
-  align-items: center; /* Center align children horizontally */
-  justify-content: center; /* Center align children vertically */
+<style scoped>
+.cards {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
 }
 
-.chartWithTotalVisitors {
-  width: 100%;
+.chart-container {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 280px;
+  
+}
+
+.chart-wrapper {
+  width: 50%;
   height: 100%;
 }
 
-.addImg {
-  width: 18%;
+.date-selector {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+}
+
+.date-inputs {
+  display: flex;
+  justify-content:space-between;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.date {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  /* border-radius: 4px; */
+  font-family: 'KB_C2';
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.date-separator {
+  margin: 5px 0;
+  font-weight: bold;
+}
+
+.total-visitors {
+  margin-top: 20px;
+  font-family: 'KB_C2';
+  font-size: 16px;
+  /* font-weight: bold; */
+}
+
+.highlight {
+  background-color: #fff6d4;
+  border-radius: 30px; /* 둥근 모서리 */
+  padding: 4px 8spx; /* 내부 여백을 추가하여 크기 조절 */
+  display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
+}
+
+.help-icon {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+
+.help-popover {
+  position: absolute;
+  left: 250px; /* 조정 가능 */
+  top: 50px; /* 조정 가능 */
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  width: 600px;
+  margin-left: 10px; /* 아이콘과의 간격 */
+  display: block; /* 추가 */
+  background-color: white; /* 임시로 눈에 띄는 색상 사용 */
+  border: 2px solid #e4e4e4;
 }
 </style>
