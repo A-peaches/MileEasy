@@ -147,12 +147,28 @@ export default {
         console.log('kingDataSelect top5:', response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : '';
         this.kingTop5 = response.data.slice(0, 5);
-        this.kingUserList = response.data
-          .map((item) => item.user_no)
-          .slice(0, 3);
+        // 사용자 점수별로 정렬
+        const sortedData = response.data.sort((a, b) => b.score - a.score);
+
+        // 공동 3등까지 포함한 사용자 목록 추출
+        let rank = 1;
+        let lastScore = sortedData[0].score;
+        const kingUserList = [];
+
+        for (const item of sortedData) {
+          if (item.score !== lastScore) {
+            rank++;
+            lastScore = item.score;
+          }
+          if (rank > 3) break;
+          kingUserList.push(item.user_no);
+        }
+
+        this.kingUserList = kingUserList;
       } catch (error) {
         console.error('kingDataSelect top5:', error);
         this.kingTop5 = [];
+        this.kingUserList = [];
       }
     },
 
@@ -163,12 +179,28 @@ export default {
         );
         console.log('점프업 top5:', response.data);
         this.jumpTop5 = response.data.slice(0, 5);
-        this.jumpUserList = response.data
-          .map((item) => item.user_no)
-          .slice(0, 3);
+        // 사용자 점수별로 정렬
+        const sortedData = response.data.sort((a, b) => b.score - a.score);
+
+        // 공동 3등까지 포함한 사용자 목록 추출
+        let rank = 1;
+        let lastScore = sortedData[0].score;
+        const jumpUserList = [];
+
+        for (const item of sortedData) {
+          if (item.score !== lastScore) {
+            rank++;
+            lastScore = item.score;
+          }
+          if (rank > 3) break;
+          jumpUserList.push(item.user_no);
+        }
+
+        this.jumpUserList = jumpUserList;
       } catch (error) {
         console.error('점프업 top5:', error);
         this.jumpTop5 = [];
+        this.jumpUserList = [];
       }
     },
 

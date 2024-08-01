@@ -139,6 +139,10 @@ export default {
               icon: 'info',
               title: '알림',
               text: '마왕 채택일입니다. 채택을 진행해주세요.',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = '/kingMain';
+              }
             });
             break;
           }
