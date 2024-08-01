@@ -45,16 +45,17 @@
             mr.request_etc,
             mr.request,
             mr.user_no,
+            u.user_name,        -- user_name을 추가
             mr.mileage_request_date,
             mr.request_status,
             m.mile_no,
             m.mile_name
         FROM
             mileage_request mr
-                JOIN
-            mileage m
-            ON
-                mr.mile_no = m.mile_no;
+                JOIN mileage m ON mr.mile_no = m.mile_no
+                JOIN user u ON mr.user_no = u.user_no  -- user 테이블과 조인
+        ORDER BY
+            mr.mileage_request_date DESC;
 
     </select>
 
