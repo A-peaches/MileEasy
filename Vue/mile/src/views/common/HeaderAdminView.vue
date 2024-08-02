@@ -5,7 +5,11 @@
       <div class="logo lg">
         <a href="/admin" class="a_link">
           <span class="logo-text" style="font-size: 20pt">
-            <img src="@/assets/img/mini_logo.png" class="mb-2 mr-3 ml-2" style="width:33px">MileEasy
+            <img
+              src="@/assets/img/mini_logo.png"
+              class="mb-2 mr-3 ml-2"
+              style="width: 33px"
+            />MileEasy
           </span>
         </a>
       </div>
@@ -23,7 +27,7 @@
             >
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" href="/m_TipListView">M-Tip관리</a>
+            <a class="nav-link hover" href="/mTipMainAdminView">M-Tip관리</a>
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
@@ -45,7 +49,7 @@
           <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
             <img
               v-if="loginInfo && loginInfo.user_no"
-             :src="profileImageUrl"
+              :src="profileImageUrl"
               class="profile-small my-3"
               alt="Profile Picture"
               @error="setDefaultImage"
@@ -58,9 +62,7 @@
             <a class="dropdown-item" aria-current="page" @click="Logout"
               >로그아웃</a
             >
-            <a class="dropdown-item" href="/passwordChange"
-              >비밀번호 변경</a
-            >
+            <a class="dropdown-item" href="/passwordChange">비밀번호 변경</a>
           </div>
         </div>
       </div>
@@ -80,15 +82,15 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     profileImageUrl() {
-  if (this.loginInfo && this.loginInfo.user_no) {
-    if (process.env.NODE_ENV === 'development') {
-      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
-    } else {
-      return `/profile/${this.loginInfo.user_no}.jpg`;
-    }
-  }
-  return ''; // 또는 기본 이미지 URL
-},
+      if (this.loginInfo && this.loginInfo.user_no) {
+        if (process.env.NODE_ENV === 'development') {
+          return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+        } else {
+          return `/profile/${this.loginInfo.user_no}.jpg`;
+        }
+      }
+      return ''; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },

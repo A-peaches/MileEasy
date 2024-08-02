@@ -1,7 +1,9 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.Mileage;
+import com.kbstar.mileEasy.dto.MtipGuide;
 import com.kbstar.mileEasy.dto.Notice;
+import com.kbstar.mileEasy.service.notice.MtipGuideService;
 import com.kbstar.mileEasy.service.notice.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,14 +11,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -34,9 +33,17 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+    @Autowired
+    private MtipGuideService mtipGuideService;
+
+
+
     /*추가코드*/
     @Value("${project.uploadpath.notice}")
     private String uploadPath;
+
+    @Value("${project.uploadpath.mTipGuide}")
+    private String mTipGuideUploadPath;
 
     @GetMapping("/{id}")
     public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
@@ -260,6 +267,68 @@ public class NoticeController {
         List<Notice> notices =  noticeService.getFooterNotice();
         System.out.println(notices);
         return notices;
+    }
+
+
+    //MTIP가이드 첨부파일
+    @PostMapping("/mTipGuideUpload")
+    public ResponseEntity<String> mTipGuideUpload(@RequestParam("files") MultipartFile file) {
+        try {
+            String originalFileName = file.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String savedFileName = uuid + "_" + originalFileName;
+
+            Path filePath = Paths.get(mTipGuideUploadPath).resolve(savedFileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // 여기서는 파일명만 반환하고, 데이터베이스 저장은 별도의 서비스 로직에서 처리
+            return ResponseEntity.ok().body(savedFileName + "," + originalFileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @PostMapping("/mTipGuideWrite")
+    public ResponseEntity<?> mTipGuideWrite(@RequestParam("title") String title,
+                                         @RequestParam("content") String content,
+                                         @RequestParam("user_no") String userNo,
+                                         @RequestParam("user_name") String userName,
+                                         @RequestParam(value = "file", required = false) String fileInfo) {
+        try {
+            MtipGuide mtipGuide = new MtipGuide();
+            mtipGuide.setMtip_guide_title(title);
+
+
+            mtipGuide.setMtip_guide_content(content);
+            mtipGuide.setUser_no(userNo);  // String 타입으로 설정
+            mtipGuide.setUser_name(userName);
+
+            if (fileInfo != null && !fileInfo.isEmpty()) {
+                String[] fileNames = fileInfo.split(","); // 파일명과 원본 파일명을 분리
+                if (fileNames.length < 2) {
+                    throw new IllegalArgumentException("Invalid fileInfo format: " + fileInfo);
+                }
+                String savedFileName = fileNames[0]; // 서버에 저장된 파일명 (UUID 포함)
+                String originalFileName = fileNames[1]; // 원본 파일명
+
+                mtipGuide.setMtip_guide_file(originalFileName); // 원본 파일명을 DB에 저장
+            }
+
+            mtipGuideService.createMtipGudie(mtipGuide);
+
+            return ResponseEntity.ok().body("M-Tip 가이드가 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("M-Tip 가이드 등록 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/mTipGuideList")
+    public ArrayList<MtipGuide> mTipGuideList() {
+        System.out.println("엔팁 가져가요");
+     return mtipGuideService.mTipGuideList();
     }
 }
 
