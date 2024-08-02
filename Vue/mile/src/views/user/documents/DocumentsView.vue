@@ -285,7 +285,7 @@ export default {
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 350%;
+  top: 300%;
   left: 50%;
   z-index: 1;
   border-color: #eeeeee;
