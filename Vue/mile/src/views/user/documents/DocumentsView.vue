@@ -222,14 +222,8 @@ export default {
       console.error('user_no이 유효하지 않습니다.');
     }
 
-    const mile_no = this.getLoginInfo ? this.getLoginInfo.mile_no : null;
-    if(mile_no){
-      this.getMileDetail(mile_no);
-      this.loadDocuments(); // 첫 페이지 로드 
-      this.fetchMileages(); 
-    }else{
-      console.error('mile_no이 유효하지 않습니다.');
-    }
+    this.loadDocuments(); // 첫 페이지 로드 
+    this.fetchMileages(); 
   },
   watch: {
     searchQuery(){
