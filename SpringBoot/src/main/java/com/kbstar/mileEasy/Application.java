@@ -29,6 +29,6 @@ public class Application {
 
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         String[] activeProfiles = context.getEnvironment().getActiveProfiles();
-        System.out.println("Active profiles: " + Arrays.toString(activeProfiles));
+        logger.info("Active profiles: " + Arrays.toString(activeProfiles));
     }
 }
