@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -10,10 +11,15 @@ import java.io.IOException;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${project.uploadpath.root}")
+    private String uploadPath;
+
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8090", "http://localhost:8080", "http://digicampus01.cafe24.com"
+                .allowedOrigins("http://localhost:8090", "http://localhost:8080", "http://digicampus01.cafe24.com:8090"
                 ,"http://210.114.18.177:8090")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
@@ -23,7 +29,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 정적 리소스 처리
+        // 외부 경로 처리
+        registry.addResourceHandler("/external/**")
+                .addResourceLocations("file:" + uploadPath + "/")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+
+        // 정적 리소스 처리 (기존 설정 유지)
         registry.addResourceHandler(
                         "/img/**",
                         "/notice/**",
@@ -46,7 +59,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
 
-        // 기타 모든 요청에 대한 처리 (SPA 라우팅을 위함)
+        // SPA 라우팅을 위한 설정 (기존 설정 유지)
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
@@ -59,7 +72,6 @@ public class WebConfig implements WebMvcConfigurer {
                     }
                 });
     }
-
 
 
 
