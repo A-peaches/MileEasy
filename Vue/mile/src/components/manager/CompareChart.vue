@@ -160,7 +160,7 @@ export default {
       const mile_no = this.loginInfo.mile_no;
       try {
         const response = await api.post(
-          '/manager/mileageCount',
+          '/mana/mileageCount',
           null,
           {
             params: {
@@ -188,7 +188,7 @@ export default {
 
       try {
         const response = await api.post(
-          '/manager/visitCount',
+          '/mana/visitCount',
           null,
           {
             params: {

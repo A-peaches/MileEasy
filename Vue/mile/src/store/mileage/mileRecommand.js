@@ -18,7 +18,7 @@ const mutations = {
 const actions = {
   async getMileRecommand({commit}, mile_no){
     try{
-      const response = await api.get(`/manager/mileRecommand/${mile_no}`)
+      const response = await api.get(`/mana/mileRecommand/${mile_no}`)
       
       commit ('setMileRecommandInfo', response.data);
     }catch(error){
@@ -33,7 +33,7 @@ const actions = {
       //  mile_link: null,
       //  mile_recommand_no: null
       //}
-      const response = await api.post(`/manager/addRecommand`, recommand)
+      const response = await api.post(`/mana/addRecommand`, recommand)
       return response;
     }catch(error){
       console.error('Error add mile recommand:', error);
@@ -42,7 +42,7 @@ const actions = {
   },
   async updateRecommands(context, recommand){
     try{
-      const response = await api.post(`/manager/updateRecommand`, recommand)
+      const response = await api.post(`/mana/updateRecommand`, recommand)
       return response;
     }catch(error){
       console.error('Error update mile recommand:', error);
@@ -52,7 +52,7 @@ const actions = {
   async deleteRecommands(context, recommand){
     try{
       const mile_recommand_no = recommand.mile_recommand_no;
-      const response = await api.get(`/manager/deleteRecommand/${mile_recommand_no}`)
+      const response = await api.get(`/mana/deleteRecommand/${mile_recommand_no}`)
       return response;
     }catch(error){
       console.error('Error delete mile recommand:', error);

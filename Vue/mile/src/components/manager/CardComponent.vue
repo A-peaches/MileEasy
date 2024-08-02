@@ -194,7 +194,7 @@ export default {
 
       try {
         const response = await api.post(
-          '/manager/mileCount',
+          '/mana/mileCount',
           null, // POST 요청의 본문을 비워둡니다.
           {
             params: {
