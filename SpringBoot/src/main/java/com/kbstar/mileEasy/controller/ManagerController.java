@@ -23,7 +23,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @RestController
-@RequestMapping("/manager")
+@RequestMapping("/mana")
 public class ManagerController {
 
     @Autowired
