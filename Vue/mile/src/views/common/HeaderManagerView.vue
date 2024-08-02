@@ -65,11 +65,15 @@ export default {
   computed: {
     ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
     profileImageUrl() {
-      if (this.loginInfo && this.loginInfo.user_no) {
-        return `${process.env.VUE_APP_IMAGE_URL}/profile/${this.loginInfo.user_no}.jpg`;
-      }
-      return ''; // 또는 기본 이미지 URL
-    },
+  if (this.loginInfo && this.loginInfo.user_no) {
+    if (process.env.NODE_ENV === 'development') {
+      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+    } else {
+      return `/profile/${this.loginInfo.user_no}.jpg`;
+    }
+  }
+  return ''; // 또는 기본 이미지 URL
+},
     loginInfo() {
       return this.getLoginInfo;
     },
