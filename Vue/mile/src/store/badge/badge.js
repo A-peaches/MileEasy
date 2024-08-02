@@ -22,6 +22,7 @@ const actions = {
         { responseType: 'blob' }
       );
       const imageUrl = URL.createObjectURL(response.data);
+      console.log(imageUrl);
       commit('setKingBadge', imageUrl);
     } catch (error) {
       console.error(`Error fetching badge:`, error);

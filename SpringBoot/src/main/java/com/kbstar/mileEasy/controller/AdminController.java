@@ -121,7 +121,6 @@ public class AdminController {
         String imagePath = "king.jpg";
         String fullPath = badgeUploadPath + File.separator + imagePath;
 
-
         try {
             Resource resource = new FileSystemResource(fullPath);
             if (resource.exists()) {
