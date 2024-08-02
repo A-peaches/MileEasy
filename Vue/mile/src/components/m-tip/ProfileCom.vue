@@ -1,13 +1,13 @@
 <template>
-  <div key="profile" class="cards" style="height: 105%; padding-left:30px">
+  <div key="profile" class="cards" style="height: 320px; padding-left:30px">
     <div class="profile-remark">
       {{ loginInfo ? loginInfo.user_name : "" }}님, 오늘도 좋은하루 되세요!
     </div>
     <div class="text-start brown mt-2">나의 M-Tip 작성 건수 : 0건</div>
 
     <!-- 버튼구간 -->
-    <div class="text-start" style="margin-top : 100px">
-      <a class="btn-mtip" href="#">
+    <div class="text-start" style="margin-top : 80px">
+      <a class="btn-mtip" href="/m_TipWriteView">
         <i class="bi bi-pencil mr-2"></i>
         <span class="btn-text">글작성</span> 
         <span class="right-arrow">></span>
