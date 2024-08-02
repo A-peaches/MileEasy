@@ -133,7 +133,7 @@ export default {
       while (currentDay.month() === currentDate.month()) {
         // 토요일(6) 또는 일요일(0)이 아닌 경우에만 첫 번째 영업일로 처리
         if (currentDay.day() !== 0 && currentDay.day() !== 6) {
-          if (currentDay.date() === 1) {
+          if (currentDay.date() === 0) {
             // 첫 번째 영업일이면 알림 표시
             Swal.fire({
               icon: 'info',
