@@ -36,7 +36,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+import api from '@/api/axios';
 
 export default {
   name: 'MileageRequestWriteDelete',
@@ -73,8 +73,8 @@ export default {
       };
 
       try {
-        const response = await axios.post(
-          'http://localhost:8090/user/requestAdd',
+        const response = await api.post(
+          '/user/requestAdd',
           formData
         );
         Swal.fire({

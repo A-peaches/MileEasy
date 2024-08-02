@@ -2,7 +2,7 @@
   <div key="profile" class="cards fade-up-item" style="height: 430px">
     <img
       v-if="loginInfo && loginInfo.user_no"
-      :src="`http://localhost:8090/profile/${loginInfo.user_no}.jpg`"
+      :src="profileImageUrl"
       class="profile-large my-3"
       alt="Profile Picture"
       @error="setDefaultImage"
@@ -33,6 +33,16 @@ export default {
   },
   computed: {
   ...mapGetters('login', ['getLoginInfo']),
+  profileImageUrl() {
+  if (this.loginInfo && this.loginInfo.user_no) {
+    if (process.env.NODE_ENV === 'development') {
+      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+    } else {
+      return `/profile/${this.loginInfo.user_no}.jpg`;
+    }
+  }
+  return ''; // 또는 기본 이미지 URL
+},
   loginInfo() {
     const info = this.getLoginInfo;
     return info ? {

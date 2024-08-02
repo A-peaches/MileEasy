@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api/axios';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -149,7 +149,7 @@ export default {
       formData.append('file', file);
 
       try {
-        const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+        const response = await api.post('/notice/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -166,8 +166,8 @@ export default {
   if (!this.currentNotice.notice_board_file) return;
 
   try {
-    const response = await axios({
-      url: `http://localhost:8090/notice/download/${this.currentNotice.notice_board_file}`,
+    const response = await api({
+      url: `/notice/download/${this.currentNotice.notice_board_file}`,
       method: 'GET',
       responseType: 'blob',
     });
@@ -203,7 +203,7 @@ async submitForm() {
   }
 
   try {
-    const response = await axios.post('http://localhost:8090/notice/update', formData, {
+    const response = await api.post('/notice/update', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -229,7 +229,7 @@ async submitForm() {
     },
     fetchNoticeDetails() {
       const noticeId = this.$route.params.id;
-      axios.get(`http://localhost:8090/notice/${noticeId}`)
+      api.get(`/notice/${noticeId}`)
         .then(response => {
           const notice = response.data;
           this.form.notice_board_no = notice.notice_board_no;
@@ -246,7 +246,7 @@ async submitForm() {
     },
     async fetchMileages() {
       try {
-        const response = await axios.get('http://localhost:8090/notice/mileage');
+        const response = await api.get('/notice/mileage');
         this.mileages = response.data;
       } catch (error) {
         console.error('Error fetching mileages:', error.response ? error.response.data : error.message);

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   objectMileage: null,
@@ -18,8 +18,8 @@ const actions = {
   // 마일리지 정보를 모두 가져오기
   async getMileage({ commit }) {
     try {
-      const response = await axios.get(
-        'http://localhost:8090/mileage/getMileage'
+      const response = await api.get(
+        '/mileage/getMileage'
       );
       commit('setArrayMileage', response.data);
     } catch (error) {

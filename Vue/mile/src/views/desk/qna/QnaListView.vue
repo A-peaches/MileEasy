@@ -73,7 +73,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 
 export default {
   data() {
@@ -192,7 +192,7 @@ export default {
     async fetchNotices() {
       console.log('fetchNotices method called'); // 이 로그가 출력되는지 확인합니다.
       try {
-        const response = await axios.get('http://localhost:8090/notice/list');
+        const response = await api.get('/notice/list');
         console.log('Fetched notices:', response.data);
         this.notices = response.data;
       } catch (error) {
@@ -201,7 +201,7 @@ export default {
     },
     async fetchMileages() {
       try {
-        const response = await axios.get('http://localhost:8090/notice/mileage');
+        const response = await api.get('/notice/mileage');
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
@@ -212,7 +212,7 @@ export default {
       if (this.isProcessing) return;
       this.isProcessing = true;
       try {
-        const response = await axios.post(`http://localhost:8090/notice/increment-views/${notice.notice_board_no}`);
+        const response = await api.post(`/notice/increment-views/${notice.notice_board_no}`);
         console.log('Increment views response:', response.data);
 
         const noticeIndex = this.notices.findIndex(n => n.notice_board_no === notice.notice_board_no);

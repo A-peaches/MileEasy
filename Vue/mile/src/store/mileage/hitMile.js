@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   objectHitMile: null,
@@ -17,8 +17,8 @@ const mutations = {
 const actions = {
   async hit_mile({ commit }, mile_no) {
     try {
-      const response = await axios.get(
-        `http://localhost:8090/mileage/hit_mile/${mile_no}`
+      const response = await api.get(
+        `/mileage/hit_mile/${mile_no}`
       );
       commit('setObjectHitMile', response.data);
     } catch (error) {
@@ -27,8 +27,8 @@ const actions = {
   },
   async hit_mileChart({ commit }) {
     try {
-      const response = await axios.get(
-        `http://localhost:8090/mileage/hit_mileChart`
+      const response = await api.get(
+        `/mileage/hit_mileChart`
       );
       commit('setHitMileChart', response.data); // 수정: setHitMileChart 사용
       console.log(response.data);

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   kingBadge: null,
@@ -17,11 +17,12 @@ const mutations = {
 const actions = {
   async badgeKingImage({ commit }) {
     try {
-      const response = await axios.get(
-        `http://localhost:8090/admin/badgeKingImage`,
+      const response = await api.get(
+        `/admin/badgeKingImage`,
         { responseType: 'blob' }
       );
       const imageUrl = URL.createObjectURL(response.data);
+      console.log(imageUrl);
       commit('setKingBadge', imageUrl);
     } catch (error) {
       console.error(`Error fetching badge:`, error);
@@ -30,8 +31,8 @@ const actions = {
 
   async badgeJumpImage({ commit }) {
     try {
-      const response = await axios.get(
-        `http://localhost:8090/admin/badgeJumpImage`,
+      const response = await api.get(
+        `/admin/badgeJumpImage`,
         { responseType: 'blob' }
       );
       const imageUrl = URL.createObjectURL(response.data);

@@ -84,7 +84,7 @@
      
      <script>
 import { mapGetters, mapActions } from "vuex";
-import axios from "axios";
+import api from '@/api/axios';
 export default {
   name: "BadgeStatusView",
   data() {
@@ -116,8 +116,8 @@ export default {
 
     async kingData() {
       try {
-        const response = await axios.get(
-          "http://localhost:8090/mileage/kingData"
+        const response = await api.get(
+          "/mileage/kingData"
         );
         console.log("마왕 top3:", response.data);
         this.kingTop3 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 3만 가져오기
@@ -128,8 +128,8 @@ export default {
     },
     async jumpData() {
       try {
-        const response = await axios.get(
-          "http://localhost:8090/mileage/jumpData"
+        const response = await api.get(
+          "/mileage/jumpData"
         );
         console.log("점프업 top3:", response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : ""; // 첫 번째 데이터의 기준일자 설정
@@ -169,8 +169,8 @@ export default {
     async loadBadgeData() {
       if (this.getLoginInfo && this.getLoginInfo.user_no) {
         try {
-          const response = await axios.get(
-            `http://localhost:8090/myMile/loadBadgeData/${this.getLoginInfo.user_no}`
+          const response = await api.get(
+            `/myMile/loadBadgeData/${this.getLoginInfo.user_no}`
           );
           this.badgeData = response.data;
           console.log(this.badgeData);

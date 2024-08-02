@@ -1,5 +1,5 @@
 // src/store/modules/loginHistory.js
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   objectLoginHistory: null,
@@ -22,8 +22,8 @@ const mutations = {
 const actions = {
   async loginHistory({ commit }, user_no) {
     try {
-      const response = await axios.get(
-        `http://localhost:8090/user/loginHistory/${user_no}`
+      const response = await api.get(
+        `/user/loginHistory/${user_no}`
       );
       commit('setLoginHistory', response.data);
     } catch (error) {
@@ -34,8 +34,8 @@ const actions = {
   async loginHistoryCountArray({ commit }, start, end) {
     try {
       console.log('Requesting data with:', { start, end });
-      const response = await axios.get(
-        'http://localhost:8090/user/loginHistoryCountArray',
+      const response = await api.get(
+        '/user/loginHistoryCountArray',
         {
           params: { start, end },
         }

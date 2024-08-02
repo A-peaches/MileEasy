@@ -42,7 +42,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
-import axios from 'axios';
+import api from '@/api/axios';
 
 Chart.register(...registerables);
 
@@ -83,8 +83,8 @@ export default {
 
     async realChartData() {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/user/levelChartData',
+        const response = await api.post(
+          '/user/levelChartData',
           { date: this.date } // POST 요청에 날짜 데이터 포함
         );
 

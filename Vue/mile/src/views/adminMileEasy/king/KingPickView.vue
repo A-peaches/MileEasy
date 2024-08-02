@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api/axios';
 import Swal from 'sweetalert2';
 
 export default {
@@ -141,8 +141,8 @@ export default {
   methods: {
     async kingData() {
       try {
-        const response = await axios.get(
-          'http://localhost:8090/mileage/kingDataSelect'
+        const response = await api.get(
+          '/mileage/kingDataSelect'
         );
         console.log('kingDataSelect top5:', response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : '';
@@ -174,8 +174,8 @@ export default {
 
     async jumpData() {
       try {
-        const response = await axios.get(
-          'http://localhost:8090/mileage/jumpDataSelect'
+        const response = await api.get(
+          '/mileage/jumpDataSelect'
         );
         console.log('점프업 top5:', response.data);
         this.jumpTop5 = response.data.slice(0, 5);
@@ -206,8 +206,8 @@ export default {
 
     async fetchMileageLabels() {
       try {
-        const response = await axios.get(
-          'http://localhost:8090/mileage/getMileage'
+        const response = await api.get(
+          '/mileage/getMileage'
         );
         this.mileageLabels = response.data.map((item) => item.mile_name);
         this.dates = new Array(this.mileageLabels.length).fill('-');
@@ -220,8 +220,8 @@ export default {
 
     async lastUpdate() {
       try {
-        const response = await axios.get(
-          'http://localhost:8090/admin/lastUpdate'
+        const response = await api.get(
+          '/admin/lastUpdate'
         );
         console.log('날짜 데이터', response.data);
         this.dates = response.data.map((item) => item.date || '-');
@@ -297,8 +297,8 @@ export default {
         this.kingUserList.forEach((user) => params.append('king', user));
         this.jumpUserList.forEach((user) => params.append('jump', user));
 
-        const response = await axios.post(
-          `http://localhost:8090/admin/pickBadge?${params.toString()}`
+        const response = await api.post(
+          `/admin/pickBadge?${params.toString()}`
         );
         console.log('Response:', response.data);
         Swal.fire({

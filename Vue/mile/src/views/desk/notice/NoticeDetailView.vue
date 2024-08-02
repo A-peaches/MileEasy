@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api/axios';
 import { mapActions, mapGetters } from 'vuex';
 import Swal from 'sweetalert2';
 
@@ -75,7 +75,7 @@ export default {
       }).then(async result => {
         if (result.isConfirmed) {
           try {
-            await axios.delete(`http://localhost:8090/notice/delete/${this.notice.notice_board_no}`);
+            await api.delete(`/notice/delete/${this.notice.notice_board_no}`);
             Swal.fire('게시글 삭제 완료', '게시글이 삭제 되었습니다.', 'success').then(() => {
               this.$router.push('/noticeListView');
             });
@@ -151,8 +151,8 @@ export default {
     try {
       console.log("글쓰기 상세보기 fileName :",this.notice.notice_board_file);
       const fileName = encodeURIComponent(this.notice.notice_board_file);
-      const response = await axios({
-        url: `http://localhost:8090/notice/download/${fileName}`,
+      const response = await api({
+        url: `/notice/download/${fileName}`,
         method: 'GET',
         responseType: 'blob',
       });

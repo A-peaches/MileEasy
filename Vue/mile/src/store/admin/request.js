@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   requestList: null,
@@ -13,8 +13,8 @@ const mutations = {
 const actions = {
   async requestList({ commit }) {
     try {
-      const response = await axios.get(
-        `http://localhost:8090/admin/requestList`
+      const response = await api.get(
+        `/admin/requestList`
       );
       console.log(response.data);
       commit('setRequestList', response.data);

@@ -1,5 +1,5 @@
 // src/store/modules/mtipLike.js
-// import axios from 'axios';
+// import api from '@/api/axios';
 
 const state = {
   objectMtipLike: null,

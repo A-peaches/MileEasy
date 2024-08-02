@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.5'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'war'
 }
 
 group = 'com.kbstar'
@@ -48,8 +49,9 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-bootJar {
-    archiveBaseName = '-'
-    archiveFileName = 'vue_springboot.jar'
-    archiveVersion ='0.0.0'
+bootWar {
+    archiveBaseName.set('-')
+    archiveFileName.set('ROOT.war')
+    archiveVersion.set('0.0.0')
 }
+

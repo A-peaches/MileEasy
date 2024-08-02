@@ -97,7 +97,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import Swal from 'sweetalert2';
 import SearchModal from './SearchModal.vue';
-import axios from 'axios';
+import api from '@/api/axios';
 
 export default {
   name: 'MileageRequestWriteAdd',
@@ -230,10 +230,7 @@ export default {
 
       try {
         // Send form data to the server
-        const response = await axios.post(
-          'http://localhost:8090/user/requestAdd',
-          formData
-        );
+        const response = await api.post('/user/requestAdd', formData);
         Swal.fire({
           icon: 'success',
           title: '성공',
@@ -260,15 +257,11 @@ export default {
 
     const getMileageAdminList = async () => {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/admin/getMileageAdminList',
-          null,
-          {
-            params: {
-              mile_no: loginInfo.value.mile_no,
-            },
-          }
-        );
+        const response = await api.post('/admin/getMileageAdminList', null, {
+          params: {
+            mile_no: loginInfo.value.mile_no,
+          },
+        });
         console.log('담당자 리스트:', response.data);
         if (response.data.length > 0) {
           rows.value = response.data.map((admin) => ({

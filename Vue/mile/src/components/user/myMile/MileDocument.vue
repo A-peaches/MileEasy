@@ -48,7 +48,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 import moment from 'moment';
 export default {
   name: "AttendanceCom",
@@ -95,7 +95,7 @@ export default {
       this.currentPage++;
       
       const mile_no = this.mile_no;
-      const countList = await axios.get(`http://localhost:8090/mileage/countListDocuments/${mile_no}`);
+      const countList = await api.get(`/mileage/countListDocuments/${mile_no}`);
       this.countList = countList.data;
     },
     onSearch(){

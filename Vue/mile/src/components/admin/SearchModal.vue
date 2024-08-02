@@ -114,7 +114,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 import Swal from 'sweetalert2';
 
 export default {
@@ -140,8 +140,8 @@ export default {
   methods: {
     async getMileageAdminList() {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/admin/getMileageAdminList',
+        const response = await api.post(
+          '/admin/getMileageAdminList',
           null,
           {
             params: {
@@ -158,8 +158,8 @@ export default {
     },
     async searchUser() {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/admin/searchUser',
+        const response = await api.post(
+          '/admin/searchUser',
           null,
           {
             params: {},
@@ -225,8 +225,8 @@ export default {
 
       try {
         // 쿼리 매개변수로 데이터 전송
-        const response = await axios.post(
-          'http://localhost:8090/admin/newAdminList',
+        const response = await api.post(
+          '/admin/newAdminList',
           null,
           {
             params: {
