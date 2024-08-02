@@ -39,7 +39,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
-import axios from 'axios';
+import api from '@/api/axios';
 
 Chart.register(...registerables);
 
@@ -85,8 +85,8 @@ export default {
 
     async label() {
       try {
-        const response = await axios.get(
-          'http://localhost:8090/mileage/getMileage'
+        const response = await api.get(
+          '/mileage/getMileage'
         );
         const mileageLabel = response.data.map((item) => item.mile_name);
         return mileageLabel;
@@ -98,8 +98,8 @@ export default {
 
     async realChartData() {
       try {
-        const response = await axios.post(
-          'http://localhost:8090/mileage/hit_mileChartDATE',
+        const response = await api.post(
+          '/mileage/hit_mileChartDATE',
           { date: this.date } // POST 본문에 데이터 포함
         );
 

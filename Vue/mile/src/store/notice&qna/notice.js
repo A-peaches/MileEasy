@@ -1,5 +1,5 @@
 // src/store/modules/loginHistory.js
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   objectLoginHistory: null,
@@ -29,7 +29,7 @@ const mutations = {
 const actions = {
   async fetchNotices({ commit }) {
     try {
-      const response = await axios.get('http://localhost:8090/notice/list');
+      const response = await api.get('/notice/list');
       commit('SET_NOTICES', response.data);
     } catch (error) {
       console.error('Error fetching notices:', error);
@@ -37,7 +37,7 @@ const actions = {
   },
   async fetchNoticeDetail({ commit }, noticeId) {
     try {
-      const response = await axios.get(`http://localhost:8090/notice/${noticeId}`);
+      const response = await api.get(`/notice/${noticeId}`);
       commit('SET_NOTICE', response.data);
     } catch (error) {
       console.error('Error fetching notice detail:', error.response ? error.response.data : error.message);
@@ -45,7 +45,7 @@ const actions = {
   },
   async incrementViews({ commit }, noticeId) {
     try {
-      await axios.post(`http://localhost:8090/notice/increment-views/${noticeId}`);
+      await api.post(`/notice/increment-views/${noticeId}`);
       commit('INCREMENT_VIEWS', noticeId);
     } catch (error) {
       console.error('Error incrementing views:', error);
@@ -53,7 +53,7 @@ const actions = {
   },
   async addNotice({ commit }, formData) {
     try {
-      const response = await axios.post('http://localhost:8090/notice/write', formData, {
+      const response = await api.post('/notice/write', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -67,8 +67,8 @@ const actions = {
   },
   async getFooterNotice({ commit }) {
     try {
-      const response = await axios.get(
-        'http://localhost:8090/notice/getFooterNotice'
+      const response = await api.get(
+        '/notice/getFooterNotice'
       );
       commit('setFooterNotices', response.data);
     } catch (error) {

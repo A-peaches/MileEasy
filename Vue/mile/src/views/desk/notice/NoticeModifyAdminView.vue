@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api/axios';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -118,7 +118,7 @@ export default {
   formData.append('files', file);
 
   try {
-    const response = await axios.post('http://localhost:8090/notice/upload', formData, {
+    const response = await api.post('/notice/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -180,7 +180,7 @@ export default {
   }
 
   try {
-    const response = await axios.post('http://localhost:8090/notice/update', formData, {
+    const response = await api.post('/notice/update', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -238,7 +238,7 @@ export default {
     },
     fetchNoticeDetails() { //detail 에서 정보 가지고 오기.
       const noticeId = this.$route.params.id;
-      axios.get(`http://localhost:8090/notice/${noticeId}`)
+      api.get(`/notice/${noticeId}`)
         .then(response => {
           const notice = response.data;
           this.form.notice_board_no = notice.notice_board_no;
@@ -258,7 +258,7 @@ export default {
     },
     async fetchMileages() {
       try {
-        const response = await axios.get('http://localhost:8090/notice/mileage');
+        const response = await api.get('/notice/mileage');
         this.mileages = response.data;
       } catch (error) {
         console.error('Error fetching mileages:', error.response ? error.response.data : error.message);

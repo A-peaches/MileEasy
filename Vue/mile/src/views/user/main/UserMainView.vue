@@ -67,7 +67,20 @@ export default {
   opacity: 1;
   transform: translateY(0);
 }
+.main-container {
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+}
 
+.content-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+}
 /* 출석 체크 컴포넌트에 대한 추가 스타일 */
 /* .left-container > :last-child {
   margin-bottom: 20px; 

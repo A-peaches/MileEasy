@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   objectMileScore: null,
@@ -37,7 +37,7 @@ const mutations = {
 const actions = {
   async getMileScore({ commit }, user_no) {
     try {
-      const response = await axios.get(`http://localhost:8090/mileage/getMileScore/${user_no}`);
+      const response = await api.get(`/mileage/getMileScore/${user_no}`);
       commit('setArrayMileScore', response.data);
     } catch (error) {
       console.error('Error getting mileScore data:', error);
@@ -45,7 +45,7 @@ const actions = {
   },
   async getMileAge({ commit }, user_no) {
     try {
-      const response = await axios.get(`http://localhost:8090/mileage/getMileAge/${user_no}`);
+      const response = await api.get(`/mileage/getMileAge/${user_no}`);
       commit('setMileAges', response.data);
     } catch (error) {
       console.error('Error getting mileAges data:', error);
@@ -53,7 +53,7 @@ const actions = {
   },
   async getMilePosition({ commit }, user_no) {
     try {
-      const response = await axios.get(`http://localhost:8090/mileage/getMilePosition/${user_no}`);
+      const response = await api.get(`/mileage/getMilePosition/${user_no}`);
       commit('setMilePosition', response.data);
     } catch (error) {
       console.error('Error getting MilePosition data:', error);
@@ -61,7 +61,7 @@ const actions = {
   },
   async getMileJob({ commit }, user_no) {
     try {
-      const response = await axios.get(`http://localhost:8090/mileage/getMileJob/${user_no}`);
+      const response = await api.get(`/mileage/getMileJob/${user_no}`);
       commit('setMileJob', response.data);
     } catch (error) {
       console.error('Error getting MileJob data:', error);
@@ -69,7 +69,7 @@ const actions = {
   },
   async getMyMiles({ commit },user_no) {
     try {
-      const response = await axios.get(`http://localhost:8090/myMile/getMyMiles/${user_no}`);
+      const response = await api.get(`/myMile/getMyMiles/${user_no}`);
       commit('setMyMile', response.data);
     } catch (error) {
       console.error('Error getting MileJob data:', error);
@@ -77,7 +77,7 @@ const actions = {
   },
   async getMyMileStatus({ commit },{ user_no,mile_no }) {
     try {
-      const response = await axios.get(`http://localhost:8090/myMile/getMileStatus/${user_no}/${mile_no}`);
+      const response = await api.get(`/myMile/getMileStatus/${user_no}/${mile_no}`);
       commit('setMileStatus', response.data);
     } catch (error) {
       console.error('Error getting MileJob data:', error);

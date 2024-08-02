@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   loginInfo: null,
@@ -21,7 +21,7 @@ const mutations = {
 const actions = {
   async login({ commit }, loginInfo) {
     try {
-      const response = await axios.post('http://localhost:8090/user/login', loginInfo); // await는 비동기 작업이 완료될 때까지 기다린다.
+      const response = await api.post('/user/login', loginInfo); // await는 비동기 작업이 완료될 때까지 기다린다.
       const data = response.data; // 서버 응답의 본문 데이터를 추출하여 'data' 변수에 저장한다.
       // reponse.data.user{
       //  user_no: 직원번호
@@ -92,7 +92,7 @@ const actions = {
   async sendEmail(context, inputInfo) { // 비밀번호 변경 시 이메일 발송하는 액션 
     console.log('Input Info to send:', inputInfo);
     try {
-      const response = await axios.post('http://localhost:8090/user/pwreset', inputInfo);
+      const response = await api.post('/user/pwreset', inputInfo);
       return response.data; // 성공 시 서버 응답 데이터 반환
     } catch (error) {
       console.error('메일 전송 중 오류 발생', error);

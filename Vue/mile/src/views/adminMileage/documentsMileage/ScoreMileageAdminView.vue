@@ -124,7 +124,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 import moment from 'moment';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -248,7 +248,7 @@ export default {
       formData.append('file', this.file);
       formData.append('mile_no', this.loginInfo ? this.loginInfo.mile_no : null);
       try{
-        const response = await axios.post(`http://localhost:8090/mileage/uploadExcel`, formData, {
+        const response = await api.post(`/mileage/uploadExcel`, formData, {
           headers: {
             'Content-Type':'multipart/form-data',
           },
@@ -307,7 +307,7 @@ export default {
         this.currentPage++;
 
         const mile_no = this.loginInfo.mile_no;
-        const countList = await axios.get(`http://localhost:8090/mileage/countList/${mile_no}`);
+        const countList = await api.get(`/mileage/countList/${mile_no}`);
         this.countList = countList.data;
       } 
     },

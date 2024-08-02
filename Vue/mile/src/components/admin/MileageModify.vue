@@ -47,7 +47,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 import Swal from 'sweetalert2';
 import SearchModal from '../admin/SearchModal.vue';
 
@@ -103,8 +103,8 @@ export default {
 
       if (confirmed) {
         try {
-          const response = await axios.post(
-            'http://localhost:8090/admin/deleteMile',
+          const response = await api.post(
+            '/admin/deleteMile',
             null,
             {
               params: { mile_no: mile_no },

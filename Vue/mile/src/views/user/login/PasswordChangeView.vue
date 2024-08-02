@@ -45,7 +45,7 @@
    
    <script>
 import { mapGetters } from "vuex";
-import axios from "axios";
+import api from '@/api/axios';
 
 export default {
   name: "PasswordReissueView",
@@ -129,8 +129,8 @@ export default {
       // ...
 
       try {
-        const response = await axios.post(
-          "http://localhost:8090/user/changePassword",
+        const response = await api.post(
+          "/user/changePassword",
           inputInfo
         );
 

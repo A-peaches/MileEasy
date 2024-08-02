@@ -1,5 +1,5 @@
 // src/store/modules/user.js
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   // 필드 선언하는 장소
@@ -25,7 +25,7 @@ const mutations = {
 const actions = {
   async getUserById({ commit }, user_no) { // 특정 사용자 데이터를 가져오는 액션 추가
     try {
-      const response = await axios.get(`http://localhost:8090/user/${user_no}`);
+      const response = await api.get(`/user/${user_no}`);
       commit('setObjectUser', response.data);
     } catch (error) {
       console.error('Error get user data:', error);
@@ -36,7 +36,7 @@ const actions = {
   async getAllUser({ commit }) {
     // 모든 사용자 데이터를 가져오는 액션 추가
     try {
-      const response = await axios.get('http://localhost:8090/user/allUser');
+      const response = await api.get('/user/allUser');
       // 스트링부트 user/allUser서버 이동 -> 스프링부트 데이터 전달 -> const response 담기
 
       commit('setArrayUsers', response.data);

@@ -1,5 +1,5 @@
 // src/store/modules/qna.js
-// import axios from 'axios';
+// import api from '@/api/axios';
 
 const state = {
   arrayQnA: [],

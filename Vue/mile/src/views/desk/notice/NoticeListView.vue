@@ -77,7 +77,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import axios from 'axios';
+import api from '@/api/axios';
 
 export default {
   data() {
@@ -205,7 +205,7 @@ export default {
     async fetchNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
-        const response = await axios.get('http://localhost:8090/notice/list');
+        const response = await api.get('/notice/list');
         this.notices = response.data;
         console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
@@ -214,7 +214,7 @@ export default {
     },
     async fetchMileages() {
       try {
-        const response = await axios.get('http://localhost:8090/notice/mileage');
+        const response = await api.get('/notice/mileage');
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
@@ -228,10 +228,10 @@ export default {
   try {
     console.log("게시글 상세보기+조회수 메소드 도달", notice);
     // 조회수 증가 요청
-    await axios.post(`http://localhost:8090/notice/increment-views/${notice.notice_board_no}`);
+    await api.post(`/notice/increment-views/${notice.notice_board_no}`);
     
     // 게시글 상세 정보 요청
-    const response = await axios.get(`http://localhost:8090/notice/details/${notice.notice_board_no}`);
+    const response = await api.get(`/notice/details/${notice.notice_board_no}`);
     console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
     const noticeDetails = response.data;
     console.log('Fetched notice details:', noticeDetails);

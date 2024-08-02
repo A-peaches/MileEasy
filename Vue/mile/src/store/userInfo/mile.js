@@ -1,5 +1,5 @@
 // src/store/modules/mile.js
-import axios from 'axios';
+import api from '@/api/axios';
 
 const state = {
   mileInfo: null,
@@ -22,7 +22,7 @@ const mutations = {
 const actions = {
   async fetchMileInfo({commit}, user_no){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/mileIntro/${user_no}`);
+      const response = await api.get(`/manager/mileIntro/${user_no}`);
       // reponse.data {
       //  user_name: 사용자 이름
       //  user_profile: 사용자 프로필 사진 파일명
@@ -35,7 +35,7 @@ const actions = {
   },
   async getMileDetail({commit}, mile_no){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/mileDetail/${mile_no}`)
+      const response = await api.get(`/manager/mileDetail/${mile_no}`)
       // reponse.data {
       //  mile_introduce_no: 마일리지 소개글 번호
       //  mile_no: 마일리지 번호
@@ -50,7 +50,7 @@ const actions = {
   },
   async getMileModify({commit}, {mile_introduce_no, mile_no}){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/mileModifyDetail/${mile_introduce_no}?mile_no=${mile_no}`)
+      const response = await api.get(`/manager/mileModifyDetail/${mile_introduce_no}?mile_no=${mile_no}`)
       commit('setMileDetail', response.data);
     }catch(error){
       console.error('Error get modify mile detail:', error);
@@ -58,7 +58,7 @@ const actions = {
   },
   async addMile(context, mileInfo){
     try{
-      const response = await axios.post(`http://localhost:8090/manager/mileAdd`, mileInfo,{
+      const response = await api.post(`/manager/mileAdd`, mileInfo,{
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -71,7 +71,7 @@ const actions = {
   },
   async downloadFile(context, {mile_route}){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/downloadFile/${mile_route}`,{
+      const response = await api.get(`/manager/downloadFile/${mile_route}`,{
         responseType: 'blob' // 바이너리 데이터를 받는다. 
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -86,7 +86,7 @@ const actions = {
   },
   async deleteMile(context, {mile_introduce_no}){
     try{
-      const response = await axios.get(`http://localhost:8090/manager/deleteMile/${mile_introduce_no}`)
+      const response = await api.get(`/manager/deleteMile/${mile_introduce_no}`)
       return response;
     }catch(error){
       console.error('Error delete mile:', error);
@@ -96,7 +96,7 @@ const actions = {
   
   async updateMile(context, mileInfo){
     try{
-      const response = await axios.post(`http://localhost:8090/manager/updateDetail`, mileInfo,{
+      const response = await api.post(`/manager/updateDetail`, mileInfo,{
         headers: {
           'Content-Type': 'multipart/form-data'
         }

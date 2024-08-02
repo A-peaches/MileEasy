@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '@/api/axios';
 import Swal from 'sweetalert2';
 export default {
   data() {
@@ -37,7 +37,7 @@ export default {
       formData.append('file', this.file);
       formData.append('name', 'jump.jpg');
       try {
-        await axios.post('http://localhost:8090/admin/badgeUpload', formData, {
+        await api.post('/admin/badgeUpload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
