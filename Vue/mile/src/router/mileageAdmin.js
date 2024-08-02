@@ -3,8 +3,8 @@ export default [
 
   {
     //마일리지 담당자 메인 화면
-    path: '/manager',
-    name: 'manager',
+    path: '/mana',
+    name: 'mana',
     component: () =>
       import('../views/user/main/ManagerMainView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가

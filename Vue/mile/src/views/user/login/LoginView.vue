@@ -95,7 +95,7 @@ export default {
         if (response.user_is_admin && this.isChecked) {
           this.$router.push('/admin');
         } else if (response.user_is_manager && this.isChecked) {
-          this.$router.push('/manager');
+          this.$router.push('/mana');
         } else {
           this.$router.push('/main');
         }
