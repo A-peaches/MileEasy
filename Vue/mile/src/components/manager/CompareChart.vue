@@ -17,8 +17,8 @@
         >
       </div>
     </div>
-    <div v-if="isLoading" class="loading-indicator">데이터 로딩 중...</div>
-    <div v-else class="chart-wrapper d-flex justify-content-evenly">
+    <!-- <div v-if="isLoading" class="loading-indicator">데이터 로딩 중...</div> -->
+    <div class="chart-wrapper d-flex justify-content-evenly">
       <div v-if="selectedTab==='mileage'" class="chart-container" style="margin-right: 3%;" >
         <canvas id="mileageChart"></canvas>
       </div>
@@ -93,7 +93,7 @@ export default {
       thisYearData: [],
       lastYearData: [],
       selectedTab: 'mileage',
-      isLoading: true,
+      //isLoading: true,
       mileageCountData: null,
       visitCountData: null,
     };
@@ -103,7 +103,7 @@ export default {
     this.loadData();
   },
   mounted() {
-    this.setDefaultDates();
+    //this.setDefaultDates();
     this.updateCharts(); // Ensure chart rendering happens after setting dates
   },
 
@@ -249,16 +249,16 @@ export default {
       this.lastYearTotal = this.lastYearData.reduce((sum, item) => sum + (item[key] || 0), 0);
     },
     async loadData() {
-      this.isLoading = true;
+      //this.isLoading = true;
       try {
         this.mileageCountData = await this.mileageCount();
         this.visitCountData = await this.visitCount();
         this.processData(this.mileageCountData, this.visitCountData);
-        this.renderCharts();
+        // this.renderCharts();
       } catch (error) {
         console.error('loadData error:', error);
       } finally {
-        this.isLoading = false;
+        //this.isLoading = false;
       }
     },
     // 차트 렌더링 
@@ -282,8 +282,14 @@ export default {
       ]
 
       chartConfigs.forEach((config) => {
-        const ctx = document.getElementById(config.id)?.getContext('2d');
+        const canvas = document.getElementById(config.id);
+        // 캔버스 요소가 존재하지 않으면 해당 차트를 건너뛴다.
+        if(!canvas){
+          return;
+        }
 
+        const ctx = canvas.getContext('2d');
+        // 2D 컨텍스트를 얻지 못하면 에러를 로그로 남기고 다음 설정으로 넘어감.
         if (!ctx) {
           console.error(`Canvas element with id '${config.id}' not found.`);
           return;
