@@ -1,7 +1,9 @@
 package com.kbstar.mileEasy.controller;
 
 import com.kbstar.mileEasy.dto.Mileage;
+import com.kbstar.mileEasy.dto.MtipGuide;
 import com.kbstar.mileEasy.dto.Notice;
+import com.kbstar.mileEasy.service.notice.MtipGuideService;
 import com.kbstar.mileEasy.service.notice.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,14 +11,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -34,9 +33,17 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+    @Autowired
+    private MtipGuideService mtipGuideService;
+
+
+
     /*추가코드*/
     @Value("${project.uploadpath.notice}")
     private String uploadPath;
+
+    @Value("${project.uploadpath.mTipGuide}")
+    private String mTipGuideUploadPath;
 
     @GetMapping("/{id}")
     public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
@@ -144,13 +151,10 @@ public class NoticeController {
     //게시글 상세보기
     @GetMapping("/details/{noticeId}")
     public ResponseEntity<Notice> getNoticeDetails(@PathVariable int noticeId) {
-        System.out.println("details with ID: " + noticeId); // 로그 추가
+
         Notice notice = noticeService.getNoticeDetails(noticeId);
         if (notice != null) {
-            System.out.println("Notice details: " + notice); // 로그 추가
-            System.out.println("File name: " + notice.getNotice_board_file()); // 파일 이름 로그 추가
-            System.out.println("Mile no: " + notice.getMile_no()); // mile_no 로그 추가
-            System.out.println("Mile name: " + notice.getMile_name()); // mile_name 로그 추가
+
             return ResponseEntity.ok(notice);
         } else {
             return ResponseEntity.notFound().build();
@@ -200,7 +204,6 @@ public class NoticeController {
                     .orElse(null);
         }
     }
-
     @PostMapping("/update")
     public ResponseEntity<?> updateNotice(
             @RequestParam("notice_board_no") int noticeBoardNo,
@@ -258,9 +261,211 @@ public class NoticeController {
     @GetMapping("/getFooterNotice")
     public List<Notice> getFooterNotice() {
         List<Notice> notices =  noticeService.getFooterNotice();
-        System.out.println(notices);
+
         return notices;
     }
+
+
+    //MTIP가이드 첨부파일
+    @PostMapping("/mTipGuideUpload")
+    public ResponseEntity<String> mTipGuideUpload(@RequestParam("files") MultipartFile file) {
+        try {
+            String originalFileName = file.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String savedFileName = uuid + "_" + originalFileName;
+
+            Path filePath = Paths.get(mTipGuideUploadPath).resolve(savedFileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // 여기서는 파일명만 반환하고, 데이터베이스 저장은 별도의 서비스 로직에서 처리
+            return ResponseEntity.ok().body(savedFileName + "," + originalFileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @PostMapping("/mTipGuideWrite")
+    public ResponseEntity<?> mTipGuideWrite(@RequestParam("title") String title,
+                                         @RequestParam("content") String content,
+                                         @RequestParam("user_no") String userNo,
+                                         @RequestParam("user_name") String userName,
+                                         @RequestParam(value = "file", required = false) String fileInfo) {
+        try {
+            MtipGuide mtipGuide = new MtipGuide();
+            mtipGuide.setMtip_guide_title(title);
+
+
+            mtipGuide.setMtip_guide_content(content);
+            mtipGuide.setUser_no(userNo);  // String 타입으로 설정
+            mtipGuide.setUser_name(userName);
+
+            if (fileInfo != null && !fileInfo.isEmpty()) {
+                String[] fileNames = fileInfo.split(","); // 파일명과 원본 파일명을 분리
+                if (fileNames.length < 2) {
+                    throw new IllegalArgumentException("Invalid fileInfo format: " + fileInfo);
+                }
+                String savedFileName = fileNames[0]; // 서버에 저장된 파일명 (UUID 포함)
+                String originalFileName = fileNames[1]; // 원본 파일명
+
+                mtipGuide.setMtip_guide_file(originalFileName); // 원본 파일명을 DB에 저장
+            }
+
+            mtipGuideService.createMtipGudie(mtipGuide);
+
+            return ResponseEntity.ok().body("M-Tip 가이드가 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("M-Tip 가이드 등록 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/mTipGuideList")
+    public ArrayList<MtipGuide> mTipGuideList() {
+
+     return mtipGuideService.mTipGuideList();
+    }
+
+    @GetMapping("/GudieDetail/{mtipGuideNo}")
+    public ResponseEntity<MtipGuide> getGuide(@PathVariable long mtipGuideNo) {
+        MtipGuide mtipGuide = mtipGuideService.findById(mtipGuideNo);
+        if (mtipGuide != null) {
+            return ResponseEntity.ok(mtipGuide);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/GuideIncrement-views/{mtipGuideNo}")
+    public ResponseEntity<MtipGuide> incrementGuideNoticeViews(@PathVariable("mtipGuideNo") int mtipGuideNo) {
+        System.out.println("조회수");
+        try {
+            mtipGuideService.incrementViews(mtipGuideNo);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @DeleteMapping("/Guidedelete/{mtip_guide_no}")
+    public ResponseEntity<String> deleteGuide(@PathVariable Long mtip_guide_no) {
+        try {
+            mtipGuideService.deleteNotice(mtip_guide_no);
+            return ResponseEntity.ok("가이드 deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error deleting notice: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice: " + e.getMessage());
+        }
+    }
+
+
+
+    @GetMapping("/downloadGuide/{originalFileName:.+}")
+    public ResponseEntity<Resource> GuidedownloadFile(@PathVariable String originalFileName) throws IOException {
+        System.out.println("도착");
+        // 파일명 디코딩
+        originalFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8.toString());
+
+        // 서버에 저장된 파일 이름을 찾기
+        String savedFileName = findSavedFileGuideName(originalFileName);
+
+        if (savedFileName == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 파일 경로 설정 (실제 경로로 수정 필요)
+        Path filePath = Paths.get( mTipGuideUploadPath).resolve(savedFileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (resource.exists()) {
+            // 파일 이름을 UTF-8 인코딩하여 한글, 특수 문자 등 포함 가능
+            String encodedFileName = URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8.toString());
+            // 인코딩된 파일 이름을 사용하여 CONTENT_DISPOSITION 헤더 설정. filename* 속성은 UTF-8로 인코딩된 파일 이름을 지원
+            String contentDisposition = String.format("attachment; filename*=UTF-8''%s", encodedFileName);
+            // CONTENT_DISPOSITION 헤더를 설정하여 파일 다운로드를 트리거. 파일 리소스를 응답 본문에 포함시킴
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build(); // 파일이 존재하지 않으면 404응답 반환
+        }
+    }
+
+
+
+
+
+
+
+
+    // 서버에 저장된 파일 이름을 찾는 메서드 (예시)
+    private String findSavedFileGuideName(String originalFileName) throws IOException {
+        try (Stream<Path> paths = Files.walk(Paths.get(mTipGuideUploadPath))) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> name.endsWith("_" + originalFileName))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+
+
+    @PostMapping("/GuideUpdate")
+    public ResponseEntity<?> GuideUpdate(
+            @RequestParam("mtip_guide_no") int mtip_guide_no,
+            @RequestParam("mtip_guide_title") String mtip_guide_title,
+            @RequestParam("mtip_guide_content") String mtip_guide_content,
+            @RequestParam("user_no") String user_no,
+            @RequestParam("user_name") String user_name,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "originalFileName", required = false) String originalFileName) {
+
+        try {
+
+            MtipGuide mtipGuide = new MtipGuide();
+            mtipGuide.setMtip_guide_no(mtip_guide_no);
+            mtipGuide.setMtip_guide_title(mtip_guide_title);
+            mtipGuide.setMtip_guide_content(mtip_guide_content);
+            mtipGuide.setUser_no(user_no);
+            mtipGuide.setUser_name(user_name);
+
+            if (file != null && !file.isEmpty()) {
+                String savedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+                Path filePath = Paths.get(mTipGuideUploadPath).resolve(savedFileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                mtipGuide.setMtip_guide_file(originalFileName); // DB에는 원본 파일명만 저장
+            } else if (originalFileName != null && !originalFileName.isEmpty()) {
+                mtipGuide.setMtip_guide_file(originalFileName);
+            }
+
+            mtipGuideService.updateGuide(mtipGuide);
+
+
+            return ResponseEntity.ok("Notice updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating notice: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/Guide/{mtipGuideNo}")
+    public ResponseEntity<MtipGuide> getGuide(@PathVariable Long mtipGuideNo) {
+        System.out.println("안뇽");
+        MtipGuide mtipGuide = mtipGuideService.findById(mtipGuideNo);
+        if (mtipGuide != null) {
+            return ResponseEntity.ok(mtipGuide);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
 
 

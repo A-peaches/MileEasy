@@ -35,32 +35,40 @@ export default [
     component: () => import('../views/m_Tip/M_TipModifyView.vue'),
     meta: { requiresAuth: true },
   },
+
+  //관리자,사용자 : m-tip 가이드 상세보기
   {
-    //관리자,사용자 : m-tip 가이드 상세보기
-    path: '/m_TipGuideDetailView',
-    name: 'm_TipGuideDetailView',
-    component: () => import('../views/m_Tip/M_TipGuideDetailView.vue'),
+    path: '/mTipGuideDetail/:mtipGuideNo',
+    name: 'mTipGuideDetail',
+    component: () =>
+      import('../views/adminMileEasy/mTipManagement/mTipGuideDetail.vue'),
+    props: true,
     meta: { requiresAuth: true },
   },
+
   {
     //관리자 : m-tip 메인 화면
-    path: '/m_TipMainAdminView',
+    path: '/mTipMainAdminView',
     name: 'm_TipMainAdminView',
-    component: () => import('../views/m_Tip/admin/M_TipMainAdminView.vue'),
+    component: () =>
+      import('../views/adminMileEasy/mTipManagement/mTipMainAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
     //관리자 : m-tip 가이드 작성
-    path: '/m_TipGuideWriteAdminView',
-    name: 'm_TipGuideWriteAdminView',
-    component: () => import('../views/m_Tip/M_TipGuideWriteAdminView.vue'),
+    path: '/mTipWrite',
+    name: 'mTipWrite',
+    component: () =>
+      import('../views/adminMileEasy/mTipManagement/mTipGuideWrite.vue'),
     meta: { requiresAuth: true },
   },
   {
     //관리자 : m-tip 가이드 수정
-    path: '/m_TipGuideModifyAdminView',
-    name: 'm_TipGuideModifyAdminView',
-    component: () => import('../views/m_Tip/M_TipGuideModifyAdminView.vue'),
+    path: '/mTipGuideModify/:mtipGuideNo',
+    name: 'mTipGuideModify',
+    component: () =>
+      import('../views/adminMileEasy/mTipManagement/mTipGuideModify.vue'),
+    props: true,
     meta: { requiresAuth: true },
   },
 ];

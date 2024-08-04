@@ -1,6 +1,7 @@
 package com.kbstar.mileEasy.mapper;
 import com.kbstar.mileEasy.dto.Mileage;
 import com.kbstar.mileEasy.dto.Notice;
+
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -14,6 +15,13 @@ public interface NoticeDao {
     @Options(useGeneratedKeys = true, keyProperty = "notice_board_no")
     void insertNotice(Notice notice);
     /* 게시글 글작성 */
+
+
+
+
+
+
+
 
     @Select("SELECT n.notice_board_no, n.user_no, n.user_name, n.notice_board_title, n.notice_board_content, n.notice_board_file, n.notice_board_date, n.notice_board_hit,n.mile_no, m.mile_name " +
             "FROM notice n " +

@@ -3,7 +3,7 @@
     <div class="cards" style="width: 24%; height: 400px">
       <img
         v-if="loginInfo && loginInfo.user_no"
-    :src="profileImageUrl"
+        :src="profileImageUrl"
         class="profile-large my-3"
         alt="Profile Picture"
         @error="setDefaultImage"
@@ -88,7 +88,7 @@
     <MileagePageCount style="width: 70%; margin-left: 3%" />
   </div>
 
-  <br>
+  <br />
 
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div
@@ -114,15 +114,15 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     profileImageUrl() {
-  if (this.loginInfo && this.loginInfo.user_no) {
-    if (process.env.NODE_ENV === 'development') {
-      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
-    } else {
-      return `/profile/${this.loginInfo.user_no}.jpg`;
-    }
-  }
-  return ''; // 또는 기본 이미지 URL
-},
+      if (this.loginInfo && this.loginInfo.user_no) {
+        if (process.env.NODE_ENV === 'development') {
+          return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+        } else {
+          return `/profile/${this.loginInfo.user_no}.jpg`;
+        }
+      }
+      return ''; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -143,7 +143,7 @@ export default {
       while (currentDay.month() === currentDate.month()) {
         // 토요일(6) 또는 일요일(0)이 아닌 경우에만 첫 번째 영업일로 처리
         if (currentDay.day() !== 0 && currentDay.day() !== 6) {
-          if (currentDay.date() === 1) {
+          if (currentDay.date() === 0) {
             // 첫 번째 영업일이면 알림 표시
             Swal.fire({
               icon: 'info',
