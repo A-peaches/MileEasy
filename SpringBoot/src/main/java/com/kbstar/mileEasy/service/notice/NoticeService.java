@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.service.notice;
 
+import com.kbstar.mileEasy.dto.MtipGuide;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.dto.Mileage;
 import com.kbstar.mileEasy.dto.Notice;
@@ -93,5 +94,8 @@ public class NoticeService {
     public Notice findById(Long id) {
         return noticeDao.findById(id);
     }
+
+
+
 
 }

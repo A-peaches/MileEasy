@@ -62,7 +62,7 @@
               {{ formatDate(notice.mtip_guide_date) }}
             </div>
             <div class="notice-mile">
-              {{ notice.mtip_guide_hit }}
+              <i class="bi bi-eye"></i> {{ notice.mtip_guide_hit }}
             </div>
           </div>
         </div>
@@ -170,7 +170,10 @@ export default {
     },
 
     toggleDetails(mtipGuideNo) {
-      this.$router.push({ name: 'mTipGuideDetail', params: { mtipGuideNo } });
+      this.$router.push({
+        name: 'mTipGuideDetail',
+        params: { mtipGuideNo: mtipGuideNo },
+      });
     },
 
     formatDate(date) {

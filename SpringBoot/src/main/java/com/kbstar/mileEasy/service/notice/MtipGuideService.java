@@ -6,6 +6,7 @@ import com.kbstar.mileEasy.dto.Notice;
 import com.kbstar.mileEasy.mapper.MtipGuideDao;
 import com.kbstar.mileEasy.mapper.NoticeDao;
 import com.kbstar.mileEasy.mapper.UserDao;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,25 @@ public class MtipGuideService {
         mtipGuideDao.insertMtipGuide(mtipGuide);
     }
 
+    // ID로 공지사항 찾기
+    public MtipGuide findById(Long mtipGuideNo) {
+        return mtipGuideDao.findById(mtipGuideNo);
+    }
 
+    public void incrementViews(int mtipGuideNo) {
+        System.out.println("Service: Incrementing views for notice ID: " + mtipGuideNo); // 로그 추가
+        mtipGuideDao.incrementViews(mtipGuideNo);
+    }
+
+
+    public void deleteNotice(Long mtip_guide_no) {
+        MtipGuide mtipGuide = mtipGuideDao.findById(mtip_guide_no);
+        if (mtipGuide != null) {
+            mtipGuideDao.deleteNotice(mtip_guide_no);
+        } else {
+            throw new RuntimeException("Notice not found");
+        }
+    }
 
 
 
@@ -62,25 +81,21 @@ public class MtipGuideService {
     }
 
 
-    public void deleteNotice(Long id) {
-        Notice notice = noticeDao.findById(id);
-        if (notice != null) {
-            noticeDao.deleteNotice(id);
-        } else {
-            throw new RuntimeException("Notice not found");
-        }
-    }
 
     public List<Notice> getFooterNotice() {
         return noticeDao.getFooterNotice();
     }
 
-    // ID로 공지사항 찾기
-    public Notice findById(Long id) {
-        return noticeDao.findById(id);
-    }
+
 
     public ArrayList<MtipGuide> mTipGuideList() {
         return mtipGuideDao.mTipGuideList();
     }
+
+
+    public void updateGuide(MtipGuide mtipGuide) {
+        mtipGuideDao.updateGuide(mtipGuide);
+    }
+
+
 }

@@ -35,14 +35,17 @@ export default [
     component: () => import('../views/m_Tip/M_TipModifyView.vue'),
     meta: { requiresAuth: true },
   },
+
+  //관리자,사용자 : m-tip 가이드 상세보기
   {
-    //관리자,사용자 : m-tip 가이드 상세보기
-    path: '/mTipGuideDetail',
+    path: '/mTipGuideDetail/:mtipGuideNo',
     name: 'mTipGuideDetail',
     component: () =>
       import('../views/adminMileEasy/mTipManagement/mTipGuideDetail.vue'),
+    props: true,
     meta: { requiresAuth: true },
   },
+
   {
     //관리자 : m-tip 메인 화면
     path: '/mTipMainAdminView',
@@ -61,10 +64,11 @@ export default [
   },
   {
     //관리자 : m-tip 가이드 수정
-    path: '/mTipModify',
-    name: 'mTipModify',
+    path: '/mTipGuideModify/:mtipGuideNo',
+    name: 'mTipGuideModify',
     component: () =>
       import('../views/adminMileEasy/mTipManagement/mTipGuideModify.vue'),
+    props: true,
     meta: { requiresAuth: true },
   },
 ];

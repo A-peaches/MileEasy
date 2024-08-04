@@ -22,24 +22,21 @@
         </div>
       </div>
       <div class="content">
-        <span v-if="isNew(notice.notice_board_date)" class="new-label"
-          >NEW</span
-        >
-        <h1 class="title">{{ notice.notice_board_title }}</h1>
+        <span v-if="isNew(notice.mtip_guide_date)" class="new-label">NEW</span>
+        <h1 class="title">{{ notice.mtip_guide_title }}</h1>
         <div class="meta">
           <span class="author">{{ notice.user_name }}</span>
-          <span class="date">{{ formatDate(notice.notice_board_date) }}</span>
+          <span class="date">{{ formatDate(notice.mtip_guide_date) }}</span>
         </div>
         <div class="main-content">
           <div class="body">
-            <pre><p>{{ notice.notice_board_content }}</p></pre>
-            <!-- 줄 바꿈 -->
+            <pre><p>{{ notice.mtip_guide_content }}</p></pre>
           </div>
           <div class="file cards">
             <div style="display: flex; align-items: center">
               <h2 style="margin-right: 10px">첨부파일</h2>
               <span
-                v-if="!notice.notice_board_file"
+                v-if="!notice.mtip_guide_file"
                 style="
                   color: #4b4a4a;
                   font-family: 'KB_S5', sans-serif;
@@ -49,13 +46,13 @@
                 >파일이 존재하지 않습니다.</span
               >
             </div>
-            <div v-if="notice.notice_board_file" style="margin-top: 10px">
+            <div v-if="notice.mtip_guide_file" style="margin-top: 10px">
               <a
                 @click.prevent="downloadFile"
                 href="#"
                 class="file-download-link"
               >
-                {{ getDisplayFileName(notice.notice_board_file) }}
+                {{ getDisplayFileName(notice.mtip_guide_file) }}
               </a>
             </div>
           </div>
@@ -64,7 +61,7 @@
           <div class="views-icon">
             <i class="bi bi-eye"></i>
           </div>
-          <div class="views-text">{{ notice.notice_board_hit }}</div>
+          <div class="views-text">{{ notice.mtip_guide_hit }}</div>
         </div>
       </div>
     </div>
@@ -77,12 +74,23 @@
 <script>
 import api from '@/api/axios';
 import { mapActions, mapGetters } from 'vuex';
+
 import Swal from 'sweetalert2';
 
 export default {
-  props: ['mtipGuideNo'],
+  props: {
+    mtipGuideNo: {
+      type: [Number, String],
+      required: true,
+    },
+  },
+  data() {
+    return {
+      guideDetail: null,
+    };
+  },
   methods: {
-    ...mapActions('notice', ['fetchNoticeDetail', 'incrementViews']),
+    ...mapActions('notice', ['MtipGuideDetail', 'guide_incrementViews']),
 
     async deleteNotice() {
       Swal.fire({
@@ -98,13 +106,15 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            await api.delete(`/notice/delete/${this.notice.notice_board_no}`);
+            await api.delete(
+              `/notice/Guidedelete/${this.notice.mtip_guide_no}`
+            );
             Swal.fire(
               '게시글 삭제 완료',
               '게시글이 삭제 되었습니다.',
               'success'
             ).then(() => {
-              this.$router.push('/noticeListView');
+              this.$router.push('/mTipMainAdminView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
@@ -127,107 +137,99 @@ export default {
         scrollbarPadding: false,
         backdrop: true,
         didOpen: () => {
-          document.body.classList.add('no-scroll');
-          document.documentElement.style.overflow = 'hidden';
-        },
-        willClose: () => {
-          document.body.classList.remove('no-scroll');
-          document.documentElement.style.overflow = '';
+          document.querySelector('.swal2-container').style.zIndex = '999999';
         },
       });
     },
 
     getDisplayFileName(fileName) {
-      // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
-      const UUID_LENGTH = 36 + 1;
-
-      // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
-      if (!fileName || fileName.length <= UUID_LENGTH) {
-        return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
-      }
-
-      // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
-      if (fileName.charAt(UUID_LENGTH - 1) === '_') {
-        return fileName.substring(UUID_LENGTH);
-      }
-
-      return fileName;
+      return fileName.split('/').pop();
     },
 
     goBack() {
       this.$router.go(-1);
     },
+
     goToModifyView() {
-      console.log('id ;', this.notice.notice_board_no);
       this.$router.push({
-        name: 'noticeModifyAdminView',
-        params: { id: this.notice.notice_board_no },
+        name: 'mTipGuideModify',
+        params: { mtipGuideNo: this.notice.mtip_guide_no },
       });
     },
+
     isNew(dateString) {
-      const today = new Date();
-      const noticeDate = new Date(dateString);
-      const diffTime = Math.abs(today - noticeDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays <= 7;
+      const now = new Date();
+      const date = new Date(dateString);
+      const timeDiff = now - date;
+      const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      return daysDiff <= 7;
     },
+
     formatDate(dateString) {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Date(dateString).toLocaleDateString('ko-KR', options);
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
     },
 
     async downloadFile() {
       try {
-        console.log(
-          '글쓰기 상세보기 fileName :',
-          this.notice.notice_board_file
+        const response = await api.get(
+          `/notice/downloadGuide/${this.notice.mtip_guide_file}`,
+          {
+            responseType: 'blob',
+          }
         );
-        const fileName = encodeURIComponent(this.notice.notice_board_file);
-        const response = await api({
-          url: `/notice/download/${fileName}`,
-          method: 'GET',
-          responseType: 'blob',
+        const blob = new Blob([response.data], {
+          type: response.headers['content-type'],
         });
-
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', this.notice.notice_board_file); // 서버에서 받은 파일명을 그대로 사용
-        document.body.appendChild(link);
+        link.download = this.getDisplayFileName(this.notice.mtip_guide_file);
         link.click();
-        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       } catch (error) {
-        console.error('파일 다운로드 중 오류 발생:', error);
-        this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
+        console.error('파일 다운로드 중 오류가 발생했습니다.', error);
       }
     },
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
-    ...mapGetters('notice', ['getNotice']),
-    notice() {
-      return this.getNotice;
-    },
-    loginInfo() {
-      return this.getLoginInfo;
-    },
-    isChecked() {
-      return this.getIsChecked;
-    },
+    ...mapGetters('login', {
+      loginInfo: 'getLoginInfo',
+      isChecked: 'getIsChecked',
+    }),
+    ...mapGetters('notice', {
+      notice: 'getMtipGuideList',
+      allNotices: 'getMtipGuideLists',
+    }),
+
     isLoggedIn() {
       return !!this.loginInfo;
     },
+    mileNo() {
+      return this.$route.params.mile_no; // URL에서 전달받은 mile_no를 컴포넌트에서 사용
+    },
   },
   watch: {
-    id: {
-      immediate: true,
-      handler(newVal) {
-        this.fetchNoticeDetail(newVal);
-      },
+    mtipGuideNo(newVal) {
+      if (newVal) {
+        this.MtipGuideDetail(newVal);
+      }
     },
   },
   mounted() {
-    this.fetchNoticeDetail(this.id);
+    console.log('mtipGuideNo:', this.mtipGuideNo);
+    if (this.mtipGuideNo) {
+      console.log('Calling MtipGuideDetail with:', this.mtipGuideNo);
+      this.MtipGuideDetail(this.mtipGuideNo);
+      this.guide_incrementViews(this.mtipGuideNo);
+    } else {
+      console.log('mtipGuideNo is not available');
+    }
+  },
+  created() {
+    if (this.mtipGuideNo) {
+      this.MtipGuideDetail(this.mtipGuideNo);
+    }
   },
 };
 </script>

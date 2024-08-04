@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="actions">
-        <h1 class="title">M-Tip 가이드 작성</h1>
+        <h1 class="title">M-Tip 수정</h1>
       </div>
       <form @submit.prevent="submitForm">
         <div class="form-group">
@@ -22,6 +22,7 @@
             class="title-input"
           />
         </div>
+
         <div class="form-group content">
           <label for="content">내용</label>
           <textarea
@@ -30,8 +31,34 @@
             placeholder="내용을 입력해주세요"
           ></textarea>
         </div>
+        <div class="form-group file-upload">
+          <label for="file">첨부파일</label>
+          <div class="custom-file-upload">
+            <div v-if="displayFileName">
+              <div class="file-info">
+                <span>{{ displayFileName }}</span>
+                <button
+                  @click="triggerFileInput"
+                  type="button"
+                  class="file-modify-button"
+                >
+                  파일 수정
+                </button>
+              </div>
+              <input
+                type="file"
+                @change="handleFileUpload"
+                ref="fileInput"
+                style="display: none"
+              />
+            </div>
+            <div v-else>
+              <input type="file" @change="handleFileUpload" ref="fileInput" />
+            </div>
+          </div>
+        </div>
         <div class="btn-yellow-container">
-          <button type="submit" class="btn-yellow">등록</button>
+          <button type="submit" class="btn-yellow">수정</button>
         </div>
       </form>
     </div>
@@ -39,50 +66,195 @@
 </template>
 
 <script>
-//import api from '@/api/axios'; // axios를 정의합니다.
+import api from '@/api/axios';
 import { mapGetters } from 'vuex';
 
 export default {
-  name: 'mTipWrite',
+  name: 'mTipGuideModify',
   data() {
     return {
       form: {
+        notice_board_no: '',
         title: '',
-        mile_no: '',
-        kind: '',
-        file: null,
+        file: '',
         content: '',
-        category: '',
-        selectedKind: '',
+        user_no: '',
+        user_name: '',
+        mtipGuideNo: null,
+        mtip_guide_no: null,
       },
+      uploadedFileName: '',
+      displayFileName: '',
       mileages: [],
-      showCategory: false,
-      showKind: false,
-      uploadedFileName: null, // 추가: 업로드된 파일명 저장
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
-  },
-  mounted() {
-    this.fetchMileages();
-    this.setUserInfo();
+
+    decodedFileName() {
+      if (this.uploadedFileName) {
+        const parts = this.uploadedFileName.split('_', 2);
+        if (parts.length > 1) {
+          return decodeURIComponent(parts[1]);
+        }
+      }
+      return '';
+    },
   },
 
-  methods: {},
+  mounted() {
+    this.MtipGuideDetail();
+    this.setUserInfo();
+    document.addEventListener('click', this.handleClickOutside);
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside);
+  },
+
+  methods: {
+    async handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('files', file);
+
+      try {
+        // 파일 업로드는 POST 요청을 사용해야 합니다.
+        const response = await api.post('/notice/mTipGuideUpload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        console.log('서버 응답:', response.data);
+
+        const [savedFileName, originalFileName] = response.data.split(',');
+        console.log('저장된 파일명:', savedFileName);
+        console.log('원본 파일명:', originalFileName);
+
+        this.uploadedFileName = savedFileName;
+        this.displayFileName = originalFileName;
+        this.form.file = savedFileName;
+      } catch (error) {
+        console.error('파일 업로드 중 오류 발생:', error);
+        this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
+      }
+    },
+
+    getDisplayFileName(fileName) {
+      // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
+      const UUID_LENGTH = 36 + 1;
+
+      // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
+      if (!fileName || fileName.length <= UUID_LENGTH) {
+        return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
+      }
+
+      // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
+      if (fileName.charAt(UUID_LENGTH - 1) === '_') {
+        return fileName.substring(UUID_LENGTH);
+      }
+
+      return fileName;
+    },
+
+    async submitForm() {
+      const formData = new FormData();
+      formData.append('mtip_guide_no', this.form.mtip_guide_no);
+      formData.append('mtip_guide_title', this.form.title);
+      formData.append('mtip_guide_content', this.form.content);
+      formData.append('user_no', this.form.user_no);
+      formData.append('user_name', this.form.user_name);
+
+      if (this.form.file) {
+        formData.append('file', this.form.file);
+        formData.append('originalFileName', this.displayFileName);
+      }
+      // 파일이 업로드되지 않은 경우, 기존 파일명만 추가
+      else if (this.displayFileName) {
+        formData.append('originalFileName', this.displayFileName);
+      }
+
+      // FormData 내용 확인
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      try {
+        const response = await api.post('/notice/GuideUpdate', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        console.log('서버 응답:', response.data);
+
+        if (response.status === 200) {
+          this.showAlert('M-Tip가이드가 수정되었습니다.', 'success');
+          this.$router.push('/mTipMainAdminView');
+        } else {
+          this.showAlert('M-Tip가이드 수정 중 오류가 발생했습니다.', 'error');
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        this.showAlert('M-Tip가이드 수정 중 오류가 발생했습니다.', 'error');
+      }
+    },
+    goBack() {
+      this.$router.go(-1);
+    },
+
+    triggerFileInput() {
+      const fileInput = this.$refs.fileInput;
+      if (fileInput) {
+        fileInput.click();
+      } else {
+        console.error('fileInput reference is not available.');
+      }
+    },
+    setUserInfo() {
+      const loginInfo = this.getLoginInfo;
+      if (loginInfo) {
+        this.form.user_no = loginInfo.user_no;
+        this.form.user_name = loginInfo.user_name;
+      }
+    },
+    MtipGuideDetail() {
+      //detail 에서 정보 가지고 오기.
+      console.log('왓나?', this.$route.params.mtipGuideNo);
+      const mtipGuideNo = this.$route.params.mtipGuideNo;
+      api
+        .get(`/notice/Guide/${mtipGuideNo}`)
+        .then((response) => {
+          const notice = response.data;
+          this.form.mtip_guide_no = notice.mtip_guide_no;
+          this.form.title = notice.mtip_guide_title;
+          this.form.content = notice.mtip_guide_content;
+          this.displayFileName = notice.mtip_guide_file;
+        })
+        .catch((error) => {
+          console.error(
+            'Error fetching notice details:',
+            error.response ? error.response.data : error.message
+          );
+        });
+    },
+
+    showAlert(message, icon) {
+      this.$swal({
+        title: message,
+        icon: icon,
+        confirmButtonText: '확인',
+        confirmButtonColor: '#4b4a4a',
+      });
+    },
+  },
 };
 </script>
 
 <style scoped>
-.file-download-link {
-  color: #19c99b;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.file-download-link:hover {
-  color: #32ab8b;
-}
 .no-scroll {
   overflow: hidden;
   height: 100%; /* 높이를 고정하여 스크롤을 방지 */
@@ -110,7 +282,7 @@ h2 {
   font-size: 35px;
   font-weight: bold;
   margin-bottom: 50px;
-  font-family: 'KB_C3', sans-serif;
+  font-family: 'KB_S2', sans-serif;
 }
 /* form-group content의 높이 조정 */
 .form-group.content {
@@ -127,7 +299,7 @@ h2 {
   line-height: 1.5; /* 줄 높이를 조절하여 텍스트 간격 변경 */
   height: 500px; /* 필요에 따라 높이 조정 */
   resize: none; /* 텍스트 영역 크기 조정 금지 */
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_s5', sans-serif;
   font-size: 20px;
   color: #4b4a4a;
   border-radius: 5px;
@@ -228,7 +400,7 @@ form {
 
 .form-group label {
   flex: 0 0 10%; /* label의 너비를 설정합니다. */
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_s4', sans-serif;
   font-size: 20px;
   color: #4b4a4a;
   display: block;
@@ -247,7 +419,7 @@ form {
   margin-bottom: 0.5vh;
   text-align: left; /* 왼쪽 정렬 */
   letter-spacing: 1px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_s5', sans-serif;
 }
 
 .form-group textarea {
@@ -288,8 +460,8 @@ form {
   border-radius: 30px;
   line-height: 50px;
   padding: 0 20px;
-  font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
+  font-size: 22px;
+  font-family: 'KB_s5', sans-serif;
   color: #7a7a7a;
   width: 100%; /* 가로로 길게 설정 */
   max-width: 500px; /* 필요에 따라 최대 너비 설정 */
@@ -310,7 +482,7 @@ form {
   padding: 10px; /* 안쪽 여백 추가 */
   width: 920px; /* 가로로 늘림 */
   height: auto; /* 세로로 늘림 */
-  max-height: 2000px; /* 최대 높이 설정 */
+  max-height: 400px; /* 최대 높이 설정 */
 }
 .dropdown-category {
   display: block;
@@ -372,7 +544,7 @@ form {
   width: 7vw;
   height: 6vh;
   font-size: 23px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_s5', sans-serif;
 }
 
 .btn-yellow:hover {
@@ -386,6 +558,35 @@ form {
   margin: 5px 5px 5px 5px;
   width: 7vw;
   height: 6vh;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_s5', sans-serif;
+}
+
+.file-modify-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-modify-button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>
