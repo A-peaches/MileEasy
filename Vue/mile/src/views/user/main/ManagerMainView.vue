@@ -23,6 +23,7 @@
           {{ loginInfo ? loginInfo.dp_no : '' }}
         </p>
         <button @click="goToMileageIntroView" class="btn-yellow KB_C2">{{ mile_name }}</button>
+
       </div>
       <CardComponent
         title="기간별 페이지 방문자 수"
