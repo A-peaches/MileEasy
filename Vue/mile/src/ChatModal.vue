@@ -7,7 +7,18 @@
         <span class="title">이지 챗</span>
       </div>
 
-      <div class="chatBox" id="chatBox"></div>
+      <div class="chatBox" id="chatBox">
+        <div
+          v-for="(message, index) in chatMessages"
+          :key="index"
+          :class="{
+            'user-message': message.type === 'user',
+            'bot-message': message.type === 'bot',
+          }"
+        >
+          {{ message.content }}
+        </div>
+      </div>
 
       <div class="input-container">
         <input
@@ -25,13 +36,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import api from '@/api/axios';
-//import Swal from 'sweetalert2';
 
 export default {
   data() {
     return {
       message: '',
       chatList: [],
+      chatMessages: [],
     };
   },
   props: {
@@ -41,26 +52,47 @@ export default {
     ...mapGetters('login', ['getLoginInfo']),
   },
   methods: {
-    sendMessage() {
-      if (this.message.trim()) {
-        // 메시지를 전송하거나 처리하는 로직을 추가합니다.
-        console.log('Message sent:', this.message);
-
-        // 입력 필드를 초기화합니다.
-        this.message = '';
-      }
-    },
     async chatData() {
       try {
         const response = await api.get('/user/chatList');
-        console.log('챗:', response.data);
         this.chatList = response.data;
       } catch (error) {
         console.error('챗에러:', error);
       }
     },
-  },
+    sendMessage() {
+      if (this.message.trim()) {
+        const userInput = this.message.toLowerCase();
 
+        // chat_tag 또는 chat_content에서 일치하는 항목 찾기
+        const matchedChat = this.chatList.find(
+          (chat) =>
+            userInput.includes(chat.chat_tag.toLowerCase()) ||
+            userInput.includes(chat.chat_content.toLowerCase())
+        );
+
+        if (matchedChat) {
+          this.chatMessages.push({ type: 'user', content: this.message });
+          this.chatMessages.push({
+            type: 'bot',
+            content: matchedChat.chat_content,
+          });
+        } else {
+          this.chatMessages.push({ type: 'user', content: this.message });
+          this.chatMessages.push({
+            type: 'bot',
+            content: '검색어를 정확하게 입력해주세요.',
+          });
+        }
+
+        this.message = '';
+        this.$nextTick(() => {
+          const chatBox = document.getElementById('chatBox');
+          chatBox.scrollTop = chatBox.scrollHeight; // 자동 스크롤
+        });
+      }
+    },
+  },
   mounted() {
     this.chatData();
   },
@@ -68,22 +100,28 @@ export default {
 </script>
 
 <style scoped>
-.btn-green {
-  box-shadow: 3px 5px 7px rgba(172, 172, 172, 0.3) !important;
-}
 .modals {
-  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modals-content {
-  background-color: #fff; /* 흰색 배경 */
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
   width: 700px;
-  height: 600px; /* 모달의 높이를 지정 */
+  height: 600px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .close {
@@ -110,11 +148,29 @@ export default {
 .chatBox {
   border: solid 1px #ddd;
   border-radius: 8px;
-  flex: 1; /* 가용 공간을 모두 차지 */
-  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+  flex: 1;
+  overflow-y: auto;
   padding: 10px;
   margin-bottom: 20px;
-  background-color: #f9f9f9; /* 배경색 */
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #d1e7dd;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background-color: #cce5ff;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
 }
 
 .input-container {
