@@ -13,6 +13,10 @@ public interface UserDao {
 
     ArrayList<User> selectAllUser();
 
+    ArrayList<User> selectContactMileage();
+
+    ArrayList<User> selectContactMileEasy();
+
     User checkedUser(String user_no);
 
     User selectUserByEmail(String user_no);

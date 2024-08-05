@@ -53,6 +53,20 @@ public class UserController {
         return users; //호출된 곳으로 다시 돌아감!!!
     }
 
+    // 마일리지 담당자 정보 가져오기
+    @GetMapping("/mileageContacts")
+    public ArrayList<User> mileageContacts() {
+        ArrayList<User> users = GetUserInfoService.getContactMileage();
+        return users;
+    }
+
+    // 운영 관리자 정보 가져오기
+    @GetMapping("/mileEasyContacts")
+    public ArrayList<User> mileEasyContacts() {
+        ArrayList<User> users = GetUserInfoService.getContactMileEasy();
+        return users;
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, Object> loginInfo) {
         // ResponseEntity는 HTTP 응답의 상태코드, 헤더, 본문을 모두 제어할 수 있는 스프링의 클래스

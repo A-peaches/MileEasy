@@ -26,5 +26,7 @@ public class User {
     private String position_no;
     private String mile_no;
     private int visitorCount;
+    private String mile_name;
+    private String user_phone;
 
 }
