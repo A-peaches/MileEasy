@@ -1,6 +1,6 @@
 <template>
   <div class="cards page-back mx-auto" :style="{ height: computedHeight }">
-    <div class="button-container">
+    <div class="button-container mt-3">
       <button class="back-button" @click="goBack">
         <span class="arrow">❮</span> 이전
       </button>
@@ -83,7 +83,6 @@
           style="
             justify-content: space-between;
             align-items: flex-start;
-            background-color: #f6f6f6;
           "
         >
           <table class="styled-table">
@@ -104,7 +103,7 @@
       </div>
     </div>
 
-    <div class="btn-container">
+    <div class="btn-container" style=" margin-right: 75px;">
       <button class="btn-yellow KB_S4" @click="checkValidDates">
         채택하기
       </button>
@@ -322,6 +321,7 @@ export default {
 .page-back {
   width: 70%;
   margin-top: 5%;
+  padding-bottom : 70px;
 }
 
 .btn-yellow {

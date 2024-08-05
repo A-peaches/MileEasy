@@ -1,5 +1,5 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 400px; padding: 20px;">
+  <div class="cards" style="background-color: #f9f9f9; height: 430px; padding: 20px;">
     <p class="text-left lg2 KB_C2">{{ title }}
       <i
         class="bi bi-question-circle"
@@ -16,7 +16,7 @@
         >
       </div>
     </div>
-    <div class="cards">
+    <div class="cards" style="height: 335px;">
       <div class="chart-container" style="padding-top: 10px">
         <div class="chart-wrapper">
           <canvas :id="chartIds[0]"></canvas>
@@ -57,7 +57,7 @@
           <div  class="text-end w-100 mt-5">
           <span  style="
                       position: absolute;
-                      top: 90%;
+                      top: 87%;
                       right : -45px;
                       transform: translateX(-50%);
                       z-index: 0;

@@ -8,9 +8,6 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@fullcalendar/core": "^6.1.15",
-    "@fullcalendar/daygrid": "^6.1.15",
-    "@fullcalendar/vue3": "^6.1.15",
     "@popperjs/core": "^2.11.8",
     "@vuepic/vue-datepicker": "^9.0.1",
     "axios": "^1.7.2",
@@ -35,7 +32,8 @@
     "vue3-datepicker": "^0.4.0",
     "vue3-device-detector": "^1.2.2",
     "vuetify": "^3.6.12",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
