@@ -1,113 +1,63 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 400px">
-    <p class="text-left lg2 KB_C2">페이지 방문자 수</p>
-    <div class="flex">
-      <div
-        class="cards favorite-card"
-        style="display: flex; flex-direction: column; width: 100%"
-      >
-        <div
-          class="subBox"
-          style="width: 100%; padding: 0 20px; text-align: right"
-        >
-          <div class="dateround">
-            <input
-              type="date"
-              class="date"
-              id="startDate"
-              v-model="startDate"
-              @change="updateCharts"
-            />
-            -
-            <input
-              type="date"
-              class="date"
-              id="endDate"
-              v-model="endDate"
-              @change="updateCharts"
-            />
-          </div>
-        </div>
-        <div class="chartWithTotalVisitors" style="display: flex">
-          <div class="chartBox" style="flex: 1; padding: 20px">
-            <canvas :id="chartIds[0]" width="400" height="235"></canvas>
-          </div>
-
-          <div
-            class="boxs"
-            style="
-              flex: 0.5;
-              display: contents;
-              flex-direction: column;
-              justify-content: center;
-              padding: 20px;
-              margin-top: 50px;
-              margin-left: 20px;
-            "
-          >
-            <div class="bu">
-              <div>
-                <div style="display: flex; justify-content: center">
-                  <i
-                    class="bi bi-display"
-                    style="color: #868686; font-size: 2.3rem"
-                  ></i>
-                </div>
-                <span>총 방문자 수</span>
-                <div
-                  class="KB_C1"
-                  style="font-size: 1.5rem; font-weight: bold; font-size: 23pt"
-                >
-                  {{ total }}
-                </div>
-              </div>
-            </div>
-            <div class="bu">
-              <div style="display: flex; justify-content: center">
-                <i
-                  class="bi bi-reception-4"
-                  style="color: #868686; font-size: 2.3rem"
-                ></i>
-              </div>
-              <div>
-                최고 방문자 수
-                <div
-                  class="KB_C1"
-                  style="font-size: 1.5rem; font-weight: bold; font-size: 23pt"
-                >
-                  {{ maxcount }}
-                </div>
-              </div>
-            </div>
-            <div class="bu">
-              <div style="display: flex; justify-content: center">
-                <i
-                  class="bi bi-reception-2"
-                  style="color: #868686; font-size: 2.3rem"
-                ></i>
-              </div>
-              <div>
-                최소 방문자 수
-                <div
-                  class="KB_C1"
-                  style="font-size: 1.5rem; font-weight: bold; font-size: 23pt"
-                >
-                  {{ mincount }}
-                </div>
-              </div>
-            </div>
-          </div>
+  <div class="cards" style="background-color: #f9f9f9; height: 420px; ">
+    <p class="text-left lg2 KB_C2 ml-2">페이지 방문자 수
+      <i class="bi bi-download" @click="downloadChart"></i>
+    </p>
+    <div class="cards" style="height : 330px;">
+      <div class="date-container">
+        <div class="dateround">
+          <input type="date" class="date" id="startDate" v-model="startDate" @change="updateCharts" />
+          -
+          <input type="date" class="date" id="endDate" v-model="endDate" @change="updateCharts" />
         </div>
       </div>
+      <div class="content-container mr-5">
+        <div class="chartBox ml-3" >
+          <canvas :id="chartIds[0]" style="height:280px; width: 450px; "></canvas>
+        </div>
+        <div class="stats-container">
+  <div class="stat-row" style="margin-top : 25px">
+    <div class="stat-item">
+      <i class="bi bi-display"></i>
+      <span class="stat-label">총 방문자 수</span>
+      <div class="stat-value">{{ total }}</div>
+    </div>
+    <div class="stat-item">
+      <i class="bi bi-reception-4"></i>
+      <span class="stat-label">최고 방문자 수</span>
+      <div class="stat-value">{{ maxcount }}</div>
+    </div>
+    <div class="stat-item">
+      <i class="bi bi-reception-2"></i>
+      <span class="stat-label">최소 방문자 수</span>
+      <div class="stat-value">{{ mincount }}</div>
     </div>
   </div>
+</div>
+      </div>
+    </div>
+    <div  class="text-end w-100 mt-5">
+         <span  style="
+                    position: absolute;
+                    top: 87%;
+                    right : -50px;
+                    transform: translateX(-50%);
+                    z-index: 0;
+                    
+                  font-size:10pt; color:gray;">( 최대 조회 가능일 : 전영업일 )</span>
+        </div>
+  </div>
 </template>
+
+
+
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
 import Swal from 'sweetalert2';
 import api from '@/api/axios';
+import * as XLSX from 'xlsx';
 
 Chart.register(...registerables);
 
@@ -138,6 +88,30 @@ export default {
     },
   },
   methods: {
+    async downloadChart() {
+      try{
+        const counts = await this.chartDataCount();
+        const dates = this.weekDays();
+
+        const wsData = [['날짜', '방문자 수']]; // 엑셀 파일의 첫번째 행에 컬럼명을 추가
+        dates.forEach((date, index) => {
+          wsData.push([date, counts[index] || 0]);
+        });
+
+        const worksheet = XLSX.utils.aoa_to_sheet(wsData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+        XLSX.writeFile(workbook, 'chart_data.xlsx'); // 엑셀 파일 다운로드 
+      }catch (error) {
+        console.error('Error downloading chart data:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '차트 데이터 다운로드 중 오류가 발생했습니다.',
+        });
+      }
+    },
     setDefaultDates() {
       const today = new Date();
       const endDate = new Date(today);
@@ -199,7 +173,10 @@ export default {
       }
     },
     renderCharts(counts) {
-      this.chartIds.forEach((chartId, index) => {
+    
+
+      this.chartIds.forEach((chartId) => {
+        const canvas = document.getElementById(chartId);
         const ctx = document.getElementById(chartId)?.getContext('2d');
 
         if (!ctx) {
@@ -211,27 +188,33 @@ export default {
           this.charts[chartId].destroy();
         }
 
+        // 디바이스 픽셀 비율 설정
+    const dpr = window.devicePixelRatio || 1;
+    canvas.style.width = '450px';
+    canvas.style.height = '280px';
+
+
         this.charts[chartId] = new Chart(ctx, {
           type: 'line',
           data: {
             labels: this.weekDays(),
             datasets: [
               {
-                label: `Dataset ${index + 1}`,
+                label: `visit count`,
                 borderColor: '#FFCC00',
-                backgroundColor: '#FFCC00',
                 data: counts,
-                fill: true,
-                tension: 0.4, // Line tension to round the line edges
+                tension: 0.3, // Line tension to round the line edges
                 borderRadius: 5, // Border radius to round the line edges
               },
             ],
           },
           options: {
-            responsive: true,
+        responsive: true,
+        maintainAspectRatio: false,
+        devicePixelRatio: dpr,
             plugins: {
               legend: {
-                display: false,
+                display: true,
               },
               title: {
                 display: false,
@@ -240,10 +223,10 @@ export default {
             scales: {
               y: {
                 ticks: {
-                  display: false,
+                  display: true,
                 },
                 grid: {
-                  display: false,
+                  display: true,
                 },
               },
               x: {
@@ -268,7 +251,7 @@ export default {
       ) {
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        daysArray.push(`${month}-${day}`);
+        daysArray.push(`${month}.${day}`);
       }
 
       return daysArray;
@@ -277,44 +260,124 @@ export default {
 };
 </script>
 
+
+
 <style scoped>
-.favorite-card {
-  width: 100%;
-  height: 300px;
-  overflow: hidden;
+.layout-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  height: 100%;
 }
+
+
+.content-container {
+  display: flex;
+  flex: 1;
+  overflow: visible; /* 부모 요소에서 오버플로우를 허용 */
+}
+
+.chartBox {
+  flex: 2;
+  padding-right: 20px;
+
+  overflow: visible; /* 차트 요소에서 오버플로우를 허용 */
+  position: relative; /* 상대 위치 */
+  top: -50px; /* 원하는 만큼 위로 올리기 */
+}
+.stats-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.date-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
 
 .date {
-  border: 1px solid;
+  border: 1px solid #cecece;
   border-radius: 8px;
-  border-color: #cecece;
-}
-.dateround {
-  text-align: right;
+  padding: 5px 10px;
+  font-size: 14px;
 }
 
-.bu {
-  border-radius: 15px;
-
-  width: 130px;
-  height: 130px;
-
+.stat-item {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* 수직 가운데 정렬 */
+  align-items: center; /* 수평 가운데 정렬 */
+  flex: 1;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 10px;
   text-align: center;
   margin-right: 10px;
-  margin-top: 50px;
-}
-.bi {
-  font-size: 40px;
+  height: 160px;
+  width: 130px;
 }
 
-canvas#Chart1 {
-  max-height: 235px;
-  max-width: 100%; /* Add this to ensure the chart width does not exceed its container */
+.stat-item:last-child {
+  margin-right: 0;
+}
+
+
+.stat-item i {
+  font-size: 1.5rem;
+  color: #55B88E;
+  margin-bottom: 5px;
+  font-size : 20pt;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: #666;
+  margin-bottom: 2px;
+  font-size : 12pt;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.favorite-card {
+  width: 100%;
+  height: 350px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 20px;
+}
+
+.chartBox canvas {
+  width: 450px !important;
+  height: 280px !important;
+}
+
+.bi-download:hover {
+  cursor: pointer;
 }
 </style>
+
+
+
+
