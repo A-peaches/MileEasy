@@ -3,6 +3,7 @@ package com.kbstar.mileEasy.controller;
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.service.Chat.ChatService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
+import com.kbstar.mileEasy.service.monthlyKing.MonthlyKingService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
 import com.kbstar.mileEasy.service.user.request.RequestService;
@@ -37,6 +38,11 @@ public class UserController {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private MonthlyKingService monthlyKingService;
+
+
 
 
     @GetMapping("/{user_no}")
@@ -214,6 +220,13 @@ public class UserController {
 
         System.out.println("chat입장");
         return chatService.chatList();
+    }
+
+    @PostMapping("/badgeList")
+    public ArrayList<MonthlyKing> badgeList() {
+        System.out.println("배지배지배지");
+        return monthlyKingService.badgeList();
+
     }
 
 }

@@ -23,7 +23,9 @@
 
       <router-view />
 
-      <button @click.stop="openModal" class="chat-button">CHAT</button>
+      <button @click.stop="openModal" class="chat-button">
+        <img src="./assets/img/chat.gif" alt="Chat" class="chat-icon" />
+      </button>
       <ChatModal v-if="isModalOpen" :isOpen="isModalOpen" @close="closeModal" />
 
       <button @click="scrollToTop" class="top-button">
@@ -37,6 +39,7 @@
     <!-- hideHeader가 true일 때는 main과 Header를 숨기고 router-view만 렌더링 -->
   </div>
 </template>
+
 <script>
 import { mapGetters } from 'vuex';
 
@@ -109,23 +112,25 @@ export default {
 <style>
 @import url('./assets/css/css.css');
 
+/* 버튼 스타일 */
 .chat-button {
   position: fixed;
   bottom: 90px;
   right: 20px;
-  background-color: #19c99b;
-  color: white;
-  border: none;
-  border-radius: 50%;
+  background-color: transparent;
   width: 50px; /* 버튼의 가로 길이와 세로 길이를 같게 설정 */
   height: 50px;
   font-family: 'KB_C3', sans-serif;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9000;
+}
+
+.chat-icon {
+  width: 50px; /* 이미지 크기 조정 */
+  height: 50px;
+  object-fit: cover; /* 이미지를 버튼 크기에 맞게 조정 */
 }
 </style>

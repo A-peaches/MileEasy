@@ -12,11 +12,18 @@
           v-for="(message, index) in chatMessages"
           :key="index"
           :class="{
+            'message-container': true,
             'user-message': message.type === 'user',
             'bot-message': message.type === 'bot',
           }"
         >
-          {{ message.content }}
+          <div v-if="message.type === 'bot'" class="message-content">
+            <img src="./assets/img/chat.gif" alt="Bot" class="bot-image" />
+            <div class="message-text">{{ message.content }}</div>
+          </div>
+          <div v-if="message.type === 'user'" class="message-content">
+            <div class="message-text">{{ message.content }}</div>
+          </div>
         </div>
       </div>
 
@@ -64,7 +71,7 @@ export default {
       if (this.message.trim()) {
         const userInput = this.message.toLowerCase();
 
-        // chat_tag 또는 chat_content에서 일치하는 항목 찾기
+        // 사용자 입력이 포함된 첫 번째 채팅 응답을 찾음
         const matchedChat = this.chatList.find(
           (chat) =>
             userInput.includes(chat.chat_tag.toLowerCase()) ||
@@ -92,9 +99,27 @@ export default {
         });
       }
     },
+    sendGreeting() {
+      if (this.isOpen) {
+        this.chatMessages.push({
+          type: 'bot',
+          content: '안녕하세요! 저는 리브뚝뚝입니다. 무엇이든 물어보세요!',
+        });
+      }
+    },
   },
   mounted() {
     this.chatData();
+  },
+  watch: {
+    isOpen: {
+      handler(newVal) {
+        if (newVal) {
+          this.sendGreeting();
+        }
+      },
+      immediate: true, // 처음 렌더링 시에도 호출되도록
+    },
   },
 };
 </script>
@@ -157,20 +182,47 @@ export default {
   flex-direction: column;
 }
 
-.user-message {
-  align-self: flex-end;
-  background-color: #d1e7dd;
-  padding: 10px;
-  border-radius: 8px;
+.message-container {
+  display: flex;
   margin: 5px 0;
 }
 
+.message-content {
+  display: flex;
+  align-items: center;
+}
+
 .bot-message {
-  align-self: flex-start;
+  justify-content: flex-start;
+}
+
+.user-message {
+  justify-content: flex-end;
+}
+
+.bot-message .message-content {
+  align-items: flex-start;
+}
+
+.user-message .message-content {
+  align-items: flex-end;
+  flex-direction: row-reverse; /* 사용자 메시지의 내용이 오른쪽으로 배치되도록 함 */
+}
+
+.bot-image {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px; /* 이미지와 메시지 사이에 공간 추가 */
+}
+
+.message-text {
   background-color: #cce5ff;
   padding: 10px;
   border-radius: 8px;
-  margin: 5px 0;
+}
+
+.user-message .message-text {
+  background-color: #d1e7dd;
 }
 
 .input-container {
@@ -187,7 +239,7 @@ input[type='text'] {
 }
 
 button {
-  background-color: #007bff;
+  background-color: #19c99b;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -199,6 +251,6 @@ button {
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #17b88d;
 }
 </style>
