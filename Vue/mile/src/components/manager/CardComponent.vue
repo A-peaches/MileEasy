@@ -16,58 +16,58 @@
         >
       </div>
     </div>
+    <div class="cards">
+      <div class="chart-container" style="padding-top: 10px">
+        <div class="chart-wrapper">
+          <canvas :id="chartIds[0]"></canvas>
+        </div>
+        <div class="date-selector" style="width: 35%;">
+          <div class="d-flex justify-content-between align-items-center" style="width: 80%;">
+            <span class="md  highlight fw-bold">시작일자</span>
+            <span class="md highlight  fw-bold">종료일자</span>
+          </div>
+          <div class="date-inputs" style="width: 100%; margin-top: 5%;">
+            <input
+              type="date"
+              class="date"
+              id="startDate"
+              v-model="startDate"
+              @change="updateCharts"
+            />
+            <span class="date-separator">-</span>
+            <input
+              type="date"
+              class="date"
+              id="endDate"
+              v-model="endDate"
+              @change="updateCharts"
+            />
+          </div><br>
+          <div class="total-visitors mt-3" style="text-align: center; font-family: 'KB_S5'; font-size:13pt">
+            <!-- 조회 기간의 총 방문자 수는 {{ total }}명 입니다.<br><br> -->
+            조회 기간 중 직원들이 가장 많이 방문한 날짜는
+            <div class="mt-2"></div>
+            <span class="date-text">
+              <sup><img src="@/assets/img/left-quote.png" class="quote" style="width:6%;" /></sup>
+              {{ maxcountDate }}
+              <sup><img src="@/assets/img/right-quote.png" class="quote" style="width:6%;" /></sup>
+            </span> 입니다. 
+          </div>
+  
+          <div  class="text-end w-100 mt-5">
+          <span  style="
+                      position: absolute;
+                      top: 90%;
+                      right : -45px;
+                      transform: translateX(-50%);
+                      z-index: 0;
+                      
+                    font-size:10pt; color:gray;">( 최대 조회 가능일 : 전영업일 )</span>
+          </div>
+        </div>
 
-    <div class="chart-container" style="padding-top: 20px">
-      <div class="chart-wrapper">
-        <canvas :id="chartIds[0]"></canvas>
       </div>
-      <div class="date-selector" style="width: 35%;">
-        <div class="d-flex justify-content-between align-items-center" style="width: 80%;">
-          <span class="md  highlight fw-bold">시작일자</span>
-          <span class="md highlight  fw-bold">종료일자</span>
-        </div>
-        <div class="date-inputs" style="width: 100%; margin-top: 5%;">
-          <input
-            type="date"
-            class="date"
-            id="startDate"
-            v-model="startDate"
-            @change="updateCharts"
-          />
-          <span class="date-separator">-</span>
-          <input
-            type="date"
-            class="date"
-            id="endDate"
-            v-model="endDate"
-            @change="updateCharts"
-          />
-        </div><br>
-        <div class="total-visitors mt-4" style="text-align: center; font-family: 'KB_S5'; font-size:14pt">
-          <!-- 조회 기간의 총 방문자 수는 {{ total }}명 입니다.<br><br> -->
-          조회 기간 중 직원들이 가장 많이 방문한 날짜는
-          <div class="mt-2"></div>
-          <span class="date-text">
-            <sup><img src="@/assets/img/left-quote.png" class="quote" style="width:6%;" /></sup>
-            {{ maxcountDate }}
-            <sup><img src="@/assets/img/right-quote.png" class="quote" style="width:6%;" /></sup>
-          </span> 입니다. 
-        </div>
- 
-        <div  class="text-end w-100 mt-5">
-         <span  style="
-                    position: absolute;
-                    top: 90%;
-                    right : -60px;
-                    transform: translateX(-50%);
-                    z-index: 0;
-                    
-                  font-size:10pt; color:gray;">( 최대 조회 가능일 : 전영업일 )</span>
-        </div>
-      </div>
-
     </div>
-
   </div>
 </template>
 
@@ -372,9 +372,9 @@ export default {
 }
 
 .chart-wrapper {
-  width: 45%;
-  height: 120%;
-  padding-top: 20px;
+  width: 48%;
+  height: 110%;
+  padding-top: 10px;
 }
 
 .date-selector {

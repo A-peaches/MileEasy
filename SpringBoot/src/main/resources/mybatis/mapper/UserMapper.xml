@@ -48,6 +48,16 @@
             u.user_no = #{user_no}
     </select>
 
+    <select id="selectContactMileage" resultType="com.kbstar.mileEasy.dto.User">
+        select user_no, user_name, mile_name, user_phone
+        from user u join mileage m on u.mile_no = m.mile_no
+        where user_is_manager=1;
+    </select>
+
+    <select id="selectContactMileEasy" resultType="com.kbstar.mileEasy.dto.User">
+        select user_no, user_name, user_phone from user where user_is_admin=1;
+    </select>
+
     <select id ="selectUserByEmail" resultType="com.kbstar.mileEasy.dto.User">
         SELECT * FROM user WHERE user_no = #{user_no};
     </select>
