@@ -1,7 +1,7 @@
 <template>
   <div class="cards" style="background-color: #f9f9f9; height: 430px; padding: 20px;">
     <div>
-      <p class="text-left lg2 KB_C2">직급별 방문자 수
+      <p class="text-left lg2 KB_C2">직급별 방문자 수 &nbsp;
         <i class="bi bi-download" @click="downloadChart"></i>
       </p>
       <div class="cards favorite-card" style="height: 330px; display: flex; align-items: center;">
