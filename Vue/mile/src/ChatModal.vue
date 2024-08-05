@@ -68,36 +68,41 @@ export default {
       }
     },
     sendMessage() {
-      if (this.message.trim()) {
-        const userInput = this.message.toLowerCase();
-        // 사용자 입력의 일부가 포함된 첫 번째 채팅 응답을 찾음
-        const matchedChat = this.chatList.find(
-          (chat) =>
-            chat.chat_tag.toLowerCase().includes(userInput) ||
-            chat.chat_content.toLowerCase().includes(userInput) ||
-            userInput.includes(chat.chat_tag.toLowerCase()) ||
-            userInput.includes(chat.chat_content.toLowerCase())
-        );
-        if (matchedChat) {
-          this.chatMessages.push({ type: 'user', content: this.message });
-          this.chatMessages.push({
-            type: 'bot',
-            content: matchedChat.chat_content,
-          });
-        } else {
-          this.chatMessages.push({ type: 'user', content: this.message });
-          this.chatMessages.push({
-            type: 'bot',
-            content: '검색어를 정확하게 입력해주세요.',
-          });
-        }
-        this.message = '';
-        this.$nextTick(() => {
-          const chatBox = document.getElementById('chatBox');
-          chatBox.scrollTop = chatBox.scrollHeight; // 자동 스크롤
-        });
-      }
-    },
+  if (this.message.trim()) {
+    const userInput = this.message.toLowerCase();
+    // 사용자 입력에 포함된 단어들을 분리
+    const userWords = userInput.split(/\s+/);
+    
+    // 사용자 입력의 일부가 포함된 모든 채팅 응답을 찾음
+    const matchedChats = this.chatList.filter(chat => 
+      userWords.some(word => 
+        chat.chat_tag.toLowerCase().includes(word) ||
+        chat.chat_content.toLowerCase().includes(word)
+      )
+    );
+
+    if (matchedChats.length > 0) {
+      // 가장 연관성 높은 응답 선택 (여기서는 첫 번째 매치를 사용)
+      const bestMatch = matchedChats[0];
+      this.chatMessages.push({ type: 'user', content: this.message });
+      this.chatMessages.push({
+        type: 'bot',
+        content: bestMatch.chat_content,
+      });
+    } else {
+      this.chatMessages.push({ type: 'user', content: this.message });
+      this.chatMessages.push({
+        type: 'bot',
+        content: '검색어를 정확하게 입력해주세요.',
+      });
+    }
+    this.message = '';
+    this.$nextTick(() => {
+      const chatBox = document.getElementById('chatBox');
+      chatBox.scrollTop = chatBox.scrollHeight; // 자동 스크롤
+    });
+  }
+},
     sendGreeting() {
       if (this.isOpen) {
         this.chatMessages.push({
