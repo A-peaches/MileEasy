@@ -1,17 +1,7 @@
 <template>
-  <div key="profile" class="cards fade-up-item" style="height: 430px">
-    <img
-      v-if="loginInfo && loginInfo.user_no"
-      :src="profileImageUrl"
-      class="profile-large my-3"
-      alt="Profile Picture"
-      @error="setDefaultImage"
-    />
-    <div class="profile-header mt-3">
-      <h2 class="lg KB_S4 my-3">
-        {{ loginInfo ? loginInfo.user_name : '' }}
-      </h2>
-      <div class="badge-container">
+    <div key="profile" class="cards fade-up-item" style="height: 430px">
+    <div class="profile-container">
+      <!-- <div class="badge-container">
         <img
           v-if="hasKingBadge"
           src="@/assets/img/king.png"
@@ -24,7 +14,19 @@
           alt="Jump"
           class="chat-icon"
         />
-      </div>
+      </div> -->
+      <img
+        v-if="loginInfo && loginInfo.user_no"
+        :src="profileImageUrl"
+        class="profile-large my-3"
+        alt="Profile Picture"
+        @error="setDefaultImage"
+      />
+    </div>
+    <div class="profile-header mt-3">
+      <h2 class="lg KB_S4 my-1">
+        {{ loginInfo ? loginInfo.user_name : '' }}
+      </h2>
     </div>
     <p class="md" style="margin-bottom: 0px">
       {{
@@ -43,6 +45,7 @@
     </button>
   </div>
 </template>
+
 
 <script>
 import { mapGetters } from 'vuex';
@@ -117,33 +120,51 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .cards {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.profile-header {
-  position: relative; /* position을 relative로 설정 */
+.profile-container {
+  width: 100%;
+  position: relative;
+}
+
+
+.profile-large {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+}
+.badge-container {
+  position: absolute;
+  top: -22px;
+  left: -25px;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  margin-top: -20px; /* 프로필 이미지 아래로 위치 조정 */
+  z-index: 1;
+}
+
+.chat-icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 5px;
+}
+
+.profile-header {
+  text-align: center;
+  margin-top: 10px;
 }
 
 .profile-header h2 {
   margin: 0;
-  padding-right: 10px; /* 배지와의 간격 조정 */
-}
-
-.badge-container {
-  display: flex;
-  align-items: center;
-}
-
-.chat-icon {
-  width: 20pt;
-  height: 40px;
-  margin-left: 5px;
 }
 </style>
