@@ -70,32 +70,28 @@ export default {
     sendMessage() {
   if (this.message.trim()) {
     const userInput = this.message.toLowerCase();
-    // 사용자 입력에 포함된 단어들을 분리
-    const userWords = userInput.split(/\s+/);
     
-    // 사용자 입력의 일부가 포함된 모든 채팅 응답을 찾음
-    const matchedChats = this.chatList.filter(chat => 
-      userWords.some(word => 
-        chat.chat_tag.toLowerCase().includes(word) ||
-        chat.chat_content.toLowerCase().includes(word)
-      )
+    // chatList에서 chat_tag가 사용자 입력에 포함된 항목을 찾습니다.
+    const matchedChat = this.chatList.find(chat => 
+      userInput.includes(chat.chat_tag.toLowerCase())
     );
 
-    if (matchedChats.length > 0) {
-      // 가장 연관성 높은 응답 선택 (여기서는 첫 번째 매치를 사용)
-      const bestMatch = matchedChats[0];
-      this.chatMessages.push({ type: 'user', content: this.message });
+    this.chatMessages.push({ type: 'user', content: this.message });
+
+    if (matchedChat) {
+      // 일치하는 chat_tag가 있으면 해당 chat_content를 응답합니다.
       this.chatMessages.push({
         type: 'bot',
-        content: bestMatch.chat_content,
+        content: matchedChat.chat_content,
       });
     } else {
-      this.chatMessages.push({ type: 'user', content: this.message });
+      // 일치하는 chat_tag가 없으면 기본 응답을 합니다.
       this.chatMessages.push({
         type: 'bot',
-        content: '검색어를 정확하게 입력해주세요.',
+        content: '죄송합니다. 해당 내용에 대한 정보를 찾을 수 없습니다.',
       });
     }
+
     this.message = '';
     this.$nextTick(() => {
       const chatBox = document.getElementById('chatBox');
