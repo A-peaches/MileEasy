@@ -18,55 +18,55 @@
       </div>
     </div>
     <!-- <div v-if="isLoading" class="loading-indicator">데이터 로딩 중...</div> -->
-    <div class="chart-wrapper d-flex justify-content-evenly">
-      <div v-if="selectedTab==='mileage'" class="chart-container" style="margin-right: 3%;" >
-        <canvas id="mileageChart"></canvas>
-      </div>
-      <div v-if="selectedTab==='visitor'" class="chart-container" style="margin-right: 3%;">
-        <canvas id="visitsChart"></canvas>
-      </div>
-      <div class="" style="width: 35%; height: 80%;">
-        <div class="stats-container" style="height: 100%;">
-          <table style="border: 1px solid #EBEBEB; background-color: #fff; width: 100%; height:100%;">
-            <tr class="md" style="border: 1px solid #EBEBEB;">
-              <th>기준</th>
-              <th>{{ selectedTab === 'mileage' ? '마일리지 총점' : '방문자 수' }}</th>
-            </tr>
-            <tr >
-              <td class="md" style="font-size: 15pt;">전년도 대비</td>
-              <td class="lg2" style="font-family: 'KB_S4';">
-                <i
-                  :class="yearOverYearChange >= 0 ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"
-                  :style="{ color: yearOverYearChange >= 0 ? '#F28080' : '#808BF2', fontSize: '20pt' }"
-                ></i>
-                {{ Math.abs(yearOverYearChange) }}%
-              </td>
-            </tr>
-            <tr >
-              <td class="md" style="font-size: 15pt;">전월 대비</td>
-              <td class="lg2" style="font-family: 'KB_S4';">
-                <i
-                  :class="monthOverMonthChange >= 0 ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"
-                  :style="{ color: monthOverMonthChange >= 0 ? '#F28080' : '#808BF2', fontSize: '20pt' }"
-                ></i>
-                {{ Math.abs(monthOverMonthChange) }}%
-              </td>
-            </tr>
-          </table>
+    <div class="cards">
+      <div class="chart-wrapper d-flex justify-content-evenly">
+        <div v-if="selectedTab==='mileage'" class="chart-container" style="margin-right: 3%;" >
+          <canvas id="mileageChart"></canvas>
         </div>
-        <div  class="text-end w-100 mt-5">
-         <span  style="
-                    position: absolute;
-                    top: 90%;
-                    right : -40px;
-                    transform: translateX(-50%);
-                    z-index: 0;
-                    
-                  font-size:10pt; color:gray;">( 기준일자 : {{ startDate}} )</span>
+        <div v-if="selectedTab==='visitor'" class="chart-container" style="margin-right: 3%;">
+          <canvas id="visitsChart"></canvas>
+        </div>
+        <div class="" style="width: 35%; height: 80%;">
+          <div class="stats-container" style="height: 100%;">
+            <table style="border: 1px solid #EBEBEB; background-color: #fff; width: 100%; height:100%;">
+              <tr class="md" style="border: 1px solid #EBEBEB;">
+                <th>기준</th>
+                <th>{{ selectedTab === 'mileage' ? '마일리지 총점' : '방문자 수' }}</th>
+              </tr>
+              <tr >
+                <td class="md" style="font-size: 15pt;">전년도 대비</td>
+                <td class="lg2" style="font-family: 'KB_S4';">
+                  <i
+                    :class="yearOverYearChange >= 0 ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"
+                    :style="{ color: yearOverYearChange >= 0 ? '#F28080' : '#808BF2', fontSize: '20pt' }"
+                  ></i>
+                  {{ Math.abs(yearOverYearChange) }}%
+                </td>
+              </tr>
+              <tr >
+                <td class="md" style="font-size: 15pt;">전월 대비</td>
+                <td class="lg2" style="font-family: 'KB_S4';">
+                  <i
+                    :class="monthOverMonthChange >= 0 ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"
+                    :style="{ color: monthOverMonthChange >= 0 ? '#F28080' : '#808BF2', fontSize: '20pt' }"
+                  ></i>
+                  {{ Math.abs(monthOverMonthChange) }}%
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div  class="text-end w-100 mt-5">
+          <span  style="
+                      position: absolute;
+                      top: 90%;
+                      right : -40px;
+                      transform: translateX(-50%);
+                      z-index: 0;
+                      
+                    font-size:10pt; color:gray;">( 기준일자 : {{ startDate}} )</span>
+          </div>
         </div>
       </div>
-      
-      <!-- <img src="@/assets/imoji/ago/아거다짐.png" style="width: 5vw; align-self: flex-end;"/> -->
     </div>
   </div>
 </template>
@@ -431,11 +431,11 @@ export default {
   display: flex;
   justify-content:flex-start;
   align-items: center;
-  height: 280px;
+  height: 275px;
 }
 .chart-container {
   width: 48%;
-  height: 120%;
+  height: 105%;
   padding-top: 20px
 }
 .date {
