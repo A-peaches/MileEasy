@@ -1,11 +1,7 @@
 <template>
   <div class="cards" style="background-color: #f9f9f9; height: 430px; padding: 20px;">
     <p class="text-left lg2 KB_C2">{{ title }}
-      <i
-        class="bi bi-question-circle"
-        @click="toggleHelpPopover"
-        style="font-size: 15pt"
-      ></i>
+      <i class="bi bi-download" @click="downloadChart"></i>
     </p>
    
     <div v-if="showHelpPopover" class="help-popover" ref="helpPopover">
@@ -76,6 +72,8 @@ import { mapActions, mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
 import Swal from 'sweetalert2';
 import api from '@/api/axios';
+import * as XLSX from 'xlsx';
+
 Chart.register(...registerables);
 
 export default {
@@ -99,7 +97,6 @@ export default {
       maxcount: 0,
       mincount: 0,
       dates: [],
-      showHelpPopover: false,
     };
   },
   mounted() {
@@ -115,6 +112,18 @@ export default {
     },
   },
   methods: {
+    downloadChart() {
+      const wsData = [['날짜', '방문자 수']]; // 엑셀 파일의 첫번째 행에 컬럼명을 추가
+      this.dates.forEach((date, index) => {
+        wsData.push([this.formatted(new Date(date)), this.counts[index]]);
+      });
+
+      const worksheet = XLSX.utils.aoa_to_sheet(wsData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+      XLSX.writeFile(workbook, 'chart_data.xlsx'); // 엑셀 파일 다운로드 
+    },
     setDefaultDates() {
       const today = new Date();
       const endDate = new Date(today);
@@ -131,29 +140,6 @@ export default {
       const endDateInput = document.getElementById('endDate');
       endDateInput.setAttribute('max', endDateFormatted);
     },
-    toggleHelpPopover(event) {
-      event.stopPropagation(); // 이벤트 전파 중지
-      console.log("toggleHelpPopover 클릭");
-      this.showHelpPopover = !this.showHelpPopover;
-      console.log("showHelpPopover:", this.showHelpPopover); // 추가
-      if (this.showHelpPopover) {
-        document.addEventListener("click", this.handleClickOutside);
-      } else {
-        document.removeEventListener("click", this.handleClickOutside);
-      }
-    },
-    handleClickOutside(event) {
-      console.log("handleClickOutside 실행");
-      if (
-        this.$refs.helpPopover &&
-        !this.$refs.helpPopover.contains(event.target) &&
-        !this.$refs.helpIcon.contains(event.target)
-      ) {
-        console.log("팝오버 닫기");
-        this.showHelpPopover = false;
-        document.removeEventListener("click", this.handleClickOutside);
-      }
-    },
     async updateCharts() {
       if (new Date(this.startDate) > new Date(this.endDate)) {
         Swal.fire({
@@ -167,6 +153,7 @@ export default {
       try {
         const {counts, dates} = await this.chartDataCount();
         this.dates = dates;
+        this.counts = counts;
         this.total = counts.reduce((acc, cur) => acc + cur, 0);
         this.maxcount = Math.max(...counts);
         this.mincount = Math.min(...counts);
@@ -190,8 +177,7 @@ export default {
       const start = this.startDate.trim();
       const end = this.endDate.trim();
       const mile_no = this.getLoginInfo.mile_no;
-      console.log('마일넘', mile_no);
-
+    
       try {
         const response = await api.post(
           '/mana/mileCount',
@@ -204,10 +190,9 @@ export default {
             },
           }
         );
-        console.log('Response data:', response.data);
         const counts = response.data.map((item) => item.hit_count);
         const dates = response.data.map((item) => item.hit_date);
-        console.log('결과:', counts);
+        
         return {counts, dates};
       } catch (error) {
         console.error('Error fetching login history:', error);
@@ -444,5 +429,13 @@ export default {
 .date-text {
   font-size : 18pt;
   font-family: 'KB_C2'
+}
+
+.bi-question-circle:hover {
+  cursor: pointer;
+}
+
+.bi-download:hover {
+  cursor: pointer;
 }
 </style>

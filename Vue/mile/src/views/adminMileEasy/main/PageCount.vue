@@ -1,6 +1,8 @@
 <template>
   <div class="cards" style="background-color: #f9f9f9; height: 420px; ">
-    <p class="text-left lg2 KB_C2 ml-2">페이지 방문자 수</p>
+    <p class="text-left lg2 KB_C2 ml-2">페이지 방문자 수
+      <i class="bi bi-download" @click="downloadChart"></i>
+    </p>
     <div class="cards" style="height : 330px;">
       <div class="date-container">
         <div class="dateround">
@@ -55,6 +57,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
 import Swal from 'sweetalert2';
 import api from '@/api/axios';
+import * as XLSX from 'xlsx';
 
 Chart.register(...registerables);
 
@@ -85,6 +88,30 @@ export default {
     },
   },
   methods: {
+    async downloadChart() {
+      try{
+        const counts = await this.chartDataCount();
+        const dates = this.weekDays();
+
+        const wsData = [['날짜', '방문자 수']]; // 엑셀 파일의 첫번째 행에 컬럼명을 추가
+        dates.forEach((date, index) => {
+          wsData.push([date, counts[index] || 0]);
+        });
+
+        const worksheet = XLSX.utils.aoa_to_sheet(wsData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+        XLSX.writeFile(workbook, 'chart_data.xlsx'); // 엑셀 파일 다운로드 
+      }catch (error) {
+        console.error('Error downloading chart data:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '차트 데이터 다운로드 중 오류가 발생했습니다.',
+        });
+      }
+    },
     setDefaultDates() {
       const today = new Date();
       const endDate = new Date(today);
@@ -344,6 +371,10 @@ export default {
 .chartBox canvas {
   width: 450px !important;
   height: 280px !important;
+}
+
+.bi-download:hover {
+  cursor: pointer;
 }
 </style>
 
