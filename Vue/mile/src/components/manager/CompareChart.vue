@@ -1,7 +1,10 @@
 <template>
   <div class="cards" style="background-color: #f9f9f9; height: 400px; padding: 20px;">
     <div class="d-flex justify-content-between align-items-center">
-      <p class="text-left lg2 KB_C2">{{ title }}</p>
+      <p class="text-left lg2 KB_C2">
+        {{ title }}
+        <i class="bi bi-download" @click="downloadChart"></i>
+      </p>
       <div class="tabs text-end lg2 mr-3">
         <span
           @click="selectedTab = 'mileage'"
@@ -75,6 +78,8 @@
 import { mapGetters } from 'vuex';
 import { Chart, registerables } from 'chart.js';
 import api from '@/api/axios';
+import * as XLSX from 'xlsx';
+
 Chart.register(...registerables);
 
 export default {
@@ -145,6 +150,37 @@ export default {
     }
   },
   methods: {
+    downloadChart() {
+      const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+      let wsData = [];
+
+      if(this.selectedTab === 'mileage'){
+        wsData = [['월별', '올해 마일리지 총점', '작년 마일리지 총점']]; // 엑셀 파일의 첫번째 행에 컬럼명을 추가
+        months.forEach((month, index) => {
+          wsData.push([
+            month,
+            this.thisYearData[index]?.total_points || 0,
+            this.lastYearData[index]?.total_points || 0,
+          ]);
+        });
+      }else {
+        wsData = [['월별', '올해 방문자 수', '작년 방문자 수']]; // 엑셀 파일의 첫번째 행에 컬럼명을 추가
+        months.forEach((month, index) => {
+          wsData.push([
+            month,
+            this.thisYearData[index]?.visits || 0,
+            this.lastYearData[index]?.visits || 0,
+          ]);
+        });
+      }
+
+      const worksheet = XLSX.utils.aoa_to_sheet(wsData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+      const fileName = this.selectedTab === 'mileage' ? 'mileage_data.xlsx' : 'visitor_data.xlsx';
+      XLSX.writeFile(workbook, fileName); // 엑셀 파일 다운로드 
+    },
     async updateCharts() {
       try {
         const mileageCountData = await this.mileageCount();
@@ -480,5 +516,9 @@ export default {
   background-color: #f5f6f5; 
   border-radius: 10px; 
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bi-download:hover {
+  cursor: pointer;
 }
 </style>
