@@ -77,19 +77,24 @@ export default {
       this.mileRecommands.push(newRecommand);
     },
     async deleteComment(index){
-      const recommand = this.mileRecommands[index];
-      if(recommand.mile_recommand_no){
-        // DB에 있는 멘트를 삭제할 경우 
-        const response = await this.deleteRecommands(recommand);
-        if(response && response.data.success){
-          this.mileRecommands.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
-          console.log('삭제 완료');
+      const confirmDeletion = await this.showAlertConfirm("추천멘트를 삭제하시겠습니까?", "warning");
+      if(confirmDeletion){
+        const recommand = this.mileRecommands[index];
+        if(recommand.mile_recommand_no){
+          // DB에 있는 멘트를 삭제할 경우 
+          const response = await this.deleteRecommands(recommand);
+          if(response && response.data.success){
+            this.mileRecommands.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
+            console.log('삭제 완료');
+          }else{
+            console.log('삭제 실패');
+          }
         }else{
-          console.log('삭제 실패');
+          // DB에 없는 멘트를 삭제할 경우
+          this.mileRecommands.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
         }
       }else{
-        // DB에 없는 멘트를 삭제할 경우
-        this.mileRecommands.splice(index, 1); // 해당 인덱스의 항목을 배열에서 삭제 
+        console.log('삭제 취소');
       }
     },
     async addCommentAction(){
@@ -122,6 +127,18 @@ export default {
           }
         }
       })
+    },
+    showAlertConfirm(t, i) {
+      return this.$swal({
+        title: t,
+        icon: i,
+        showCancelButton: true,
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+        scrollbarPadding: false
+      }).then((result) => {
+        return result.isConfirmed;
+      });
     },
   },
   async created(){
