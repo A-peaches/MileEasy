@@ -1,6 +1,6 @@
 <template>
   <div class="cards" style="background-color: #f9f9f9; height: 430px; padding: 20px;">
-    <p class="text-left lg2 KB_C2">{{ title }}
+    <p class="text-left lg2 KB_C2">{{ title }} &nbsp;
       <i class="bi bi-download" @click="downloadChart"></i>
     </p>
    
