@@ -6,7 +6,7 @@
       <p class="lg2 KB_S4 mb-3" style="margin-bottom: 0px">
         마왕 배지 디자인 변경
       </p>
-
+      <br>
       <input type="file" @change="onFileChange" />
       <button @click="uploadFile">파일 업로드</button>
     </div>

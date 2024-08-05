@@ -1,5 +1,5 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 400px; padding: 20px;">
+  <div class="cards" style="background-color: #f9f9f9; height: 430px; padding: 20px;">
     <div class="d-flex justify-content-between align-items-center">
       <p class="text-left lg2 KB_C2">
         {{ title }}
@@ -21,7 +21,7 @@
       </div>
     </div>
     <!-- <div v-if="isLoading" class="loading-indicator">데이터 로딩 중...</div> -->
-    <div class="cards">
+    <div class="cards" style="height: 335px;">
       <div class="chart-wrapper d-flex justify-content-evenly">
         <div v-if="selectedTab==='mileage'" class="chart-container" style="margin-right: 3%;" >
           <canvas id="mileageChart"></canvas>
@@ -61,7 +61,7 @@
           <div  class="text-end w-100 mt-5">
           <span  style="
                       position: absolute;
-                      top: 90%;
+                      top: 89%;
                       right : -40px;
                       transform: translateX(-50%);
                       z-index: 0;

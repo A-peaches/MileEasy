@@ -166,11 +166,13 @@
             </div>
           </div>
           <div
-            style="display: flex; justify-content: flex-end; margin-top: 10px"
+            style="display: flex; justify-content: flex-end; margin-top: 10px;
+            margin-right: 90px; margin-bottom : 20px;"
           >
             <button
               class="btn-yellow KB_S4"
               onclick="location.href='/KingPickView'"
+            
             >
               채택하기
             </button>
@@ -282,6 +284,7 @@ export default {
 .page-back {
   width: 70%;
   margin-top: 5%;
+  padding-bottom : 70px;
 }
 .btn-yellow {
   width: 120px;

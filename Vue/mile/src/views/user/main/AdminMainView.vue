@@ -3,7 +3,8 @@
     <div class="left-container">
 
       <!-- 여기 프로필 -->
-      <div key="profile" class="cards fade-up-item profile-card">
+      <div key="profile" class="cards fade-up-item profile-card"
+      >
         <img
           v-if="loginInfo && loginInfo.user_no"
           :src="profileImageUrl"
