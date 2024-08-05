@@ -1,9 +1,9 @@
 package com.kbstar.mileEasy.controller;
 
-import com.kbstar.mileEasy.dto.LoginHistory;
-import com.kbstar.mileEasy.dto.Mileage_request;
-import com.kbstar.mileEasy.dto.User;
+import com.kbstar.mileEasy.dto.*;
+import com.kbstar.mileEasy.service.Chat.ChatService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
+import com.kbstar.mileEasy.service.monthlyKing.MonthlyKingService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
 import com.kbstar.mileEasy.service.user.info.LoginHistoryService;
 import com.kbstar.mileEasy.service.user.request.RequestService;
@@ -35,6 +35,14 @@ public class UserController {
 
     @Autowired
     private RequestService requestService;
+
+    @Autowired
+    private ChatService chatService;
+
+    @Autowired
+    private MonthlyKingService monthlyKingService;
+
+
 
 
     @GetMapping("/{user_no}")
@@ -204,6 +212,20 @@ public class UserController {
         List<String> result = requestService.changePassword(password,user_no);
 
         return ResponseEntity.ok().body("{\"success\":" + result.get(0).equals("성공") + ", \"message\":\"" + result.get(1) + "\"}");
+
+    }
+
+    @GetMapping("/chatList")
+    public ArrayList<Chat> chatList(){
+
+        System.out.println("chat입장");
+        return chatService.chatList();
+    }
+
+    @PostMapping("/badgeList")
+    public ArrayList<MonthlyKing> badgeList() {
+        System.out.println("배지배지배지");
+        return monthlyKingService.badgeList();
 
     }
 
