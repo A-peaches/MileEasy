@@ -3,7 +3,7 @@
 <mapper namespace="com.kbstar.mileEasy.mapper.NoticeDao">
 
     <select id="getFooterNotice" resultType="com.kbstar.mileEasy.dto.Notice">
-        select * from notice order by notice_board_date DESC LIMIT 5;
+        select * from notice where notice_board_is_delete = 0 order by notice_board_date DESC LIMIT 5 ;
     </select>
 
 </mapper>
