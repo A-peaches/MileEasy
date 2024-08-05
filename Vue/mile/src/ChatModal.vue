@@ -70,14 +70,14 @@ export default {
     sendMessage() {
       if (this.message.trim()) {
         const userInput = this.message.toLowerCase();
-
-        // 사용자 입력이 포함된 첫 번째 채팅 응답을 찾음
+        // 사용자 입력의 일부가 포함된 첫 번째 채팅 응답을 찾음
         const matchedChat = this.chatList.find(
           (chat) =>
+            chat.chat_tag.toLowerCase().includes(userInput) ||
+            chat.chat_content.toLowerCase().includes(userInput) ||
             userInput.includes(chat.chat_tag.toLowerCase()) ||
             userInput.includes(chat.chat_content.toLowerCase())
         );
-
         if (matchedChat) {
           this.chatMessages.push({ type: 'user', content: this.message });
           this.chatMessages.push({
@@ -91,7 +91,6 @@ export default {
             content: '검색어를 정확하게 입력해주세요.',
           });
         }
-
         this.message = '';
         this.$nextTick(() => {
           const chatBox = document.getElementById('chatBox');
