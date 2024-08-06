@@ -82,13 +82,14 @@
         </button>
       </div>
       <div style="text-align: center; justify-content: center">
-        <div class="notice-list" style="text-align: center">
-          <div v-if="filteredNotices.length === 0" class="no-results">
-            접수된 내역이 없습니다.
-          </div>
-          <div v-else>
+        <div v-if="filteredNotices.length === 0" class="no-results">
+          접수된 내역이 없습니다.
+        </div>
+        <div v-else>
+          <div class="notice-list" style="text-align: center">
             <div v-for="(notice, index) in paginatedNotices" :key="index">
               <div
+                v-if="notice"
                 class="input-base list-wrapper"
                 @click="toggleDetails(index)"
               >
@@ -109,7 +110,7 @@
                 </div>
               </div>
               <div
-                v-if="selectedNotice === index"
+                v-if="selectedNotice === index && notice"
                 class="notice-details-expanded"
               >
                 <p
@@ -173,11 +174,11 @@ import Swal from 'sweetalert2';
 export default {
   data() {
     return {
-      requestList: [],
+      requestList: [], // 초기값을 빈 배열로 설정
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 10,
-      selectedFilter: 'all', // 기본값을 'all'로 설정
+      selectedFilter: 'all',
       selectedNotice: null,
     };
   },
@@ -192,12 +193,12 @@ export default {
       return this.getIsChecked;
     },
     filteredNotices() {
-      let filtered = this.requestList;
+      let filtered = this.requestList || []; // Ensure it's an array
 
       if (this.searchQuery) {
         filtered = filtered.filter((notice) => {
           return (
-            notice.mile_name.includes(this.searchQuery) ||
+            (notice.mile_name && notice.mile_name.includes(this.searchQuery)) ||
             (notice.request_mile_name &&
               notice.request_mile_name.includes(this.searchQuery))
           );
@@ -209,7 +210,7 @@ export default {
       }
 
       return filtered.filter((notice) => {
-        const status = notice.request_status;
+        const status = notice.request_status ?? -1; // Use default value if null
         return (
           (this.selectedFilter === 'processing' && status === 0) ||
           (this.selectedFilter === 'completed' && status === 1) ||
@@ -237,11 +238,10 @@ export default {
         const response = await api.post('/user/requestList', null, {
           params: { user_no: this.getLoginInfo.user_no },
         });
-        this.requestList = response.data;
-        console.log('이', response.data);
+        this.requestList = response.data || []; // Ensure it's an array
       } catch (error) {
         console.error('문제', error);
-        this.requestList = [];
+        this.requestList = []; // Ensure it's an array
       }
     },
     async deleteRequest(mileage_request_no) {
@@ -264,12 +264,12 @@ export default {
           console.log(response.data);
           Swal.fire('삭제 완료', '요청이 삭제되었습니다.', 'success').then(
             () => {
-              window.location.reload(); // 페이지 새로고침
+              this.fetchRequestList(); // Call fetchRequestList to refresh data
             }
           );
         } catch (error) {
           console.error('문제', error);
-          Swal.fire('오류', '요청 삭제에 실패했습니다.', 'error'); // 오류 메시지
+          Swal.fire('오류', '요청 삭제에 실패했습니다.', 'error');
         }
       }
     },
@@ -277,28 +277,24 @@ export default {
       if (type === 1) return '추가';
       if (type === 2) return '수정';
       if (type === 3) return '삭제';
-      return '';
+      return '기타';
     },
     getStatus(status) {
       if (status === 0) return '접수요청';
       if (status === 1) return '접수완료';
       if (status === 2) return '승인완료';
       if (status === 3) return '승인거절';
-      return '';
-    },
-    applyFilters() {
-      this.currentPage = 1;
+      return '미확인';
     },
     toggleDetails(index) {
-      if (this.selectedNotice === index) {
-        this.selectedNotice = null;
-      } else {
-        this.selectedNotice = index;
-      }
+      this.selectedNotice = this.selectedNotice === index ? null : index;
+    },
+    applyFilters() {
+      this.currentPage = 1; // Reset to the first page on filter change
     },
   },
 
-  mounted() {
+  created() {
     this.fetchRequestList();
   },
 };

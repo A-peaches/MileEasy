@@ -20,4 +20,5 @@ public interface MileageRequestDao {
 
     void recive(String num);
 
+    void updateRegister(int num);
 }

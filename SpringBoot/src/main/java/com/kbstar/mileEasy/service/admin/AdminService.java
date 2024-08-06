@@ -4,6 +4,7 @@ import com.kbstar.mileEasy.dto.MileScore;
 import com.kbstar.mileEasy.dto.User;
 import com.kbstar.mileEasy.mapper.AdminDao;
 import com.kbstar.mileEasy.mapper.MileageDao;
+import com.kbstar.mileEasy.mapper.MileageRequestDao;
 import com.kbstar.mileEasy.mapper.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,8 @@ public class AdminService {
 
     @Autowired
     private MileageDao mileageDao;
-
+    @Autowired
+    private MileageRequestDao mileageRequestDao;
 
 
     public ArrayList<User> getileageAdminList(String mileNo) { return userDao.getileageAdminList(mileNo);
@@ -68,6 +70,9 @@ public class AdminService {
         mileageDao.updateUser(mileNo,manager);
     }
 
+    public void updateRegiter(int num) {
+        mileageRequestDao.updateRegister(num);
+    }
 
 
     // @Autowired

@@ -5,6 +5,7 @@
 
     <select id="requestList" resultType="com.kbstar.mileEasy.dto.Mileage_request">
         SELECT
+            mr.register,
             mr.mileage_request_no,
             mr.request_is_branch,
             mr.request_mile_name,
@@ -35,6 +36,7 @@
 
     <select id="requestListAdmin" resultType="com.kbstar.mileEasy.dto.Mileage_request">
         SELECT
+            mr.register,
             mr.mileage_request_no,
             mr.request_is_branch,
             mr.request_mile_name,
@@ -76,6 +78,14 @@
         WHERE mileage_request_no = #{num};
     </update>
 
+    <update id="updateRegister">
+        UPDATE mileage_request
+        SET register = CASE
+                           WHEN register = 0 THEN 1
+                           ELSE register + 1
+            END
+        WHERE mileage_request_no = #{num};
+    </update>
 
 
 

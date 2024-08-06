@@ -85,6 +85,12 @@
               class="input-base input-white"
             ></textarea>
           </div>
+          <div
+            v-if="this.currentRequest.register >= 1"
+            style="text-align: right; color: red"
+          >
+            현재 건을 등록한 이력이 있습니다
+          </div>
           <div class="button-wrapper">
             <button
               v-if="currentRequest.request_status === 1"
@@ -245,7 +251,7 @@ export default {
       formData.append('mileageLimit', this.mileageLimit);
       formData.append('manager', this.manager);
       formData.append('request_is_branch', this.request_is_branch);
-
+      formData.append('num', this.requestNo);
       try {
         const response = await api.post('/admin/addMileage', formData, {
           headers: {
@@ -283,6 +289,15 @@ export default {
         });
       }
     },
+    async label() {
+      try {
+        const response = await api.get('/mileage/getMileage');
+        this.mileageLabels = response.data;
+      } catch (error) {
+        console.error('Error fetching mileage labels:', error);
+        this.mileageLabels = []; // 에러 발생 시 빈 배열 반환
+      }
+    },
 
     async ModifyData() {
       this.label(); // 마일리지 레이블을 먼저 가져옴
@@ -306,6 +321,7 @@ export default {
             final_admin_list: this.manager,
             mileNameInput: this.mileageName,
             mileMax: this.mileageLimit,
+            num: this.requestNo,
           },
         });
         console.log(response.data);
@@ -334,6 +350,7 @@ export default {
         const response = await api.post('/admin/DeleteData', null, {
           params: {
             mile_no: this.currentRequest.mile_no,
+            num: this.requestNo,
           },
         });
         console.log(response.data);
@@ -430,7 +447,7 @@ export default {
           scrollbarPadding: false,
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.reload();
+            document.location = '/mileageManagementView';
           }
         });
       } catch (error) {
