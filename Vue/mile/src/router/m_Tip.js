@@ -37,9 +37,18 @@ export default [
   },
   {
     //사용자 : m-tip 수정화면
-    path: '/m_TipModifyView',
+    path: '/m_TipModifyView/:mtip_board_no',
     name: 'm_TipModifyView',
+    props: true,
     component: () => import('../views/m_Tip/M_TipModifyView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    //사용자 : 나만의 좋아요 m-tip 화면
+    path: '/MyM_TipBestView',
+    name: 'MyM_TipBestView',
+    props: true,
+    component: () => import('../views/m_Tip/MyM_TipBestView.vue'),
     meta: { requiresAuth: true },
   },
 

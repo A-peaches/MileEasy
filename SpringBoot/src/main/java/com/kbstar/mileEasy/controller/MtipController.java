@@ -126,7 +126,7 @@ public class MtipController {
             return ResponseEntity.status(500).body("Error retrieving notices: " + e.getMessage());
         }
     }
-
+    // m-tip 게시글 상세보기
     @GetMapping("/details/{noticeId}")
     public ResponseEntity<?> getMtipDetails(@PathVariable int noticeId) {
         try {
@@ -146,7 +146,7 @@ public class MtipController {
                     .body("{\"error\": \"Error fetching notice details: " + e.getMessage() + "\"}");
         }
     }
-
+    // m-tip 조회수 불러오기
     @GetMapping("/MtipViews/{noticeId}")
     public ResponseEntity<String> incrementNoticeViews(@PathVariable("noticeId") int noticeId) {
         try {
@@ -236,7 +236,7 @@ public class MtipController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+    //m-tip id로 정보 불러오기
     @GetMapping("/{id}")
     public ResponseEntity<MtipBoard> getNotice(@PathVariable Long id) {
         System.out.println("이것은 id다" + id);
@@ -248,13 +248,13 @@ public class MtipController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    //m-tip 좋아요
     @GetMapping("/check-like/{mtipBoardNo}/{userNo}")
     public ResponseEntity<?> checkLikeStatus(@PathVariable int mtipBoardNo, @PathVariable String userNo) {
         boolean isLiked = mtipBoardService.checkLikeStatus(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
-
+    //m-tip 좋아요
     @PostMapping("/toggle-like")
     public ResponseEntity<?> toggleLike(@RequestBody Map<String, Object> payload) {
         int mtipBoardNo = Integer.parseInt(payload.get("mtip_board_no").toString());
@@ -263,11 +263,77 @@ public class MtipController {
         boolean isLiked = mtipBoardService.toggleLike(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
-
+    //m-tip 좋아요
     @GetMapping("/liked-posts/{userId}")
     public ResponseEntity<List<Integer>> getLikedPosts(@PathVariable String userId) {
         List<Integer> likedPostIds = mtipBoardService.getLikedPostIds(userId);
         return ResponseEntity.ok(likedPostIds);
+    }
+
+    //m-tip 수정
+    @PostMapping("/update")
+    public ResponseEntity<?> updateNotice(
+            @RequestParam("mtip_board_no") int noticeBoardNo,
+            @RequestParam("mtip_board_title") String title,
+            @RequestParam("mile_name") String mileName,
+            @RequestParam("mtip_board_content") String content,
+            @RequestParam("user_no") String userNo,
+            @RequestParam("user_name") String userName,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "originalFileName", required = false) String originalFileName) {
+        try {
+
+            MtipBoard notice = new MtipBoard();
+            notice.setMtip_board_no(noticeBoardNo);
+            notice.setMtip_board_title(title);
+            notice.setMile_name(mileName);
+            notice.setMtip_board_content(content);
+            notice.setUser_no(userNo);
+            notice.setUser_name(userName);
+
+            if (file != null && !file.isEmpty()) {
+                String savedFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+                Path filePath = Paths.get(mTipGuideUploadPath).resolve(savedFileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                notice.setMtip_board_file(originalFileName); // DB에는 원본 파일명만 저장
+            } else if (originalFileName != null && !originalFileName.isEmpty()) {
+                notice.setMtip_board_file(originalFileName);
+            }
+
+            mtipBoardService.updateNotice(notice);
+            return ResponseEntity.ok("Notice updated successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating notice: " + e.getMessage());
+        }
+    }
+
+
+    // DELETE 요청을 처리하는 엔드포인트
+    @DeleteMapping("/delete/{noticeId}")
+    public ResponseEntity<String> deleteNotice(@PathVariable Long noticeId) {
+        try {
+            mtipBoardService.deleteNotice(noticeId);
+            return ResponseEntity.ok("Notice deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error deleting notice: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting notice: " + e.getMessage());
+        }
+    }
+
+    //나만의 m-tip 게시글 리스트
+    @GetMapping("/Mymtiplist")
+    public ResponseEntity<?> getMtiplist(@RequestParam String user_no) {
+        try {
+            List<MtipBoard> notices = mtipBoardService.getMymtiplist(user_no);
+            return ResponseEntity.ok(notices);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving notices: " + e.getMessage());
+        }
     }
 
 }

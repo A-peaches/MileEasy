@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="actions">
-        <h1 class="title">공지사항 작성</h1>
+        <h1 class="title">M-Tip 글작성</h1>
       </div>
       <form @submit.prevent="submitForm">
         <div class="form-group">
@@ -159,7 +159,7 @@ getDisplayFileName(fileName) {
 
       if (response.status === 200) {
         this.showAlert('공지사항이 등록되었습니다.', 'success');
-        this.$router.push('/noticeListView');
+        this.$router.push('/M_TipListView');
       } else {
         this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
       }

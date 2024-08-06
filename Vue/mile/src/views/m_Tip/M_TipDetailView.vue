@@ -7,7 +7,7 @@
             <span class="arrow">❮</span> 이전
           </button>
         </div>
-        <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+        <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no">
           <div class="actions">
             <button class="edit-button" @click="goToModifyView">수정</button>
             <button class="delete-button" @click="deleteNotice">삭제</button>
@@ -28,9 +28,9 @@
         <div class="file cards" >
           <div style="display: flex; align-items: center;">
               <h2 style="margin-right: 10px;">첨부파일</h2>
-              <span v-if="!notice.notice_board_file" style="color: #4b4a4a; font-family: 'KB_S5',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
+              <span v-if="!notice.mtip_board_file" style="color: #4b4a4a; font-family: 'KB_S5',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
             </div>
-          <div v-if="notice.notice_board_file" style="margin-top: 10px;">
+          <div v-if="notice.mtip_board_file" style="margin-top: 10px;">
             <a @click.prevent="downloadFile" href="#" class="file-download-link">
               {{ getDisplayFileName(notice.mtip_board_file) }} 
             </a>
@@ -46,8 +46,9 @@
         </div>
         <div class="icon-container">
           <div class="heart-icon" @click="toggleLike">
-            <i :class="['bi', isLiked(notice.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"></i>
-          </div>
+            <i :class="['bi', isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"
+           :style="{ color: isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? '#dc3545' : 'inherit' }"></i>
+           </div>
           <div class="views-text">{{ notice.mtip_board_like }}</div>
         </div>
        </div>
@@ -77,8 +78,8 @@ export default {
     };
   },
   methods: {
-    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'incrementViews', 'toggleLikeAction','checkLikeStatus']),
-    ...mapGetters('mtipBoard', ['getNotice']),
+    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction', 'fetchLikedPosts']),
+    ...mapGetters('mtipBoard', ['getNotice', 'isPostLiked']),
 
     async toggleLike() {
       if (!this.loginInfo) {
@@ -96,16 +97,12 @@ export default {
           mtip_board_no: this.notice.mtip_board_no,
           user_no: this.loginInfo.user_no
         });
-
-        // 좋아요 상태를 다시 불러와 갱신
-        await this.checkLikeStatus({
-          mtip_board_no: this.notice.mtip_board_no,
-          user_no: this.loginInfo.user_no
-        });
+        await this.fetchLikedPosts(this.loginInfo.user_no);
       } catch (error) {
         console.error('Error toggling like:', error);
       }
     },
+
     async deleteNotice() {
       Swal.fire({
         title: '정말로 삭제하시겠습니까?',
@@ -120,9 +117,9 @@ export default {
       }).then(async result => {
         if (result.isConfirmed) {
           try {
-            await api.delete(`/notice/delete/${this.notice.notice_board_no}`);
+            await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
             Swal.fire('게시글 삭제 완료', '게시글이 삭제 되었습니다.', 'success').then(() => {
-              this.$router.push('/noticeListView');
+              this.$router.push('/M_TipListView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
@@ -176,8 +173,8 @@ export default {
       this.$router.go(-1);
     },
     goToModifyView() {
-      console.log('id ;',this.notice.notice_board_no);
-      this.$router.push({ name: 'm_TipModifyView', params: { id: this.notice.notice_board_no } });
+      console.log('modify 화면으로 넘긴 정보:', this.notice.mtip_board_no);
+      this.$router.push({ name: 'm_TipModifyView', params: { mtip_board_no: this.notice.mtip_board_no } });
     },
     isNew(dateString) {
       const today = new Date();
@@ -212,8 +209,8 @@ export default {
 
     async downloadFile() {
     try {
-      console.log("글쓰기 상세보기 fileName :",this.notice.notice_board_file);
-      const fileName = encodeURIComponent(this.notice.notice_board_file);
+      console.log("글쓰기 상세보기 fileName :",this.notice.mtip_board_file);
+      const fileName = encodeURIComponent(this.notice.mtip_board_file);
       const response = await api({
         url: `/mtip/downloadGuide/${fileName}`,
         method: 'GET',
@@ -223,7 +220,7 @@ export default {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', this.notice.notice_board_file); // 서버에서 받은 파일명을 그대로 사용
+    link.setAttribute('download', this.notice.mtip_board_file); // 서버에서 받은 파일명을 그대로 사용
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -241,10 +238,8 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mtipBoard', ['getNotice']),
-    ...mapState({
-      isLiked: (state) => (postId) => state.mtipBoard.likedPosts[state.login.loginInfo?.user_no]?.includes(postId),
-      loginInfo: (state) => state.login.loginInfo
-    }),
+    ...mapState('login', ['loginInfo']),
+
     notice() {
       return this.getNotice || null; // null을 반환하여 undefined 방지
     },
@@ -261,28 +256,13 @@ export default {
       return this.$route.params.notice.mtip_board_no; // URL에서 전달받은 mile_no를 컴포넌트에서 사용
     },
   },
-  watch: {
-    id: {
-      immediate: true,
-      handler(newVal) {
-        this.fetchNoticeDetail(newVal);
-      },
-    },
-  },
-  mounted() {
+  async mounted() {
     const noticeId = this.$route.params.mtip_board_no;
-    console.log('Route params:', this.$route.params); // 디버깅 로그 추가
-      if (noticeId) {
-        this.fetchNoticeDetail(noticeId).then(() => {
-          console.log('Notice data:', this.notice);
-          console.log('Date field:', this.notice?.mtip_board_date);
-      });
+    if (noticeId) {
+      await this.fetchNoticeDetail(noticeId);
     }
-    if (this.loginInfo && this.notice) {
-      this.$store.dispatch('mtipBoard/checkLikeStatus', {
-        mtip_board_no: this.notice.mtip_board_no,
-        user_no: this.loginInfo.user_no
-      });
+    if (this.loginInfo) {
+      await this.fetchLikedPosts(this.loginInfo.user_no);
     }
   },
 };

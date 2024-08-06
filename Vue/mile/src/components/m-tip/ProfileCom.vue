@@ -13,13 +13,13 @@
         <span class="right-arrow">></span>
       </a><br>
       <div class="mt-2"></div>
-      <a class="btn-mtip" href="#">
+      <a class="btn-mtip" href="/myM_TipView">
         <i class="bi bi-file-earmark-text mr-2 "></i>
         <span class="btn-text">나의 M-Tip</span>
          <span class="right-arrow">></span>
       </a><br>
       <div class="mt-2"></div>
-      <a class="btn-mtip " href="#">
+      <a class="btn-mtip " href="/MyM_TipBestView">
         <i class="bi bi-heart mr-2 "></i>
         <span class="btn-text">내가 좋아요한 M-Tip</span>
          <span class="right-arrow">></span>

@@ -52,12 +52,6 @@ public class MtipBoardService {
             throw new IllegalArgumentException("Invalid user_no: " + notice.getUser_no());
         }
 
-        // User 검증이 필요한 경우 (옵션)
-        // User user = userDao.selectUserById(notice.getUser_no());
-        // if (user == null) {
-        //     throw new IllegalArgumentException("User not found for user_no: " + notice.getUser_no());
-        // }
-
         // 파일 이름이 null이 아닌 경우에만 설정
         if (notice.getMtip_board_file() != null && !notice.getMtip_board_file().isEmpty()) {
             notice.setMtip_board_file(notice.getMtip_board_file());
@@ -67,6 +61,28 @@ public class MtipBoardService {
 
         mtipDao.insertMtip(notice);
     }
+
+//    // 공지사항 작성
+//    public void createMtip(MtipBoard notice) {
+//        if (notice.getUser_no() == null || notice.getUser_no().isEmpty()) {
+//            throw new IllegalArgumentException("Invalid user_no: " + notice.getUser_no());
+//        }
+//
+//        // User 검증이 필요한 경우 (옵션)
+//        // User user = userDao.selectUserById(notice.getUser_no());
+//        // if (user == null) {
+//        //     throw new IllegalArgumentException("User not found for user_no: " + notice.getUser_no());
+//        // }
+//
+//        // 파일 이름이 null이 아닌 경우에만 설정
+//        if (notice.getMtip_board_file() != null && !notice.getMtip_board_file().isEmpty()) {
+//            notice.setMtip_board_file(notice.getMtip_board_file());
+//        } else {
+//            notice.setMtip_board_file(null);
+//        }
+//
+//        mtipDao.insertMtip(notice);
+//    }
 
     // ID로 공지사항 찾기
     public MtipBoard findById(Long id) {
@@ -96,6 +112,37 @@ public class MtipBoardService {
 
     public List<Integer> getLikedPostIds(String userId) {
         return mtipDao.getLikedPostIds(userId);
+    }
+
+    //mtip 수정하기
+    @Transactional
+    public void updateNotice(MtipBoard notice) {
+        mtipDao.updateNotice(notice);
+    }
+
+    //mtip 삭제
+    public void deleteNotice(Long id) {
+        MtipBoard notice =  mtipDao.findById(id);
+        if (notice != null) {
+            mtipDao.deleteNotice(id);
+        } else {
+            throw new RuntimeException("Notice not found");
+        }
+    }
+    // 나만의 m-tip 게시글 조회
+    public List<MtipBoard> getMymtiplist(String user_no) throws Exception {
+        try {
+            if (user_no == null || user_no.isEmpty()) {
+                throw new IllegalArgumentException("User number is required");
+            }
+            List<MtipBoard> notices = mtipDao.selectMymtiplist(user_no);
+            System.out.println("Fetched notices for user " + user_no + ": " + notices);  // 로그 추가
+            return notices;
+        } catch (Exception e) {
+            System.err.println("Error in getMymtiplist for user " + user_no + ": " + e.getMessage());  // 로그 추가
+            e.printStackTrace();
+            throw new Exception("Error fetching notices from database for user " + user_no, e);
+        }
     }
 
 }

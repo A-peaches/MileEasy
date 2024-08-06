@@ -7,7 +7,7 @@
           </button>
         </div>
       <div>
-        <h2>M-Tip</h2>
+        <h2>Best M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>

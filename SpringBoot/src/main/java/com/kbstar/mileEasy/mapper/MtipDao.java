@@ -39,7 +39,7 @@ public interface MtipDao {
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
             "WHERE mb.mtip_board_is_delete = 0 ")
     List<MtipBoard> selectMtiplist();
-    /* m-tip 가이드 리스트 */
+    /* m-tip 게시글 리스트 */
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
@@ -61,7 +61,7 @@ public interface MtipDao {
 
     @Insert("INSERT INTO mtip_board (user_no, user_name, mile_no, mtip_board_title, mtip_board_content, mtip_board_file) " +
             "VALUES (#{user_no}, #{user_name}, #{mile_no}, #{mtip_board_title}, #{mtip_board_content}, #{mtip_board_file, jdbcType=VARCHAR})")
-    @Options(useGeneratedKeys = true, keyProperty = "mtip_board_no")
+    @Options(useGeneratedKeys = true, keyProperty = "mtip_board_no", keyColumn = "mtip_board_no")
     void insertMtip(MtipBoard notice);
     /* 게시글 글작성 */
 
@@ -70,5 +70,31 @@ public interface MtipDao {
             "LEFT JOIN mileage mil ON m.mile_no = mil.mile_no " +
             "WHERE m.mtip_board_no = #{id} AND m.mtip_board_is_delete = 0")
     MtipBoard findById(Long id);
+
+    @Update("UPDATE mtip_board SET mtip_board_is_delete = 1 WHERE mtip_board_no = #{id}")
+    void deleteNotice(Long id);
+    /*mtip 삭제*/
+
+    @Update({
+            "UPDATE mtip_board",
+            "SET mtip_board_title = #{mtip_board_title},",
+            "    mtip_board_content = #{mtip_board_content},",
+            "    mtip_board_file = #{mtip_board_file, jdbcType=VARCHAR},",
+            "    mile_no = (SELECT mile_no FROM mileage WHERE mile_name = #{mile_name})",
+            "WHERE mtip_board_no = #{mtip_board_no}"
+    })
+    void updateNotice(MtipBoard notice);
+    /* mtip 수정*/
+
+    @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
+            "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "m.mile_name " +
+            "FROM mtip_board mb " +
+            "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
+            "WHERE mb.mtip_board_is_delete = 0 " +
+            "AND mb.user_no = #{user_no}")
+    List<MtipBoard> selectMymtiplist(@Param("user_no") String user_no);
+    /* m-tip 게시글 리스트 */
 
 }
