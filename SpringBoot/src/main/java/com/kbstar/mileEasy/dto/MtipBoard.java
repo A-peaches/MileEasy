@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Getter
 @Setter
+
 public class MtipBoard {
     private int mtip_board_no;
     private String user_no;
@@ -21,4 +22,5 @@ public class MtipBoard {
     private int mtip_board_hit;
     private boolean mtip_board_is_deleted;
     private boolean mtip_board_is_guide;
+    private String mile_name;
 }

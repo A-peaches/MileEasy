@@ -8,6 +8,13 @@ export default [
     meta: { requiresAuth: true },
   },
   {
+    //사용자 : m-tip  전체화면
+    path: '/M_TipListView',
+    name: 'M_TipListView',
+    component: () => import('../views/m_Tip/M_TipListView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     //사용자 : 나의 m-tip  메인 화면
     path: '/myM_TipView',
     name: 'myM_TipView',
@@ -16,7 +23,7 @@ export default [
   },
   {
     //사용자 : m-tip 상세보기 화면
-    path: '/m_TipDetailView',
+    path: '/m_TipDetailView/:mtip_board_no',
     name: 'm_TipDetailView',
     component: () => import('../views/m_Tip/M_TipDetailView.vue'),
     meta: { requiresAuth: true },
@@ -38,7 +45,7 @@ export default [
 
   //관리자,사용자 : m-tip 가이드 상세보기
   {
-    path: '/mTipGuideDetail/:mtipGuideNo',
+    path: '/mTipGuideDetail:mtipGuideNo',
     name: 'mTipGuideDetail',
     component: () =>
       import('../views/adminMileEasy/mTipManagement/mTipGuideDetail.vue'),

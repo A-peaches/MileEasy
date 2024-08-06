@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public interface MtipGuideDao {
@@ -43,4 +44,9 @@ public interface MtipGuideDao {
             "WHERE mtip_guide_no = #{mtip_guide_no}"
     })
     void updateGuide(MtipGuide mtipGuide);
+
+
+    @Select("SELECT mtip_guide_no, mtip_guide_title, mtip_guide_content, mtip_guide_file FROM mtip_guide WHERE mtip_guide_is_delete = 0")
+    List<MtipGuide> selectAllNotices();
+    /* m-tip 가이드 리스트 */
 }
