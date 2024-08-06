@@ -83,62 +83,69 @@
       </div>
       <div style="text-align: center; justify-content: center">
         <div class="notice-list" style="text-align: center">
-          <div v-if="paginatedNotices.length === 0" class="no-results">
-            검색 결과가 없습니다.
+          <div v-if="filteredNotices.length === 0" class="no-results">
+            접수된 내역이 없습니다.
           </div>
-          <div v-else v-for="(notice, index) in paginatedNotices" :key="index">
-            <div class="input-base list-wrapper" @click="toggleDetails(index)">
-              <div class="notice-details">
-                <div class="notice-new">{{ index + 1 }}</div>
-                <div class="notice-num">
-                  {{ getRequestType(notice.request) }}
-                </div>
-                <div class="notice-title">
-                  {{ notice.request_mile_name || notice.mile_name }}
-                </div>
-                <div class="notice-mile">
-                  {{ getStatus(notice.request_status) }}
-                </div>
-                <div class="notice-date">{{ notice.mileage_request_date }}</div>
-              </div>
-            </div>
-            <div
-              v-if="selectedNotice === index"
-              class="notice-details-expanded"
-            >
-              <p
-                style="text-align: left; font-size: 15pt"
-                class="KB_S3 mt-3 ml-3"
-              >
-                요청사항
-              </p>
-              <hr />
-              <p style="text-align: left" class="ml-3">
-                마일리지 이름 :
-                {{ notice.request_mile_name || notice.mile_name }}
-              </p>
-              <p style="text-align: left" class="ml-3">
-                연간 최고 한도 : {{ notice.request_mil_max }}
-              </p>
-              <p style="text-align: left" class="ml-3">
-                담당자 : {{ notice.request_admin }}
-              </p>
-              <p style="text-align: left" class="ml-3">
-                기타요청: {{ notice.request_etc }}
-              </p>
+          <div v-else>
+            <div v-for="(notice, index) in paginatedNotices" :key="index">
               <div
-                v-if="notice.request_status === 0"
-                style="text-align: right; margin-right: 10px"
+                class="input-base list-wrapper"
+                @click="toggleDetails(index)"
               >
-                <i
-                  class="bi bi-trash-fill"
-                  style="color: gray; font-size: larger"
-                ></i>
-                <span
-                  style="color: gray; font-size: larger"
-                  @click="deleteRequest(notice.mileage_request_no)"
-                  >삭제</span
+                <div class="notice-details">
+                  <div class="notice-new">{{ index + 1 }}</div>
+                  <div class="notice-num">
+                    {{ getRequestType(notice.request) }}
+                  </div>
+                  <div class="notice-title">
+                    {{ notice.request_mile_name || notice.mile_name }}
+                  </div>
+                  <div class="notice-mile">
+                    {{ getStatus(notice.request_status) }}
+                  </div>
+                  <div class="notice-date">
+                    {{ notice.mileage_request_date }}
+                  </div>
+                </div>
+              </div>
+              <div
+                v-if="selectedNotice === index"
+                class="notice-details-expanded"
+              >
+                <p
+                  style="text-align: left; font-size: 15pt"
+                  class="KB_S3 mt-3 ml-3"
                 >
+                  요청사항
+                </p>
+                <hr />
+                <p style="text-align: left" class="ml-3">
+                  마일리지 이름 :
+                  {{ notice.request_mile_name || notice.mile_name }}
+                </p>
+                <p style="text-align: left" class="ml-3">
+                  연간 최고 한도 : {{ notice.request_mil_max }}
+                </p>
+                <p style="text-align: left" class="ml-3">
+                  담당자 : {{ notice.request_admin }}
+                </p>
+                <p style="text-align: left" class="ml-3">
+                  기타요청: {{ notice.request_etc }}
+                </p>
+                <div
+                  v-if="notice.request_status === 0"
+                  style="text-align: right; margin-right: 10px"
+                >
+                  <i
+                    class="bi bi-trash-fill"
+                    style="color: gray; font-size: larger"
+                  ></i>
+                  <span
+                    style="color: gray; font-size: larger"
+                    @click="deleteRequest(notice.mileage_request_no)"
+                    >삭제</span
+                  >
+                </div>
               </div>
             </div>
           </div>

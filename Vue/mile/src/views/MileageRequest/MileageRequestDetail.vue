@@ -25,16 +25,27 @@
         <div class="p-2 form-container" style="background-color: #f6f6f6">
           <div class="form-group" v-if="this.currentRequest.request === 2">
             <label class="mt-3">기존 마일리지 정보</label>
-            <table class="table table-bordered">
+            <table class="styled-table">
               <thead>
-                <td>마일리지 이름</td>
-                <td>연간 최고 한도</td>
-                <td>담당자</td>
+                <tr>
+                  <th>마일리지 이름</th>
+                  <th>연간 최고 한도</th>
+                  <th>담당자</th>
+                </tr>
               </thead>
               <tbody>
-                <td>마일리지 이름</td>
-                <td>연간 최고 한도</td>
-                <td>담당자</td>
+                <tr>
+                  <td>{{ currentMileage.mile_name }}</td>
+                  <td>{{ currentMileage.mile_max }}</td>
+                  <td>
+                    <div v-if="admins?.length">
+                      <span v-for="admin in admins" :key="admin.user_no">
+                        {{ admin.user_name }} ({{ admin.user_no }})<br />
+                      </span>
+                    </div>
+                    <div v-else>담당자 정보가 없습니다.</div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -88,7 +99,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import api from '@/api/axios';
@@ -102,8 +112,9 @@ export default {
       mileageLimit: '',
       manager: '',
       additionalNotes: '',
-      admins: [],
+      admins: [], // Ensure this is initialized as an empty array
       mileageLabels: [],
+      currentMileage: '',
     };
   },
 
@@ -166,7 +177,7 @@ export default {
       this.$router.go(-1);
     },
 
-    setFormData() {
+    async setFormData() {
       if (this.currentRequest) {
         this.mileageName = this.currentRequest.request_mile_name || '';
         this.mileageLimit = this.currentRequest.request_mil_max || '';
@@ -174,20 +185,32 @@ export default {
         this.additionalNotes = this.currentRequest.request_etc || '';
         if (this.currentRequest.request === 2) {
           try {
-            const response = api.post('/admin/getMileageAdminList', null, {
-              params: {
-                mile_no: this.currentRequest.mile_no,
-              },
-            });
-            this.admins = response.data; // 기존 담당자 목록 업데이트
+            const response = await api.post(
+              '/admin/getMileageAdminList',
+              null,
+              {
+                params: {
+                  mile_no: this.currentRequest.mile_no,
+                },
+              }
+            );
+            console.log('당담자', response.data);
+            this.admins = response.data || [];
           } catch (error) {
             console.error('Error fetching admin list:', error);
-            this.admins = []; // 오류 처리
+            this.admins = []; // Handle error and set to empty array
           }
 
           try {
-            const response = api.get('/mileage/getMileage');
+            const response = await api.get('/mileage/getMileage');
             this.mileageLabels = response.data;
+            if (this.currentRequest) {
+              this.currentMileage = this.mileageLabels.find(
+                (mileage) => mileage.mile_no === this.currentRequest.mile_no
+              );
+            }
+
+            console.log('마일마일', response.data);
           } catch (error) {
             console.error('Error fetching mileage labels:', error);
             this.mileageLabels = []; // 에러 발생 시 빈 배열 반환
@@ -544,5 +567,35 @@ textarea.input-base {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%; /* Use full width */
+}
+.styled-table {
+  width: 100%;
+  border-collapse: collapse; /* Merge borders between cells */
+}
+
+.styled-table thead th,
+.styled-table tbody td {
+  border: 1px solid #cdcdcd; /* Border color and width */
+}
+
+.styled-table thead th {
+  background-color: #ffffff;
+  padding: 10px;
+  text-align: center;
+  font-family: 'KB_C2', sans-serif;
+}
+
+.styled-table tbody td {
+  padding: 10px;
+  background-color: #ffffff;
+  font-family: 'KB_C2', sans-serif;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f6f6f6; /* Optional: alternate row color for better readability */
+}
+
+.styled-table tbody tr:hover {
+  background-color: #e0e0e0; /* Optional: hover effect */
 }
 </style>
