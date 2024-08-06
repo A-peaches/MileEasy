@@ -368,4 +368,23 @@ public class MtipController {
         }
     }
 
+    // 좋아요가 많은 게시글 10개 가져오기
+    @GetMapping("/PlusbestMtiplist")
+    public ResponseEntity<List<MtipBoard>> getPlusbestMtiplist() {
+        try {
+            System.out.print("m-tip 도달 ");
+            List<MtipBoard> bestNotices = mtipBoardService.getTopLikedMtiplistPlus();
+            // 프론트엔드로 보내는 내용을 콘솔에 출력
+            System.out.println("프론트엔드로 보내는 데이터:");
+            for (MtipBoard notice : bestNotices) {
+                System.out.println(notice.toString());
+            }
+            return ResponseEntity.ok(bestNotices);
+        } catch (Exception e) {
+            System.err.println("Error retrieving best notices: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
 }

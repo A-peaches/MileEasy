@@ -8,7 +8,7 @@
       <div v-for="notice in bestNotices" :key="notice.mtip_board_no" class="notice-item">
         <span class="notice-mile">{{ notice.mile_name }}</span>
         <span class="notice-title">
-          {{ notice.mtip_board_title }}
+          {{ truncateTitle(notice.mtip_board_title) }}
           <i class="bi bi-heart-fill title-icon"></i>
         </span>
         <span class="notice-date">{{ formatDate(notice.mtip_board_date) }}</span>
@@ -28,6 +28,12 @@ export default {
     };
   },
   methods: {
+    truncateTitle(title) {
+      if (title.length > 25) {
+        return title.slice(0, 25) + '....';
+      }
+      return title;
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString();

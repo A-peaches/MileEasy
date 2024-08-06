@@ -90,12 +90,15 @@ export default {
       searchQuery: '',
       selectedCategory: null,
       isProcessing: false, 
+      sortByLikes: true,
+      sortByViews: false,
+      sortByDateAsc: false,
     };
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapState('login', ['loginInfo']),
-    ...mapGetters('mtipBoard', ['isPostLiked']),
+    ...mapGetters('mtipBoard', ['isPostLiked'],['getBestNotices']),
 
     uniqueMileages() {
     return [...new Set(this.notices.filter(notice => notice.mile_name).map(notice => notice.mile_name))];
@@ -149,13 +152,17 @@ filteredNotices() {
         result = result.filter(notice => notice.mile_name === this.selectedCategory);
       }
     }
-    if (this.sortByViews) {
-      result.sort((a, b) => b.mtip_board_hit - a.mtip_board_hit || new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
-    } else if (this.sortByDateAsc) {
-      result.sort((a, b) => new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
-    } else {
-      result.sort((a, b) => new Date(a.mtip_board_date) - new Date(b.mtip_board_date));
-    }
+
+    // 정렬 조건에 따라 정렬
+  if (this.sortByLikes) {
+    result.sort((a, b) => b.mtip_board_like - a.mtip_board_like);
+  } else if (this.sortByViews) {
+    result.sort((a, b) => b.mtip_board_hit - a.mtip_board_hit);
+  } else if (this.sortByDateAsc) {
+    result.sort((a, b) => new Date(a.mtip_board_date) - new Date(b.mtip_board_date));
+  } else {
+    result.sort((a, b) => new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
+  }
 
     let displayNum = 1;
     return result.map(notice => ({
@@ -185,12 +192,18 @@ filteredNotices() {
 
   },
   methods: {
-    ...mapActions('mtipBoard', ['fetchNotices', 'fetchLikedPosts']),
+    ...mapActions('mtipBoard', ['fetchNotices', 'fetchLikedPosts'],['fetchBestNotices']),
     ...mapActions('mileage', ['fetchMileages']),
 
     goBack() {
       this.$router.go(-1);
     },
+    sortByLikesMethod() {
+  this.sortByLikes = true;
+  this.sortByViews = false;
+  this.sortByDateAsc = false;
+  this.$forceUpdate(); // Vue에게 재렌더링을 강제로 알립니다.
+},
     isNew(dateString) {
     const today = new Date();
     const noticeDate = new Date(dateString);
@@ -230,7 +243,7 @@ filteredNotices() {
     async fetchNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
-        const response = await api.get('/mtip/Mtiplist');
+        const response = await api.get('/mtip/PlusbestMtiplist');
         this.notices = response.data;
         console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
@@ -290,6 +303,18 @@ filteredNotices() {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
+    async fetchBestNotices() {
+  console.log('Best Mtiplist DB 메소드로 이동 ~ ');
+  try {
+    const response = await api.get('/mtip/PlusbestMtiplist');
+    this.bestNotices = response.data;
+    console.log('Best Mtiplist 서버에서 가지고 온 값 :', this.bestNotices);
+  } catch (error) {
+    console.error('Error fetching best notices:', error.response ? error.response.data : error.message);
+  }
+},
+
+
     searchNotices() {
       this.currentPage = 1;
     },
@@ -322,9 +347,12 @@ filteredNotices() {
 
     document.addEventListener('click', this.handleClickOutside);
 
-    this.fetchNotices();
+    this.fetchNotices().then(() => {
+    this.sortByLikesMethod(); // 데이터를 가져온 후 좋아요 순으로 정렬
+  });
     this.fetchMileages();
     this.initializeData();
+    this.fetchBestNotices();
 
   },
 

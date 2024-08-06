@@ -164,4 +164,9 @@ public class MtipBoardService {
         return mtipDao.selectTopLikedMtiplist();
     }
 
+    //Best 9개 게시글 가지고 오기
+    public List<MtipBoard> getTopLikedMtiplistPlus() {
+        return mtipDao.selectTopLikedMtiplistPlus();
+    }
+
 }

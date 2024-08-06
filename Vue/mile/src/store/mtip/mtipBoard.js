@@ -11,6 +11,7 @@ const state = {
   likedPosts: {},
   isLiked: false, // 새로운 상태 추가
   userTotalNotices: 0, // 로그인한 사용자가 작성한 게시글 합계
+  bestNotices: [],
 };
 
 const mutations = {
@@ -64,10 +65,22 @@ const mutations = {
   SET_USER_TOTAL_NOTICES(state, count) {
     state.userTotalNotices = count;
   },
+  SET_BEST_NOTICES(state, notices) {
+    state.bestNotices = notices;
+  },
 };
 
 const actions = {
-  
+  async fetchBestNotices({ commit }) {
+    try {
+      const response = await api.get('/mtip/PlusbestMtiplist');
+      commit('SET_BEST_NOTICES', response.data);
+      return response;
+    } catch (error) {
+      console.error('Error fetching best notices:', error);
+      throw error;
+    }
+  },
   async fetchLikedPosts({ commit }, user_no) {
     try {
       const response = await api.get(`/mtip/liked-posts/${user_no}`);
@@ -201,7 +214,7 @@ const getters = {
   },
   isLiked: state => state.isLiked,
   userTotalNotices: (state) => state.userTotalNotices,
-  
+  getBestNotices: state => state.bestNotices,
 };
 
 export default {
