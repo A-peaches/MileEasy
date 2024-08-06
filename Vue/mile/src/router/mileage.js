@@ -26,4 +26,13 @@ export default [
     meta: { requiresAuth: true },
   },
   
+  {
+    // 마일리지 목표 설정 화면
+    path: '/myMileagetarget',
+    name: 'myMileagetarget',
+    component: () =>
+      import('../views/user/mileage/MyMileageTarget.vue'),
+    meta: { requiresAuth: true },
+    props: true // 이 부분이 중요합니다.
+  },
 ];
