@@ -4,7 +4,7 @@
       <span class="close" @click="$emit('close')">&times;</span>
 
       <div class="header">
-        <span class="title">이지 챗</span>
+        <span class="title">챗봇</span>
       </div>
 
       <div class="chatBox" id="chatBox">

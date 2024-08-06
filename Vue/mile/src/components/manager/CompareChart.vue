@@ -2,7 +2,7 @@
   <div class="cards" style="background-color: #f9f9f9; height: 430px; padding: 20px;">
     <div class="d-flex justify-content-between align-items-center">
       <p class="text-left lg2 KB_C2">
-        {{ title }}
+        {{ title }} &nbsp;
         <i class="bi bi-download" @click="downloadChart"></i>
       </p>
       <div class="tabs text-end lg2 mr-3">

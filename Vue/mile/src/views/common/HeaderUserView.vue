@@ -15,6 +15,9 @@
             <a class="nav-link hover" href="/myMileageView">나의 마일리지</a>
           </div>
           <div class="nav-item">
+            <a class="nav-link hover" href="/myMileagetarget">목표 설정</a>
+          </div>
+          <div class="nav-item">
             <a class="nav-link hover" aria-current="page" href="/documentsView"
               >문서모아</a
             >
