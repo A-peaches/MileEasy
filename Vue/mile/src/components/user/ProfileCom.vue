@@ -40,8 +40,8 @@
     <p class="md mb-2" style="margin-bottom: 0px">
       {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
     </p>
-    <button class="btn-yellow KB_C2 my-3" @click="goToMyMileageView">
-      나의 마일리지
+    <button class="btn-yellow KB_C2 my-3" @click="goToAIView">
+      나의 AI 리포트
     </button>
   </div>
 </template>
@@ -98,8 +98,8 @@ export default {
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
-    goToMyMileageView() {
-      window.location.href = '/myMileageView';
+    goToAIView() {
+      window.location.href = '/AI_Report';
     },
     async badgeData() {
       try {

@@ -18,7 +18,16 @@ export default [
     props: true // 이 부분이 중요합니다.
   },
   {
-    // 마일리지 목표 설정 화면면
+    // 리포트 화면
+    path: '/AI_Report',
+    name: 'AI_Report',
+    component: () =>
+      import('../views/user/mileage/AI_ReportView.vue'),
+    meta: { requiresAuth: true },
+  },
+  
+  {
+    // 마일리지 목표 설정 화면
     path: '/myMileagetarget',
     name: 'myMileagetarget',
     component: () =>
