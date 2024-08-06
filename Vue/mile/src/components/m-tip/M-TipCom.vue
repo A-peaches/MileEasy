@@ -9,8 +9,8 @@
         <span class="notice-mile">{{ category }}</span>
         <template v-if="latestNotices[category]">
           <span class="notice-title">
-            {{ latestNotices[category].mtip_board_title }}
-            <i class="bi bi-emoji-heart-eyes-fill title-icon"></i>
+            {{ truncateTitle(latestNotices[category].mtip_board_title) }}
+            <span class="title-icon">new</span>
           </span>
           <span class="notice-date" style="margin-left: 50px; font-size: 14px;font-family: 'KB_S5', sans-serif; margin-left: auto; /* 오른쪽으로 밀어냄 */
   margin-right: 0; /* 오른쪽 여백 제거 */">{{ formatDate(latestNotices[category].mtip_board_date) }}</span>
@@ -35,18 +35,23 @@ export default {
   },
   computed: {
     latestNotices() {
-      const latest = {};
-      this.mileageCategories.forEach(category => {
-        const notice = this.paginatedNotices.find(n => n.mile_name === category);
-        if (notice) {
-          latest[category] = notice;
-        }
-      });
-      return latest;
-    },
+    const latest = {};
+    this.mileageCategories.forEach(category => {
+      const notice = this.paginatedNotices.find(n => (n.mile_name === category) || (category === '기타' && (n.mile_name === null || n.mile_name === '기타')));
+      if (notice) {
+        latest[category] = notice;
+      }
+    });
+    return latest;
+  },
   },
   methods: {
-
+    truncateTitle(title) {
+      if (title.length > 25) {
+        return title.slice(0, 25) + '....';
+      }
+      return title;
+    },
     formatDate(dateString) {
       const date = new Date(dateString);
       return date.toLocaleDateString();
@@ -114,7 +119,6 @@ export default {
 </script>
 
 <style scoped>
-
 .title-icon {
   color: #ffca05;
   margin-left: 10px; /* 왼쪽으로 여백 추가 */
@@ -125,20 +129,17 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
 .m-tip-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
-
 .m-tip-title {
   font-size: 24px;
   font-family: 'KB_S3', sans-serif;
   margin: 0;
 }
-
 .view-all {
   font-size: 18px;
   font-family: 'KB_S5', sans-serif;
@@ -146,18 +147,15 @@ export default {
   text-decoration: underline;
   cursor: pointer;
 }
-
 .notice-list {
   display: flex;
   flex-direction: column;
 }
-
 .notice-item {
   display: flex;
   align-items: center;
   padding: 3px 0;
 }
-
 .notice-mile {
   width: 120px;
   font-weight: bold;
@@ -167,7 +165,6 @@ export default {
   font-family: 'KB_S3', sans-serif;
   margin: 0;
 }
-
 .notice-title {
   flex-grow: 1;
   margin-left: 18PX;
@@ -180,7 +177,13 @@ export default {
   align-items: center;
   font-family: 'KB_S4', sans-serif;
 }
-
+.notice-date {
+  margin-left: 50px;
+  font-size: 14px;
+  font-family: 'KB_S5', sans-serif;
+  margin-left: auto; /* 오른쪽으로 밀어냄 */
+  margin-right: 0; /* 오른쪽 여백 제거 */
+}
 .no-notice {
   color: #888;
   font-style: italic;

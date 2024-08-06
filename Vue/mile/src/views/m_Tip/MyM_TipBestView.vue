@@ -7,7 +7,7 @@
           </button>
         </div>
       <div>
-        <h2>Best M-Tip</h2>
+        <h2>내가 좋아요한 M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
@@ -57,7 +57,7 @@
               <div class="notice-details">
                 <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
-                <div class="notice-mile">{{ notice.mile_name ? notice.mile_name + ' 마일리지' : '기타' }}</div>
+                <div class="notice-mile">{{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}</div>
                 <div class="notice-title">{{ notice.mtip_board_title }}</div>
                 <pre class="notice-date">{{ formatDate(notice.mtip_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
@@ -248,7 +248,13 @@ filteredNotices() {
     async fetchNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
-        const response = await api.get('/mtip/Mtiplist');
+        const response = await api.get('/mtip/MyBestmtiplist',{
+        params: {
+            user_no: this.loginInfo ? this.loginInfo.user_no : null,
+            user_name: this.loginInfo ? this.loginInfo.user_name : null
+          }
+        });
+
         this.notices = response.data;
         console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {

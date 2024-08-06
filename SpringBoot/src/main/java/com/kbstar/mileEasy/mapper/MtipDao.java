@@ -97,4 +97,30 @@ public interface MtipDao {
     List<MtipBoard> selectMymtiplist(@Param("user_no") String user_no);
     /* m-tip 게시글 리스트 */
 
+    @Select("SELECT DISTINCT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
+            "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "m.mile_name " +
+            "FROM mtip_board mb " +
+            "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
+            "LEFT JOIN mtip_like ml ON mb.mtip_board_no = ml.mtip_board_no " +
+            "WHERE mb.mtip_board_is_delete = 0 " +
+            "AND ml.user_no = #{user_no} " +
+            "LIMIT 0, 1000")
+    List<MtipBoard> selectMyBestmtiplist(@Param("user_no") String user_no);
+    /* 로그인한 사용자가 좋아요한 m-tip 게시글 리스트 */
+
+    @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
+            "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "m.mile_name " +
+            "FROM mtip_board mb " +
+            "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
+            "WHERE mb.mtip_board_is_delete = 0 " +
+            "ORDER BY mb.mtip_board_like DESC " +
+            "LIMIT 9")
+    List<MtipBoard> selectTopLikedMtiplist();
+    /* 좋아요가 많은 상위 9개의 m-tip 게시글 리스트 */
+
+
 }

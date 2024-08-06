@@ -51,6 +51,14 @@ export default [
     component: () => import('../views/m_Tip/MyM_TipBestView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    //사용자 : Best m-tip 리스트 화면
+    path: '/M_TipBestView',
+    name: 'M_TipBestView',
+    props: true,
+    component: () => import('../views/m_Tip/M_TipBestView.vue'),
+    meta: { requiresAuth: true },
+  },
 
   //관리자,사용자 : m-tip 가이드 상세보기
   {

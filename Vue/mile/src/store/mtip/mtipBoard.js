@@ -10,6 +10,7 @@ const state = {
   mtipGuideLists: [],
   likedPosts: {},
   isLiked: false, // 새로운 상태 추가
+  userTotalNotices: 0, // 로그인한 사용자가 작성한 게시글 합계
 };
 
 const mutations = {
@@ -60,6 +61,9 @@ const mutations = {
       state.likedPosts[user_no].push(mtip_board_no);
     }
   },
+  SET_USER_TOTAL_NOTICES(state, count) {
+    state.userTotalNotices = count;
+  },
 };
 
 const actions = {
@@ -76,6 +80,7 @@ const actions = {
     try {
       const response = await api.get('/mtip/Mtiplist');
       commit('SET_NOTICES', response.data);
+      return response; // 명시적으로 response 반환
     } catch (error) {
       console.error('Error fetching notices:', error);
     }
@@ -163,6 +168,20 @@ async fetchNoticeDetail({ commit }, noticeId) {
     }
   },
 
+  async fetchUserTotalNotices({ commit }, user_no) {
+    try {
+      const response = await api.get('/mtip/Mymtiplist', {
+        params: {
+          user_no: user_no
+        }
+      });
+      const notices = response.data;
+      commit('SET_USER_TOTAL_NOTICES', notices.length);
+    } catch (error) {
+      console.error('Error fetching user total notices:', error.response ? error.response.data : error.message);
+    }
+  },
+
 };
 
 const getters = {
@@ -181,6 +200,7 @@ const getters = {
     return state.likedPosts[user_no]?.includes(mtip_board_no) || false;
   },
   isLiked: state => state.isLiked,
+  userTotalNotices: (state) => state.userTotalNotices,
   
 };
 

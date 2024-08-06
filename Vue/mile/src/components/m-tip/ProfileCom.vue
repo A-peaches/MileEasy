@@ -3,7 +3,7 @@
     <div class="profile-remark">
       {{ loginInfo ? loginInfo.user_name : "" }}님, 오늘도 좋은하루 되세요!
     </div>
-    <div class="text-start brown mt-2">나의 M-Tip 작성 건수 : 0건</div>
+    <div class="text-start brown mt-2">나의 M-Tip 작성 건수 :  {{ userTotalNotices }} 건</div>
 
     <!-- 버튼구간 -->
     <div class="text-start" style="margin-top : 80px">
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: "ProfileCom",
@@ -43,6 +43,7 @@ export default {
   },
   computed: {
     ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters('mtipBoard', ['notices', 'userTotalNotices']),
     loginInfo() {
       const info = this.getLoginInfo;
       return info
@@ -57,12 +58,20 @@ export default {
     },
   },
   methods: {
+    ...mapActions('mtipBoard', ['fetchNotices', 'fetchUserTotalNotices']),
+
     setDefaultImage(event) {
       event.target.src = require("@/assets/img/test.png");
     },
     goToMyMileageView() {
       window.location.href = "/myMileageView";
     },
+  },
+  async mounted() {
+    await this.fetchNotices();
+    if (this.loginInfo) {
+      await this.fetchUserTotalNotices(this.loginInfo.user_no);
+    }
   },
 };
 </script>

@@ -7,7 +7,7 @@
           </button>
         </div>
       <div>
-        <h2>나만의 M-Tip</h2>
+        <h2>Best M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
@@ -23,14 +23,6 @@
       </div>
       <div class="notice-count-container">
         <div class="notice-count">총 {{ filteredNotices.length }}건</div>
-        <label class="checkbox-container">
-          <input type="checkbox" v-model="sortByViews" @change="handleCheckboxChange('views')">
-          <span class="custom-checkbox"></span> <span class="checkbox-label">조회수</span>
-        </label>
-        <label class="checkbox-container">
-          <input type="checkbox" v-model="sortByDateAsc" @change="handleCheckboxChange('date')">
-          <span class="custom-checkbox"></span> <span class="checkbox-label">최신순</span>
-        </label>
       </div>
       <div>
         <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
@@ -97,9 +89,7 @@ export default {
       itemsPerPage: 10,
       searchQuery: '',
       selectedCategory: null,
-      isProcessing: false,
-      sortByDateAsc: true, // 최신순 체크박스가 기본으로 선택
-      sortByViews: false, // 조회 수 정렬 여부
+      isProcessing: false, 
     };
   },
   computed: {
@@ -208,14 +198,6 @@ filteredNotices() {
     const differenceInDays = differenceInTime / (1000 * 3600 * 24);
     return differenceInDays <= 7;
   },
- // methods 부분
- handleCheckboxChange(sortType) {
-      if (sortType === 'views' && this.sortByViews) {
-        this.sortByDateAsc = false;
-      } else if (sortType === 'date' && this.sortByDateAsc) {
-        this.sortByViews = false;
-      }
-    },
     toggleCategory() {
       this.showCategory = !this.showCategory;
     },
@@ -248,12 +230,7 @@ filteredNotices() {
     async fetchNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
-        const response = await api.get('/mtip/Mymtiplist', {
-          params: {
-            user_no: this.loginInfo ? this.loginInfo.user_no : null,
-            user_name: this.loginInfo ? this.loginInfo.user_name : null
-          }
-        });
+        const response = await api.get('/mtip/Mtiplist');
         this.notices = response.data;
         console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
@@ -525,48 +502,6 @@ h2::after {
   gap: 10px;
 }
 
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  top: -5px; /* 위치를 살짝 위로 올립니다 */
-}
-
-.checkbox-container input[type="checkbox"] {
-  display: none; /* 기본 체크박스를 숨깁니다 */
-}
-
-.checkbox-container .custom-checkbox {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #ccc;
-  margin-left: 10px;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
-}
-
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
-  background-color: #f6a319; /* 체크된 상태일 때 배경색 변경 (노란색) */
-  border: none; /* 체크된 상태일 때 테두리 제거 */
-}
-
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  color: white;
-  transform: translate(-50%, -50%);
-}
-
-.checkbox-label {
-  margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
-  font-family: 'KB_C5', sans-serif;
-  font-size: 20px;
-}
 
 .input-base {
   width: 100%;

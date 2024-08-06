@@ -144,5 +144,24 @@ public class MtipBoardService {
             throw new Exception("Error fetching notices from database for user " + user_no, e);
         }
     }
+    // 내가 좋아요한 m-tip 게시글 조회
+    public List<MtipBoard> getMyBestmtiplist(String user_no) throws Exception {
+        try {
+            if (user_no == null || user_no.isEmpty()) {
+                throw new IllegalArgumentException("User number is required");
+            }
+            List<MtipBoard> notices = mtipDao.selectMyBestmtiplist(user_no);
+            System.out.println("Fetched notices for user " + user_no + ": " + notices);  // 로그 추가
+            return notices;
+        } catch (Exception e) {
+            System.err.println("Error in getMymtiplist for user " + user_no + ": " + e.getMessage());  // 로그 추가
+            e.printStackTrace();
+            throw new Exception("Error fetching notices from database for user " + user_no, e);
+        }
+    }
+    //Best 9개 게시글 가지고 오기
+    public List<MtipBoard> getTopLikedMtiplist() {
+        return mtipDao.selectTopLikedMtiplist();
+    }
 
 }

@@ -336,4 +336,36 @@ public class MtipController {
         }
     }
 
+    //내가 좋아요한 m-tip 게시글 리스트
+    @GetMapping("/MyBestmtiplist")
+    public ResponseEntity<?> getMyBestmtiplist(@RequestParam String user_no) {
+        try {
+            List<MtipBoard> notices = mtipBoardService.getMyBestmtiplist(user_no);
+            return ResponseEntity.ok(notices);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving notices: " + e.getMessage());
+        }
+    }
+
+    // 좋아요가 많은 게시글 9개 가져오기
+    @GetMapping("/bestMtiplist")
+    public ResponseEntity<?> getBestMtiplist() {
+        try {
+            System.out.print("m-tip 도달 ");
+            List<MtipBoard> bestNotices = mtipBoardService.getTopLikedMtiplist();
+            // 프론트엔드로 보내는 내용을 콘솔에 출력
+            System.out.println("프론트엔드로 보내는 데이터:");
+            for (MtipBoard notice : bestNotices) {
+                System.out.println(notice.toString());
+            }
+            return ResponseEntity.ok(bestNotices);
+        } catch (Exception e) {
+            System.err.println("Error retrieving best notices: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error retrieving best notices: " + e.getMessage());
+        }
+    }
+
 }
