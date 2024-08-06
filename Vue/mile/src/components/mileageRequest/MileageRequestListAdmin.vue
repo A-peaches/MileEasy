@@ -27,7 +27,6 @@
             <span class="radio-label">접수완료</span>
           </label>
         </div>
-        <div></div>
         <div class="search-container">
           <input
             type="text"
@@ -41,6 +40,10 @@
         </div>
         <div style="text-align: center; justify-content: center">
           <div class="notice-list" style="text-align: center">
+            <!-- 데이터가 로드되었는지 확인 -->
+            <div v-if="!filteredRequestList.length">
+              <p>등록된 요청이 없습니다.</p>
+            </div>
             <div
               v-for="(notice, index) in paginatedRequestList"
               :key="notice.mileage_request_no"
@@ -95,7 +98,6 @@ export default {
       searchQuery: '',
       currentPage: 1,
       noticesPerPage: 10,
-      list: null,
     };
   },
   computed: {
@@ -110,10 +112,10 @@ export default {
       return this.getLoginInfo;
     },
     filteredRequestList() {
-      if (!this.getRequestList) return [];
+      if (!this.getRequestList || !Array.isArray(this.getRequestList))
+        return [];
 
       let filteredList = [...this.getRequestList];
-      console.log('여기', filteredList);
 
       // 상태 필터링 로직
       filteredList = filteredList.filter((notice) => {
@@ -137,7 +139,6 @@ export default {
                 .includes(this.searchQuery.toLowerCase()))
         );
       }
-      console.log(filteredList);
       return filteredList;
     },
     paginatedRequestList() {
@@ -186,7 +187,9 @@ export default {
   },
 
   mounted() {
-    this.requestList();
+    this.requestList().catch((error) => {
+      console.error('데이터 로딩 오류:', error);
+    });
   },
 };
 </script>

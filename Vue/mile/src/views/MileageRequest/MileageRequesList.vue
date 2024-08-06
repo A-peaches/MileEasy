@@ -27,7 +27,7 @@
             @change="applyFilters"
           />
           <span class="custom-radio"></span>
-          <span class="radio-label">승인요청</span>
+          <span class="radio-label">접수요청</span>
         </label>
         <label class="radio-container">
           <input
@@ -38,7 +38,7 @@
             @change="applyFilters"
           />
           <span class="custom-radio"></span>
-          <span class="radio-label">승인중</span>
+          <span class="radio-label">접수완료</span>
         </label>
         <label class="radio-container">
           <input
@@ -60,7 +60,7 @@
             @change="applyFilters"
           />
           <span class="custom-radio"></span>
-          <span class="radio-label">미승인</span>
+          <span class="radio-label">승인거절</span>
         </label>
       </div>
       <div>
@@ -227,12 +227,11 @@ export default {
     },
     async fetchRequestList() {
       try {
-        const response = await api.post(
-          '/user/requestList',
-          null,
-          { params: { user_no: this.getLoginInfo.user_no } }
-        );
+        const response = await api.post('/user/requestList', null, {
+          params: { user_no: this.getLoginInfo.user_no },
+        });
         this.requestList = response.data;
+        console.log('이', response.data);
       } catch (error) {
         console.error('문제', error);
         this.requestList = [];
@@ -252,11 +251,9 @@ export default {
 
       if (result.isConfirmed) {
         try {
-          const response = await api.post(
-            '/user/requestListDelete',
-            null,
-            { params: { mileage_request_no: mileage_request_no } }
-          );
+          const response = await api.post('/user/requestListDelete', null, {
+            params: { mileage_request_no: mileage_request_no },
+          });
           console.log(response.data);
           Swal.fire('삭제 완료', '요청이 삭제되었습니다.', 'success').then(
             () => {

@@ -52,6 +52,24 @@ public class AdminService {
     public void updateMileMax(String mileMax, String mileNo) { mileageDao.updateMileMax(mileMax,mileNo);
     }
 
+    public void addMileage(String mileageName, String mileageLimit, int requestIsBranch, int mile_no) {
+        mileageDao.addMileage(mileageName,mileageLimit,requestIsBranch, mile_no);
+    }
+
+    public int getMaxMileNo() {
+        return mileageDao.getMaxMileNo();
+    }
+
+    public void updateMileageDescription(int mile_no) {
+        mileageDao.updateMileageDescription(mile_no);
+    }
+
+    public void updateUser(int mileNo, String manager) {
+        mileageDao.updateUser(mileNo,manager);
+    }
+
+
+
     // @Autowired
     //private AdminDao adminDao;
 

@@ -13,4 +13,11 @@ public interface MileageRequestDao {
     void requestListDelete(String mileageRequestNo);
 
     ArrayList<Mileage_request> requestListAdmin();
+
+    void accept(String num);
+
+    void reject(String num);
+
+    void recive(String num);
+
 }

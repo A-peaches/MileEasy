@@ -19,10 +19,8 @@
             m.mile_name
         FROM
             mileage_request mr
-                JOIN
-            mileage m
-            ON
-                mr.mile_no = m.mile_no
+                LEFT JOIN mileage m
+                          ON mr.mile_no = m.mile_no
         WHERE
             mr.user_no = #{user_no}
         ORDER BY
@@ -52,12 +50,32 @@
             m.mile_name
         FROM
             mileage_request mr
-                JOIN mileage m ON mr.mile_no = m.mile_no
+                LEFT JOIN mileage m ON mr.mile_no = m.mile_no
                 JOIN user u ON mr.user_no = u.user_no  -- user 테이블과 조인
         ORDER BY
             mr.mileage_request_date DESC;
 
+
     </select>
+
+    <update id="accept">
+        UPDATE mileage_request
+        SET request_status = 2
+        WHERE mileage_request_no = #{num};
+    </update>
+
+    <update id="reject">
+        UPDATE mileage_request
+        SET request_status = 3
+        WHERE mileage_request_no = #{num};
+    </update>
+
+    <update id="recive">
+        UPDATE mileage_request
+        SET request_status = 1
+        WHERE mileage_request_no = #{num};
+    </update>
+
 
 
 

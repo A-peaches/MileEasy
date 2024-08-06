@@ -79,6 +79,7 @@ public class AdminController {
     private RequestService requestService;
 
 
+
     @Value("${project.uploadpath.badge}")
     private String badgeUploadPath;
 
@@ -191,6 +192,7 @@ public class AdminController {
             @RequestParam("final_admin_list") String finalAdminList,
             @RequestParam("mileNameInput") String mileNameInput,
             @RequestParam("mileMax") String mileMax) {
+        System.out.println("요것이 모락담!?!?!?!?");
         adminService.clearManager(mileNo);
         List<String> adminList = Arrays.asList(finalAdminList.split(","));
         adminService.newManager(mileNo,adminList);
@@ -223,6 +225,54 @@ public class AdminController {
         // userNo를 사용하여 필요한 데이터 처리
         System.out.println("처리");
         return requestService.requestListAdmin();
+    }
+
+    @PostMapping("/addMileage")
+    public void addMileage(
+            @RequestParam("mileageName") String mileageName,
+            @RequestParam("mileageLimit") String mileageLimit,
+            @RequestParam("manager") String manager,
+            @RequestParam("request_is_branch") int request_is_branch) {
+        System.out.println("========================================================================바꾸자");
+        int mile_no = adminService.getMaxMileNo() +1;
+        adminService.addMileage(mileageName,mileageLimit,request_is_branch,mile_no);
+        mile_no = adminService.getMaxMileNo();
+        adminService.updateMileageDescription(mile_no);
+        adminService.updateUser(mile_no,manager);
+
+
+    }
+
+    @PostMapping("/accept")
+    public void accept(
+            @RequestParam("num") String num) {
+        requestService.accept(num);
+
+    }
+
+
+    @PostMapping("/reject")
+    public void reject(
+            @RequestParam("num") String num) {
+        requestService.reject(num);
+
+    }
+
+    @PostMapping("/recive")
+    public void recive(
+            @RequestParam("num") String num) {
+        requestService.recive(num);
+
+    }
+
+    @PostMapping("/DeleteData")
+    public void DeleteData(
+            @RequestParam("mile_no") String mile_no) {
+       mileService.deleteDetail(mile_no);
+       mileService.deleteMile(mile_no);
+        mileService.adminDelete(mile_no);
+
+
     }
 
 
