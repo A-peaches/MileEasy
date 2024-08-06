@@ -2,9 +2,35 @@
   <div>
     <div class="row">
       <div v-for="(mileage, index) in mileages" :key="mileage.mile_no" class="col-md-4 mb-3">
-        <div class="p-2">
+        <div class="p-3">
           <div style="text-align: center; font-family: KB_C2; font-size: 16pt;" class="mb-2">{{ mileage.mile_name }} 마일리지</div>
-          <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 250px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box"></div>
+          <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 250px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box">
+            <!-- 여기 하드코딩 한 부분 데이터 불러오기!! -->
+             <!-- 목표 설정된 마일리지의 경우 -->
+            <div v-if="index%2==0">
+              <div class="py-4">
+                <span class="lg2" style="font-family: 'KB_C1';">목표기간</span><br>
+                <span class="md">2024.08.06 - 2024.08.17</span>
+              </div>
+              <div class="py-3">
+                <span class="lg2" style="font-family: 'KB_C1';">진행률</span><br>
+                <div class="progress mx-auto" role="progressbar" aria-label="Animated striped example" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 80%;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 60%"></div>
+                </div>
+              </div>
+              <div class="py-3">
+                <span class="bold-x-lg" style="font-family: 'KB_C1';">12 / 20</span>
+              </div>
+            </div>
+            <!-- 목표 미설정된 마일리지의 경우 -->
+            <div v-else style="background-color: #aeaeb2; height: 100%;" class="rounded-4">
+              <div style="padding-top: 30%;">
+                <span class="bold-x-lg">🎯</span><br><br>
+                <span class="md" style="font-family: 'KB_C2'; color: #fff;">설정된 목표가 없습니다</span>
+                <button class="btn-green mt-3" @click="goTogether">참여하기</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -49,15 +75,6 @@ export default {
 </script>
 
 <style scoped>
-.highlight {
-  background-color: #CFD4E7;
-  border-radius: 30px; /* 둥근 모서리 */
-  padding: 4px 8px; /* 내부 여백을 추가하여 크기 조절 */
-  display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
-}
-.highlight:hover {
-  cursor: pointer;
-}
 .mb-3 {
   margin-bottom: 1rem; /* 하단 여백 추가 */
 }
