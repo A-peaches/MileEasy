@@ -17,4 +17,13 @@ export default [
     meta: { requiresAuth: true },
     props: true // 이 부분이 중요합니다.
   },
+  {
+    // 리포트 화면
+    path: '/AI_Report',
+    name: 'AI_Report',
+    component: () =>
+      import('../views/user/mileage/AI_ReportView.vue'),
+    meta: { requiresAuth: true },
+  },
+  
 ];

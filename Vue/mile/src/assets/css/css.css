@@ -73,8 +73,8 @@
   font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
 }
 .swal2-cancel {
-  background-color: #f89f94 !important; /* 취소 버튼 색상 변경 */
-  border-color: #f89f94 !important;
+  background-color: #ff8473 !important; /* 취소 버튼 색상 변경 */
+  border-color: #ff8473 !important;
   color: #ffffff !important;
 }
 
@@ -260,19 +260,23 @@ body.swal2-shown > [aria-hidden="true"] {
  회색 강조: AEAEB2, 
  초록색 강조: 32AB8B,
   갈색 강조: 9C8480 */
-.red {
+.text-red {
   color: #cf2222;
 }
 
-.gray {
-  color: #aeaeb2;
+.text-gray {
+  color: #8c8c8c;
 }
 
-.green {
+.text-green {
   color: #32ab8b;
 }
 
 .brown {
+  color: #9c8480;
+}
+
+.text-brown {
   color: #9c8480;
 }
 
@@ -542,4 +546,21 @@ body.swal-open {
   margin-right: 8px;
   font-size: 15px;
   font-family: "KB_S5", sans-serif;
+}
+
+.btn-analysis {
+  background: linear-gradient(to right, #ffca05, #fcebaf); /* 그라데이션 색상 설정 */
+border: none;
+border-radius: 10px;
+color: rgb(96, 96, 96);
+padding: 10px 20px;
+cursor: pointer;
+font-family: 'KB_S5';
+font-weight: 600;
+font-size: 13pt;
+transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.btn-analysis:hover {
+  transform: scale(1.05); /* 호버시 크기를 1.05배로 확대 */
 }
