@@ -586,7 +586,40 @@
     </update>
 
 
+    <insert id="addMileage">
+        INSERT INTO mileage (mile_no,mile_name, mile_max, mile_description, mile_is_branch)
+        VALUES (#{mile_no},#{mileageName}, #{mileageLimit}, ' ', #{requestIsBranch, jdbcType=INTEGER, javaType=Integer})
+    </insert>
 
 
+
+    <select id="getMaxMileNo" resultType="int">
+        SELECT MAX(mile_no) FROM mileage
+    </select>
+
+    <!-- mile_description 업데이트 쿼리 -->
+    <update id="updateMileageDescription">
+        UPDATE mileage
+        SET mile_description = CONCAT('/mileageDetail/', #{mile_no})
+        WHERE mile_no = #{mile_no}
+    </update>
+
+    <update id="updateUser">
+        UPDATE user
+        SET
+            user_is_manager = 1,
+            mile_no = #{mileNo}
+        WHERE FIND_IN_SET(user_no, #{manager}) > 0;
+    </update>
+
+    <update id="deleteDetail">
+        DELETE FROM mileage_detail
+        WHERE mile_no = #{mileNo};
+    </update>
+
+    <update id="adminDelete">
+        UPDATE user SET user_is_manager = 0, mile_no = null
+        WHERE mile_no = #{mileNo};
+    </update>
 
 </mapper>

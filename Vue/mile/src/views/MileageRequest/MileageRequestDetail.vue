@@ -12,11 +12,43 @@
     <div style="padding: 0 5%">
       <div>
         <div style="text-align: right" class="my-2">
-          <span>승인완료</span>
-          &nbsp;
-          <span>승인거절</span>
+          <span v-if="currentRequest.request_status === 0" @click="recive()">
+            접수완료
+          </span>
+          <span v-if="currentRequest.request_status === 1" @click="accept()">
+            승인완료 </span
+          >&nbsp;
+          <span v-if="currentRequest.request_status === 1" @click="reject()">
+            승인거절
+          </span>
         </div>
         <div class="p-2 form-container" style="background-color: #f6f6f6">
+          <div class="form-group" v-if="this.currentRequest.request === 2">
+            <label class="mt-3">기존 마일리지 정보</label>
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>마일리지 이름</th>
+                  <th>연간 최고 한도</th>
+                  <th>담당자</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ currentMileage.mile_name }}</td>
+                  <td>{{ currentMileage.mile_max }}</td>
+                  <td>
+                    <div v-if="admins?.length">
+                      <span v-for="admin in admins" :key="admin.user_no">
+                        {{ admin.user_name }} ({{ admin.user_no }})<br />
+                      </span>
+                    </div>
+                    <div v-else>담당자 정보가 없습니다.</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div class="form-group">
             <label class="mt-3">마일리지 이름</label>
             <input
@@ -53,18 +85,30 @@
               class="input-base input-white"
             ></textarea>
           </div>
+          <div
+            v-if="this.currentRequest.register >= 1"
+            style="text-align: right; color: red"
+          >
+            현재 건을 등록한 이력이 있습니다
+          </div>
           <div class="button-wrapper">
-            <button class="btn-yellow">등록</button>
+            <button
+              v-if="currentRequest.request_status === 1"
+              class="btn-yellow"
+              @click="ok()"
+            >
+              등록
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import { mapGetters, mapActions } from 'vuex';
-
+import api from '@/api/axios';
+import Swal from 'sweetalert2';
 export default {
   name: 'MileageRequestDetail',
   props: ['mileage_request_no'],
@@ -74,6 +118,9 @@ export default {
       mileageLimit: '',
       manager: '',
       additionalNotes: '',
+      admins: [], // Ensure this is initialized as an empty array
+      mileageLabels: [],
+      currentMileage: '',
     };
   },
 
@@ -136,19 +183,287 @@ export default {
       this.$router.go(-1);
     },
 
-    setFormData() {
+    async setFormData() {
       if (this.currentRequest) {
         this.mileageName = this.currentRequest.request_mile_name || '';
         this.mileageLimit = this.currentRequest.request_mil_max || '';
         this.manager = this.currentRequest.request_admin || '';
         this.additionalNotes = this.currentRequest.request_etc || '';
+        if (this.currentRequest.request === 2) {
+          try {
+            const response = await api.post(
+              '/admin/getMileageAdminList',
+              null,
+              {
+                params: {
+                  mile_no: this.currentRequest.mile_no,
+                },
+              }
+            );
+            console.log('당담자', response.data);
+            this.admins = response.data || [];
+          } catch (error) {
+            console.error('Error fetching admin list:', error);
+            this.admins = []; // Handle error and set to empty array
+          }
+
+          try {
+            const response = await api.get('/mileage/getMileage');
+            this.mileageLabels = response.data;
+            if (this.currentRequest) {
+              this.currentMileage = this.mileageLabels.find(
+                (mileage) => mileage.mile_no === this.currentRequest.mile_no
+              );
+            }
+
+            console.log('마일마일', response.data);
+          } catch (error) {
+            console.error('Error fetching mileage labels:', error);
+            this.mileageLabels = []; // 에러 발생 시 빈 배열 반환
+          }
+        }
+      }
+    },
+
+    ok() {
+      if (this.currentRequest) {
+        switch (this.currentRequest.request) {
+          case 1:
+            this.AddData();
+            break;
+          case 2:
+            this.ModifyData();
+            break;
+          case 3:
+            this.DeleteData();
+            break;
+        }
+      }
+    },
+    async AddData() {
+      if (this.currentRequest.request_is_branch) {
+        this.request_is_branch = 1;
+      } else {
+        this.request_is_branch = 0;
+      }
+      const formData = new FormData();
+      formData.append('mileageName', this.mileageName);
+      formData.append('mileageLimit', this.mileageLimit);
+      formData.append('manager', this.manager);
+      formData.append('request_is_branch', this.request_is_branch);
+      formData.append('num', this.requestNo);
+      try {
+        const response = await api.post('/admin/addMileage', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '요청이 성공적으로 완료되었습니다.',
+          scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageManagementView'; // 성공 시 페이지 이동
+          }
+        });
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        // 서버 응답의 세부 정보를 출력
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+          console.error('Error headers:', error.response.headers);
+        } else if (error.request) {
+          console.error('Error request:', error.request);
+        } else {
+          console.error('Error message:', error.message);
+        }
+        Swal.fire({
+          icon: 'error',
+          title: '서버 오류',
+          text: '요청을 완료하는 동안 오류가 발생했습니다. 나중에 다시 시도해 주세요.',
+          scrollbarPadding: false,
+        });
+      }
+    },
+    async label() {
+      try {
+        const response = await api.get('/mileage/getMileage');
+        this.mileageLabels = response.data;
+      } catch (error) {
+        console.error('Error fetching mileage labels:', error);
+        this.mileageLabels = []; // 에러 발생 시 빈 배열 반환
+      }
+    },
+
+    async ModifyData() {
+      this.label(); // 마일리지 레이블을 먼저 가져옴
+      if (
+        this.mileageLabels.includes(this.mileageName) &&
+        !this.mileageName === ' '
+      ) {
+        Swal.fire({
+          icon: 'error',
+          title: '오류',
+          text: '이미 존재하는 마일리지 입니다.',
+          scrollbarPadding: false,
+        });
+        return;
+      }
+      try {
+        // 쿼리 매개변수로 데이터 전송
+        const response = await api.post('/admin/newAdminList', null, {
+          params: {
+            mile_no: this.currentRequest.mile_no,
+            final_admin_list: this.manager,
+            mileNameInput: this.mileageName,
+            mileMax: this.mileageLimit,
+            num: this.requestNo,
+          },
+        });
+        console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '요청이 성공적으로 완료되었습니다.',
+          scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageManagementView'; // 성공 시 페이지 이동
+          }
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '서버 오류',
+          text: '요청을 완료하는 동안 오류가 발생했습니다. 나중에 다시 시도해 주세요.',
+          scrollbarPadding: false,
+        });
+      }
+    },
+    async DeleteData() {
+      try {
+        // 쿼리 매개변수로 데이터 전송
+        const response = await api.post('/admin/DeleteData', null, {
+          params: {
+            mile_no: this.currentRequest.mile_no,
+            num: this.requestNo,
+          },
+        });
+        console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '마일리지 삭제가 처리되었습니다.',
+          scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageManagementView'; // 성공 시 페이지 이동
+          }
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '서버 오류',
+          text: '요청을 완료하는 동안 오류가 발생했습니다. 나중에 다시 시도해 주세요.',
+          scrollbarPadding: false,
+        });
+      }
+    },
+
+    async accept() {
+      try {
+        // 쿼리 매개변수로 데이터 전송
+        const response = await api.post('/admin/accept', null, {
+          params: {
+            num: this.requestNo,
+          },
+        });
+        console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '승인완료 처리되었습니다.',
+          scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageManagementView'; // 성공 시 페이지 이동
+          }
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '서버 오류',
+          text: '요청을 완료하는 동안 오류가 발생했습니다. 나중에 다시 시도해 주세요.',
+          scrollbarPadding: false,
+        });
+      }
+    },
+
+    async reject() {
+      try {
+        // 쿼리 매개변수로 데이터 전송
+        const response = await api.post('/admin/reject', null, {
+          params: {
+            num: this.requestNo,
+          },
+        });
+        console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '승인거절 처리되었습니다.',
+          scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageManagementView'; // 성공 시 페이지 이동
+          }
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '서버 오류',
+          text: '요청을 완료하는 동안 오류가 발생했습니다. 나중에 다시 시도해 주세요.',
+          scrollbarPadding: false,
+        });
+      }
+    },
+    async recive() {
+      try {
+        // 쿼리 매개변수로 데이터 전송
+        const response = await api.post('/admin/recive', null, {
+          params: {
+            num: this.requestNo,
+          },
+        });
+        console.log(response.data);
+        Swal.fire({
+          icon: 'success',
+          title: '성공',
+          text: '접수완료 처리되었습니다.',
+          scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageManagementView';
+          }
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '서버 오류',
+          text: '요청을 완료하는 동안 오류가 발생했습니다. 나중에 다시 시도해 주세요.',
+          scrollbarPadding: false,
+        });
       }
     },
   },
 
   async mounted() {
-    await this.requestList(); // Fetch the request list
-    this.setFormData(); // Set form data after request list is fetched
+    await this.requestList();
+    this.setFormData();
   },
 };
 </script>
@@ -269,5 +584,35 @@ textarea.input-base {
   justify-content: flex-end;
   margin-top: 20px;
   width: 100%; /* Use full width */
+}
+.styled-table {
+  width: 100%;
+  border-collapse: collapse; /* Merge borders between cells */
+}
+
+.styled-table thead th,
+.styled-table tbody td {
+  border: 1px solid #cdcdcd; /* Border color and width */
+}
+
+.styled-table thead th {
+  background-color: #ffffff;
+  padding: 10px;
+  text-align: center;
+  font-family: 'KB_C2', sans-serif;
+}
+
+.styled-table tbody td {
+  padding: 10px;
+  background-color: #ffffff;
+  font-family: 'KB_C2', sans-serif;
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f6f6f6; /* Optional: alternate row color for better readability */
+}
+
+.styled-table tbody tr:hover {
+  background-color: #e0e0e0; /* Optional: hover effect */
 }
 </style>

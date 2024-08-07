@@ -76,5 +76,18 @@ public interface MileageDao {
 
     void updateMilename(String mileNameInput,String mileNo);
 
+
     void updateMileMax(String mileMax, String mileNo);
+
+    void addMileage(String mileageName, String mileageLimit, int requestIsBranch ,int mile_no);
+
+    int getMaxMileNo();
+
+    void updateMileageDescription(int mile_no);
+
+    void updateUser(int mileNo, String manager);
+
+    void deleteDetail(String mileNo);
+
+    void adminDelete(String mileNo);
 }
