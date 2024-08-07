@@ -60,7 +60,7 @@
         </div>
        </div>
         <hr style="margin-top: 100px;">
-        <CommentSection :comments="comments" :login-info="loginInfo" @post-comment="postComment" />
+        <UserComment :login-info="loginInfo" :mtip_board_no="notice.mtip_board_no"  />
       </div>
     </div>
     <div v-else>
@@ -74,7 +74,7 @@
 import api from '@/api/axios';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import Swal from 'sweetalert2';
-import CommentSection from '@/components/m-tip/UserComment';
+import UserComment from '@/components/m-tip/UserComment';
 
 export default {
   name: 'M_TipDetailView',
@@ -85,7 +85,7 @@ export default {
     };
   },
   components : {
-    CommentSection
+    UserComment
   },
   methods: {
     ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction', 'fetchLikedPosts']),

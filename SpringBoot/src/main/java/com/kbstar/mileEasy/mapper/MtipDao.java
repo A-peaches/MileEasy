@@ -1,8 +1,5 @@
 package com.kbstar.mileEasy.mapper;
-import com.kbstar.mileEasy.dto.Mileage;
-import com.kbstar.mileEasy.dto.MtipBoard;
-import com.kbstar.mileEasy.dto.MtipGuide;
-import com.kbstar.mileEasy.dto.Notice;
+import com.kbstar.mileEasy.dto.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -133,4 +130,20 @@ public interface MtipDao {
             "LIMIT 10")
     List<MtipBoard> selectTopLikedMtiplistPlus();
     /* 좋아요가 많은 상위 9개의 m-tip 게시글 리스트 */
+
+    @Insert("INSERT INTO mtip_reply (user_no, user_name, mtip_board_no, mtip_reply_content, mtip_reply_date) " +
+            "VALUES (#{user_no}, #{user_name}, #{mtip_board_no}, #{mtip_reply_content}, NOW())")
+    void insertComment(MtipReply mtipReply);
+    /*mtip 댓글 등록*/
+
+    @Select("SELECT * FROM mtip_reply WHERE mtip_board_no = #{mtipBoardNo} ORDER BY mtip_reply_date DESC")
+    List<MtipReply> selectCommentsByBoardNo(@Param("mtipBoardNo") int mtipBoardNo);
+    /*mtip 댓글 조회*/
+
+    @Update("UPDATE mtip_reply SET mtip_reply_content = #{mtip_reply_content}, mtip_reply_date = NOW() WHERE mtip_reply_no = #{mtip_reply_no}")
+    void updateComment(MtipReply mtipReply);
+    /*mtip 댓글 수정*/
+    @Delete("DELETE FROM mtip_reply WHERE mtip_reply_no = #{mtipReplyNo}")
+    void deleteComment(@Param("mtipReplyNo") int mtipReplyNo);
+    /*mtip 댓글 삭제*/
 }

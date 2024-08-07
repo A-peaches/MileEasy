@@ -1,9 +1,6 @@
 package com.kbstar.mileEasy.controller;
 
-import com.kbstar.mileEasy.dto.Mileage;
-import com.kbstar.mileEasy.dto.MtipBoard;
-import com.kbstar.mileEasy.dto.MtipGuide;
-import com.kbstar.mileEasy.dto.Notice;
+import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.service.mtip.MtipBoardService;
 import com.kbstar.mileEasy.service.mtip.MtipLikeService;
 import com.kbstar.mileEasy.service.mtip.MtipReplyService;
@@ -386,5 +383,59 @@ public class MtipController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    // 댓글 저장
+    @PostMapping("/comments")
+    public ResponseEntity<?> addComment(@RequestBody MtipReply mtipReply) {
+        try {
+            mtipReplyService.addComment(mtipReply);
+            return ResponseEntity.ok("댓글이 성공적으로 추가되었습니다.");
+        } catch (Exception e) {
+            System.err.println("Error adding comment: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("댓글 추가 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    // 댓글 불러오기
+    @GetMapping("/comments/{mtipBoardNo}")
+    public ResponseEntity<?> getComments(@PathVariable int mtipBoardNo) {
+        try {
+            List<MtipReply> comments = mtipReplyService.getComments(mtipBoardNo);
+            return ResponseEntity.ok(comments);
+        } catch (Exception e) {
+            System.err.println("Error retrieving comments: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("댓글 불러오기 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    // 댓글 수정
+    @PostMapping("/updateComment/{mtipReplyNo}")
+    public ResponseEntity<?> updateComment(@PathVariable int mtipReplyNo, @RequestBody MtipReply mtipReply) {
+        try {
+            mtipReply.setMtip_reply_no(mtipReplyNo);
+            mtipReplyService.updateComment(mtipReply);
+            return ResponseEntity.ok("댓글이 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            System.err.println("Error updating comment: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("댓글 수정 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/deleteComment/{mtipReplyNo}")
+    public ResponseEntity<?> deleteComment(@PathVariable int mtipReplyNo) {
+        try {
+            mtipReplyService.deleteComment(mtipReplyNo);
+            return ResponseEntity.ok("댓글이 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            System.err.println("Error deleting comment: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("댓글 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
 
 }
