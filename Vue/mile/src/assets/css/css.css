@@ -396,6 +396,12 @@ body.swal2-shown > [aria-hidden="true"] {
 .card-yellow {
   background-color: #ffe06d;
 }
+.card-green {
+  background-color: #e4fcef;
+}
+.card-red {
+  background-color: #feeeef;
+}
 
 /* 대표 색상 */
 .gray {

@@ -10,6 +10,8 @@
         FROM
             user u
                 JOIN
+
+
             department d ON u.dp_no = d.dp_no
                 LEFT JOIN
             mileage m ON u.mile_no = m.mile_no
@@ -20,6 +22,55 @@
     <select id="selectMileDetail" resultType="com.kbstar.mileEasy.dto.MileIntroduce">
         SELECT * FROM mile_introduce WHERE mile_no = #{mile_no};
     </select>
+
+    <select id="selectMileTarget" resultType="com.kbstar.mileEasy.dto.Target">
+        WITH user_mileage AS (
+            SELECT
+                ut.user_no,
+                ut.target_no,
+                COALESCE(SUM(CASE
+                                 WHEN ms.mile_score_date BETWEEN t.start_date AND t.end_date THEN ms.mile_score_point
+                                 WHEN mh.mile_history_date BETWEEN t.start_date AND t.end_date THEN mh.mile_history_point
+                                 ELSE 0
+                    END), 0) AS total_mileage
+            FROM user_target ut
+                     JOIN target t ON ut.target_no = t.target_no
+                     LEFT JOIN mile_score ms ON ut.user_no = ms.user_no AND ut.mile_no = ms.mile_no
+                     LEFT JOIN mile_history mh ON ut.user_no = mh.user_no AND ut.mile_no = mh.mile_no
+            WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
+            GROUP BY ut.user_no, ut.target_no
+        ),
+             target_stats AS (
+                 SELECT
+                     t.target_no,
+                     t.start_date,
+                     t.end_date,
+                     t.target_mileage,
+                     COUNT(DISTINCT ut.user_no) AS total_participants,
+                     COUNT(DISTINCT CASE WHEN um.total_mileage >= t.target_mileage THEN ut.user_no END) AS achieved_participants
+                 FROM target t
+                          LEFT JOIN user_target ut ON t.target_no = ut.target_no
+                          LEFT JOIN user_mileage um ON ut.target_no = um.target_no AND ut.user_no = um.user_no
+                 WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
+                 GROUP BY t.target_no, t.start_date, t.end_date, t.target_mileage
+             )
+        SELECT
+            start_date,
+            end_date,
+            target_mileage,
+            target_no,
+            CASE
+                WHEN total_participants > 0 THEN
+                    ROUND((achieved_participants / total_participants) * 100, 2)
+                ELSE 0
+                END AS achievement_rate
+        FROM target_stats
+        ORDER BY start_date DESC, target_no;
+    </select>
+
+    <insert id="insertTarget">
+        insert into target (mile_no, user_no, start_date, end_date, target_mileage, is_together, is_manager_plan) values (#{mile_no},#{user_no},#{start_date},#{end_date},#{target_mileage},#{is_together},#{is_manager_plan});
+    </insert>
 
     <insert id="insertMile">
         insert into mile_introduce (mile_no, mile_title, mile_content, mile_route) values (#{mile_no}, #{mile_title}, #{mile_content}, #{mile_route});

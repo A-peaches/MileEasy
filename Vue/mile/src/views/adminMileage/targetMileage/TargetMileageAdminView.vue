@@ -6,54 +6,45 @@
       <button class="btn-green target-btn" @click="openModal">목표 등록하기</button>
     </div>
     <!-- 현재 진행중인 마일리지 목표 -->
-  <div class="mileage-goals-container">
-  <h3 class="mileage-goals-title">현재 진행중인 마일리지 목표</h3>
-  
-  <div v-if="currentTargets.length > 0" class="goals-list">
-    <div v-for="(target, index) in currentTargets" :key="index" class="goal-card">
-      <div class="goal-info">
-        <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
-        <span class="goal-mileage">🎯 목표: {{ target.target_mileage }} 마일리지</span>
-        <span class="goal-rate">✨ 달성률: {{ target.targetRate }}%</span>
+    <div class="mileage-goals-container">
+      <h3 class="mileage-goals-title">현재 진행중인 마일리지 목표</h3>
+      
+      <div v-if="currentTargets.length > 0" class="goals-list">
+        <div v-for="(target, index) in currentTargets" :key="index" class="goal-card">
+          <div class="goal-info">
+            <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
+            <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
+            <span class="goal-rate">✨ {{ target.targetRate }}% 달성</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" :style="{ width: target.targetRate + '%' }"></div>
+          </div>
+        </div>
       </div>
-      <div class="progress-container">
-        <div class="progress-bar" :style="{ width: target.targetRate + '%' }"></div>
+      
+      <div v-else class="no-goals">
+        <p class="lg2">현재 진행중인 목표가 없습니다.</p>
       </div>
     </div>
-  </div>
-  
-  <div v-else class="no-goals">
-    <p>현재 진행중인 목표가 없습니다.</p>
-    <button class="create-goal-btn">새 목표 만들기</button>
-  </div>
-</div>
-    <!-- <div style="width:90%; height: 40vh; margin-top: 4%; margin-bottom: 10%;" class="mx-auto">
-      <h3 class="lg p-3 ml-5" style="text-align: left; font-family: 'KB_S4'; font-size: 18pt;">현재 진행중인 마일리지 목표</h3>
-      <div v-if="currentTargets.length>0" >
-        <div v-for="(target, index) in currentTargets" :key="index" class="cards mx-auto my-3 pointer" style="height: 100%; width: 90%; background-color: #FFF9EB">
-          <div class="d-flex justify-content-between pr-3 pl-3">
-            <span class="cur-target-list">목표기간: {{ target.start_date }} ~ {{ target.end_date }}</span>&nbsp;
-            <span class="cur-target-list">목표 마일리지: {{ target.target_mileage }}</span>&nbsp;
-            <span class="cur-target-list">달성률: {{ target.targetRate }}%</span>
-          </div>
-          <div class="progress mx-auto mt-3" role="progressbar" aria-label="Animated striped example" :aria-valuenow="target.targetRate" aria-valuemin="0" aria-valuemax="100" style="width: 90%;">
-            <div class="progress-bar progress-bar-striped progress-bar-animated " :style="{width: target.targetRate + '%', backgroundColor: '#ffca05'}"></div>
-          </div>
+    
+    <!-- 예정된 마일리지 목표 내역 -->
+    <div style="width:90%;" class="mx-auto mt-5">
+      <h3 class="lg p-3 ml-5" style="text-align: left; font-family: 'KB_S4'; font-size: 18pt;">예정된 마일리지 목표 내역</h3>
+      <div v-for="detail in futureTargets" :key="detail.target_no" class="cards card-red mx-auto m-3 pointer" style="width: 90%; height: 6vh;">
+        <div class="d-flex justify-content-evenly pr-3 pl-3">
+          <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>
+          <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>
         </div>
       </div>
-      <div v-else class="cards card-lemon mx-auto" style="height: 90%; width: 80%;">
-        <div class="d-flex justify-content-center align-items-center lg2" style="height: 100%;">
-          현재 진행중인 목표가 없습니다.
-        </div>
-      </div>
-    </div> -->
+    </div>
+
     <!-- 지난 마일리지 목표 내역 -->
     <div style="width:90%;" class="mx-auto mt-5">
       <h3 class="lg p-3 ml-5" style="text-align: left; font-family: 'KB_S4'; font-size: 18pt;">지난 마일리지 목표 내역</h3>
-      <div v-for="detail in pastTargets" :key="detail.month" class="cards card-gray mx-auto m-3 pointer" style="width: 90%; height: 6vh;">
+      <div v-for="detail in pastTargets" :key="detail.target_no" class="cards card-gray mx-auto m-3 pointer" style="width: 90%; height: 6vh;">
         <div class="d-flex justify-content-between pr-3 pl-3">
-          <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>&nbsp;
-          <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>&nbsp;
+          <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>
+          <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>
           <span class=" target-list">달성률: {{ detail.targetRate }}%</span>
         </div>
       </div>
@@ -64,7 +55,7 @@
   <div v-if="isModalOpen" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">개인별 목표 설정하기</h2>
+        <h2 class="modal-title">{{ mile_name }} 목표 등록하기</h2>
         <button class="close-button" @click="closeModal">&times;</button>
       </div>
       <div class="modal-body">
@@ -104,58 +95,16 @@ export default {
       startDate: null,
       endDate: null,
       targetScore: 0,
-      targets: [
-        {
-          month: '07',
-          start_date: '2024-07-01',
-          end_date: '2024-07-31',
-          target_mileage: 50,
-          is_together: 1,
-          is_manager_plan: 1,
-          overall_avg: 36
-        },
-        {
-          month: '06',
-          start_date: '2024-06-01',
-          end_date: '2024-06-30',
-          target_mileage: 40,
-          is_together: 1,
-          is_manager_plan: 1,
-          overall_avg: 22
-        },
-        {
-          month: '08',
-          start_date: '2024-08-01',
-          end_date: '2024-08-31',
-          target_mileage: 40,
-          is_together: 1,
-          is_manager_plan: 1,
-          overall_avg: 22
-        },
-        {
-          month: '08',
-          start_date: '2024-08-01',
-          end_date: '2024-09-15',
-          target_mileage: 40,
-          is_together: 1,
-          is_manager_plan: 1,
-          overall_avg: 10
-        },
-        {
-          month: '08',
-          start_date: '2024-08-16',
-          end_date: '2024-08-31',
-          target_mileage: 40,
-          is_together: 1,
-          is_manager_plan: 1,
-          overall_avg: 10
-        }
-      ]
+      mile_name: '',
     }
   },
   computed :{ // 데이터를 가공하는 곳. 
     ...mapGetters('mile', ['getMileInfo', 'getArrayMiles']),
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('mileage', ['getTargets']),
+    targets() {
+      return this.getTargets || [];
+    },
     loginInfo(){
       return this.getLoginInfo;
     },
@@ -163,38 +112,65 @@ export default {
       return this.getMileInfo;
     },
     formattedTargets(){
+      if(!this.targets) return [];
       return this.targets.map(target => {
         const startDate = new Date(target.start_date);
+        const endDate = new Date(target.end_date);
 
         return{
             ...target, // ...은 복사의 의미 
-          targetRate: ((target.overall_avg/target.target_mileage)*100).toFixed(2),
-          month: String(startDate.getMonth()+1).padStart(2, '0'),
-          year: startDate.getFullYear(),
+          targetRate: target.achievement_rate,
+          startDate,
+          endDate
         }
       }
     );
     },
     currentTargets(){
       const currentDate =new Date();
-      const currentMonth = String(currentDate.getMonth()+1).padStart(2, '0');
-      const currentYear = currentDate.getFullYear();
+      currentDate.setHours(0, 0, 0, 0);
       
-      const targets = this.formattedTargets.filter(target =>
-        target.month === currentMonth && target.year === currentYear
+      return this.formattedTargets.filter(target =>
+        target.startDate <= currentDate && currentDate <= target.endDate
       );
-      
-      return this.targets.length>0 ? targets : [];
     },
     pastTargets() {
-      const currentMonth = String(new Date().getMonth()+1).padStart(2, '0'); // JavaScript에서 월은 0부터 시작하므로 +1 필요
-      const currentYear = new Date().getFullYear();
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
 
-      return this.formattedTargets.filter(target => target.month !== currentMonth || target.year !== currentYear);
+      return this.formattedTargets.filter(target =>
+        target.endDate < currentDate
+      );
+    },
+    futureTargets() {
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      return this.formattedTargets.filter(target =>
+        target.startDate > currentDate
+      );
     }
   },
   methods: {
   ...mapActions('mile', ['fetchMileInfo']),
+  ...mapActions('mileage', ['addTarget', 'fetchMileTarget']),
+    async addAction() {
+      const targetInfo = {
+        mile_no: this.loginInfo.mile_no,
+        user_no: this.loginInfo.user_no,
+        start_date: this.formatDate(this.startDate),
+        end_date: this.formatDate(this.endDate),
+        target_mileage: this.targetScore,
+      }
+
+      const response = await this.addTarget(targetInfo);
+
+      if(response && response.data.success){
+        this.showAlert('목표가 등록되었습니다', 'success', '#');
+      }else{
+        this.showAlert('목표 등록에 실패했습니다', 'fail', '#');
+      }
+    },
     openModal() {
       this.isModalOpen = true;
     },
@@ -235,6 +211,17 @@ export default {
       }
     }else{
       console.error('user_no이 유효하지 않습니다.');
+    }
+
+    const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
+    if (mile_no) {
+      try {
+        await this.fetchMileTarget(mile_no);
+      } catch (error) {
+        console.error('마일리지 목표 리스트를 가져오는 중 오류 발생:', error);
+      }
+    } else {
+      console.error('mile_no가 유효하지 않습니다.');
     }
   },
  
@@ -315,8 +302,9 @@ export default {
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-weight: bold;
+  text-align: left;
 }
 
 .form-group select,
@@ -326,6 +314,7 @@ export default {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
+  margin-bottom: 8px;
 }
 
 .date-range {
@@ -347,11 +336,11 @@ export default {
   background-color: #ffca05;
   color: #4b4a4a;
   border: none;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 10px 25px;
+  font-size: 14pt;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 5px;
   transition: background-color 0.3s;
   margin: 5px 5px 5px 5px;
 }
@@ -436,14 +425,22 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.3rem;
-  font-size: 16pt;
+  
 }
 
-.goal-date, .goal-mileage, .goal-rate {
+.goal-mileage, .goal-rate {
   background-color: #FFE082;
   padding: 0.3rem 0.6rem;
   border-radius: 20px;
   font-family: 'KB_S5';
+  font-size: 16pt;
+}
+
+.goal-date {
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-family: 'KB_S5';
+  font-size: 14pt;
 }
 
 .progress-container {
@@ -455,7 +452,6 @@ export default {
 
 .progress-bar {
   height: 100%;
-  width: 90%;
   background-color: #FFCA05;
   transition: width 0.5s ease-in-out;
 }
@@ -465,20 +461,5 @@ export default {
   padding: 2rem;
   background-color: #F5F5F5;
   border-radius: 8px;
-}
-
-.create-goal-btn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #FFCA05;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.create-goal-btn:hover {
-  background-color: #FFC107;
 }
 </style>

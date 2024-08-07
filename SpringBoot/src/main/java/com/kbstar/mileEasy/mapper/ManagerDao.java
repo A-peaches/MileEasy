@@ -18,10 +18,11 @@ public interface ManagerDao {
     int updateMile(String mile_title, String mile_content, String mile_route, int mile_introduce_no);
     int updateMileDetail(String mile_introduce_no, String job_name);
     List<MileRecommand> selectMileRecommand(String mile_no);
+    List<Target> selectMileTarget(int mile_no);
     int updateRecommand(String mile_mention, int mile_recommand_no);
     int insertRecommand(String mile_no, String mile_mention);
     int deleteRecommand(String mile_recommand_no);
-
+    int insertTarget(int mile_no, String user_no, String start_date, String end_date, int target_mileage, boolean is_together, boolean is_manager_plan);
     ArrayList<HitMile> mileCount(String start, String end, String mile);
 
 
