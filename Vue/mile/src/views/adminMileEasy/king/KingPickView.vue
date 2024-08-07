@@ -80,10 +80,7 @@
         </div>
         <div
           class="p-2"
-          style="
-            justify-content: space-between;
-            align-items: flex-start;
-          "
+          style="justify-content: space-between; align-items: flex-start"
         >
           <table class="styled-table">
             <thead>
@@ -103,7 +100,7 @@
       </div>
     </div>
 
-    <div class="btn-container" style=" margin-right: 75px;">
+    <div class="btn-container" style="margin-right: 75px">
       <button class="btn-yellow KB_S4" @click="checkValidDates">
         채택하기
       </button>
@@ -140,9 +137,7 @@ export default {
   methods: {
     async kingData() {
       try {
-        const response = await api.get(
-          '/mileage/kingDataSelect'
-        );
+        const response = await api.get('/mileage/kingDataSelect');
         console.log('kingDataSelect top5:', response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : '';
         this.kingTop5 = response.data.slice(0, 5);
@@ -173,9 +168,7 @@ export default {
 
     async jumpData() {
       try {
-        const response = await api.get(
-          '/mileage/jumpDataSelect'
-        );
+        const response = await api.get('/mileage/jumpDataSelect');
         console.log('점프업 top5:', response.data);
         this.jumpTop5 = response.data.slice(0, 5);
         // 사용자 점수별로 정렬
@@ -205,9 +198,7 @@ export default {
 
     async fetchMileageLabels() {
       try {
-        const response = await api.get(
-          '/mileage/getMileage'
-        );
+        const response = await api.get('/mileage/getMileage');
         this.mileageLabels = response.data.map((item) => item.mile_name);
         this.dates = new Array(this.mileageLabels.length).fill('-');
       } catch (error) {
@@ -219,9 +210,7 @@ export default {
 
     async lastUpdate() {
       try {
-        const response = await api.get(
-          '/admin/lastUpdate'
-        );
+        const response = await api.get('/admin/lastUpdate');
         console.log('날짜 데이터', response.data);
         this.dates = response.data.map((item) => item.date || '-');
       } catch (error) {
@@ -274,16 +263,30 @@ export default {
           icon: 'warning',
           title: '업데이트 날짜 오류',
           html: `
-        <div>최종 업데이트 날짜가 말일이 아닌 것이 있습니다.</div>
-        <div class="swal-dates-list" style="color: red;">${invalidDatesList}</div>
-      `,
+    <div id="swal-content">
+      <div>최종 업데이트 날짜가 말일이 아닌 것이 있습니다.</div>
+      <div class="swal-dates-list" style="color: red;">${invalidDatesList}</div>
+    </div>
+  `,
           confirmButtonText: '확인',
-          heightAuto: true, // 높이 자동 조절 비활성화
+          heightAuto: false,
           scrollbarPadding: false,
-
           customClass: {
             container: 'my-swal-container',
             content: 'my-swal-content',
+            popup: 'swal2-popup',
+          },
+          width: 'auto',
+          didOpen: (popup) => {
+            const content = popup.querySelector('#swal-content');
+            const maxHeight = window.innerHeight * 0.7; // 화면 높이의 70%로 제한
+
+            if (content.offsetHeight > maxHeight) {
+              content.style.height = `${maxHeight}px`;
+              content.style.overflowY = 'auto';
+            } else {
+              popup.style.height = 'auto';
+            }
           },
         });
       } else {
@@ -321,7 +324,7 @@ export default {
 .page-back {
   width: 70%;
   margin-top: 5%;
-  padding-bottom : 70px;
+  padding-bottom: 70px;
 }
 
 .btn-yellow {
@@ -422,18 +425,29 @@ export default {
 
 .my-swal-container .swal2-title {
   margin-bottom: 15px; /* 제목과 본문 사이의 여백 */
+  overflow: visible;
+  height: auto;
 }
 
 .swal-dates-list {
   white-space: pre-wrap; /* 줄바꿈 유지 */
   word-break: break-word; /* 긴 단어 줄바꿈 */
   color: red; /* 텍스트 색상 빨간색으로 설정 */
+  overflow: visible;
 }
 
-.swal2-html-container {
-  overflow: visible; /* 스크롤이 없고 내용이 모두 보이도록 설정 */
+.my-swal-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.my-swal-content {
+  max-height: 80vh; /* Adjust as needed */
+  overflow: visible;
+}
+
 .swal2-popup {
-  height: auto;
+  overflow: visible;
 }
 </style>

@@ -38,4 +38,12 @@ public class MileService {
 
     public void deleteMile(String mileNo) { mileageDao.deleteMile(mileNo);
     }
+
+    public void deleteDetail(String mileNo) {
+        mileageDao.deleteDetail(mileNo);
+    }
+
+    public void adminDelete(String mileNo) {
+        mileageDao.adminDelete(mileNo);
+    }
 }
