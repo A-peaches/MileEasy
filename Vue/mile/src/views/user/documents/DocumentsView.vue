@@ -158,7 +158,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '@/api/axios';
 import moment from 'moment';
 export default {
   name: 'DocumentsView',
@@ -257,7 +258,7 @@ export default {
       const response = await this.fetchMileDocument();
       this.allDocuments = response.data;
 
-      const countList = await axios.get(
+      const countList = await api.get(
         `http://localhost:8090/myMile/countListDocuments`
       );
       this.countList = countList.data;
@@ -277,7 +278,7 @@ export default {
     async fetchMileages() {
       // 마일리지 카테고리 가져오기
       try {
-        const response = await axios.get(
+        const response = await api.get(
           'http://localhost:8090/notice/mileage'
         );
         console.log('Fetched mileages:', response.data);
@@ -334,15 +335,8 @@ export default {
     } else {
       console.error('user_no이 유효하지 않습니다.');
     }
-
-    const mile_no = this.getLoginInfo ? this.getLoginInfo.mile_no : null;
-    if (mile_no) {
-      this.getMileDetail(mile_no);
-      this.loadDocuments(); // 첫 페이지 로드
-      this.fetchMileages();
-    } else {
-      console.error('mile_no이 유효하지 않습니다.');
-    }
+    this.loadDocuments(); // 첫 페이지 로드
+    this.fetchMileages();
   },
   watch: {
     searchQuery() {
@@ -395,16 +389,11 @@ export default {
   background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
 }
-/* 드롭다운 메뉴 스타일 */
-.QnA {
-  position: relative;
-  display: inline-block;
-}
 
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 350%;
+  top: 240%;
   left: 50%;
   z-index: 1;
   border-color: #eeeeee;

@@ -6,7 +6,7 @@
     </div>
     <div class="notice-list">
       <div v-for="notice in bestNotices" :key="notice.mtip_board_no" class="notice-item">
-        <span class="notice-mile">{{ notice.mile_name }}</span>
+        <span class="notice-mile">{{ notice.mile_name || '기타' }}</span>
         <span class="notice-title">
           {{ truncateTitle(notice.mtip_board_title) }}
           <i class="bi bi-heart-fill title-icon"></i>

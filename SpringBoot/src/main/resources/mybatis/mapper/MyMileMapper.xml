@@ -8,17 +8,15 @@
             SUM(CASE WHEN ms.user_no = #{userNo} THEN ms.mile_score_point ELSE 0 END) AS user_point,
             m.mile_max,
             SUM(ms.mile_score_point) AS all_point,
-            ms.mile_score_date AS mile_date,
+            MAX(ms.mile_score_date) AS mile_date, -- 가장 최근 날짜를 가져옴
             m.mile_is_branch
         FROM
             mileage m
-                LEFT JOIN
-            mile_score ms ON ms.mile_no = m.mile_no
+                LEFT JOIN mile_score ms ON ms.mile_no = m.mile_no
         WHERE
             m.mile_is_delete = 0
         GROUP BY
-            m.mile_no, m.mile_max, ms.mile_score_date;
-
+            m.mile_no, m.mile_name, m.mile_max, m.mile_is_branch;
     </select>
 
     <select id="getMileStatus" resultType="com.kbstar.mileEasy.beans.MileStatus">

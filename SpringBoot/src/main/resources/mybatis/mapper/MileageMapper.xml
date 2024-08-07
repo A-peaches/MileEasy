@@ -65,6 +65,7 @@
             FROM hit_mile
             WHERE hit_date = #{date}
         ) h ON m.mile_no = h.mile_no
+        where m.mile_is_delete = 0
         ORDER BY m.mile_no;
     </select>
 

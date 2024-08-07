@@ -1,7 +1,7 @@
 <template>
   <div ref="mainContainer">
     <div class="flex" style="margin-left: 10%; margin-right: 10%">
-      <div class="cards fade-up-item" style="width: 24%; height: 400px">
+      <div class="cards fade-up-item profile-card">
         <img
           v-if="loginInfo && loginInfo.user_no"
     :src="profileImageUrl"
@@ -22,18 +22,19 @@
         <p class="md" style="margin-bottom: 10px">
           {{ loginInfo ? loginInfo.dp_no : '' }}
         </p>
-        <button @click="goToMileageIntroView" class="btn-yellow KB_C2">{{ mile_name }}</button>
+        <button @click="goToMileageIntroView" class="btn-yellow KB_C2 my-3">{{ mile_name }}</button>
+
       </div>
       <CardComponent
         title="기간별 페이지 방문자 수"
         class="fade-up-item"
-        style="width: 70%; margin-left: 6%"
+        style="width: 70%; margin-left: 5.6%"
       />
     </div>
     <div class="flex" style="margin-left: 10%; margin-right: 10%">
       <div
         class="cards fade-up-item"
-        style="width: 24%; height: 400px; padding: 3% 3% 4% 3%; margin-top: 3%"
+        style="width: 24%; height: 370px; padding: 3% 3% 4% 3%; margin-top: 3%"
       >
         <div style="padding: 3% 0%">
           <a href="/introduceMileageAdminView" class="mileage-link">
@@ -211,4 +212,10 @@ export default {
   width: 100%;
   height: 300px;
 }
+
+.profile-card {
+  height: 430px;
+  width: 370px;
+}
+
 </style>

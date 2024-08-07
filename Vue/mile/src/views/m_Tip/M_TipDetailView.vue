@@ -7,10 +7,17 @@
             <span class="arrow">❮</span> 이전
           </button>
         </div>
-        <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no">
-          <div class="actions">
+        <div class="actions">
+          <!-- 로그인한 사용자가 글 작성자인 경우 -->
+          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no">
             <button class="edit-button" @click="goToModifyView">수정</button>
             <button class="delete-button" @click="deleteNotice">삭제</button>
+          </div>
+
+          <!-- 로그인한 사용자가 관리자인 경우 -->
+          <div v-else-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+            <button class="report-button" @click="reportNotice">신고하기</button>
+            <span style="font-size: 25pt;">🚨</span>
           </div>
         </div>
       </div>
@@ -53,13 +60,12 @@
         </div>
        </div>
         <hr style="margin-top: 100px;">
+        <CommentSection :comments="comments" :login-info="loginInfo" @post-comment="postComment" />
       </div>
     </div>
-    <div v-else-if="isLoading">
-      <p>Loading...</p>
-    </div>
     <div v-else>
-      <p>No data available</p>
+      <p v-if="isLoading">Loading...</p>
+      <p v-else>No data available</p>
     </div>
   </div>
 </template>
@@ -68,6 +74,7 @@
 import api from '@/api/axios';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import Swal from 'sweetalert2';
+import CommentSection from '@/components/m-tip/UserComment';
 
 export default {
   name: 'M_TipDetailView',
@@ -76,6 +83,9 @@ export default {
     return {
       isLoading: true,
     };
+  },
+  components : {
+    CommentSection
   },
   methods: {
     ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction', 'fetchLikedPosts']),
@@ -350,6 +360,13 @@ export default {
   font-family: 'KB_S5', sans-serif;
   color: #714319;
   padding: 5px 10px;
+}
+
+.report-button{
+  font-size: 20px;
+  font-family: 'KB_S5', sans-serif;
+  color: red;
+  margin-top: 15px;
 }
 
 .content {

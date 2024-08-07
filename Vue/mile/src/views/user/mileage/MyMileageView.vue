@@ -1,13 +1,13 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
     <h2
-      class="bold-x-lg my-5 ml-5 help-icon"
+      class="bold-x-lg my-5 ml-5"
       ref="helpIcon"
       style="font-family: KB_C3"
     >
       나의 마일리지
       <i
-        class="bi bi-question-circle"
+        class="bi bi-question-circle help-icon"
         @click="toggleHelpPopover"
         style="font-size: 20pt"
       ></i>
