@@ -65,12 +65,6 @@
           <p>게시글이 없습니다.</p>
         </div>
       </div>
-
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
-        <button @click="goToPage(page)" :class="{ active: currentPage === page }" v-for="page in totalPages" :key="page">{{ page }}</button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">〉</button>
-      </div>
     </div>
   </div>
 </template>
@@ -181,9 +175,7 @@ filteredNotices() {
     isLoggedIn() {
       return !!this.loginInfo;
     },
-    totalPages() {
-      return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
-    },
+
     paginatedNotices() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
@@ -227,19 +219,8 @@ filteredNotices() {
         this.closeDropdown();
       }
     },
-    goToPage(page) {
-      this.currentPage = page;
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
-    },
-    prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--;
-      }
-    },
+    
+    
     async fetchNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
@@ -313,20 +294,6 @@ filteredNotices() {
     console.error('Error fetching best notices:', error.response ? error.response.data : error.message);
   }
 },
-
-
-    searchNotices() {
-      this.currentPage = 1;
-    },
-    filterByCategory(category) {
-      this.selectedCategory = category;
-      this.currentPage = 1;
-    },
-    refreshPage() {
-      this.selectedCategory = null;
-      this.searchQuery = '';
-      this.currentPage = 1;
-    },
     async initializeData() {
     try {
       await this.fetchNotices();
@@ -673,45 +640,6 @@ h2::after {
   width: auto; /* 너비를 자동으로 설정 */
 }
 
-/* 페이지 네이션 및 글쓰기 버튼 스타일 */
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 100px;
-  gap: 5px;
-}
-
-.pagination button {
-  background-color: #ffffff;
-  padding: 10px 20px;
-  cursor: pointer;
-  margin: 0 5px;
-  border-radius: 5px;
-  font-size: 18px; /* 숫자의 폰트 크기 */
-  font-family: 'KB_C3', sans-serif; /* 숫자의 폰트 */
-}
-
-.pagination button:disabled {
-  background-color: #d5e9e3;
-  cursor: not-allowed;
-  color: white;
-}
-
-.pagination button.active {
-  background-color: #43c2a0;
-  color: white;
-}
-
-.pagination button.arrow-button {
-  font-size: 18px; /* 화살표의 폰트 크기 */
-}
 
 .write-button {
   display: flex;

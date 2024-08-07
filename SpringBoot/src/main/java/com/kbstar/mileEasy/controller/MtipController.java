@@ -381,7 +381,7 @@ public class MtipController {
             }
             return ResponseEntity.ok(bestNotices);
         } catch (Exception e) {
-            System.err.println("Error retrieving best notices: " + e.getMessage());
+            System.err.println("Error retrieving best notices: " + e.getMessage());l
             e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
