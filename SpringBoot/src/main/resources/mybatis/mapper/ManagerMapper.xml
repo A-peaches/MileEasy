@@ -5,7 +5,6 @@
     <select id="selectMileTitle" resultType="com.kbstar.mileEasy.dto.User">
         SELECT
             u.user_name,
-            u.user_profile,
             d.dp_name as dp_name,
             m.mile_name as mile_no
         FROM

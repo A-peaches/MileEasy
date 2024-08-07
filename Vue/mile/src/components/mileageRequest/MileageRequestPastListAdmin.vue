@@ -40,32 +40,31 @@
         </div>
         <div style="text-align: center; justify-content: center">
           <div class="notice-list" style="text-align: center">
-            <div v-if="filteredRequestList.length === 0">
-              <p>해당 내용이 없습니다.</p>
+            <!-- 데이터가 로드되었는지 확인 -->
+            <div v-if="!filteredRequestList.length">
+              <p>등록된 요청이 없습니다.</p>
             </div>
-            <div v-else>
+            <div
+              v-for="(notice, index) in paginatedRequestList"
+              :key="notice.mileage_request_no"
+            >
               <div
-                v-for="(notice, index) in paginatedRequestList"
-                :key="notice.mileage_request_no"
+                class="input-base list-wrapper"
+                @click="toggleDetails(notice.mileage_request_no)"
               >
-                <div
-                  class="input-base list-wrapper"
-                  @click="toggleDetails(index)"
-                >
-                  <div class="notice-details">
-                    <div class="notice-new">{{ index + 1 }}</div>
-                    <div class="notice-num">
-                      {{ getRequestAction(notice.request) }}
-                    </div>
-                    <div class="notice-title">
-                      {{ notice.request_mile_name || notice.mile_name }}
-                    </div>
-                    <div class="notice-mile">
-                      {{ getRequestStatus(notice.request_status) }}
-                    </div>
-                    <div class="notice-date">
-                      {{ notice.mileage_request_date || '날짜 없음' }}
-                    </div>
+                <div class="notice-details">
+                  <div class="notice-new">{{ index + 1 }}</div>
+                  <div class="notice-num">
+                    {{ getRequestAction(notice.request) }}
+                  </div>
+                  <div class="notice-title">
+                    {{ notice.request_mile_name || notice.mile_name }}
+                  </div>
+                  <div class="notice-mile">
+                    {{ getRequestStatus(notice.request_status) }}
+                  </div>
+                  <div class="notice-date">
+                    {{ notice.mileage_request_date || '날짜 없음' }}
                   </div>
                 </div>
               </div>
@@ -95,11 +94,10 @@ export default {
 
   data() {
     return {
-      selectedFilter: '승인완료',
+      selectedFilter: '승인완료', // 기본 필터를 '승인완료'로 설정
       searchQuery: '',
       currentPage: 1,
       noticesPerPage: 10,
-      list: null,
     };
   },
   computed: {
@@ -114,11 +112,12 @@ export default {
       return this.getLoginInfo;
     },
     filteredRequestList() {
-      if (!this.getRequestList) return [];
+      if (!this.getRequestList || !Array.isArray(this.getRequestList))
+        return [];
 
       let filteredList = [...this.getRequestList];
 
-      // 상태 필터링 로직
+      // 상태 필터링 로직 (승인완료와 승인거절만)
       filteredList = filteredList.filter((notice) => {
         return (
           (this.selectedFilter === '승인완료' && notice.request_status === 2) ||
@@ -182,10 +181,15 @@ export default {
           return '';
       }
     },
+    toggleDetails(mileage_request_no) {
+      this.$router.push(`/mileageRequesDetail/${mileage_request_no}`);
+    },
   },
 
   mounted() {
-    this.requestList();
+    this.requestList().catch((error) => {
+      console.error('데이터 로딩 오류:', error);
+    });
   },
 };
 </script>

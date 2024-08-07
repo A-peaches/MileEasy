@@ -23,7 +23,7 @@
       </div>
       <!-- 동적 컴포넌트 전환 -->
       <requestList v-if="isModifyActive" />
-      <coding v-if="!isModifyActive" />
+      <pastList v-if="!isModifyActive" />
     </div>
   </div>
 </template>
@@ -33,11 +33,11 @@ import { mapActions, mapGetters } from 'vuex';
 import api from '@/api/axios';
 import Swal from 'sweetalert2';
 import requestList from '@/components/mileageRequest/MileageRequestListAdmin.vue';
-import coding from '@/components/mileageRequest/MileageRequestPastListAdmin.vue';
+import pastList from '@/components/mileageRequest/MileageRequestPastListAdmin.vue';
 
 export default {
   name: 'KingMain',
-  components: { requestList, coding },
+  components: { requestList, pastList },
   data() {
     return {
       isModifyActive: true, // 초기에는 '마일리지 수정'이 활성화됨
@@ -70,16 +70,12 @@ export default {
 
       if (confirmed) {
         try {
-          const response = await api.post(
-            '/admin/deleteMile',
-            null,
-            {
-              params: { mile_no: mile_no },
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-            }
-          );
+          const response = await api.post('/admin/deleteMile', null, {
+            params: { mile_no: mile_no },
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          });
           this.getMileage();
           Swal.fire('삭제 완료!', '마일리지가 삭제되었습니다.', 'success');
           console.log('삭제', response.data);

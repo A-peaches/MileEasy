@@ -71,4 +71,18 @@ public class RequestService {
 
     public ArrayList<Mileage_request> requestListAdmin() { return mileageRequestDao.requestListAdmin();
     }
+
+    public void accept(String num) {
+        mileageRequestDao.accept(num);
+    }
+
+    public void reject(String num) {
+        mileageRequestDao.reject(num);
+    }
+
+    public void recive(String num) {
+        mileageRequestDao.recive(num);
+    }
+
+
 }

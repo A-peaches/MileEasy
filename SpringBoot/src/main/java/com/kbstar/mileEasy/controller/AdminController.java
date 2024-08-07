@@ -1,6 +1,5 @@
 package com.kbstar.mileEasy.controller;
 import com.kbstar.mileEasy.dto.*;
-import com.kbstar.mileEasy.mapper.UserDao;
 import com.kbstar.mileEasy.service.admin.AdminService;
 import com.kbstar.mileEasy.service.mileage.info.HitMileService;
 import com.kbstar.mileEasy.service.mileage.info.MileHistoryService;
@@ -77,6 +76,7 @@ public class AdminController {
 
     @Autowired
     private RequestService requestService;
+
 
 
     @Value("${project.uploadpath.badge}")
@@ -190,7 +190,8 @@ public class AdminController {
             @RequestParam("mile_no") String mileNo,
             @RequestParam("final_admin_list") String finalAdminList,
             @RequestParam("mileNameInput") String mileNameInput,
-            @RequestParam("mileMax") String mileMax) {
+            @RequestParam("mileMax") String mileMax,
+            @RequestParam("num") String no) {
         adminService.clearManager(mileNo);
         List<String> adminList = Arrays.asList(finalAdminList.split(","));
         adminService.newManager(mileNo,adminList);
@@ -202,6 +203,10 @@ public class AdminController {
         if(mileMax !=null && !mileMax.isEmpty()) {
             adminService.updateMileMax(mileMax,mileNo);
         }
+        int num = Integer.parseInt(no);
+        adminService.updateRegiter(num);
+
+
     }
 
     @GetMapping ("/lastUpdate")
@@ -223,6 +228,60 @@ public class AdminController {
         // userNo를 사용하여 필요한 데이터 처리
         System.out.println("처리");
         return requestService.requestListAdmin();
+    }
+
+    @PostMapping("/addMileage")
+    public void addMileage(
+            @RequestParam("mileageName") String mileageName,
+            @RequestParam("mileageLimit") String mileageLimit,
+            @RequestParam("manager") String manager,
+            @RequestParam("request_is_branch") int request_is_branch,
+            @RequestParam("num") String no) {
+        System.out.println("========================================================================바꾸자");
+        int mile_no = adminService.getMaxMileNo() +1;
+        adminService.addMileage(mileageName,mileageLimit,request_is_branch,mile_no);
+        mile_no = adminService.getMaxMileNo();
+        adminService.updateMileageDescription(mile_no);
+        adminService.updateUser(mile_no,manager);
+        int num = Integer.parseInt(no);
+        adminService.updateRegiter(num);
+
+
+    }
+
+    @PostMapping("/accept")
+    public void accept(
+            @RequestParam("num") String num) {
+        requestService.accept(num);
+
+    }
+
+
+    @PostMapping("/reject")
+    public void reject(
+            @RequestParam("num") String num) {
+        requestService.reject(num);
+
+    }
+
+    @PostMapping("/recive")
+    public void recive(
+            @RequestParam("num") String num) {
+        requestService.recive(num);
+
+    }
+
+    @PostMapping("/DeleteData")
+    public void DeleteData(
+            @RequestParam("mile_no") String mile_no,
+            @RequestParam("num") String no) {
+        int num = Integer.parseInt(no);
+       mileService.deleteDetail(mile_no);
+       mileService.deleteMile(mile_no);
+        mileService.adminDelete(mile_no);
+        adminService.updateRegiter(num);
+
+
     }
 
 

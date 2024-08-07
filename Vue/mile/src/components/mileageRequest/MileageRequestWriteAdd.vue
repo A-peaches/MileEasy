@@ -267,18 +267,19 @@ export default {
       };
 
       try {
-        const response = await api.post(
-          '/user/requestAdd',
-          formData
-        );
+        const response = await api.post('/user/requestAdd', formData);
         Swal.fire({
           icon: 'success',
           title: '성공',
           text: '요청이 성공적으로 제출되었습니다.',
           scrollbarPadding: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            document.location = '/mileageRequesList'; // 성공 시 페이지 이동
+          }
         });
         console.log(response.data);
-        document.location = '/mileageRequesList'; // 성공 시 페이지 이동
+        // 성공 시 페이지 이동
       } catch (error) {
         console.error('Error submitting form:', error);
         Swal.fire({
