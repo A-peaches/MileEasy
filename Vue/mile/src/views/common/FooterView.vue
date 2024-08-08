@@ -99,9 +99,9 @@
       </div>
       <div class="w-100 mx-auto text-start">
         <span class="menu-title">Help Desk</span>
-        <span class="menu"
+        <!-- <span class="menu"
           ><a href="/qnaListView" class="link-menu">Q&A</a></span
-        >
+        > -->
         <span class="menu"
           ><a href="/mileEasyContactView" class="link-menu"
             >업무별 연락처</a

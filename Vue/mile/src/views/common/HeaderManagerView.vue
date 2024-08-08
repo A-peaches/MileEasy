@@ -29,6 +29,9 @@
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
           </div>
+          <!-- <div class="nav-item">
+            <a class="nav-link hover" href="/qnaListView">Q&A</a>
+          </div> -->
           <div class="nav-item">
             <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
           </div>

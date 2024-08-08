@@ -83,16 +83,16 @@ public class ManagerController {
         }
     }
     // addTarget 마일리지 목표 설정 추가하기(param: targetInfo)
-    @PostMapping("/addTarget")
-    public ResponseEntity<?> addTarget(@RequestBody Target target) {
-        System.out.println("이건 등록할 거" + target);
-        int result = managerService.addTarget(target.getMile_no(), target.getUser_no(), target.getStart_date(), target.getEnd_date(), target.getTarget_mileage(), true,true);
-        if (result > 0) {
-            return ResponseEntity.ok().body("{\"success\":true}");
-        } else {
-            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
-        }
-    }
+//    @PostMapping("/addTarget")
+//    public ResponseEntity<?> addTarget(@RequestBody Target target) {
+//        System.out.println("이건 등록할 거" + target);
+//        int result = managerService.addTarget(target.getMileNo(), target.getUserNo(), target.getStartDate(), target.getEndDate(), target.getTargetMileage(), true,true);
+//        if (result > 0) {
+//            return ResponseEntity.ok().body("{\"success\":true}");
+//        } else {
+//            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
+//        }
+//    }
 
     // targetList 마일리지 목표 리스트 가져오기
     @GetMapping("/targetList/{mile_no}")

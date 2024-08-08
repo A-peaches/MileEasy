@@ -13,5 +13,5 @@ public interface TargetDao {
 
     void insertUserTarget(Usertarget usertarget);
 
-    
+
 }
