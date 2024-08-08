@@ -9,9 +9,6 @@ import java.util.List;
 public interface MtipDao {
 
 
-    @Select("SELECT mtip_board_no FROM mtip_like WHERE user_no = #{userId}")
-    List<Integer> getLikedPostIds(@Param("userId") String userId);
-
     @Select("SELECT COUNT(*) FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
     int checkLikeStatus(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 

@@ -260,12 +260,6 @@ public class MtipController {
         boolean isLiked = mtipBoardService.toggleLike(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
-    //m-tip 좋아요
-    @GetMapping("/liked-posts/{userId}")
-    public ResponseEntity<List<Integer>> getLikedPosts(@PathVariable String userId) {
-        List<Integer> likedPostIds = mtipBoardService.getLikedPostIds(userId);
-        return ResponseEntity.ok(likedPostIds);
-    }
 
     //m-tip 수정
     @PostMapping("/update")

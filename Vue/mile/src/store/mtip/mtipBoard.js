@@ -58,8 +58,16 @@ const mutations = {
     const index = state.likedPosts[user_no].indexOf(mtip_board_no);
     if (index > -1) {
       state.likedPosts[user_no].splice(index, 1);
+      state.notice.mtip_board_like--;  // 좋아요 숫자 감소
     } else {
       state.likedPosts[user_no].push(mtip_board_no);
+      state.notice.mtip_board_like++;  // 좋아요 숫자 증가
+    }
+  },
+  UPDATE_LIKE_COUNT(state, { mtip_board_no, isLiked }) {
+    const notice = state.notices.find(n => n.mtip_board_no === mtip_board_no);
+    if (notice) {
+      notice.mtip_board_like += isLiked ? 1 : -1;
     }
   },
   SET_USER_TOTAL_NOTICES(state, count) {
@@ -81,14 +89,14 @@ const actions = {
       throw error;
     }
   },
-  async fetchLikedPosts({ commit }, user_no) {
-    try {
-      const response = await api.get(`/mtip/liked-posts/${user_no}`);
-      commit('SET_LIKED_POSTS', { user_no, likedPosts: response.data });
-    } catch (error) {
-      console.error('Error fetching liked posts:', error);
-    }
-  },
+  // async fetchLikedPosts({ commit }) { // user_no 제거
+  //   try {
+  //     const response = await api.get('/path/to/liked/posts');
+  //     commit('SET_LIKED_POSTS', response.data);
+  //   } catch (error) {
+  //     console.error('좋아하는 글 가져오기 중 오류 발생:', error);
+  //   }
+  // },
   async fetchNotices({ commit }) {
     try {
       const response = await api.get('/mtip/Mtiplist');
@@ -100,31 +108,31 @@ const actions = {
   },
 
   // mtipBoard.js 또는 관련 Vuex 모듈
-async fetchNoticeDetail({ commit }, noticeId) {
-  if (!noticeId) {
-    console.error('Notice ID is undefined');
-    return;
-  }
-  try {
-    console.log('Fetching notice detail for ID:', noticeId);
-    const response = await api.get(`/mtip/${noticeId}`);
-    console.log('API Response:', response); // 전체 응답 로깅
-    if (response.data) {
-      console.log('Fetched notice details:', response.data);
-      commit('SET_NOTICE', response.data);
-      return response; // 명시적으로 response 반환
-    } else {
-      console.error('No data in response');
-      throw new Error('No data in response');
+  async fetchNoticeDetail({ commit }, noticeId) { // commit 추가
+    if (!noticeId) {
+      console.error('Notice ID is undefined');
+      return;
     }
-  } catch (error) {
-    console.error(
-      'Error fetching notice detail:',
-      error.response ? error.response.data : error.message
-    );
-    throw error; // 에러를 다시 throw하여 컴포넌트에서 캐치할 수 있게 함
-  }
-},
+    try {
+      console.log('Fetching notice detail for ID:', noticeId);
+      const response = await api.get(`/mtip/${noticeId}`);
+      console.log('API Response:', response); // 전체 응답 로깅
+      if (response.data) {
+        console.log('Fetched notice details:', response.data);
+        commit('SET_NOTICE', response.data);
+        return response; // 명시적으로 response 반환
+      } else {
+        console.error('No data in response');
+        throw new Error('No data in response');
+      }
+    } catch (error) {
+      console.error(
+        'Error fetching notice detail:',
+        error.response ? error.response.data : error.message
+      );
+      throw error; // 에러를 다시 throw하여 컴포넌트에서 캐치할 수 있게 함
+    }
+  },
 
   async incrementViews({ commit }, noticeId) {
     try {
@@ -171,11 +179,11 @@ async fetchNoticeDetail({ commit }, noticeId) {
     }
   },
 
-  async toggleLikeAction({ commit, dispatch }, { mtip_board_no, user_no }) {
+  async toggleLikeAction({ commit }, { mtip_board_no, user_no }) {
     try {
-      await api.post('/mtip/toggle-like', { mtip_board_no, user_no });
+      const response = await api.post('/mtip/toggle-like', { mtip_board_no, user_no });
       commit('TOGGLE_LIKE', { user_no, mtip_board_no });
-      dispatch('fetchNoticeDetail', mtip_board_no);
+      commit('UPDATE_LIKE_COUNT', { mtip_board_no, isLiked: response.data.isLiked });
     } catch (error) {
       console.error('Error toggling like:', error);
     }
@@ -194,11 +202,10 @@ async fetchNoticeDetail({ commit }, noticeId) {
       console.error('Error fetching user total notices:', error.response ? error.response.data : error.message);
     }
   },
-
 };
 
 const getters = {
-  getNotices: (state) => state.notices,
+  getNotices: (state) => state.notices, // 주석 해제
   getNotice(state) {
     return state.notice;
   },

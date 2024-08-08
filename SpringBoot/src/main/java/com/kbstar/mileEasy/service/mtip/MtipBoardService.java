@@ -110,9 +110,10 @@ public class MtipBoardService {
         }
     }
 
-    public List<Integer> getLikedPostIds(String userId) {
-        return mtipDao.getLikedPostIds(userId);
-    }
+//    // 좋아요한 게시글 ID 목록 가져오기
+//    public List<Integer> getLikedPostIds(String userNo, int noticeId) {
+//        return mtipDao.getLikedPostIds(userNo, noticeId);
+//    }
 
     //mtip 수정하기
     @Transactional

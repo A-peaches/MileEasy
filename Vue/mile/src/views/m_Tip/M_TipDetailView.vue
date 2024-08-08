@@ -53,9 +53,9 @@
         </div>
         <div class="icon-container">
           <div class="heart-icon" @click="toggleLike">
-            <i :class="['bi', isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"
-           :style="{ color: isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? '#dc3545' : 'inherit' }"></i>
-           </div>
+            <i :class="['bi', computedIsPostLiked ? 'bi-heart-fill' : 'bi-heart']"
+              :style="{ color: computedIsPostLiked ? '#dc3545' : 'inherit' }"></i>
+          </div>
           <div class="views-text">{{ notice.mtip_board_like }}</div>
         </div>
        </div>
@@ -84,12 +84,11 @@ export default {
       isLoading: true,
     };
   },
-  components : {
+  components: {
     UserComment
   },
   methods: {
-    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction', 'fetchLikedPosts']),
-    ...mapGetters('mtipBoard', ['getNotice', 'isPostLiked']),
+    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction']),
 
     async toggleLike() {
       if (!this.loginInfo) {
@@ -107,7 +106,6 @@ export default {
           mtip_board_no: this.notice.mtip_board_no,
           user_no: this.loginInfo.user_no
         });
-        await this.fetchLikedPosts(this.loginInfo.user_no);
       } catch (error) {
         console.error('Error toggling like:', error);
       }
@@ -163,21 +161,18 @@ export default {
     },
     
     getDisplayFileName(fileName) {
-  // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
-  const UUID_LENGTH = 36 + 1;
+      const UUID_LENGTH = 36 + 1;
 
-  // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
-  if (!fileName || fileName.length <= UUID_LENGTH) {
-    return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
-  }
+      if (!fileName || fileName.length <= UUID_LENGTH) {
+        return fileName;
+      }
 
-  // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
-  if (fileName.charAt(UUID_LENGTH - 1) === '_') {
-    return fileName.substring(UUID_LENGTH);
-  }
-  
-  return fileName;
-},
+      if (fileName.charAt(UUID_LENGTH - 1) === '_') {
+        return fileName.substring(UUID_LENGTH);
+      }
+      
+      return fileName;
+    },
 
     goBack() {
       this.$router.go(-1);
@@ -216,42 +211,41 @@ export default {
       return date.toLocaleString('ko-KR', options);
     },
 
-
     async downloadFile() {
-    try {
-      console.log("글쓰기 상세보기 fileName :",this.notice.mtip_board_file);
-      const fileName = encodeURIComponent(this.notice.mtip_board_file);
-      const response = await api({
-        url: `/mtip/downloadGuide/${fileName}`,
-        method: 'GET',
-        responseType: 'blob',
-      });
+      try {
+        console.log("글쓰기 상세보기 fileName :", this.notice.mtip_board_file);
+        const fileName = encodeURIComponent(this.notice.mtip_board_file);
+        const response = await api({
+          url: `/mtip/downloadGuide/${fileName}`,
+          method: 'GET',
+          responseType: 'blob',
+        });
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', this.notice.mtip_board_file); // 서버에서 받은 파일명을 그대로 사용
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error('파일 다운로드 중 오류 발생:', error);
-    this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
-    }
-  },
-  async fetchNoticeDetail(id) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', this.notice.mtip_board_file);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('파일 다운로드 중 오류 발생:', error);
+        this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
+      }
+    },
+    async fetchNoticeDetail(id) {
       this.isLoading = true;
       await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
       this.isLoading = false;
     },
-},
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
-    ...mapGetters('mtipBoard', ['getNotice']),
+    ...mapGetters('mtipBoard', ['getNotice', 'isPostLiked']),
     ...mapState('login', ['loginInfo']),
 
     notice() {
-      return this.getNotice || null; // null을 반환하여 undefined 방지
+      return this.getNotice || null;
     },
     loginInfo() {
       return this.getLoginInfo;
@@ -263,7 +257,10 @@ export default {
       return !!this.loginInfo;
     },
     mileNo() {
-      return this.$route.params.notice.mtip_board_no; // URL에서 전달받은 mile_no를 컴포넌트에서 사용
+      return this.$route.params.notice.mtip_board_no;
+    },
+    computedIsPostLiked() {
+      return this.isPostLiked(this.loginInfo.user_no, this.notice.mtip_board_no);
     },
   },
   async mounted() {
@@ -271,12 +268,10 @@ export default {
     if (noticeId) {
       await this.fetchNoticeDetail(noticeId);
     }
-    if (this.loginInfo) {
-      await this.fetchLikedPosts(this.loginInfo.user_no);
-    }
   },
 };
 </script>
+
 
 
 

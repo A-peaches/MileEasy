@@ -77,6 +77,8 @@
 
 <script>
 import api from '@/api/axios';
+import { mapActions, mapGetters } from 'vuex';
+
 export default {
   name: 'UserComment',
   props: {
@@ -91,21 +93,39 @@ export default {
   },
   data() {
     return {
-      comments: [], // 수정된 부분
+      // comments: [], // 수정된 부분
       newComment: '',
-      editingCommentId: null, // 추가된 부분
+      // editingCommentId: null, // 추가된 부분
     };
+  },
+  watch: {
+    mtip_board_no: {
+      immediate: true,
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.fetchComments();
+        }
+      }
+    }
   },
   created() { // 추가된 부분
   console.log('UserComment component created 확인해보기');
   console.log('mtip_board_no 확인 중:', this.mtip_board_no);
   console.log('loginInfo 확인 중:', this.loginInfo);
   console.log('API URL 확인 중:', process.env.VUE_APP_API_URL);
-  this.fetchComments();
+  this.$store.dispatch('mtipReply/fetchComments', this.mtip_board_no);
+  },
+  computed: {
+    ...mapGetters('mtipReply', ['getComments']),
+    comments() {
+      return this.getComments;
+    },
   },
 
-
   methods: {
+    ...mapActions('mtipReply', ['fetchComments', 'addComment', 'updateComment', 'deleteComment']),
+
+  
     //프로필 사진 불러오기
     profileImageUrl(user_no) {
       if (user_no!=null) {
@@ -127,38 +147,38 @@ export default {
       comment.editingContent = comment.mtip_reply_content;
     },
 
-    async fetchComments() { // 댓글 정보 불러오기
-      console.log('Fetching comments...');
-      try {
-        const response = await api.get(`/mtip/comments/${this.mtip_board_no}`);
-        console.log('서버에서 댓글 정보 가져오기 :', response.data); // 로그 추가
-        this.comments = response.data.map(comment => ({
-          ...comment,
-          isEditing: false,
-          editingContent: comment.mtip_reply_content
-        }));
-      } catch (error) {
-        console.error('댓글 가져오기 중 오류가 발생했습니다:', error);
-      }
-    },
-    async addComment() { // 댓글 등록하는 부분
-      if (!this.newComment.trim()) return;
-      const commentData = {
-        user_no: this.loginInfo.user_no,
-        user_name: this.loginInfo.user_name,
-        mtip_board_no: this.mtip_board_no,
-        mtip_reply_content: this.newComment.trim(),
-      };
-      console.log('commentData:',commentData);
-      try {
-        const response = await api.post('/mtip/comments', commentData); // 추가된 부분
-        this.comments.unshift(response.data); // 새로운 댓글을 맨 위에 추가
-        this.newComment = '';
-        window.location.reload(); // 페이지 새로고침
-      } catch (error) {
-        console.error('댓글 등록 중 오류가 발생했습니다:', error);
-      }
-    },
+    async fetchComments() {
+    console.log('Fetching comments...');
+    try {
+      const response = await api.get(`/mtip/comments/${this.mtip_board_no}`);
+      console.log('서버에서 댓글 정보 가져오기 :', response.data); // 로그 추가
+      this.comments = response.data.map(comment => ({
+        ...comment,
+        isEditing: false,
+        editingContent: comment.mtip_reply_content
+      }));
+    } catch (error) {
+      console.error('댓글 가져오기 중 오류가 발생했습니다:', error);
+    }
+  },
+  async addComment() {
+    if (!this.newComment.trim()) return;
+    const commentData = {
+      user_no: this.loginInfo.user_no,
+      user_name: this.loginInfo.user_name,
+      mtip_board_no: this.mtip_board_no,
+      mtip_reply_content: this.newComment.trim(),
+    };
+    console.log('commentData:', commentData);
+    try {
+      const response = await api.post('/mtip/comments', commentData);
+      this.comments.unshift(response.data);
+      this.newComment = '';
+      window.location.reload();
+    } catch (error) {
+      console.error('댓글 등록 중 오류가 발생했습니다:', error);
+    }
+  },
     // 기본 프로필 사진
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
@@ -196,14 +216,20 @@ export default {
         console.error('댓글 수정 중 오류가 발생했습니다:', error);
       }
     },
-  async deleteComment(mtip_reply_no) {
-    try {
-      await api.delete(`/mtip/deleteComment/${mtip_reply_no}`);
-      this.comments = this.comments.filter(comment => comment.mtip_reply_no !== mtip_reply_no);
-    } catch (error) {
-      console.error('댓글 삭제 중 오류가 발생했습니다:', error);
+    async deleteComment(mtip_reply_no) {
+      try {
+        await api.delete(`/mtip/deleteComment/${mtip_reply_no}`);
+        this.$store.commit('mtipReply/DELETE_COMMENT', mtip_reply_no);
+      } catch (error) {
+        console.error('댓글 삭제 중 오류가 발생했습니다:', error);
+      }
     }
-  }
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (to.params.mtip_board_no !== from.params.mtip_board_no) {
+      this.$store.dispatch('mtipReply/fetchComments', to.params.mtip_board_no);
+    }
+    next();
   },
 };
 </script>

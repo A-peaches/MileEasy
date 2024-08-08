@@ -3,6 +3,8 @@ package com.kbstar.mileEasy.dto;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+
 @NoArgsConstructor
 @ToString
 @AllArgsConstructor
@@ -23,4 +25,8 @@ public class MtipBoard {
     private boolean mtip_board_is_deleted;
     private boolean mtip_board_is_guide;
     private String mile_name;
+    private int mtip_reply_no;
+    private String mtip_reply_content;
+    private Timestamp mtip_reply_date;
+
 }
