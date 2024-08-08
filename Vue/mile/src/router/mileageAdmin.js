@@ -67,4 +67,14 @@ export default [
       ),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
+  {
+    //마일리지 목표설정 화면
+    path: '/mileageTargetView',
+    name: 'mileageTargetView',
+    component: () =>
+      import(
+        '../views/adminMileage/targetMileage/TargetMileageAdminView'
+      ),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  },
 ];
