@@ -7,7 +7,7 @@
         class="mx-auto"
       />
     </h2>
-
+  
     <!-- 카테고리 목록 -->
     <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
       <div class="category-button list-wrapper" style="width: 10vw">
@@ -27,32 +27,31 @@
         </div>
       </div>
     </div>
-
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="lg2" style="padding: 3em">총 {{ countList }}건</div>
+  </div>
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="lg2" style="padding: 3em">총 {{ countList }}건</div>
+    <div
+      class="input-search input-base"
+      style="margin-right: 2em; width: 17vw; height: 6vh"
+    >
       <div
-        class="input-search input-base"
-        style="margin-right: 2em; width: 17vw; height: 6vh"
+        class="d-flex justify-content-between align-items-center"
+        style="font-size: 14pt; height: 100%; margin-left: 1em"
       >
-        <div
-          class="d-flex justify-content-between align-items-center"
-          style="font-size: 14pt; height: 100%; margin-left: 1em"
-        >
-          <input
-            type="text"
-            v-model="searchQuery"
-            @input="onSearch"
-            placeholder="검색어를 입력하세요"
-            class="w-100 h-100 d-inline-block"
-            style="text-align: left"
-          />
-          <button>
-            <i
-              class="bi bi-search mr-2"
-              style="font-size: 25px; color: #4b4a4a"
-            ></i>
-          </button>
-        </div>
+        <input
+          type="text"
+          v-model="searchQuery"
+          @input="onSearch"
+          placeholder="검색어를 입력하세요"
+          class="w-100 h-100 d-inline-block"
+          style="text-align: left"
+        />
+        <button>
+          <i
+            class="bi bi-search mr-2"
+            style="font-size: 25px; color: #4b4a4a"
+          ></i>
+        </button>
       </div>
     </div>
 
@@ -348,11 +347,6 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  height: 90vh;
-  margin-top: 5%;
-}
 
 /* 드롭다운 메뉴 스타일 */
 .QnA {

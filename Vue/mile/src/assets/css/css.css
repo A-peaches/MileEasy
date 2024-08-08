@@ -377,8 +377,8 @@ body.swal2-shown > [aria-hidden="true"] {
 .page-back {
   width: 70%;
   height: 140%;
-  margin-top: 5%;
-  padding-bottom: 5%;
+  margin-top: 5% !important;
+  padding-bottom: 5% !important;
 }
 
 .cards {
