@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbstar.mileEasy.mapper.GroupDao">
+
+    <select id="getActiveMileages" resultType="map">
+        SELECT mile_no, mile_name FROM mileage WHERE isdelete = 0
+    </select>
+
+    <select id="getUserMileages" resultType="map" parameterType="map">
+        SELECT
+        u.user_no,
+        u.user_name,
+        <foreach collection="mileages" item="mileage" separator=",">
+            COALESCE(SUM(CASE WHEN m.mile_no = #{mileage.mile_no} THEN m.mile_score ELSE 0 END), 0) AS mil_no_#{mileage.mile_no}
+        </foreach>,
+        COALESCE(SUM(CASE WHEN m.mile_no IN
+        <foreach collection="mileages" item="mileage" open="(" separator="," close=")">
+            #{mileage.mile_no}
+        </foreach>
+        THEN m.mile_score ELSE 0 END), 0) AS total_sum,
+        RANK() OVER (ORDER BY total_sum DESC) AS rank
+        FROM
+        user u
+        LEFT JOIN (
+        SELECT user_no, mile_no, mile_score, mile_date
+        FROM (
+        SELECT user_no, mile_no, mile_score, mile_date,
+        ROW_NUMBER() OVER (PARTITION BY user_no, mile_no ORDER BY mile_date DESC) as rn
+        FROM (
+        SELECT user_no, mile_no, mile_score, mile_history_date as mile_date
+        FROM mile_history
+        WHERE mile_history_date <= #{date}
+        UNION ALL
+        SELECT user_no, mile_no, mile_score, mile_score_date as mile_date
+        FROM mile_score
+        WHERE mile_score_date <= #{date}
+        ) subquery
+        ) ranked
+        WHERE ranked.rn = 1
+        ) m ON u.user_no = m.user_no
+        GROUP BY
+        u.user_no, u.user_name
+    </select>
+
+</mapper>

@@ -36,7 +36,9 @@
             u.user_is_delete,
             u.user_is_manager,
             u.user_is_admin,
-            u.mile_no
+            u.mile_no,
+            u.group_no,
+            u.is_hr
         FROM
             user u
                 JOIN department d ON u.dp_no = d.dp_no

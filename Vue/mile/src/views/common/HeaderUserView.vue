@@ -23,14 +23,17 @@
             >
           </div>
           <div class="nav-item">
+            <a class="nav-link hover" href="/group">그룹 관리</a>
+          </div>
+          <div class="nav-item">
             <a class="nav-link hover" href="/M-Tip">M-Tip</a>
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
           </div>
-          <div class="nav-item">
+          <!-- <div class="nav-item">
             <a class="nav-link hover" href="/qnaListView">Q&A</a>
-          </div>
+          </div> -->
           <div class="nav-item">
             <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
           </div>
