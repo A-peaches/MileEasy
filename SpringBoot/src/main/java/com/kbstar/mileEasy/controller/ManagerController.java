@@ -287,8 +287,6 @@ public class ManagerController {
     public ResponseEntity<Map<String, List<MileScore>>> mileageCount(
             @RequestParam("mile_no") String mile_no) {
 
-        System.out.println("여기는 마일리지");
-
         Map<String, List<MileScore>> mileageCounts = managerService.mileageCount(mile_no);
         return ResponseEntity.ok(mileageCounts);
     }
@@ -297,8 +295,6 @@ public class ManagerController {
     @PostMapping("/visitCount")
     public ResponseEntity<Map<String, List<PageCount>>> visitCount(
             @RequestParam("mile_no") String mile_no) {
-
-
 
         Map<String, List<PageCount>> visitCounts = managerService.visitCount(mile_no);
         return ResponseEntity.ok(visitCounts);

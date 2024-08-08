@@ -81,7 +81,7 @@ public class ManagerService {
         int lastYear = currentYear - 1;
 
         for (PageCount count : visitCounts) {
-            String[] yearMonth = count.getMonth().split("-");
+            String[] yearMonth = count.getYear_and_month().split("-");
             int year = Integer.parseInt(yearMonth[0]);
 
             if (year == currentYear) {
@@ -108,7 +108,7 @@ public class ManagerService {
         int lastYear = currentYear - 1;
 
         for (MileScore points : mileageCounts) {
-            String[] yearMonth = points.getMonth().split("-");
+            String[] yearMonth = points.getYear_and_month().split("-");
             int year = Integer.parseInt(yearMonth[0]);
 
             if (year == currentYear) {

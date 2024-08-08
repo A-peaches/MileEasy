@@ -66,10 +66,5 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  height: 100%;
-  /* height: 800px; */
-  margin-top: 5%;
-}
+
 </style>
