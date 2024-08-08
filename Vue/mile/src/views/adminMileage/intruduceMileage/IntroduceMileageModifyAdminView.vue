@@ -144,12 +144,6 @@ export default {
 </script>
 
 <style scope>
-.page-back {
-  width: 70%;
-  height: 100%;
-  /* height: 800px; */
-  margin-top: 5%;
-}
 
 /* 기본 버튼 스타일 */
 .custom-radio-btn {

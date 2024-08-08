@@ -26,6 +26,12 @@ public class ManagerService {
     public List<MileIntroduce> getMileDetail(String mile_no) {
         return managerDao.selectMileDetail(mile_no);
     }
+    public List<Target> getTargets(int mile_no) {
+        return managerDao.selectMileTarget(mile_no);
+    }
+    public int addTarget(String mile_no, String user_no, String start_date, String end_date, int target_mileage, boolean is_together, boolean is_manager_plan){
+        return managerDao.insertTarget(Integer.parseInt(mile_no), user_no, start_date, end_date, target_mileage, is_together, is_manager_plan);
+    }
 
     public int addMileage(String mile_no, String mile_title, String mile_content, String mile_route) {
         return managerDao.insertMile(Integer.parseInt(mile_no), mile_title, mile_content, mile_route);
@@ -75,7 +81,7 @@ public class ManagerService {
         int lastYear = currentYear - 1;
 
         for (PageCount count : visitCounts) {
-            String[] yearMonth = count.getMonth().split("-");
+            String[] yearMonth = count.getYear_and_month().split("-");
             int year = Integer.parseInt(yearMonth[0]);
 
             if (year == currentYear) {
@@ -102,7 +108,7 @@ public class ManagerService {
         int lastYear = currentYear - 1;
 
         for (MileScore points : mileageCounts) {
-            String[] yearMonth = points.getMonth().split("-");
+            String[] yearMonth = points.getYear_and_month().split("-");
             int year = Integer.parseInt(yearMonth[0]);
 
             if (year == currentYear) {

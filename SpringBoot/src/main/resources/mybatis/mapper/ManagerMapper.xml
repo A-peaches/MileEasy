@@ -10,6 +10,8 @@
         FROM
             user u
                 JOIN
+
+
             department d ON u.dp_no = d.dp_no
                 LEFT JOIN
             mileage m ON u.mile_no = m.mile_no
@@ -20,6 +22,77 @@
     <select id="selectMileDetail" resultType="com.kbstar.mileEasy.dto.MileIntroduce">
         SELECT * FROM mile_introduce WHERE mile_no = #{mile_no};
     </select>
+
+    <select id="selectMileTarget" resultType="com.kbstar.mileEasy.dto.Target">
+        <![CDATA[
+        WITH RECURSIVE date_range AS (
+        SELECT MIN(start_date) AS date FROM target WHERE mile_no = 1
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM date_range
+        WHERE date < CURDATE()
+        ),
+        user_mileage AS (
+        SELECT
+        t.target_no,
+        t.start_date,
+        t.end_date,
+        t.target_mileage,
+        ut.user_no,
+        COALESCE(
+        (SELECT SUM(mile_score_point)
+        FROM mile_score ms
+        WHERE ms.user_no = ut.user_no
+        AND ms.mile_no = t.mile_no
+        AND ms.mile_score_date BETWEEN t.start_date AND LEAST(t.end_date, CURDATE())),
+        0
+        ) +
+        COALESCE(
+        (SELECT SUM(mile_history_point)
+        FROM mile_history mh
+        WHERE mh.user_no = ut.user_no
+        AND mh.mile_no = t.mile_no
+        AND mh.mile_history_date BETWEEN t.start_date AND LEAST(t.end_date, CURDATE())),
+        0
+        ) AS total_mileage
+        FROM target t
+        LEFT JOIN user_target ut ON t.target_no = ut.target_no
+        WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
+        ),
+        target_summary AS (
+        SELECT
+        um.target_no,
+        um.start_date,
+        um.end_date,
+        um.target_mileage,
+        COUNT(DISTINCT um.user_no) AS total_participants,
+        COUNT(DISTINCT CASE WHEN um.total_mileage >= um.target_mileage THEN um.user_no END) AS achieved_participants
+        FROM user_mileage um
+        GROUP BY um.target_no, um.start_date, um.end_date, um.target_mileage
+        )
+        SELECT
+        t.target_no,
+        t.start_date,
+        t.end_date,
+        t.target_mileage,
+        total_participants,
+        achieved_participants,
+        CASE
+        WHEN t.start_date > CURDATE() THEN 0  -- 미래의 목표
+        WHEN ts.total_participants > 0 THEN
+        ROUND((ts.achieved_participants * 100.0 / ts.total_participants), 2)
+        ELSE 0
+        END AS achievement_rate
+        FROM target t
+        LEFT JOIN target_summary ts ON t.target_no = ts.target_no
+        WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
+        ORDER BY t.start_date DESC, t.target_no;
+        ]]>
+    </select>
+
+    <insert id="insertTarget">
+        insert into target (mile_no, user_no, start_date, end_date, target_mileage, is_together, is_manager_plan) values (#{mile_no},#{user_no},#{start_date},#{end_date},#{target_mileage},#{is_together},#{is_manager_plan});
+    </insert>
 
     <insert id="insertMile">
         insert into mile_introduce (mile_no, mile_title, mile_content, mile_route) values (#{mile_no}, #{mile_title}, #{mile_content}, #{mile_route});
@@ -109,47 +182,58 @@
     </select>
 
     <select id="visitCount" resultType="com.kbstar.mileEasy.beans.PageCount">
+        <![CDATA[
+        WITH RECURSIVE months AS (
+        SELECT DATE_FORMAT(DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR), '%Y-%m') AS year_and_month
+        UNION ALL
+        SELECT DATE_FORMAT(DATE_ADD(CONCAT(year_and_month, '-01'), INTERVAL 1 MONTH), '%Y-%m')
+        FROM months
+        WHERE DATE_ADD(CONCAT(year_and_month, '-01'), INTERVAL 1 MONTH) <= CURDATE()
+        )
+
         SELECT
-            DATE_FORMAT(hit_date, '%Y-%m') AS month,
-    COALESCE(SUM(hit_count), 0) AS visits
+        m.year_and_month,
+        COALESCE(SUM(h.hit_count), 0) AS visits
         FROM
-            hit_mile
+        months m
+        LEFT JOIN (
+        SELECT
+        DATE_FORMAT(hit_date, '%Y-%m') AS year_and_month,
+        hit_count
+        FROM
+        hit_mile
         WHERE
-            mile_no = #{mile_no}
-          AND YEAR(hit_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
+        mile_no = #{mile_no}
+        AND hit_date >= DATE_FORMAT(DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR), '%Y-%m-%d')
+        ) h ON m.year_and_month = h.year_and_month
         GROUP BY
-            DATE_FORMAT(hit_date, '%Y-%m')
+        m.year_and_month
         ORDER BY
-            month;
+        m.year_and_month;
+    ]]>
     </select>
 
 
     <select id="mileageCount" resultType="com.kbstar.mileEasy.dto.MileScore">
-         <![CDATA[
         SELECT
-            CASE
-                WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN '0000-00'
-                ELSE DATE_FORMAT(date, '%Y-%m')
-                END AS month,
-            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_score_point END), 0) AS score_points,
-            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_history_point END), 0) AS history_points,
-            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_score_point END), 0) +
-            COALESCE(SUM(CASE WHEN DATE_FORMAT(date, '%Y-%m') IS NULL THEN 0 ELSE mile_history_point END), 0) AS total_points
+            DATE_FORMAT(date, '%Y-%m') AS year_and_month,
+            COALESCE(SUM(mile_score_point), 0) AS total_score_points,
+            COALESCE(SUM(mile_history_point), 0) AS total_history_points,
+            COALESCE(SUM(mile_score_point), 0) + COALESCE(SUM(mile_history_point), 0) AS total_points
         FROM (
-            SELECT mile_no, mile_score_point, mile_score_date AS date, NULL AS mile_history_point
-            FROM mile_score
-            WHERE mile_no = #{mile_no}
-            AND YEAR(mile_score_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
+                 SELECT mile_score_date AS date, mile_score_point, NULL AS mile_history_point
+                 FROM mile_score
+                 WHERE mile_no = #{mile_no}
+                   AND YEAR(mile_score_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
 
-            UNION ALL
+                 UNION ALL
 
-            SELECT mile_no, NULL AS mile_score_point, mile_history_point, mile_history_date AS date
-            FROM mile_history
-            WHERE mile_no = #{mile_no}
-            AND YEAR(mile_history_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
-            ) AS combined
-        GROUP BY month
-        ORDER BY month
-        ]]>
+                 SELECT mile_history_date AS date, NULL AS mile_score_point, mile_history_point
+                 FROM mile_history
+                 WHERE mile_no = #{mile_no}
+                   AND YEAR(mile_history_date) IN (YEAR(CURDATE()), YEAR(CURDATE()) - 1)
+             ) AS combined
+        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        ORDER BY DATE_FORMAT(date, '%Y-%m');
     </select>
 </mapper>

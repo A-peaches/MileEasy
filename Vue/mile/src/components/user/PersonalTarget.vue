@@ -11,7 +11,7 @@
       <div class="form-check p-3 lg2">
         <input class="form-check-input" type="radio" name="targetList" id="notFinished" value="not-finished" v-model="sortBy" >
         <label class="form-check-label" for="notFinished">
-          미완료
+          진행중
         </label>
       </div>
     </div>

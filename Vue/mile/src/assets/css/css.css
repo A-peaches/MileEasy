@@ -374,6 +374,13 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 /* 공통 스타일 */
+.page-back {
+  width: 70%;
+  height: 140%;
+  margin-top: 5%;
+  padding-bottom: 5%;
+}
+
 .cards {
   background-color: #ffffff;
   border-radius: 12px;
@@ -395,6 +402,12 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 .card-yellow {
   background-color: #ffe06d;
+}
+.card-green {
+  background-color: #e4fcef;
+}
+.card-red {
+  background-color: #feeeef;
 }
 
 /* 대표 색상 */
