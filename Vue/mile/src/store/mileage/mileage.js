@@ -26,6 +26,7 @@ const actions = {
         '/mileage/getMileage'
       );
       commit('setArrayMileage', response.data);
+      console.log('마일리지즐겨찾기에 그 점수 ' ,response.data);
     } catch (error) {
       console.error('Error getting all mileage data:', error);
     }

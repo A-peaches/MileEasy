@@ -22,8 +22,10 @@
               >문서모아</a
             >
           </div>
-          <div class="nav-item">
-            <a class="nav-link hover" href="/group">그룹 관리</a>
+          <div v-if="loginInfo.is_hr == true">
+            <div class="nav-item">
+              <a class="nav-link hover" href="/group">그룹 관리</a>
+            </div>
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/M-Tip">M-Tip</a>
