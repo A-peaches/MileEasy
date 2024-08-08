@@ -143,6 +143,7 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
+    
   },
   created() {
     this.fetchMileages();

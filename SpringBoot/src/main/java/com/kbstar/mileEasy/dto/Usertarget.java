@@ -1,5 +1,6 @@
 package com.kbstar.mileEasy.dto;
 
+
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -9,14 +10,13 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Target {
+public class Usertarget {
+    private int userTargetNo;
+    private String userNo;
     private int targetNo;
     private int mileNo;
-    private String userNo;
     private Timestamp startDate;
     private Timestamp endDate;
-    private int targetMileage;
+    private Integer targetMileage;
     private boolean isTogether;
-    private boolean isManagerPlan;
-
 }
