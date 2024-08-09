@@ -76,23 +76,23 @@
                 padding-right: 5%;
               "
             >
-              <div class="progress-bar mb-4">
-                <div
-                  class="progress"
-                  :style="{
-                    height: getProgressHeight(card.user_point, card.all_point),
-                  }"
-                ></div>
-                <div class="marker top">
-                  <i class="bi bi-caret-right-fill"></i>&nbsp;상위 20%
-                </div>
-                <div class="marker middle">
-                  <i class="bi bi-caret-right-fill"></i>&nbsp;상위 60%
-                </div>
-                <div class="marker bottom">
-                  <i class="bi bi-caret-right-fill"></i>&nbsp;상위 100%
-                </div>
-              </div>
+            <div class="progress-bar mb-4">
+  <div
+    class="progress"
+    :style="{
+      height: calculateProgressHeight(card.all_point)+'%'
+    }"
+  ></div>
+  <div class="marker top">
+    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 20%
+  </div>
+  <div class="marker middle">
+    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 60%
+  </div>
+  <div class="marker bottom">
+    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 100%
+  </div>
+</div>
               <div class="below-text mb-2 ml-">
                 &lt; 총 평균 대비 상위 그래프 &gt;
               </div>
@@ -120,12 +120,13 @@ export default {
   methods: {
     ...mapActions("mileScore", ["getMyMiles"]),
 
-    getProgressHeight(current, total) {
-      if (total === "-") total = 1;
-      const percentage = (current / total) * 100;
-      return `${percentage}%`;
-    },
-
+    calculateProgressHeight(allPoint) {
+  // all_point가 0이면 프로그레스 바를 표시하지 않음
+  if (allPoint === 0) return 0.1;
+  
+  // all_point가 낮을수록 (상위권일수록) 높이가 높아야 함
+  return Math.max(0, Math.min(100, 100 - allPoint));
+},
     setTransitionDelay(el, index) {
       el.style.setProperty("--index", index);
     },
