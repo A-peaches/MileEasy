@@ -82,7 +82,7 @@
               </div>
               <div v-else class="notice-num">{{ notice.display_num }}</div>
               <div class="notice-mile">
-                {{ notice.mile_name ? notice.mile_name + " 마일리지" : "기타" }}
+                {{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}
               </div>
               <div class="notice-title">{{ notice.notice_board_title }}</div>
               <pre class="notice-date">{{
