@@ -1,7 +1,7 @@
 <template>
   <div class="cards" style="margin-top:20px; padding: 20px;">
     <div class="m-tip-header">
-      <h2 class="m-tip-title">M-Tip</h2>
+      <h2 class="m-tip-title fw-bold">M-Tip</h2>
       <a href="/M_TipListView" class="view-all">전체보기</a>
     </div>
     <div class="notice-list">
@@ -12,7 +12,7 @@
             {{ truncateTitle(latestNotices[category].mtip_board_title) }}
             <span class="title-icon">new</span>
           </span>
-          <span class="notice-date" style="margin-left: 50px; font-size: 14px;font-family: 'KB_S5', sans-serif; margin-left: auto; /* 오른쪽으로 밀어냄 */
+          <span class="notice-date" style="margin-left: 50px; font-size: 14px;font-family: 'KB_C2', sans-serif; margin-left: auto; /* 오른쪽으로 밀어냄 */
   margin-right: 0; /* 오른쪽 여백 제거 */">{{ formatDate(latestNotices[category].mtip_board_date) }}</span>
         </template>
         <span v-else class="no-notice">게시글이 없습니다.</span>
@@ -137,12 +137,12 @@ export default {
 }
 .m-tip-title {
   font-size: 24px;
-  font-family: 'KB_S3', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   margin: 0;
 }
 .view-all {
   font-size: 18px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   color: #edbb03;
   text-decoration: underline;
   cursor: pointer;
@@ -162,7 +162,7 @@ export default {
   color: #e98c4e;
   text-align: left;
   font-size: 16px;
-  font-family: 'KB_S3', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   margin: 0;
 }
 .notice-title {
@@ -175,12 +175,12 @@ export default {
   font-size: 20px;
   display: flex;
   align-items: center;
-  font-family: 'KB_S4', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 .notice-date {
   margin-left: 50px;
   font-size: 14px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   margin-left: auto; /* 오른쪽으로 밀어냄 */
   margin-right: 0; /* 오른쪽 여백 제거 */
 }

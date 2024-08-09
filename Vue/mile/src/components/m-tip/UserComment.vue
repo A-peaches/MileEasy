@@ -3,7 +3,7 @@
   <div class="comments-section">
     <div class="comments-header">
       <i class="bi bi-chat-right-text" style="font-size: 20px; margin-right: 10px;"></i>
-      <h3 style="font-size: 17px; font-family: 'KB_S5', sans-serif; text-align: left;margin: 0;">댓글 ({{ comments.length }})</h3>
+      <h3 style="font-size: 17px; font-family: 'KB_C2', sans-serif; text-align: left;margin: 0;">댓글 ({{ comments.length }})</h3>
     </div>
   <div class="comment-input" style=" width: 100%;">
     <textarea 
@@ -12,7 +12,7 @@
   v-model="newComment"
   @keydown.enter.prevent="addComment" 
   style="
-    font-family: 'KB_S5', sans-serif; 
+    font-family: 'KB_C2', sans-serif; 
     font-size: 18px; 
     width: 100%; 
     height: 80px; 
@@ -24,7 +24,7 @@
     <button 
     class="btn-yellow btn-yellow:hover"
       @click="addComment" 
-      style="font-family: 'KB_S4', sans-serif; font-size: 18px; width: 80px; height: 80px;color: #4b4a4a;"
+      style="font-family: 'KB_C2', sans-serif; font-size: 18px; width: 80px; height: 80px;color: #4b4a4a;"
     >등록</button>
   </div>
     <div v-if="comments && comments.length">
@@ -38,8 +38,8 @@
             />
         <div class="comment-content">
           <div class="comment-meta">
-            <span class="comment-user" style="font-family: 'KB_S5', sans-serif; font-size: 18px; margin-right: 15px;">{{ comment.user_name }}</span>
-            <span class="comment-date" style="font-family: 'KB_S5', sans-serif; font-size: 14px;">{{ formatDate(comment.mtip_reply_date) }}</span>
+            <span class="comment-user" style="font-family: 'KB_C2', sans-serif; font-size: 18px; margin-right: 15px;">{{ comment.user_name }}</span>
+            <span class="comment-date" style="font-family: 'KB_C2', sans-serif; font-size: 14px;">{{ formatDate(comment.mtip_reply_date) }}</span>
             <div class="comment-actions" style="margin-left: 50px;">
               <div v-if="comment.user_no === loginInfo.user_no">
         <button v-if="!comment.isEditing" class="edit-button" @click="startEditing(comment)" style="color:#714319;">수정</button>
@@ -54,7 +54,7 @@
             v-model="comment.editingContent"
             class="input-base"
             style="
-              font-family: 'KB_S5', sans-serif;
+              font-family: 'KB_C2', sans-serif;
               min-height: 30px;
               height: auto;
               font-size: 18px;
@@ -65,11 +65,11 @@
               text-align: left;
               box-sizing: border-box;"></textarea>
         </div>
-         <div v-else class="comment-text" style="font-family: 'KB_S5', sans-serif; font-size: 18px; margin-right: 50%; text-align:left;">{{ comment.mtip_reply_content }}</div>
+         <div v-else class="comment-text" style="font-family: 'KB_C2', sans-serif; font-size: 18px; margin-right: 50%; text-align:left;">{{ comment.mtip_reply_content }}</div>
         </div>   
       </div>
     </div>
-    <div v-else style="font-family: 'KB_S5', sans-serif; font-size: 15px; margin-top: 100px;">
+    <div v-else style="font-family: 'KB_C2', sans-serif; font-size: 15px; margin-top: 100px;">
       해당 게시글의 댓글이 없습니다.
     </div>
   </div>

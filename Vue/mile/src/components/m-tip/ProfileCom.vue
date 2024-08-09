@@ -92,13 +92,13 @@ export default {
   margin-top: 20px;
   text-align: start;
   font-size: 14pt;
-  font-family: "KB_C3";
+  font-family: "KB_C2";
   font-weight: 600;
 }
 
 .right-arrow {
   align-items: flex-end;
-  font-family: 'KB_S4';
+  font-family: 'KB_C2';
 }
 
 .btn-text {
