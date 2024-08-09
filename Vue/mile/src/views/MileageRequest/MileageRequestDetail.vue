@@ -12,13 +12,25 @@
     <div style="padding: 0 5%">
       <div>
         <div style="text-align: right" class="my-2">
-          <span v-if="currentRequest.request_status === 0" @click="recive()">
+          <span
+            v-if="currentRequest.request_status === 0"
+            @click="recive()"
+            style="cursor: pointer"
+          >
             접수완료
           </span>
-          <span v-if="currentRequest.request_status === 1" @click="accept()">
+          <span
+            v-if="currentRequest.request_status === 1"
+            @click="accept()"
+            style="cursor: pointer"
+          >
             승인완료 </span
           >&nbsp;
-          <span v-if="currentRequest.request_status === 1" @click="reject()">
+          <span
+            v-if="currentRequest.request_status === 1"
+            @click="reject()"
+            style="cursor: pointer"
+          >
             승인거절
           </span>
         </div>
@@ -469,7 +481,6 @@ export default {
 </script>
 
 <style scoped>
-
 .form-container {
   display: flex;
   flex-direction: column;

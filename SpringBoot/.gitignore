@@ -20,6 +20,8 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+application.properties
+api.properties
 .idea
 /.idea/*
 !/.idea/inspectionProfiles
