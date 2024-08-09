@@ -376,7 +376,7 @@ body.swal2-shown > [aria-hidden="true"] {
 /* 공통 스타일 */
 .page-back {
   width: 70%;
-  height: 140%;
+  height: 100%;
   margin-top: 5% !important;
   padding-bottom: 5% !important;
 }

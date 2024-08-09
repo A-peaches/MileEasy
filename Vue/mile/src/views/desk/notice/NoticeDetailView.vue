@@ -7,12 +7,12 @@
             <span class="arrow">❮</span> 이전
           </button>
         </div>
-        <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
-          <div class="actions">
-            <button class="edit-button" @click="goToModifyView">수정</button>
-            <button class="delete-button" @click="deleteNotice">삭제</button>
-          </div>
-        </div>
+        <div v-if="isLoggedIn && isChecked && (loginInfo.user_is_admin || loginInfo.user_is_manager) && loginInfo.user_no === notice.user_no">
+  <div class="actions">
+    <button class="edit-button" @click="goToModifyView">수정</button>
+    <button class="delete-button" @click="deleteNotice">삭제</button>
+  </div>
+</div>
       </div>
       <div class="content">
         <span v-if="isNew(notice.notice_board_date)" class="new-label">NEW</span>
@@ -63,12 +63,10 @@ export default {
 
     async deleteNotice() {
       Swal.fire({
-        title: '정말로 삭제하시겠습니까?',
-        text: '다시 되돌릴 수 없습니다.',
+        title: '경고',
+        text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,

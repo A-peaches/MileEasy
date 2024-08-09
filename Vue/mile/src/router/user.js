@@ -54,4 +54,10 @@ export default [
     component: () => import('../views/user/documents/BadgeStatusView.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
+  {
+    path: '/group',
+    name: 'groupManagement',
+    component: () => import('../views/user/group/GroupManagement.vue'),
+    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
+  }
 ];
