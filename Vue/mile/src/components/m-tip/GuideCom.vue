@@ -1,8 +1,8 @@
 <template>
   <div key="profile" class="cards" style="height: 105%; padding-left:30px; margin-top:20px;">
     <div class="guide-container">
-      <div style="font-size: 24px; font-family: 'KB_S3', sans-serif; margin-right: 10px; text-align: left;">M-Tip 가이드</div> 
-      <div v-if="notices.length === 0" style="font-family: 'KB_S5', sans-serif; color: #4b4a4a; margin-top: 20px;">
+      <div class="fw-bold" style="font-size: 24px; font-family: 'KB_C2', sans-serif; margin-right: 10px; text-align: left;">M-Tip 가이드</div> 
+      <div v-if="notices.length === 0" style="font-family: 'KB_C2', sans-serif; color: #4b4a4a; margin-top: 20px;">
         등재된 게시글이 없습니다.
       </div>
       <div v-else class="notice-item" v-for="notice in notices" :key="notice?.mtip_guide_no">
@@ -12,7 +12,7 @@
             <div v-if="notice.mtip_guide_file" class="file-download-wrapper">
               <a @click.prevent="downloadFile(notice)"
                  href="#"
-                 class="file-download-link" style="color: #ffca05; margin-right: 2px;font-family: 'KB_S5', sans-serif; font-size: 17px;"
+                 class="file-download-link" style="color: #ffca05; margin-right: 2px;font-family: 'KB_C2', sans-serif; font-size: 17px;"
               >
                 상세보기
               </a>
@@ -126,7 +126,7 @@
 .notice-content {
   flex-grow: 1;
   font-size: 20px;
-  font-family: 'KB_S4', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 
