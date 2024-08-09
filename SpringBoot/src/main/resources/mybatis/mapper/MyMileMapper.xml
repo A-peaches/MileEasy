@@ -2,21 +2,47 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kbstar.mileEasy.mapper.MyMileDao">
     <select id="getMyMiles" resultType="com.kbstar.mileEasy.beans.MyMiles">
+        WITH user_scores AS (
         SELECT
-            m.mile_no,
-            m.mile_name,
-            SUM(CASE WHEN ms.user_no = #{userNo} THEN ms.mile_score_point ELSE 0 END) AS user_point,
-            m.mile_max,
-            SUM(ms.mile_score_point) AS all_point,
-            MAX(ms.mile_score_date) AS mile_date, -- 가장 최근 날짜를 가져옴
-            m.mile_is_branch
+        user_no,
+        mile_no,
+        SUM(mile_score_point) AS user_point,
+        MAX(mile_score_date) AS mile_date
         FROM
-            mileage m
-                LEFT JOIN mile_score ms ON ms.mile_no = m.mile_no
-        WHERE
-            m.mile_is_delete = 0
+        mile_score
         GROUP BY
-            m.mile_no, m.mile_name, m.mile_max, m.mile_is_branch;
+        user_no, mile_no
+        ),
+        ranked_scores AS (
+        SELECT
+        mile_no,
+        user_no,
+        user_point,
+        mile_date,
+        RANK() OVER (PARTITION BY mile_no ORDER BY user_point DESC) AS user_rank,
+        COUNT(*) OVER (PARTITION BY mile_no) AS total_users
+        FROM
+        user_scores
+        )
+        SELECT
+        m.mile_no,
+        m.mile_name,
+        COALESCE(rs.user_point, 0) AS user_point,
+        m.mile_max,
+        CASE
+        WHEN rs.user_rank IS NOT NULL AND rs.total_users > 0
+        THEN ROUND(CAST(rs.user_rank AS FLOAT) / rs.total_users * 100, 2)
+        ELSE 0
+        END AS all_point,
+        rs.mile_date,
+        m.mile_is_branch
+        FROM
+        mileage m
+        LEFT JOIN ranked_scores rs ON m.mile_no = rs.mile_no AND rs.user_no =  #{userNo}
+        WHERE
+        m.mile_is_delete = 0
+        ORDER BY
+        m.mile_no;
     </select>
 
     <select id="getMileStatus" resultType="com.kbstar.mileEasy.beans.MileStatus">
@@ -35,19 +61,29 @@
                 LEFT JOIN
             (SELECT mile_no, mile_score_name, SUM(mile_score_point) AS user_point, MAX(mile_score_date) AS latest_score_date
              FROM mile_score
-             WHERE user_no = #{userNo}
+             WHERE user_no = #{userNo} AND (mile_no, mile_score_date) IN (
+                 SELECT mile_no, MAX(mile_score_date)
+                 FROM mile_score
+                 WHERE user_no = #{userNo}
+                 GROUP BY mile_no, mile_score_name
+             )
              GROUP BY mile_no, mile_score_name) ms
             ON md.mile_no = ms.mile_no AND md.mile_score_name = ms.mile_score_name
                 LEFT JOIN
-            (SELECT mile_no, mile_history_name, MAX(mile_history_point) AS prev_point, MAX(mile_history_date) AS latest_history_date
+            (SELECT mile_no, mile_history_name, SUM(mile_history_point) AS prev_point, MAX(mile_history_date) AS latest_history_date
              FROM mile_history
-             WHERE mile_no = #{mileNo}
+             WHERE user_no = #{userNo} AND (mile_no, mile_history_date) IN (
+                 SELECT mile_no, MAX(mile_history_date)
+                 FROM mile_history
+                 WHERE user_no = #{userNo}
+                 GROUP BY mile_no, mile_history_name
+             )
              GROUP BY mile_no, mile_history_name) mh
             ON md.mile_no = mh.mile_no AND md.mile_score_name = mh.mile_history_name
         WHERE
             m.mile_no = #{mileNo}
         GROUP BY
-            md.mile_score_name, m.mile_name, ms.user_point, mh.prev_point, ms.latest_score_date, mh.latest_history_date,md.job_name;
+            md.mile_score_name, m.mile_name, ms.user_point, mh.prev_point, ms.latest_score_date, mh.latest_history_date, md.job_name;
 
     </select>
 
