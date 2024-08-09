@@ -39,7 +39,7 @@
               </span>
             </span>
           </router-link>
-          <div v-else class="notice-item" :key="currentIndex">
+          <div v-else class="notice-item" :key="currentNotice.notice_board_no">
             공지사항이 없습니다.
           </div>
         </transition>

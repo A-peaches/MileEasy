@@ -17,12 +17,6 @@ public interface NoticeDao {
     /* 게시글 글작성 */
 
 
-
-
-
-
-
-
     @Select("SELECT n.notice_board_no, n.user_no, n.user_name, n.notice_board_title, n.notice_board_content, n.notice_board_file, n.notice_board_date, n.notice_board_hit,n.mile_no, m.mile_name " +
             "FROM notice n " +
             "LEFT JOIN mileage m ON n.mile_no = m.mile_no " +
