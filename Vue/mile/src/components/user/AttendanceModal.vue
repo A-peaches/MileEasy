@@ -143,9 +143,9 @@ beforeUnmount() {
   height: 50px;
   width: 50px;
   background-size: 38px 33px;
-  background-color: white;
+  background-color: #F9F9F9;
   background-repeat: no-repeat;
-  color: white;
+  color: #F9F9F9;
   background-position: 5px 9px; /* 이미지를 오른쪽으로 5px 이동 */
 }
 

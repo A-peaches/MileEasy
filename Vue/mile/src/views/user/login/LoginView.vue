@@ -120,7 +120,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import url('../../../assets/css/css.css');
 
 .background-video-wrapper {
