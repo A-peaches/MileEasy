@@ -3,6 +3,7 @@ package com.kbstar.mileEasy.dto;
 
 import lombok.*;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @NoArgsConstructor
@@ -11,12 +12,12 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 public class Usertarget {
-    private int userTargetNo;
-    private String userNo;
-    private int targetNo;
-    private int mileNo;
-    private Timestamp startDate;
-    private Timestamp endDate;
-    private Integer targetMileage;
-    private boolean isTogether;
+    private int user_target_no;
+    private String user_no;
+    private int target_no;
+    private int mile_no;
+    private Date start_date;
+    private Date end_date;
+    private Integer target_mileage;
+    private boolean is_together;
 }

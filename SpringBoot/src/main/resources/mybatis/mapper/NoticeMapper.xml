@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbstar.mileEasy.mapper.NoticeDao">
+
+    <select id="getFooterNotice" resultType="com.kbstar.mileEasy.dto.Notice">
+        select * from notice where notice_board_is_delete = 0 order by notice_board_date DESC LIMIT 5 ;
+    </select>
+
+</mapper>

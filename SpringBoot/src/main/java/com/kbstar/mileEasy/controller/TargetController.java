@@ -5,10 +5,9 @@ import com.kbstar.mileEasy.dto.Target;
 import com.kbstar.mileEasy.service.target.TargetService;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/target")
@@ -17,8 +16,17 @@ public class TargetController {
         @Autowired
         TargetService targetService;
 
+        //개인형 목표 추가하기
         @PostMapping("/create")
         public void createTarget(@RequestBody Target target) {
+            System.out.print("target created 메소드 도착 ! ");
             targetService.addTarget(target);
+            System.out.print("target:"+target);
          }
+        //개인형 목표 불러오기
+        @GetMapping("/user/{userNo}")
+        public List<Target> getTarget(@PathVariable String userNo) {
+            System.out.print("target getTarget 메소드 도착 ! ");
+            return targetService.getTargetByUserNo(userNo);
+        }
 }

@@ -82,6 +82,7 @@ export default {
   data() {
     return {
       isLoading: true,
+      comments: [] ,// comments를 초기화
     };
   },
   components: {
@@ -106,6 +107,13 @@ export default {
           mtip_board_no: this.notice.mtip_board_no,
           user_no: this.loginInfo.user_no
         });
+
+        // // 좋아요 수 업데이트
+        // if (this.computedIsPostLiked) {
+        //   this.notice.mtip_board_like++;
+        // } else {
+        //   this.notice.mtip_board_like--;
+        // }
       } catch (error) {
         console.error('Error toggling like:', error);
       }

@@ -18,10 +18,10 @@ public interface MtipDao {
     @Delete("DELETE FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
     void deleteLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
-    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like + 1 WHERE mtip_board_no = #{mtipBoardNo}")
+    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like - 1 WHERE mtip_board_no = #{mtipBoardNo}")
     void incrementLikeCount(@Param("mtipBoardNo") int mtipBoardNo);
 
-    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like - 1 WHERE mtip_board_no = #{mtipBoardNo}")
+    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like + 1 WHERE mtip_board_no = #{mtipBoardNo}")
     void decrementLikeCount(@Param("mtipBoardNo") int mtipBoardNo);
     /*좋아요 코드 */
 

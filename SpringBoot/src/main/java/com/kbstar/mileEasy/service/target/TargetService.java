@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class TargetService {
 
     @Autowired
     private TargetDao targetDao;
 
+    //개인형 목표 등록하기
     @Autowired
     public TargetService(TargetDao targetDao) {
         this.targetDao = targetDao;
@@ -26,14 +29,23 @@ public class TargetService {
 
         // 2. UserTarget 테이블에 삽입
         Usertarget userTarget = new Usertarget();
-        userTarget.setUserNo(target.getUserNo());
-        userTarget.setTargetNo(target.getTargetNo()); // Insert 이후 생성된 targetNo 사용
-        userTarget.setMileNo(target.getMileNo());
-        userTarget.setStartDate(target.getStartDate());
-        userTarget.setEndDate(target.getEndDate());
-        userTarget.setTargetMileage(target.getTargetMileage());
-        userTarget.setTogether(target.isTogether());
+        userTarget.setUser_no(target.getUser_no());
+        userTarget.setTarget_no(target.getTarget_no()); // Insert 이후 생성된 targetNo 사용
+        userTarget.setMile_no(target.getMile_no());
+        userTarget.setStart_date(target.getStart_date());
+        userTarget.setEnd_date(target.getEnd_date());
+        userTarget.setTarget_mileage(target.getTarget_mileage());
+        userTarget.set_together(target.is_together());
 
         targetDao.insertUserTarget(userTarget);
     }
+
+    //개인형 목표 불러오기
+    public List<Target> getTargetByUserNo(String userNo){
+        System.out.println("getTargetByUserNo 도착 ! ");
+        System.out.println("userNo:" + userNo);  // userNo 출력
+        return targetDao.getTargetsByUserNo(userNo);
+    }
+
+
 }

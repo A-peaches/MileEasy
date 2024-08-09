@@ -15,22 +15,28 @@
         </label>
       </div>
     </div>
+
+    <!-- 목표가 없는 경우 메시지 표시 -->
+    <div v-if="filteredMileages.length === 0" class="text-center mb-4" style="color: gray;">
+      진행 중인 목표가 없습니다.
+    </div>
+
     <div class="row">
-      <div v-for="(mileage, index) in filteredMileages" :key="mileage.mile_no" class="col-md-4 mb-3">
+      <div v-for="(targets, index) in filteredMileages" :key="targets.mile_no" class="col-md-4 mb-3">
         <div class="p-3">
-          <div style="text-align: center; font-family: KB_C2; font-size: 16pt;" class="mb-2">{{ mileage }} 마일리지</div>
+          <div style="text-align: center; font-family: KB_C2; font-size: 16pt;" class="mb-2">{{ targets.mile_name }} 마일리지</div>
           <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 250px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box">
             <!-- 여기 하드코딩 한 부분 데이터 불러오기!! -->
             <div class="py-4">
               <span class="lg2" style="font-family: 'KB_C1';">목표기간</span><br>
-              <span class="md">2024.08.06 - 2024.08.17</span>
+              <span class="md">{{ targets.start_date }} - {{ targets.end_date }}</span>
             </div>
             <div class="py-3">
               <span class="lg2" style="font-family: 'KB_C1';">목표 마일리지</span><br>
-              <span class="lg2">20</span>
+              <span class="lg2">{{targets.target_mileage}}</span>
             </div>
             <div class="py-3">
-              <span class="bold-x-lg" style="font-family: 'KB_C1';">12 / 20</span>
+              <span class="bold-x-lg" style="font-family: 'KB_C1';">{{ targets.achievementRate }} / {{targets.target_mileage }}</span>
             </div>
           </div>
         </div>
@@ -60,7 +66,7 @@
         <div class="form-group">
           <label for="mileage-select">목표 마일리지</label>
           <div class="select-wrapper">
-            <select id="mileage-select" class="form-select">
+            <select  v-model="selectedLabel" id="mileage-select" class="form-select">
               <option v-for="label in labels" :key="label" :value="label">{{ label.mile_name }}</option>
             </select>
             <i class="bi bi-caret-down-fill select-icon"></i>
@@ -87,35 +93,55 @@
 </template>
 
 <script>
-// import { mapActions, mapGetters } from "vuex";
+import {mapState, mapGetters, mapActions } from "vuex";
 import api from '@/api/axios';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
 export default {
-  name: "PersonalTarget",
-  components: {
-    Datepicker,
+
+//====================================================================
+  name: "PersonalTarget", //컴포넌트의 이름
+  emits: ['dataLoaded'], // 이 이벤트를 컴포넌트에서 처리함을 선언
+//====================================================================
+  components: { 
+    Datepicker, //이 컴포넌트가 사용할 하위 컴포넌트
   },
-  data() {
+
+//====================================================================
+  data() { //컴포넌트의 반응형 상태를 정의,컴포넌트의 메서드나 계산된 속성에서 참조
     return {
       backgroundColors: ["#F4FBF2", "#F3FBFE", "#F5F5FF", "#FFF2FD", "#F4F4F4", "#FDF5F5", "#FBF4EE", "#FCFBF1"],
-      mileages: ["HRD", "HRD", "리그테이블"], // 개인별 목표 db에서 가져오기 
+      // mileages: [], // 초기 데이터 배열 
       isModalOpen: false,
       labels:[],
+      selectedLabel: null,
       startDate: null,
       endDate: null,
       targetScore: 0,
       sortBy: "not-finished", // 미완료 필터링 기본 값
     };
   },
-  methods: {
-    async fetchMileages() {
-        // 마일리지 카테고리 가져오기
+
+//===================================================================
+  methods: {  //컴포넌트에서 수행할 함수
+    ...mapActions('target',['addTarget','fetchTargets']),
+
+    loginInfo() {
+      return this.getLoginInfo;
+    },
+    isChecked() {
+      return this.getIsChecked;
+    },
+    isLoggedIn() {
+      return !!this.loginInfo;
+    },
+    async fetchMileages() {  // 마일리지 카테고리 가져오기
       try {
           const response = await api.get(
           'http://localhost:8090/notice/mileage'
           );
+          console.log('fetchMileages 메소드 :', response.data); // 응답 데이터를 콘솔에 출력
           this.labels = response.data;
       } catch (error) {
           console.error(
@@ -143,26 +169,91 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
+    async addAction() {
+      const target = {
+        mileNo: this.selectedLabel.mile_no,
+        userNo: this.loginInfo.user_no, // 유저 아이디를 적절히 변경
+        startDate: this.startDate,
+        endDate: this.endDate,
+        targetMileage: this.targetScore,
+        isTogether: false,
+        isManagerPlan: false,
+        month: new Date().getMonth() + 1, //1~12월 범위를 맞추기 위해서
+        achievementRate: 0 //목표 달성률
+      };
+      console.log('target이 서버로 데이터 넘기는 것 :',target);
+      try {
+        await this.addTarget(target);
+        this.closeModal();
+      } catch (error) {
+        console.error('Error adding target:', error.response ? error.response.data : error.message);
+      }
+    },
+  },
     
-  },
-  created() {
+//====================================================================
+  created() { //컴포넌트가 생성될 때 실행되는 훅
+    console.log('targer loginInfo 이 찍히나요 ?:', this.loginInfo);
+    console.log('isLoggedIn:', this.isLoggedIn);
+    console.log('isChecked:', this.isChecked);
+    // const userNo = this.loginInfo.user_no;
     this.fetchMileages();
+    this.fetchTargets(this.loginInfo.user_no).then(() => {
+    console.log('Targets after fetch:', this.getTargets); 
+  });
   },
-  computed: {
-    // 여기서 완료/미완료 필터링 처리하면 됨!
 
-    // filteredMileages() {
-    //   if(this.sortBy === "finished"){
-    //     return this.mileages.filter(item => /* 완료 조건: 오늘날짜 지난 것들 */);
-    //   }else if(this.sortBy === "not-finished"){
-    //     return this.mileages.filter(item => /* 미완료 조건 */);
-    //   }else{
-    //     return this.mileages;
-    //   }
-    // }
+//=====================================================================
+  computed: { //감시자 데이터가 변경될 때 자동으로 다시 계산
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
+    ...mapState('login', ['loginInfo']),
+    ...mapGetters('target',['getTargets']),
+
+    targets(){
+      const targets = this.getTargets;
+      console.log('Targets:', targets);
+      return Array.isArray(targets) ? targets : []; // 배열이 아니면 빈 배열을 반환
+    },
+
+    filteredMileages() {
+    const currentDate = new Date();
+    return this.targets.filter((mileage) => {
+      if (!mileage || !mileage.end_date) { // end_date가 없으면 경고 메시지를 출력
+        console.warn('Skipping mileage due to missing endDate:', mileage);
+        return false;
+      }
+
+      // end_date를 Date 객체로 변환
+      const endDate = new Date(mileage.end_date);
+
+      if (isNaN(endDate.getTime())) {
+        console.warn('Invalid date format in endDate:', mileage.end_date);
+        return false; // 날짜 형식이 유효하지 않으면 제외
+      }
+
+      if (this.sortBy === 'finished') {
+        return endDate < currentDate;
+      } else if (this.sortBy === 'not-finished') {
+        return endDate >= currentDate;
+      } else {
+        return true;
+      }
+    });
   },
+},
+
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 
 <style scoped>
 .mb-3 {
