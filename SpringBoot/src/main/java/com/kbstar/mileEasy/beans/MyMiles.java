@@ -12,7 +12,7 @@ public class MyMiles {
     private String mile_name;
     private int user_point;
     private int mile_max;
-    private int all_point;
+    private double all_point;
     private String mile_date;
     private boolean mile_is_branch;
 }

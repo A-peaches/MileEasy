@@ -12,8 +12,9 @@
       <div class="col-md-3 mb-4">
         <div class="card h-100 shadow-sm fade-in">
           <div class="card-body">
-            <h5 class="card-title text-goal" style="font-size:20pt">
-                전체 순위</h5>
+            <h5 class="card-title text-goal" style="font-size: 20pt">
+              전체 순위
+            </h5>
             <hr />
             <p
               class="mt-4"
@@ -26,20 +27,22 @@
         </div>
       </div>
       <div class="col-md mb-4">
-        <div class="card h-100 shadow-sm fade-in" >
+        <div class="card h-100 shadow-sm fade-in">
           <div class="card-body card-ml">
-            <h5 class="text-primary text-start " style="font-size:20pt">
-            AI 종합 분석</h5>
+            <h5 class="text-primary text-start" style="font-size: 20pt">
+              AI 종합 분석
+            </h5>
             <p class="text-start addInfo">
               * 마일이지 AI가 예측한 마일리지 추이와 점수를 토대로 앞으로의
               마일리지 취득 전략을 제안해드립니다.
             </p>
             <div class="card-gray">
               <span>
-                김근미님은 2024.08.01 기준으로 상위 25%에 해당하며, 전반적으로
+                <!-- 김근미님은 2024.08.01 기준으로 상위 25%에 해당하며, 전반적으로
                 우수한 성과를 보이고 있습니다. '연수 마일리지'와 'Monthly
                 Best'에 조금 더 집중하시면, 연말 평가에서 더욱 좋은 결과를
-                얻으실 수 있을 것으로 예상됩니다.
+                얻으실 수 있을 것으로 예상됩니다. -->
+                {{ all }}
               </span>
             </div>
           </div>
@@ -86,20 +89,23 @@
           <div class="card-body card-ml">
             <h5 class="text-gray text-start">마일리지별 분석</h5>
             <p class="text-start addInfo">
-              * 마일이지가 사용자의 포지션에 따라 분석한 결과로, 마일리지 가중치 및 연간 최대 한도를 고려하여
-               전략과 개선 사항을 제안해드립니다.
+              * 마일이지가 사용자의 포지션에 따라 분석한 결과로, 마일리지 가중치
+              및 연간 최대 한도를 고려하여 전략과 개선 사항을 제안해드립니다.
             </p>
             <div class="card-gray">
-              <span> 김근미님이 속한 '경인지역영업' 그룹에서는 '리그 테이블' 마일리지의 가중치가 가장 높습니다. 
-                이 활동에 집중하시면 더 빠른 마일리지 점수 상승이 가능할 것으로 보입니다.
-                <br><br>
-                다른 직원들에 비해 'BEST PG' 마일리지가 20% 낮은 편입니다.
-                 이 영역에 조금 더 신경 쓰시면 전체 순위 상승에 도움이 될 것 같습니다.
-                <br><br>
-                '소비자 지원' 부문에서 탁월한 성과를 보여주셨습니다. 
-                김근미님의 꾸준한 노력과 소비자 지원에 대한 관심도가 전체 마일리지 평균 점수를 크게 향상시켰습니다.
-                이는 매우 가치 있는 기여입니다. 꾸준히 유지해주세요.
-            </span>
+              <span>
+                김근미님이 속한 '경인지역영업' 그룹에서는 '리그 테이블'
+                마일리지의 가중치가 가장 높습니다. 이 활동에 집중하시면 더 빠른
+                마일리지 점수 상승이 가능할 것으로 보입니다. <br /><br />
+                다른 직원들에 비해 'BEST PG' 마일리지가 20% 낮은 편입니다. 이
+                영역에 조금 더 신경 쓰시면 전체 순위 상승에 도움이 될 것
+                같습니다.
+                <br /><br />
+                '소비자 지원' 부문에서 탁월한 성과를 보여주셨습니다. 김근미님의
+                꾸준한 노력과 소비자 지원에 대한 관심도가 전체 마일리지 평균
+                점수를 크게 향상시켰습니다. 이는 매우 가치 있는 기여입니다.
+                꾸준히 유지해주세요.
+              </span>
             </div>
           </div>
         </div>
@@ -115,8 +121,10 @@
 
     <div class="row">
       <div class="col-md">
-        <div class="card shadow-sm mb-4 fade-in" style="background-color: #f5f5f5;
-        border:#f5f5f5">
+        <div
+          class="card shadow-sm mb-4 fade-in"
+          style="background-color: #f5f5f5; border: #f5f5f5"
+        >
           <div class="card-body text-start card-ml">
             <h5 class="text-emphasis text-start">
               <i class="bi bi-info-circle-fill"></i> 유의 사항
@@ -135,21 +143,42 @@
     </div>
   </div>
 </template>
-  
-  <script>
-import { mapGetters } from "vuex";
-import Chart from "chart.js/auto";
-import annotationPlugin from "chartjs-plugin-annotation";
+
+<script>
+import { mapGetters } from 'vuex';
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import api from '@/api/axios';
 
 Chart.register(annotationPlugin);
 
 export default {
-  name: "AI_ReportView",
+  name: 'AI_ReportView',
 
   data() {
-    return {};
+    return {
+      all: '',
+    };
   },
   methods: {
+    async aitest() {
+      try {
+        const response = await api.post('bot/chat', null, {
+          params: {
+            prompt:
+              '우리 회사 인사고과와 연결되는 마일리지 관리 사이트에서 어떤방법으로 마일리지를 취득해야 순위향상에 가장 효율적인지 길잡이를 제공하는 리포트 페이지' +
+              '이름은 김현지 이고, 오늘날짜 기준으로 연수마일리지 10점 소비자 지원 마일리지 50점이야  연수마일리지 전체 평균은 3점이고, 소비자 지원 마일리지 전체 평균은 4점이야. 상위15%에 해당돼' +
+              '전체적인 분석과  부족한 부분에 대해서 분석해줘 예시로 김근미님은 ~~~기준으로 상위 25%에 해당하며, 전반적으로 우수한 성과를 보이고 있습니다. ' +
+              "연수 마일리지'와 'Monthly Best'에 조금 더 집중하시면,  연말 평가에서 더욱 좋은 결과를 얻으실 수 있을 것으로 예상됩니다. 이러한 형태로 가장 효율적으로 분석해줘, 예시 형태를 따라줘! 글자수150자 이내로 부탁해 제발 예시를 활용해!! 유눙한 ai비서처럼 말해줘",
+          },
+        });
+        console.log(response.data);
+        this.all = response.data;
+      } catch (error) {
+        console.error('Error during API request:', error);
+      }
+    },
+
     analysis() {
       this.analysisAlret();
     },
@@ -157,46 +186,46 @@ export default {
       this.$swal({
         timer: 5000,
         timerProgressBar: true,
-        imageUrl: require("@/assets/img/analysis.gif"),
-        imageClass: "custom-image-class",
+        imageUrl: require('@/assets/img/analysis.gif'),
+        imageClass: 'custom-image-class',
         scrollbarPadding: false,
-        title: "분석중..",
+        title: '분석중..',
         html: `${this.getLoginInfo.user_name}님의 마일리지를 분석중입니다`,
         showCloseButton: true, // X 버튼 추가
         didOpen: () => {
           const popup = this.$swal.getPopup();
           const image = this.$swal.getImage();
-          const title = popup.querySelector(".swal2-title");
-          const img = popup.querySelector(".swal2-image");
+          const title = popup.querySelector('.swal2-title');
+          const img = popup.querySelector('.swal2-image');
 
-          title.style.marginTop = "0"; // 타이틀 상단 마진 제거
-          title.style.paddingTop = "0"; // 타이틀 상단 패딩 제거
+          title.style.marginTop = '0'; // 타이틀 상단 마진 제거
+          title.style.paddingTop = '0'; // 타이틀 상단 패딩 제거
 
-          popup.style.height = "400px"; // 원하는 높이로 조정
-          img.style.margin = "15px auto 0px auto";
-          image.style.width = "200px";
-          image.style.height = "auto";
-          image.style.padding = "0px 0px 0px 30px";
+          popup.style.height = '400px'; // 원하는 높이로 조정
+          img.style.margin = '15px auto 0px auto';
+          image.style.width = '200px';
+          image.style.height = 'auto';
+          image.style.padding = '0px 0px 0px 30px';
 
           this.$swal.showLoading();
         },
       }).then((result) => {
         if (result.dismiss === this.$swal.DismissReason.timer) {
-          console.log("I was closed by the timer");
+          console.log('I was closed by the timer');
         } else if (result.dismiss === this.$swal.DismissReason.close) {
-          console.log("I was closed by the close button");
+          console.log('I was closed by the close button');
         }
       });
     },
     createChart1() {
-      const ctx = document.getElementById("myChart1");
+      const ctx = document.getElementById('myChart1');
 
       const score = 75; // 실제 점수를 여기에 설정하세요
 
       const getPointColor = (score) => {
-        if (score > 70) return "rgba(146, 183, 255)";
-        if (score >= 30) return "rgba(39, 234, 182)";
-        return "rgba(255, 206, 86)";
+        if (score > 70) return 'rgba(146, 183, 255)';
+        if (score >= 30) return 'rgba(39, 234, 182)';
+        return 'rgba(255, 206, 86)';
       };
 
       // 선형 보간 함수
@@ -214,9 +243,9 @@ export default {
       const xPosition = getXPosition(score);
 
       new Chart(ctx, {
-        type: "line",
+        type: 'line',
         data: {
-          labels: ["0%", "30%", "70%", "100%"],
+          labels: ['0%', '30%', '70%', '100%'],
           datasets: [
             {
               data: [
@@ -237,12 +266,12 @@ export default {
                   chartArea.right,
                   0
                 );
-                gradient.addColorStop(0, "rgba(255, 206, 86, 1)");
-                gradient.addColorStop(0.31, "rgba(255, 206, 86, 1)");
-                gradient.addColorStop(0.35, "rgba(39, 234, 182, 1)");
-                gradient.addColorStop(0.66, "rgba(39, 234, 182, 1)");
-                gradient.addColorStop(0.69, "rgba(146, 183, 255, 1)");
-                gradient.addColorStop(1, "rgba(146, 183, 255, 1)");
+                gradient.addColorStop(0, 'rgba(255, 206, 86, 1)');
+                gradient.addColorStop(0.31, 'rgba(255, 206, 86, 1)');
+                gradient.addColorStop(0.35, 'rgba(39, 234, 182, 1)');
+                gradient.addColorStop(0.66, 'rgba(39, 234, 182, 1)');
+                gradient.addColorStop(0.69, 'rgba(146, 183, 255, 1)');
+                gradient.addColorStop(1, 'rgba(146, 183, 255, 1)');
                 return gradient;
               },
               borderWidth: 2,
@@ -259,12 +288,12 @@ export default {
                   chartArea.right,
                   0
                 );
-                gradient.addColorStop(0, "rgba(255, 206, 86, 0.5)");
-                gradient.addColorStop(0.31, "rgba(255, 206, 86, 0.5)");
-                gradient.addColorStop(0.35, "rgba(39, 234, 182, 0.5)");
-                gradient.addColorStop(0.66, "rgba(39, 234, 182, 0.5)");
-                gradient.addColorStop(0.69, "rgba(146, 183, 255, 0.5)");
-                gradient.addColorStop(1, "rgba(146, 183, 255, 0.5)");
+                gradient.addColorStop(0, 'rgba(255, 206, 86, 0.5)');
+                gradient.addColorStop(0.31, 'rgba(255, 206, 86, 0.5)');
+                gradient.addColorStop(0.35, 'rgba(39, 234, 182, 0.5)');
+                gradient.addColorStop(0.66, 'rgba(39, 234, 182, 0.5)');
+                gradient.addColorStop(0.69, 'rgba(146, 183, 255, 0.5)');
+                gradient.addColorStop(1, 'rgba(146, 183, 255, 0.5)');
                 return gradient;
               },
               pointRadius: 0,
@@ -276,7 +305,7 @@ export default {
               pointBorderColor: getPointColor(score),
               pointRadius: 6,
               pointHoverRadius: 8,
-              type: "scatter",
+              type: 'scatter',
               order: 1, // 스캐터 포인트를 앞으로 가져옵니다
             },
           ],
@@ -286,13 +315,13 @@ export default {
           maintainAspectRatio: false,
           scales: {
             x: {
-              type: "linear",
+              type: 'linear',
               min: 0,
               max: 3,
               ticks: {
                 stepSize: 1,
                 callback: function (value, index) {
-                  return ["0%", "30%", "70%", "100%"][index];
+                  return ['0%', '30%', '70%', '100%'][index];
                 },
               },
             },
@@ -315,7 +344,7 @@ export default {
               callbacks: {
                 label: function (context) {
                   if (context.datasetIndex === 1) {
-                    return "Me: " + context.parsed.y + "%";
+                    return 'Me: ' + context.parsed.y + '%';
                   }
                 },
               },
@@ -342,8 +371,8 @@ export default {
 
               ctx.save();
               ctx.fillStyle = getPointColor(score);
-              ctx.font = "bold 14px Arial";
-              ctx.textAlign = "center";
+              ctx.font = 'bold 14px Arial';
+              ctx.textAlign = 'center';
 
               if (score < 79) {
                 // 화살표 그리기
@@ -365,10 +394,10 @@ export default {
                 ctx.fill();
 
                 // "Me!" 텍스트 그리기
-                ctx.fillText("Me!", x, y - 50);
+                ctx.fillText('Me!', x, y - 50);
               } else {
                 // score가 79 이상일 때는 scatter 바로 위에 "Me!" 표시
-                ctx.fillText("Me!", x, y - 15);
+                ctx.fillText('Me!', x, y - 15);
               }
 
               ctx.restore();
@@ -378,104 +407,98 @@ export default {
       });
     },
     createChart2() {
-        const ctx = document.getElementById('myChart2').getContext('2d');
+      const ctx = document.getElementById('myChart2').getContext('2d');
 
-const data = {
-    labels: [
-        'HRD',
-        'Monthly Best',
-        'Monthly Base',
-        'HotTip',
-        'BEST PG',
-        'BEST Branch',
-        '소비자 지원',
-        '리그 테이블'
-    ],
-    datasets: [
-    {
-        label: '내 점수',
-        data: [45, 50, 45, 72, 30, 68, 90, 82],
-        backgroundColor: 'rgba(255, 0, 46, 0.3)',
-        borderColor: 'rgba(255, 0, 46, 0.5)',
-        pointBackgroundColor: 'rgb(255, 99, 132)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgb(255, 99, 132)'
-    },{
-        label: '평균 점수',
-        data: [90, 65, 80, 75, 68, 72, 85, 78],
-        backgroundColor: 'rgba(0, 122, 255, 0.2)',
-        borderColor: 'rgba(0, 122, 255, 0.4)',
-        pointBackgroundColor: 'rgb(54, 162, 235)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgb(54, 162, 235)'
-    }] 
-};
+      const data = {
+        labels: [
+          'HRD',
+          'Monthly Best',
+          'Monthly Base',
+          'HotTip',
+          'BEST PG',
+          'BEST Branch',
+          '소비자 지원',
+          '리그 테이블',
+        ],
+        datasets: [
+          {
+            label: '내 점수',
+            data: [45, 50, 45, 72, 30, 68, 90, 82],
+            backgroundColor: 'rgba(255, 0, 46, 0.3)',
+            borderColor: 'rgba(255, 0, 46, 0.5)',
+            pointBackgroundColor: 'rgb(255, 99, 132)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(255, 99, 132)',
+          },
+          {
+            label: '평균 점수',
+            data: [90, 65, 80, 75, 68, 72, 85, 78],
+            backgroundColor: 'rgba(0, 122, 255, 0.2)',
+            borderColor: 'rgba(0, 122, 255, 0.4)',
+            pointBackgroundColor: 'rgb(54, 162, 235)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(54, 162, 235)',
+          },
+        ],
+      };
 
-const config = {
-    type: 'radar',
-    data: data,
-    options: {
-        elements: {
+      const config = {
+        type: 'radar',
+        data: data,
+        options: {
+          elements: {
             line: {
-                borderWidth: 3
-            }
-        },
-        scales: {
+              borderWidth: 3,
+            },
+          },
+          scales: {
             r: {
-                angleLines: {
-                    display: false
+              angleLines: {
+                display: false,
+              },
+              suggestedMin: 0,
+              suggestedMax: 100,
+              ticks: {
+                stepSize: 20, // 간격을 20으로 설정 (5개의 간격: 20, 40, 60, 80, 100)
+                display: false, // 눈금 숫자를 표시하지 않음
+              },
+              pointLabels: {
+                font: {
+                  size: 12, // 레이블 폰트 크기 조정
                 },
-                suggestedMin: 0,
-                suggestedMax: 100,
-                ticks: {
-                    stepSize: 20,  // 간격을 20으로 설정 (5개의 간격: 20, 40, 60, 80, 100)
-                    display: false, // 눈금 숫자를 표시하지 않음
-                },
-                pointLabels: {
-                    font: {
-                        size: 12 // 레이블 폰트 크기 조정
-                    }
-                },
-                grid: {
-                    // circular: true,
-                    color: 'rgba(0, 0, 0, 0.2)' // 그리드 선 색상 설정 (필요시)
-                }
-            }
-        }
-    },
-};
+              },
+              grid: {
+                // circular: true,
+                color: 'rgba(0, 0, 0, 0.2)', // 그리드 선 색상 설정 (필요시)
+              },
+            },
+          },
+        },
+      };
 
-new Chart(ctx, config);
-    }
+      new Chart(ctx, config);
+    },
   },
   mounted() {
     this.$nextTick(() => {
       this.createChart1();
       this.createChart2();
     });
+    this.aitest();
   },
   computed: {
-    ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters('login', ['getLoginInfo']),
   },
   watch: {},
 };
 </script>
-  
-  <style scoped>
-.page-back {
-  width: 70%;
-  height: 100%;
-  margin-top: 5%;
-  padding-left: 5%;
-  padding-right: 5%;
-  padding-bottom: 5%;
-}
 
+<style scoped>
 .text-emphasis {
   font-size: 13pt;
-  font-family: "KB_S5";
+  font-family: 'KB_S5';
   font-weight: 600;
   color: #4b4a4a;
 }
@@ -497,25 +520,25 @@ new Chart(ctx, config);
 .text-primary {
   color: #32ab8b !important;
   font-weight: 600;
-  font-family: "KB_S5";
+  font-family: 'KB_S5';
 }
 
 .text-secondary {
   color: #4a90e2 !important;
   font-weight: 600;
-  font-family: "KB_S5";
+  font-family: 'KB_S5';
 }
 
 .text-goal {
   color: #ff7e5e !important;
   font-weight: 600;
-  font-family: "KB_S5";
+  font-family: 'KB_S5';
 }
 
 .text-gray {
   color: #3b3b3b !important;
   font-weight: 600;
-  font-family: "KB_S5";
+  font-family: 'KB_S5';
 }
 
 .addInfo {
@@ -531,7 +554,7 @@ new Chart(ctx, config);
 
 span {
   font-size: 14pt;
-  font-family: "KB_S5";
+  font-family: 'KB_S5';
 }
 
 .row {
@@ -545,14 +568,18 @@ span {
   display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
 }
 
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
   animation: fadeIn 0.5s ease-out;
 }
 </style>
-  

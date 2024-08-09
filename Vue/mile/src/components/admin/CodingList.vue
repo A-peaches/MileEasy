@@ -39,11 +39,6 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  margin-top: 5%;
-  min-height: 800px; /* Adjusted to fit content and avoid too small height */
-}
 
 .tab-container:hover {
   padding: 10px 10px;

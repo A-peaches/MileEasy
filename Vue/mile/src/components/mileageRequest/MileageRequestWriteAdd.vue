@@ -1,6 +1,6 @@
 <template>
   <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">
-    마일리지 추가
+    마일리지 요청
   </h3>
   <div
     class="p-2"
@@ -118,6 +118,11 @@
       placeholder="기타 요청사항을 입력하세요."
     ></textarea>
 
+    <div class="mt-3" style="text-align: left; color: gray">
+      * 마일리지 요청 페이지는 마일리지 추가 및 가중치 변경 등 마일리지에 관한
+      내용을 요청하는 페이지입니다.
+    </div>
+
     <!-- 모달 컴포넌트 -->
     <SearchModal
       v-if="isModalOpen"
@@ -128,6 +133,7 @@
       @close="closeModal"
     />
   </div>
+
   <div style="text-align: right">
     <button class="btn-yellow mt-5 KB_S4" @click="submitForm">요청하기</button>
   </div>

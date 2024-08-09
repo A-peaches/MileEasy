@@ -30,12 +30,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.springframework.boot:spring-boot-starter-tomcat'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'//gpt 라이브러리
+    compileOnly 'org.projectlombok:lombok'//gpt 라이브러리
+    annotationProcessor 'org.projectlombok:lombok'//gpt 라이브러리
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'//gpt 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.12'
+    implementation 'org.apache.poi:poi:5.2.3'           // POI 기본 라이브러리
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
 
 }
+
+
+
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

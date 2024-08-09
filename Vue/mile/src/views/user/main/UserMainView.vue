@@ -1,14 +1,16 @@
 <template>
-  <div class="flex" style="margin-left: 10%; margin-right: 10%">
-    <div class="left-container" style="width: 25%">
-      <profile class="fade-up-item" />
-      <recommand class="my-5 fade-up-item" style="height: 210px"/>
-      <attendance class="fade-up-item" style="min-height: 395px; overflow: visible;" />
-    </div>
+  <div class="container-fluid">
+    <div class="row" style="margin-left: 10%; margin-right: 10%">
+      <div class="col-12 col-md-3 mb-4">
+        <profile class="fade-up-item" />
+        <recommand class="my-5 fade-up-item" style="height: 210px" />
+        <attendance class="fade-up-item" style="min-height: 395px; overflow: visible;" />
+      </div>
 
-    <div class="right-container" style="width: 70%; margin-left: 1%; position: sticky; top: 20px; height: 100vh;">
-      <favorite class="fade-up-item" style="width: 100%; margin-bottom: 49px;" />
-      <milageCharts class="fade-up-item" style="width: 100%; height: 430px; overflow: visible;"  />
+      <div class="col-12 col-md-9" style="position: sticky; top: 20px;">
+        <favorite class="fade-up-item" style="width: 100%; margin-bottom: 49px;" />
+        <milageCharts class="fade-up-item" style="width: 100%; height: 430px; overflow: visible;" />
+      </div>
     </div>
   </div>
 </template>
@@ -56,6 +58,12 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .left-container,
+  .right-container {
+    width: 100% !important;
+  }
+}
 .fade-up-item {
   opacity: 0;
   transform: translateY(20px);

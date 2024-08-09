@@ -44,11 +44,6 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  margin-top: 5%;
-  background-color: rgb(255, 255, 255);
-}
 
 .lg2 {
   font-size: 16px;
