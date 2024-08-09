@@ -274,7 +274,7 @@ export default {
       }
     },
     getRequestType(type) {
-      if (type === 1) return '추가';
+      if (type === 1) return '요청';
       if (type === 2) return '수정';
       if (type === 3) return '삭제';
       return '기타';

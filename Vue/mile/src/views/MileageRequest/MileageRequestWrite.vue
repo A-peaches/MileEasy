@@ -20,7 +20,7 @@
             v-model="selectedAction"
           />
           <span class="custom-checkbox"></span>
-          <span class="checkbox-label">추가</span>
+          <span class="checkbox-label">요청</span>
         </label>
         <label class="checkbox-container">
           <input

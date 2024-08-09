@@ -75,6 +75,7 @@ export default {
   width: 70%;
   margin-top: 5%;
   min-height: 800px;
+  padding-bottom: 5%;
 }
 
 .tab-container:hover {
