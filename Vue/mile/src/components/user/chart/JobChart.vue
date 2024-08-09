@@ -70,8 +70,10 @@ export default {
       const userScore = this.userData[0];
       const diff = userScore - averageScore;
       const maxDiff = Math.max(this.maxValue - averageScore, averageScore - this.minValue);
-      return 50 + (diff / maxDiff) * 50;
-    },
+      return 50 + (diff / maxDiff) * 50 >= 100 ? 100 : 50 + (diff / maxDiff) * 50;
+    
+
+  },
   },
   methods: {
     ...mapActions("mileScore", ["getMileJob"]),
@@ -89,7 +91,7 @@ export default {
                 {
                   x: this.jobChartData[0],
                   y: this.jobChartData[0],
-                  r: this.jobChartData[0] / 50,
+                  r: this.jobChartData[0] / 10,
                 },
               ],
               backgroundColor: this.colors[0],
@@ -100,7 +102,7 @@ export default {
                 {
                   x: this.jobChartData[1],
                   y: this.jobChartData[1],
-                  r: this.jobChartData[1] / 50,
+                  r: this.jobChartData[1] / 10,
                 },
               ],
               backgroundColor: this.colors[1],
@@ -127,14 +129,14 @@ export default {
               min: Math.floor(this.minValue / 100) * 100 - 500,
               max: Math.ceil(this.maxValue / 100) * 100 + 500,
               ticks: {
-             stepSize: 100, // x축 간격을 100으로 설정
+             stepSize: 100,
         },
             },
             y: {
               min: Math.floor(this.minValue / 100) * 100 - 500,
               max: Math.ceil(this.maxValue / 100) * 100 + 500,
               ticks: {
-            stepSize: 200, // y축 간격을 100으로 설정
+            stepSize: 100, 
         },
             },
           },

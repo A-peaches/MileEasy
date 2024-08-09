@@ -232,11 +232,6 @@ export default {
   background-color: white; /* 임시로 눈에 띄는 색상 사용 */
   border: 2px solid #e4e4e4;
 }
-.page-back {
-  width: 70%;
-  height: 100%;
-  margin-top: 5%;
-}
 
 .row {
   display: flex;

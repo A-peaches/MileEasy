@@ -36,15 +36,20 @@
             u.user_is_delete,
             u.user_is_manager,
             u.user_is_admin,
-            u.mile_no
+            u.mile_no,
+            u.group_no,
+            sg.group_name,
+            u.is_hr
         FROM
             user u
                 JOIN department d ON u.dp_no = d.dp_no
                 JOIN level l ON u.level_no = l.level_no
                 JOIN job j ON u.job_no = j.job_no
                 JOIN position p ON u.position_no = p.position_no
+                JOIN sales_group sg ON u.group_no = sg.group_no
         WHERE
             u.user_no = #{user_no}
+
     </select>
 
     <select id="selectContactMileage" resultType="com.kbstar.mileEasy.dto.User">

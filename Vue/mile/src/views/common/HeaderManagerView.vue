@@ -18,6 +18,9 @@
             <a class="nav-link hover" aria-current="page" href="/commentMieageeAdminView">추천 멘트</a>
           </div>
           <div class="nav-item">
+            <a class="nav-link hover" href="/mileageTargetView">목표 설정</a>
+          </div>
+          <div class="nav-item">
             <a class="nav-link hover" href="/documentsMileageAdminView">문서 관리</a>
           </div>
           <div class="nav-item">
@@ -26,9 +29,9 @@
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
           </div>
-          <div class="nav-item">
+          <!-- <div class="nav-item">
             <a class="nav-link hover" href="/qnaListView">Q&A</a>
-          </div>
+          </div> -->
           <div class="nav-item">
             <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
           </div>

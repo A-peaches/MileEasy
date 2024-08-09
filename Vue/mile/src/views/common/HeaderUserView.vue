@@ -1,141 +1,296 @@
 <template>
-  <div class="mx-auto" style="width: 83%">
-    <!-- 사용자 헤더 -->
-    <div class="header">
-      <div class="logo lg">
-        <a href="/main" class="a_link">
-          <span class="logo-text" style="font-size: 20pt">
-            <img src="@/assets/img/mini_logo.png" class="mb-2 mr-3 ml-2" style="width:33px">MileEasy
-          </span>
-        </a>
-      </div>
-      <div class="menu">
-        <div class="nav justify-content-start" style="margin-left: 80px">
-          <div class="nav-item">
-            <a class="nav-link hover" href="/myMileageView">나의 마일리지</a>
-          </div>
-          <div class="nav-item">
-            <a class="nav-link hover" href="/myMileagetarget">목표 설정</a>
-          </div>
-          <div class="nav-item">
-            <a class="nav-link hover" aria-current="page" href="/documentsView"
-              >문서모아</a
-            >
-          </div>
-          <div class="nav-item">
-            <a class="nav-link hover" href="/M-Tip">M-Tip</a>
-          </div>
-          <div class="nav-item">
-            <a class="nav-link hover" href="/noticeListView">공지사항</a>
-          </div>
-          <div class="nav-item">
-            <a class="nav-link hover" href="/qnaListView">Q&A</a>
-          </div>
-          <div class="nav-item">
-            <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
-          </div>
-        </div>
-      </div>
-      <div class="d-flex justify-content-center align-items-center">
-        <div class="nav-item dropdown" style="margin-right: 30px">
-          <a
-            class="nav-link active hoverI shake"
-            aria-current="page"
-            style="cursor: pointer"
-            @click="toggleNotificationDropdown"
-          >
-            <i class="bi bi-bell-fill"></i>
-            <span
-              v-if="mileExcelData.length > 0"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              style="height: 20px; width: 15px"
-            >
-              <span
-                style="
-                  left: 90%;
-                  transform: translateX(-50%);
-                  background-color: #dc3545;
-                  display: flex;
-                  font-size: 9pt;
-                  font-family: 'KB_C3';
-                  justify-content: center;
-                "
-                >{{ mileExcelData.length }}</span
-              >
+  <div>
+    <!-- 원본 스타일 -->
+    <div v-if="!isMobile" class="mx-auto" style="width: 83%">
+      <!-- 사용자 헤더 -->
+      <div class="header">
+        <div class="logo lg">
+          <a href="/main" class="a_link">
+            <span class="logo-text" style="font-size: 20pt">
+              <img src="@/assets/img/mini_logo.png" class="mb-2 mr-3 ml-2" style="width:33px">MileEasy
             </span>
           </a>
-          <div
-            class="dropdown-menu dropdown-menu-end notification-dropdown"
-            :class="{ show: isNotificationOpen }"
-          >
-            <div class="notification-scroll">
-              <div class="notification-header">
-                <span >최근 일주일 알림 내역이 보여집니다.</span>
-              </div>
-              <a
-                v-for="(item, index) in mileExcelData"
-                :key="index"
-                class="dropdown-item text-start"
-                :href="item.mile_description"
-              >
-                <span style="color: red"
-                v-if="index < 5 ">new</span> &nbsp;
-                {{ item.mile_name }}가 업데이트 되었습니다.
-                <span style="color: gray; font-size: 10pt">
-                  ({{ item.mile_excel_date.substring(0, 10) }})
-                </span>
-
-              </a>
-
+        </div>
+        <div class="menu">
+          <div class="nav justify-content-start" style="margin-left: 80px">
+            <div class="nav-item">
+              <a class="nav-link hover" href="/myMileageView">나의 마일리지</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/myMileagetarget">목표 설정</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" aria-current="page" href="/documentsView">문서모아</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/M-Tip">M-Tip</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/noticeListView">공지사항</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/qnaListView">Q&A</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
             </div>
           </div>
         </div>
-        <div class="nav-item mr-5">
-          <a
-            class="nav-link active hoverI"
-            aria-current="page"
-            @click.stop="openModal"
-            style="cursor: pointer"
-          >
-            <i class="bi bi-calendar-check"></i>
-          </a>
-        </div>
-        <div
-          class="nav-item dropdown"
-          @mouseenter="showDropdown"
-          @mouseleave="hideDropdown"
-        >
-          <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
-            <img
-              v-if="loginInfo && loginInfo.user_no"
-    :src="profileImageUrl"
-              class="profile-small my-3"
-              alt="Profile Picture"
-              @error="setDefaultImage"
-            />
-          </a>
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="nav-item dropdown" style="margin-right: 30px">
+            <a
+              class="nav-link active hoverI shake"
+              aria-current="page"
+              style="cursor: pointer"
+              @click="toggleNotificationDropdown"
+            >
+              <i class="bi bi-bell-fill"></i>
+              <span
+                v-if="mileExcelData.length > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="height: 20px; width: 15px"
+              >
+                <span
+                  style="
+                    left: 90%;
+                    transform: translateX(-50%);
+                    background-color: #dc3545;
+                    display: flex;
+                    font-size: 9pt;
+                    font-family: 'KB_C3';
+                    justify-content: center;
+                  "
+                  >{{ mileExcelData.length }}</span
+                >
+              </span>
+            </a>
+            <div
+              class="dropdown-menu dropdown-menu-end notification-dropdown"
+              :class="{ show: isNotificationOpen }"
+            >
+              <div class="notification-scroll">
+                <div class="notification-header">
+                  <span >최근 일주일 알림 내역이 보여집니다.</span>
+                </div>
+                <a
+                  v-for="(item, index) in mileExcelData"
+                  :key="index"
+                  class="dropdown-item text-start"
+                  :href="item.mile_description"
+                >
+                  <span style="color: red"
+                  v-if="index < 5 ">new</span> &nbsp;
+                  {{ item.mile_name }}가 업데이트 되었습니다.
+                  <span style="color: gray; font-size: 10pt">
+                    ({{ item.mile_excel_date.substring(0, 10) }})
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="nav-item mr-5">
+            <a
+              class="nav-link active hoverI"
+              aria-current="page"
+              @click.stop="openModal"
+              style="cursor: pointer"
+            >
+              <i class="bi bi-calendar-check"></i>
+            </a>
+          </div>
           <div
-            class="dropdown-menu dropdown-menu-end profile-dropdown"
-            :class="{ show: isHovered }"
+            class="nav-item dropdown"
+            @mouseenter="showDropdown"
+            @mouseleave="hideDropdown"
           >
-            <a class="dropdown-item" aria-current="page" @click="Logout"
-              >로그아웃</a
+            <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
+              <img
+                v-if="loginInfo && loginInfo.user_no"
+        :src="profileImageUrl"
+                class="profile-small my-3"
+                alt="Profile Picture"
+                @error="setDefaultImage"
+              />
+            </a>
+            <div
+              class="dropdown-menu dropdown-menu-end profile-dropdown"
+              :class="{ show: isHovered }"
             >
-            <a class="dropdown-item" href="/passwordChange"
-              >비밀번호 변경</a
-            >
-            <a class="dropdown-item" href="/badgeStatusView">배지 취득 현황</a>
+              <a class="dropdown-item" aria-current="page" @click="Logout"
+                >로그아웃</a
+              >
+              <a class="dropdown-item" href="/passwordChange"
+                >비밀번호 변경</a
+              >
+              <a class="dropdown-item" href="/badgeStatusView">배지 취득 현황</a>
+            </div>
           </div>
         </div>
       </div>
+      <Modal v-if="isModalOpen" @close="closeModal" />
     </div>
-    <Modal v-if="isModalOpen" @close="closeModal" />
+    <!-- 모바일 스타일 -->
+    <div v-else class="mobile-header">
+      <div class="d-flex justify-content-between align-items-center px-3 mt-2">
+        <div class="mobile-logo">
+          <a href="/main" class="a_link">
+            <span class="logo-text" style="font-size: 15pt">
+              <img src="@/assets/img/mini_logo.png" class="mb-2 mr-2 ml-2" style="width:35px">
+            </span>
+          </a>
+        </div>
+        <div class="d-flex align-items-center justify-content-end">
+          <!-- 종모양 알림 영역 -->
+          <div class="nav-item dropdown" style="margin-right: 20px">
+            <a
+              class="nav-link active hoverI shake"
+              aria-current="page"
+              @click.stop="toggleMobileNotification"
+            >
+              <i class="bi bi-bell-fill"></i>
+              <span
+                v-if="mileExcelData.length > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="height: 15px; width: 10px"
+              >
+                <span
+                  style="
+                    left: 80%;
+                    transform: translateX(-50%);
+                    background-color: #dc3545;
+                    display: flex;
+                    font-size: 7pt;
+                    font-family: 'KB_C3';
+                    justify-content: center;
+                  "
+                  >{{ mileExcelData.length }}</span
+                >
+              </span>
+            </a>
+            <div
+              class="dropdown-menu dropdown-menu-end notification-mobile-dropdown"
+              :class="{ 'show': showMobilenotification }"
+               v-show="showMobilenotification"
+            >
+              <div class="notification-scroll">
+                <div class="notification-header">
+                  <span >최근 일주일 알림 내역이 보여집니다.</span>
+                </div>
+                <a
+                  v-for="(item, index) in mileExcelData"
+                  :key="index"
+                  class="dropdown-item text-start"
+                  :href="item.mile_description"
+                >
+                  <span style="color: red"
+                  v-if="index < 5 ">new</span> &nbsp;
+                  {{ item.mile_name }}가 업데이트 되었습니다.
+                  <span style="color: gray; font-size: 7pt">
+                    ({{ item.mile_excel_date.substring(0, 10) }})
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- 출석체크-->
+          <div class="nav-item mr-3">
+            <a
+              class="nav-link active hoverI"
+              aria-current="page"
+              @click.stop="openModal"
+            >
+              <i class="bi bi-calendar-check"></i>
+            </a>
+          </div>
+        
+          <!-- 모바일 메뉴 리스트 아이콘 -->
+          <div class="nav-item ml-2">
+            <a
+              class="nav-link active hoverI"
+              aria-current="page"
+              @click.stop="toggleMobileMenu"
+              style="cursor: pointer"
+            >
+              <i class="bi bi-list"></i>
+            </a>
+          </div>
+          <!-- 모바일 메뉴 모달 -->
+          <div class="mobile-menu" v-if="showMobileMenu" :class="{ 'mobile-menu-enter': showMobileMenu, 'mobile-menu-leave-to': !showMobileMenu }">
+            <div style="width: 100%; margin-bottom: 10%;"></div>
+            <div class="nav-item">
+              
+              <!-- 프로필 사진 영역 -->
+              <div class="accordion" id="accordionProfile">
+                <div class="accordion-item" style="border: none; background-color: transparent;">
+                  <div class="dropdown accordion-header text-center">
+                    <!-- 프로필 사진 -->
+                    <img
+                      v-if="loginInfo && loginInfo.user_no"
+                      :src="profileImageUrl"
+                      class="profile-small my-2"
+                      alt="Profile Picture"
+                      @error="setDefaultImage"
+                    />
+                    <!-- 사용자 이름 (아코디언 버튼 역할) -->
+                    <a 
+                      class="nav-link-profile no-caret accordion-button pl-5"
+                      data-bs-toggle="collapse"
+                      href="#collapseProfile"
+                      role="button"
+                      aria-expanded="false"
+                      aria-controls="collapseProfile"
+                    >
+                      <span class="lg2 fw-bold ">{{ user_name }}&nbsp;<i class="bi bi-caret-down-fill"></i></span>
+                    </a>
+                  </div>
+                  <div id="collapseProfile" class="accordion-collapse collapse" data-bs-parent="#accordionProfile">
+                    <div class="accordion-body" style="background-color: transparent;">
+                      <a class="dropdown-item" aria-current="page" @click="Logout">로그아웃</a>
+                      <a class="dropdown-item" href="/passwordChange">비밀번호 변경</a>
+                      <a class="dropdown-item" href="/badgeStatusView">배지 취득 현황</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-item">
+              <div class="nav-link mx-auto" style="width:80%; font-size: 18pt; border-bottom: 1px solid gray;"></div>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/myMileageView">나의 마일리지</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/myMileagetarget">목표 설정</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" aria-current="page" href="/documentsView">문서모아</a>
+            </div>
+            <div v-if="loginInfo.is_hr == true">
+              <div class="nav-item">
+                <a class="nav-link hover" href="/group">그룹 관리</a>
+              </div>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/M-Tip">M-Tip</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/noticeListView">공지사항</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Modal v-if="isModalOpen" @close="closeModal" />
+    </div>
   </div>
 </template>
 
 <script>
 import Modal from "../../components/user/AttendanceModal.vue";
 import { mapGetters, mapActions } from "vuex";
+import MobileDetect from "mobile-detect";
 
 export default {
   components: { Modal },
@@ -145,21 +300,26 @@ export default {
       isHovered: false,
       isNotificationOpen: false,
       mileExcelData: [],
+      isMobile: false,
+      showMobileMenu: false,
+      showMobileProfileMenu: false,
+      showMobilenotification: false,
+      user_name: '',
     };
   },
   computed: {
     ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
     ...mapGetters("mileExcel", ["getExcelNotice"]),
     profileImageUrl() {
-  if (this.loginInfo && this.loginInfo.user_no) {
-    if (process.env.NODE_ENV === 'development') {
-      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
-    } else {
-      return `/profile/${this.loginInfo.user_no}.jpg`;
-    }
-  }
-  return ''; // 또는 기본 이미지 URL
-},
+      if (this.loginInfo && this.loginInfo.user_no) {
+        if (process.env.NODE_ENV === "development") {
+          return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+        } else {
+          return `/profile/${this.loginInfo.user_no}.jpg`;
+        }
+      }
+      return ""; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -170,6 +330,7 @@ export default {
   methods: {
     ...mapActions("mileExcel", ["getExcelNotices"]),
     ...mapActions("login", ["logout"]),
+    ...mapActions('mile', ['fetchMileInfo']),
     async fetchMileExcelData() {
       await this.getExcelNotices();
       const excelNotices = this.getExcelNotice;
@@ -187,20 +348,12 @@ export default {
     },
     openModal() {
       this.isModalOpen = true;
+      // 모바일 환경에서의 포커싱 이슈 해결 (iOS와 같은 환경에서)
+      document.body.style.overflow = 'hidden'; // 모바일 환경에서 배경 스크롤 방지
     },
     closeModal() {
       this.isModalOpen = false;
-    },
-    // warningAlert() {
-    //   this.$swal({
-    //     title: "안내",
-    //     text: "이 기능은 추후 업데이트 예정입니다",
-    //     icon: "info",
-    //     scrollbarPadding: false,
-    //   });
-    // },
-    willBeUpdate() {
-      this.warningAlert();
+      document.body.style.overflow = ''; // 배경 스크롤 다시 활성화
     },
     setDefaultImage(event) {
       event.target.src = require("@/assets/img/test.png");
@@ -219,29 +372,56 @@ export default {
       this.isNotificationOpen = !this.isNotificationOpen;
     },
     closeNotificationDropdown(event) {
-      if (!event.target.closest('.nav-item.dropdown')) {
+      if (!event.target.closest(".nav-item.dropdown")) {
         this.isNotificationOpen = false;
+      }
+    },
+    toggleMobileMenu() {
+      this.showMobileMenu = !this.showMobileMenu;
+    },
+    toggleMobileProfileMenu() {
+      this.showMobileProfileMenu = !this.showMobileProfileMenu;
+    },  
+    toggleMobileNotification() {
+      this.showMobilenotification = !this.showMobilenotification;
+      console.log('Notification toggled:', this.showMobilenotification); // 디버깅용
+    },
+    closeMenuModal(event) {
+      if (!event.target.closest('.mobile-menu')  && !event.target.closest('.profile-mobile-dropdown') && !event.target.closest('.notification-mobile-dropdown')) {
+        this.showMobileMenu = false;
+        this.showMobileProfileMenu = false;
+        this.showMobilenotification = false;
       }
     },
   },
   mounted() {
     this.fetchMileExcelData();
-    document.addEventListener("click", this.closeNotificationDropdown);
+    document.addEventListener("click", this.closeMenuModal);
     window.addEventListener("resize", () => {
       if (window.innerWidth < 768) {
         this.isHovered = false;
       }
     });
-    // 3초 동안 애니메이션 적용 후 제거
-  const bellIcon = document.querySelector('.bi-bell-fill');
-  bellIcon.classList.add('shake');
-  setTimeout(() => {
-    bellIcon.classList.remove('shake');
-  }, 3000);
+
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+
+    // 모바일에서 Modal이 올바르게 포커스되도록 보장
+    if (this.isMobile) {
+        this.$nextTick(() => {
+            if (this.isModalOpen) {
+                this.$refs.modal && this.$refs.modal.focus();
+            }
+        });
+    }
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.hideDropdown);
-    document.removeEventListener("click", this.closeNotificationDropdown);
+    document.removeEventListener("click", this.closeMenuModal);
+  },
+  async created(){
+    const name = this.loginInfo ? this.loginInfo.user_name : null;
+    this.user_name = name;
   },
 };
 </script>
@@ -283,6 +463,12 @@ export default {
   font-family: "KB_C2";
 }
 
+.nav-link-profile {
+  text-decoration: none;
+  font-size: 16pt;
+  font-family: "KB_C2";
+}
+
 .dropdown-menu {
   background-color: rgba(255, 255, 255, 0.894);
   border-radius: 10px;
@@ -303,9 +489,8 @@ export default {
   white-space: nowrap;
   padding: 10px 20px;
   cursor: pointer;
+  font-family: 'KB_C3';
 }
-
-
 
 .dropdown-item:hover {
   color: black;
@@ -330,9 +515,32 @@ export default {
   display: none !important;
 }
 
+/* 모바일 환경일 때 */
 @media (min-width: 768px) {
   .dropdown-hover:hover > .dropdown-menu {
     display: block;
+  }
+  .notification-mobile-dropdown {
+    right: 0; /* 모바일 화면에서는 오른쪽 끝에 맞춤 */
+  }
+  .modals .modals-content {
+    width: 90%;
+    height: auto;
+    max-height: 90vh;
+    margin: auto;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: white;
+  }
+
+  .modals {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-y: auto;
   }
 }
 
@@ -377,9 +585,31 @@ export default {
   flex-direction: column;
 }
 
+.notification-mobile-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  min-width: 250px;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1060;
+  display: none;
+}
+
+.notification-mobile-dropdown .dropdown-item {
+  white-space: normal; /* 긴 텍스트 줄바꿈 */
+  word-wrap: break-word; /* 단어 단위 줄바꿈 */
+}
+
+.notification-show {
+  display: block;
+}
 
 .notification-header {
-
   background-color: #f8f9fade;
   border-bottom: 1px solid #e9ecef;
   font-size: 0.9rem;
@@ -432,4 +662,139 @@ export default {
   animation: bell-shake 0.7s ease-in-out;
 }
 
+.mobile-header{
+  margin-bottom: 10%;
+}
+
+.mobile-header .nav-item {
+  display: inline-block;
+}
+
+.mobile-logo {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-menu {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 100%;
+  height: 100%;
+  width: 220px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu-enter,
+.mobile-menu-leave-to {
+  transform: translateX(-100%);
+}
+
+.mobile-menu .nav-item {
+  margin-bottom: 1rem;
+}
+
+.mobile-menu .nav-link {
+  color: #333;
+  font-size: 15pt;
+  font-family: 'KB_C3';
+}
+
+.profile-mobile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: -150px; /* 오른쪽으로 더 이동 */
+  width: 250px; /* 너비 고정 */
+  max-height: 300px; /* 최대 높이 증가 */
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1060;
+}
+
+.profile-mobile-dropdown.profile-menu-enter {
+  max-height: 200px; /* 드롭다운이 열렸을 때의 최대 높이 */
+  display:block;
+}
+
+.profile-mobile-dropdown.profile-menu-leave-to {
+  max-height: 0;
+  display: none;
+}
+
+/* 모바일 메뉴 버튼 스타일 */
+.nav-item.ml-2 a {
+  font-size: 30px;
+  color: #fff;
+}
+
+/* 스타일 조정 */
+.accordion-button {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  font-size: 20pt; /* 사용자 이름 크기 조정 */
+  color: #333; /* 사용자 이름 색상 */
+  text-align: center;
+  display: block; /* 중앙 정렬을 위해 블록 요소로 변경 */
+  width: 100%; /* 중앙 정렬을 위한 너비 100% 설정 */
+}
+
+.accordion-button:not(.collapsed) {
+  color: inherit;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.accordion-button::after {
+  display: none; /* 기본 아코디언 화살표 제거 */
+}
+
+.accordion-body {
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+  text-align: center;
+}
+
+.profile-small {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none; /* 테두리 제거 */
+}
+
+.dropdown-item {
+  color: #333;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.dropdown-item:hover {
+  color: black;
+  background-color: rgb(244, 244, 244);
+  border-radius: 10px;
+}
+
+.modal {
+  z-index: 1050; /* Bootstrap 기본값과 동일, 필요시 조정 */
+}
 </style>

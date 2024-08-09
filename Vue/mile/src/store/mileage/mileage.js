@@ -3,6 +3,7 @@ import api from '@/api/axios';
 const state = {
   objectMileage: null,
   arrayMileage: [],
+  targets: [{}],
 };
 
 const mutations = {
@@ -12,6 +13,9 @@ const mutations = {
   setArrayMileage(state, payload) {
     state.arrayMileage = payload;
   },
+  setTargets(state, payload) {
+    state.targets = payload;
+  }
 };
 
 const actions = {
@@ -22,15 +26,37 @@ const actions = {
         '/mileage/getMileage'
       );
       commit('setArrayMileage', response.data);
+      console.log('마일리지즐겨찾기에 그 점수 ' ,response.data);
     } catch (error) {
       console.error('Error getting all mileage data:', error);
     }
   },
+  // 마일리지 담당자가 목표 설정 등록하기
+  async addTarget(context, targetInfo){
+    try{
+      const response = await api.post(`/mana/addTarget`, targetInfo);
+      return response;
+    }catch(error){
+      console.error('Error update mile Target:', error);
+      throw error;
+    }
+  },
+  // 마일리지 담당자가 등록한 목표 리스트 가져오기
+  async fetchMileTarget({commit}, mile_no){
+    try{
+      const response = await api.get(`/mana/targetList/${mile_no}`);
+      commit('setTargets', response.data);
+    }catch(error){
+      console.error('Error get mile Target:', error);
+      throw error;
+    }
+  }
 };
 
 const getters = {
   getObjectMileage: (state) => state.objectMileage,
   getArrayMileage: (state) => state.arrayMileage,
+  getTargets: (state) => state.targets || [],
 };
 
 export default {

@@ -170,8 +170,5 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  margin-top: 5%;
-}
+
 </style>

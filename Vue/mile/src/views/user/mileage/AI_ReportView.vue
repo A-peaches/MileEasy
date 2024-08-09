@@ -496,15 +496,6 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  height: 100%;
-  margin-top: 5%;
-  padding-left: 5%;
-  padding-right: 5%;
-  padding-bottom: 5%;
-}
-
 .text-emphasis {
   font-size: 13pt;
   font-family: 'KB_S5';

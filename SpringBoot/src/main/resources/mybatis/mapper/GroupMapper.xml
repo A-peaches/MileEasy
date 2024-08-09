@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbstar.mileEasy.mapper.GroupDao">
+
+    <select id="getActiveMileages" resultType="map">
+        SELECT mile_no, mile_name
+        FROM mileage
+        WHERE mile_is_delete = 0
+    </select>
+
+    <select id="getUserMileages" resultType="map">
+        WITH active_mileages AS (
+        SELECT mile_no, mile_name
+        FROM mileage
+        WHERE mile_is_delete = 0
+        ),
+        latest_scores AS (
+        SELECT
+        user_no,
+        mile_no,
+        SUM(mile_score_point) AS score,
+        MAX(mile_score_date) AS date
+        FROM mile_score
+        WHERE mile_score_date &lt;= #{inputDate}
+        GROUP BY user_no, mile_no, mile_score_date
+        UNION ALL
+        SELECT
+        user_no,
+        mile_no,
+        SUM(mile_history_point) AS score,
+        MAX(mile_history_date) AS date
+        FROM mile_history
+        WHERE mile_history_date &lt;= #{inputDate}
+        GROUP BY user_no, mile_no, mile_history_date
+        ),
+        ranked_scores AS (
+        SELECT
+        user_no,
+        mile_no,
+        SUM(score) AS total_score
+        FROM (
+        SELECT
+        user_no,
+        mile_no,
+        score,
+        ROW_NUMBER() OVER (PARTITION BY user_no, mile_no ORDER BY date DESC) as rn
+        FROM latest_scores
+        ) ranked
+        WHERE rn = 1
+        GROUP BY user_no, mile_no
+        ),
+        weighted_scores AS (
+        SELECT
+        rs.user_no,
+        rs.mile_no,
+        rs.total_score,
+        CASE
+        WHEN gw.weight = 0 OR gw.weight IS NULL THEN rs.total_score
+        ELSE rs.total_score + (rs.total_score * gw.weight)
+        END AS weighted_score
+        FROM ranked_scores rs
+        LEFT JOIN group_weight gw ON gw.group_no = #{group_no} AND gw.mile_no = rs.mile_no
+        ),
+        user_mileage_sums AS (
+        SELECT
+        u.user_no,
+        u.user_name,
+        <foreach item="mileage" collection="activeMileages" separator=",">
+            COALESCE(SUM(CASE WHEN ws.mile_no = #{mileage.mile_no} THEN ws.weighted_score ELSE 0 END), 0) AS "${mileage.mile_name}"
+        </foreach>,
+        COALESCE(SUM(ws.weighted_score), 0) AS total_sum
+        FROM user u
+        LEFT JOIN weighted_scores ws ON u.user_no = ws.user_no
+        WHERE u.group_no = #{group_no}
+        GROUP BY u.user_no, u.user_name
+        )
+        SELECT
+        ums.*,
+        RANK() OVER (ORDER BY ums.total_sum DESC) AS user_rank
+        FROM user_mileage_sums ums
+        ORDER BY user_rank
+    </select>
+
+
+    <select id="getWeight" resultType="com.kbstar.mileEasy.dto.GroupWeight">
+        select
+            mile_name , weight
+        from group_weight g LEFT OUTER JOIN mileage m  ON g.mile_no = m.mile_no
+        where group_no=#{groupNo} and weight &gt; 0;
+    </select>
+</mapper>

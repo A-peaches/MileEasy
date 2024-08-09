@@ -296,10 +296,5 @@ input {
   background-color: #19c99b;
 }
 
-.page-back {
-  width: 70%;
-  height: 100%;
-  margin-top: 5%;
-}
 </style>
    

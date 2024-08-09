@@ -281,11 +281,7 @@ export default {
 </script>
 
 <style scoped>
-.page-back {
-  width: 70%;
-  margin-top: 5%;
-  padding-bottom : 70px;
-}
+
 .btn-yellow {
   width: 120px;
   height: 40px;

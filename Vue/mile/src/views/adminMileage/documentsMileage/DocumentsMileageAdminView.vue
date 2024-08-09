@@ -295,12 +295,6 @@ export default {
 </script>
 
 <style scope>
-.page-back {
-  width: 70%;
-  height: 90vh;
-  /* height: 800px; */
-  margin-top: 5%;
-}
 .choice {
   background-color: #dc3545;
   color: #ffffff;
