@@ -1,10 +1,10 @@
 <template>
-  <div class="modals " >
+  <div class="modals">
     <div class="modals-content">
       <span class="close" @click="$emit('close')">&times;</span>
-      <p class="lg2 KB_S4 mb-3" style="margin-bottom: 0px">
+      <p class="lg2 KB_S4 mb-3 modal-header" style="margin-bottom: 0px">
         <i class="bi bi-calendar-check" style="color: #42b983"></i>&nbsp;&nbsp;
-        <span class="KB_S4" style="font-size: 19pt">출석체크</span>
+        <span class="KB_S4 modal-title" style="font-size: 19pt">출석체크</span>
       </p>
       <div class="calendar-container">
         <vue-cal
@@ -29,9 +29,9 @@
       </div>
       <div class="text-center">
         <button
-          class="btn-green my-3"
+          class="btn-green my-3 modal-btn"
           @click="handleAddAttendance"
-          style="width: 25%; height: 45px; font-size: 14pt"
+           style="width: 30%; height: 45px; font-size: 12pt"
         >
           출석체크
         </button>
@@ -151,6 +151,63 @@ beforeUnmount() {
 
 body.alret-open {
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .modals .modals-content {
+    width: 90%;
+    height: auto;
+    max-height: 90vh;
+    margin: auto;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: white;
+  }
+
+  .modals {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    font-size: 16pt;
+    text-align: center;
+  }
+
+  .modal-title {
+    font-size: 16pt;
+  }
+
+  .modal-btn {
+    width: 200px;
+    height: 45px;
+    font-size: 14pt;
+  }
+
+  .calendar-container {
+    height: auto;
+    width: 100%;
+  }
+
+  .close {
+    font-size: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  ::v-deep .vuecal__cell-events-count {
+    top: -4px;
+    height: 30px;
+    width: 30px;
+    background-size: 25px 23px; /* 이미지 크기 축소 */
+    background-position: 2px 5px; /* 위치 조정 */
+  }
 }
 
 </style>

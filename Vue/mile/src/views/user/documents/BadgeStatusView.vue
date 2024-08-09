@@ -214,12 +214,6 @@ h2 {
   font-family: "KB_S3", sans-serif;
 }
 
-.page-back {
-  width: 70%;
-  height: 100%;
-  margin-top: 5%;
-}
-
 .badge-title {
   font-family: "KB_C2";
   font-size: 16pt;
