@@ -1,22 +1,31 @@
 package com.kbstar.mileEasy.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
 public class FileReader {
-
-    // 지정된 경로의 파일 내용을 문자열로 읽어 반환합니다.
-    public String readFileContent(String filePath) throws IOException {
-        File file = new File(filePath);
-        if (file.exists()) {
-            return new String(Files.readAllBytes(Paths.get(filePath)));
-        } else {
-            throw new IOException("File not found: " + filePath);
+    public String readFileContent(String filePath) {
+        Path path = Paths.get(filePath);
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            return content.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

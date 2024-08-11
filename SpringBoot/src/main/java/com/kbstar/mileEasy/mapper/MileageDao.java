@@ -90,4 +90,12 @@ public interface MileageDao {
     void deleteDetail(String mileNo);
 
     void adminDelete(String mileNo);
+
+    ArrayList<MileScore> allScore();
+
+    ArrayList<MileScore> myScore(String userNo);
+
+    ArrayList<MileScore> avgScore();
+
+    ArrayList<MileScore> percentageScore(String userNo);
 }

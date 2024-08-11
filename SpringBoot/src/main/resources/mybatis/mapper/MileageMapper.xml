@@ -632,4 +632,87 @@
         WHERE mile_no = #{mileNo};
     </update>
 
+
+    <select id="allScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT
+            ms.mile_no,
+            m.mile_name,
+            ms.user_no,
+            SUM(ms.mile_score_point) AS total_score
+        FROM mile_score ms
+                 JOIN mileage m ON ms.mile_no = m.mile_no
+        GROUP BY ms.mile_no, m.mile_name, ms.user_no
+        ORDER BY total_score DESC
+            LIMIT 10;
+
+
+    </select>
+
+    <select id="myScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT
+            m.mile_name,
+            s.mile_no,
+            SUM(s.mile_score_point) AS total_score
+        FROM mile_score s
+                 JOIN mileage m ON s.mile_no = m.mile_no
+        WHERE s.user_no = #{userNo}
+        GROUP BY m.mile_name, s.mile_no;
+    </select>
+
+    <select id="avgScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+        WITH TotalScores AS (
+            SELECT
+                mile_no,
+                SUM(mile_score_point) AS total_score
+            FROM mile_score
+            GROUP BY mile_no
+        ),
+             UserCounts AS (
+                 SELECT
+                     mile_no,
+                     COUNT(DISTINCT user_no) AS user_count
+                 FROM mile_score
+                 GROUP BY mile_no
+             )
+        SELECT
+            m.mile_name,
+            t.mile_no,
+            t.total_score / u.user_count AS average_score
+        FROM TotalScores t
+                 JOIN UserCounts u ON t.mile_no = u.mile_no
+                 JOIN mileage m ON t.mile_no = m.mile_no
+        ORDER BY t.mile_no;
+
+    </select>
+
+
+    <select id="percentageScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+        WITH UserTotalScores AS (
+            -- Calculate total points for each user
+            SELECT
+                user_no,
+                SUM(mile_score_point) AS total_point
+            FROM mile_score
+            GROUP BY user_no
+        ),
+
+             PercentileCalculation AS (
+                 -- Calculate percentile rank for all users
+                 SELECT
+                     user_no,
+                     total_point,
+                     PERCENT_RANK() OVER (ORDER BY total_point DESC) AS percentile_rank
+                 FROM UserTotalScores
+             )
+
+-- Select the percentile rank for the specified user
+        SELECT
+            percentile_rank * 100 AS user_percentile
+        FROM PercentileCalculation
+        WHERE user_no = #{userNo};
+
+    </select>
+
+
+
 </mapper>
