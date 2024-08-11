@@ -568,6 +568,15 @@ span {
   display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
 }
 
+
+.page-back {
+
+
+  padding-left: 5%;
+  padding-right: 5%;
+
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
