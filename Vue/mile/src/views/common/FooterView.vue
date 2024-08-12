@@ -179,7 +179,7 @@
         </div>
       </div>
 
-      <div class="mobile-menu-container">
+      <!-- <div class="mobile-menu-container">
         <div class="mobile-menu-section">
           <span class="mobile-menu-title">My Mileage</span>
           <div class="mobile-menu-items">
@@ -214,7 +214,7 @@
             <a href="/mileEasyContactView" class="mobile-menu-link">업무별 연락처</a>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="mobile-contact-info">
         <template v-if="getLoginInfo?.user_is_admin && isChecked">
