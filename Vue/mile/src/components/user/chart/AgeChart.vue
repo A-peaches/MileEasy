@@ -79,7 +79,6 @@ export default {
   name: "AgeChart",
   data() {
     return {
-      ageChart: null, // Chart 객체를 저장하기 위한 데이터 속성
       ageChartData: [], // 초기값을 설정합니다.
       userData: [],
       isMobile: false,
@@ -95,10 +94,9 @@ export default {
   methods: {
     ...mapActions("mileScore", ["getMileAge"]),
     createChart() {
+      Chart.getChart('ageChart')?.destroy();
+      
       const ctx = document.getElementById("ageChart").getContext("2d");
-      if (this.ageChart) {
-        this.ageChart.destroy(); // 기존 차트를 파괴
-      }
       new Chart(ctx, {
         type: "doughnut",
         data: {
@@ -148,7 +146,7 @@ export default {
 
         this.$nextTick(() => {
           this.createChart();
-        }); 
+        });
       } else {
         console.error("No data available for mileAges");
       }
@@ -164,9 +162,7 @@ export default {
     await this.loadMileAgeData();
   },
   beforeUnmount() {
-    if (this.ageChart) {
-      this.ageChart.destroy(); // 컴포넌트가 제거될 때 차트를 파괴
-    }
+    Chart.getChart('ageChart')?.destroy();
   },
 };
 </script>
