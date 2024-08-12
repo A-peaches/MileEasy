@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-  </div>
+  
   <div class="d-flex justify-content-between align-items-center">
     <div class="lg2" style="padding: 3em">총 {{ countList }}건</div>
     <div
@@ -53,6 +53,7 @@
           ></i>
         </button>
       </div>
+    </div>
     </div>
 
     <!-- 문서 리스트 불러오기 -->
@@ -152,6 +153,7 @@
         〉
       </button>
     </div>
+  
   </div>
 </template>
 
