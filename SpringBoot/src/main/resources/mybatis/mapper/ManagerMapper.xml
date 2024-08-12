@@ -91,7 +91,7 @@
     </select>
 
     <insert id="insertTarget">
-        insert into target (mile_no, user_no, start_date, end_date, target_mileage, is_manager_plan) values (#{mile_no},#{user_no},#{start_date},#{end_date},#{target_mileage},#{is_manager_plan});
+        insert into target (mile_no, user_no, start_date, end_date, target_mileage, is_together, is_manager_plan) values (#{mile_no},#{user_no},#{start_date},#{end_date},#{target_mileage},#{is_together},#{is_manager_plan});
     </insert>
 
     <insert id="insertMile">

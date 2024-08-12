@@ -31,8 +31,8 @@ public class ManagerService {
     public List<Target> getTargets(int mile_no) {
         return managerDao.selectMileTarget(mile_no);
     }
-    public int addTarget(int mile_no, String user_no, Date start_date, Date end_date, int target_mileage, boolean is_manager_plan){
-        return managerDao.insertTarget(mile_no, user_no, start_date, end_date, target_mileage, is_manager_plan);
+    public int addTarget(int mile_no, String user_no, Date start_date, Date end_date, int target_mileage, boolean is_together, boolean is_manager_plan){
+        return managerDao.insertTarget(mile_no, user_no, start_date, end_date, target_mileage, is_together, is_manager_plan);
     }
 
     public int addMileage(String mile_no, String mile_title, String mile_content, String mile_route) {

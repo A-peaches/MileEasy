@@ -55,6 +55,32 @@ public class TargetService {
         return targetDao.getAdminTargets(userNo);
     }
 
+    // 사용자가 특정 타겟에 참여했는지 확인
+    public boolean isUserParticipating(int targetNo, String userNo) {
+        return targetDao.checkUserParticipation(targetNo, userNo) > 0;
+    }
+
+    // 사용자  참여하기
+    public void joinTarget(int targetNo, String userNo) {
+
+        System.out.println("joinTarget service 도착 ! ");
+        // 목표 정보를 가져오기
+        Target target = targetDao.getTargetByNo(targetNo);
+
+        // 사용자 목표에 참여시키기
+        Usertarget userTarget = new Usertarget();
+        userTarget.setTarget_no(target.getTarget_no());
+        userTarget.setUser_no(userNo);
+        userTarget.setMile_no(target.getMile_no());
+        userTarget.setStart_date(target.getStart_date());
+        userTarget.setEnd_date(target.getEnd_date());
+        userTarget.setTarget_mileage(target.getTarget_mileage());
+        userTarget.set_together(target.is_together());
+        System.out.println("userTarget dao 들렸다가 옴 : "+userTarget);
+        // user_target 테이블에 삽입
+        targetDao.joinUserTarget(userTarget);
+    }
+
 
 
 }

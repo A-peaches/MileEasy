@@ -77,5 +77,8 @@ components: {
 </script>
 
 <style scoped>
-
+.page-back {
+  padding-left: 2% !important;
+  padding-right: 2% !important;
+}
 </style>

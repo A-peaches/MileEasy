@@ -52,6 +52,35 @@ const state = {  // 애플리케이션의 상태를 저장
           console.error("Error fetching admin targets:", error);
         }
       },
+      // 사용자가 참여한 모든 타겟의 번호를 가져오는 액션
+      async checkParticipation(_, { targetNo, userNo }) {
+        try {
+          console.log("joinTarget.js :", { targetNo, userNo });
+          const response = await api.get(`/target/checkParticipation/${targetNo}/${userNo}`);
+          return response.data;  // 참여 여부 반환
+        } catch (error) {
+          console.error('Error checking participation:', error);
+          throw error;
+        }
+      },
+
+      // 사용자가 특정 타겟에 참여하도록 하는 액션
+      async joinTarget(_, { targetNo, userNo }) {
+        try {
+          const response = await api.post('/target/join', { targetNo, userNo });
+          console.log('API joinTarget response:', response.data);
+          
+          if (response.data && response.data.success) {
+            return { success: true, message: response.data.message };
+          } else {
+            return { success: false, message: response.data.message || "서버에서 예상치 못한 응답이 왔습니다." };
+          }
+        } catch (error) {
+          console.error('Error joining target:', error);
+          return { success: false, message: error.response?.data?.message || "서버 오류가 발생했습니다" };
+        }
+      },
+    
   };
   
   const getters = {  // 상태를 가져오는 게터

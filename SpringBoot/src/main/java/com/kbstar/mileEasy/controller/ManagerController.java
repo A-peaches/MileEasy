@@ -86,7 +86,7 @@ public class ManagerController {
     @PostMapping("/addTarget")
     public ResponseEntity<?> addTarget(@RequestBody Target target) {
         System.out.println("이건 등록할 거" + target);
-        int result = managerService.addTarget(target.getMile_no(), target.getUser_no(), target.getStart_date(), target.getEnd_date(), target.getTarget_mileage(),true);
+        int result = managerService.addTarget(target.getMile_no(), target.getUser_no(), target.getStart_date(), target.getEnd_date(), target.getTarget_mileage(),true,true);
         if (result > 0) {
             return ResponseEntity.ok().body("{\"success\":true}");
         } else {

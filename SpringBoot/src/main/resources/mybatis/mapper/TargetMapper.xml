@@ -44,10 +44,22 @@
             ) AS participantCount,
             CASE
                 WHEN t.target_mileage > 0 THEN
-                    ROUND((COALESCE(SUM(ms.mile_score_point), 0) / t.target_mileage) * 100, 2)
+                    ROUND(
+                            (
+                                COALESCE(
+                                        (
+                                            SELECT SUM(ms_inner.mile_score_point)
+                                            FROM mile_score ms_inner
+                                                     INNER JOIN user_target ut ON ut.user_no = ms_inner.user_no
+                                            WHERE ut.target_no = t.target_no
+                                              AND ms_inner.mile_no = t.mile_no
+                                        ), 0
+                                ) / t.target_mileage
+                                ) * 100, 2
+                    )
                 ELSE 0
                 END AS achievementRate,
-            -- 추가된 부분: 로그인한 사용자의 mile_score_point의 합계를 mile_no별로 계산
+            -- 로그인한 사용자의 해당 마일리지 점수를 계산하여 반환
             (SELECT COALESCE(SUM(ms_inner.mile_score_point), 0)
              FROM mile_score ms_inner
              WHERE ms_inner.mile_no = t.mile_no
@@ -55,10 +67,10 @@
             ) AS totalMileScoreByMileNo
         FROM
             target t
-                LEFT JOIN mile_score ms ON t.user_no = ms.user_no AND t.mile_no = ms.mile_no
                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
         WHERE
             t.is_manager_plan = true
+          AND (t.is_together = 1 OR t.is_manager_plan = true)  -- is_together가 1이거나 is_manager_plan이 true인 경우
         GROUP BY
             t.target_no,
             t.mile_no,
@@ -69,6 +81,51 @@
             t.is_together,
             t.is_manager_plan,
             m.mile_name;
+
     </select>
 
+    <!-- 사용자가 특정 타겟에 참여했는지 확인 -->
+    <select id="checkUserParticipation" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM user_target
+        WHERE target_no = #{targetNo}
+          AND user_no = #{userNo}
+    </select>
+
+    <!-- 특정 목표 정보 가져오기 -->
+    <select id="getTargetByNo" resultType="com.kbstar.mileEasy.dto.Target">
+        SELECT
+            target_no,
+            mile_no,
+            user_no,
+            start_date,
+            end_date,
+            target_mileage,
+            is_together,
+            is_manager_plan
+        FROM target
+        WHERE target_no = #{targetNo}
+    </select>
+
+    <!-- 사용자 목표 참여 정보 추가하기 -->
+    <insert id="joinUserTarget">
+        INSERT INTO user_target (
+            target_no,
+            user_no,
+            mile_no,
+            start_date,
+            end_date,
+            target_mileage,
+            is_together
+        )
+        VALUES (
+                   #{target_no},
+                   #{user_no},
+                   #{mile_no},
+                   #{start_date},
+                   #{end_date},
+                   #{target_mileage},
+                   1
+               )
+    </insert>
 </mapper>
