@@ -26,14 +26,4 @@ export default [
       ),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
   },
-  //마일리지 수정
-  {
-    path: '/mileageModifyAdminView/:mile_no',
-    name: 'mileageModifyAdminView',
-    component: () =>
-      import(
-        '../views/adminMileEasy/mileageManagement/MileageModifyAdminView.vue'
-      ),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
 ];

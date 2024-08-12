@@ -71,6 +71,7 @@ const actions = {
     try {
       const response = await api.get(`/myMile/getMyMiles/${user_no}`);
       commit('setMyMile', response.data);
+      console.log(response.data, 'get mymiles');
     } catch (error) {
       console.error('Error getting MileJob data:', error);
     }

@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkmile"]=self["webpackChunkmile"]||[]).push([[6336],{6336:function(e,n,u){u.r(n),u.d(n,{default:function(){return h}});var a=u(641);const t={class:"about"},s=(0,a.Lk)("h1",null,"업무별 연락처",-1),l=(0,a.Lk)("h3",null,"마일Easy 당담자의 연락처",-1),r=(0,a.Lk)("a",{href:"/mileageRequesList"},"마일리지 요청",-1),i=[s,l,r];function c(e,n,u,s,l,r){return(0,a.uX)(),(0,a.CE)("div",t,i)}var f={name:"MileEasyContactView"},k=u(6262);const o=(0,k.A)(f,[["render",c]]);var h=o}}]);
-//# sourceMappingURL=6336.165daf0b.js.map

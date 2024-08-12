@@ -119,7 +119,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import url('../../../assets/css/css.css');
 
 /* 모바일 버전 스타일 */

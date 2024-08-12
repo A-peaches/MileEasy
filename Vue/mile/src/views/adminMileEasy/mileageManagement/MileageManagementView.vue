@@ -105,7 +105,6 @@ export default {
 </script>
 
 <style scoped>
-
 .tab-container:hover {
   padding: 10px 10px;
   cursor: pointer;

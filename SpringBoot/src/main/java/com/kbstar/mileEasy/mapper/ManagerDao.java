@@ -3,6 +3,8 @@ import com.kbstar.mileEasy.beans.PageCount;
 import com.kbstar.mileEasy.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Mapper
@@ -22,7 +24,7 @@ public interface ManagerDao {
     int updateRecommand(String mile_mention, int mile_recommand_no);
     int insertRecommand(String mile_no, String mile_mention);
     int deleteRecommand(String mile_recommand_no);
-    int insertTarget(int mile_no, String user_no, String start_date, String end_date, int target_mileage, boolean is_together, boolean is_manager_plan);
+    int insertTarget(int mile_no, String user_no, Date start_date, Date end_date, int target_mileage, boolean is_together, boolean is_manager_plan);
     ArrayList<HitMile> mileCount(String start, String end, String mile);
 
 

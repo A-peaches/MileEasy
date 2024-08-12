@@ -6,6 +6,8 @@ import com.kbstar.mileEasy.mapper.ManagerDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Year;
 import java.util.*;
 
@@ -29,8 +31,8 @@ public class ManagerService {
     public List<Target> getTargets(int mile_no) {
         return managerDao.selectMileTarget(mile_no);
     }
-    public int addTarget(String mile_no, String user_no, String start_date, String end_date, int target_mileage, boolean is_together, boolean is_manager_plan){
-        return managerDao.insertTarget(Integer.parseInt(mile_no), user_no, start_date, end_date, target_mileage, is_together, is_manager_plan);
+    public int addTarget(int mile_no, String user_no, Date start_date, Date end_date, int target_mileage, boolean is_together, boolean is_manager_plan){
+        return managerDao.insertTarget(mile_no, user_no, start_date, end_date, target_mileage, is_together, is_manager_plan);
     }
 
     public int addMileage(String mile_no, String mile_title, String mile_content, String mile_route) {

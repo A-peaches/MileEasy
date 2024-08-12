@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbstar.mileEasy.mapper.TargetDao">
+    <!-- 개인형 목표 추가하기-->
+    <insert id="insertTarget" useGeneratedKeys="true" keyProperty="targetNo">
+        INSERT INTO target (mile_no, user_no, start_date, end_date, target_mileage, is_together, is_manager_plan)
+        VALUES (#{mileNo}, #{userNo}, #{startDate}, #{endDate}, #{targetMileage}, #{isTogether}, #{isManagerPlan})
+    </insert>
+
+    <insert id="insertUserTarget">
+        INSERT INTO user_target (user_no, target_no, mile_no, start_date, end_date, target_mileage, is_together)
+        VALUES (#{userNo}, #{targetNo}, #{mileNo}, #{startDate}, #{endDate}, #{targetMileage}, #{isTogether})
+    </insert>
+
+    <!-- 개인형 목표 불러오기-->
+    <select id="getTargetsByUserNo" parameterType="string" resultType="com.kbstar.mileEasy.dto.Target">
+        SELECT t.target_no, t.mile_no, t.user_no, t.start_date, t.end_date,
+               t.target_mileage, t.is_together, t.is_manager_plan,
+               m.mile_name,
+               COALESCE(SUM(ms.mile_score_point), 0) AS achievementRate
+        FROM target t
+                 LEFT JOIN mile_score ms ON t.user_no = ms.user_no AND t.mile_no = ms.mile_no
+                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
+        WHERE t.user_no = #{userNo}
+        GROUP BY t.target_no, t.mile_no, t.user_no, t.start_date, t.end_date,
+                 t.target_mileage, t.is_together, t.is_manager_plan, m.mile_name
+    </select>
+
+
+</mapper>
