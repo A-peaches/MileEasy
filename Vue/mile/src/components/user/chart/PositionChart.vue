@@ -172,6 +172,22 @@ export default {
 </script>
 
 <style scoped>
+@media screen and (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-container, .text-container {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .chart-container {
+    height: 300px; /* 적절한 높이로 조정 */
+  }
+}
+
 .flex {
   display: flex;
   flex-direction: row; /* 수평으로 나열 */

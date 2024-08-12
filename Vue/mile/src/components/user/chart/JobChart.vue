@@ -32,11 +32,10 @@
           <span>{{ userData[2] }}</span>
         </div>
       </div>
-    </div>
-    
-    <div class="text-start w-100 mt-3">
-      <span class="text-end" style="font-size: 10pt; color: gray">( 최근 업데이트 : {{ userData[1] }} )</span>
-    </div>
+    </div>  
+  </div>
+  <div class="text-end w-100 mt-3">
+    <span class="text-end" style="font-size: 10pt; color: gray">( 최근 업데이트 : {{ userData[1] }} )</span>
   </div>
 </template>
 
@@ -80,7 +79,7 @@ export default {
 
     createChart() {
       var ctx = document.getElementById("jobChart").getContext("2d");
-
+      
       new Chart(ctx, {
         type: "bubble",
         data: {
@@ -179,7 +178,10 @@ export default {
           this.maxValue = Math.max(...this.jobChartData);
           this.minValue = Math.min(...this.jobChartData);
           this.jobNo = this.jobs.indexOf(this.userData[2]);
-          this.createChart();
+          this.$nextTick(() => {
+            this.createChart();
+          })
+          
         } else {
           console.error("No data available for mileJobs");
         }

@@ -1,107 +1,208 @@
 <template>
-  <div class="cards " style="background-color: #f9f9f9; height: 430px">
-    <p class="text-left lg2 KB_C2">
-      즐겨찾기 마일리지&nbsp;
-      <i
-        class="bi bi-plus-circle-fill"
-        style="color: #ffca05; cursor: pointer"
-        @click="openModal"
-      ></i>
-    </p>
-    <div class="flex">
-      <div v-for="(item, index) in 4" :key="index" class="cards favorite-card"
-      @click="favoriteList[index] && navigateToLink(favoriteList[index].mile_no)"
-      style="cursor: pointer;">
-      <img
-          v-if="!favoriteList[index]"
-          src="@/assets/img/add.png"
-          class="addImg mx-auto"
-          @click.stop="openModal"
-        />
-        <div  v-else>
-          <p class="favorite-text KB_C2 mt-5">
-            {{ favoriteList[index].mile_no }} 마일리지 
-          </p>
-          <div class="flex">
-            <div
-              class="KB_C1 mileage-score"
-              style="margin-left: 10px; margin-right: 10px; width: 200px;"
-            >
-              {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
-            </div>
-            <div
-              class="chart-wrapper mx-auto"
-              style="width: 290px; position: relative; margin-left : 0px;"
-            >
-              <div v-if="hasMileageData(favoriteList[index].mile_no)" class="chart-container">
-                <canvas
-                  :id="'chart' + index"
-                  :ref="'chart' + index"
-                  style="
-                    position: absolute;
-                    top: -20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    z-index: 0;
-                    height: 190px;
-                  "
-                ></canvas>
+  <div v-if="!isMobile">
+    <div class="cards favorite-container" >
+      <p class="text-left lg2 KB_C2">
+        즐겨찾기 마일리지&nbsp;
+        <i
+          class="bi bi-plus-circle-fill"
+          style="color: #ffca05; cursor: pointer"
+          @click="openModal"
+        ></i>
+      </p>
+      <div class="flex">
+        <div v-for="(item, index) in 4" :key="index" class="cards favorite-card"
+        @click="favoriteList[index] && navigateToLink(favoriteList[index].mile_no)"
+        style="cursor: pointer;">
+        <img
+            v-if="!favoriteList[index]"
+            src="@/assets/img/add.png"
+            class="addImg mx-auto"
+            @click.stop="openModal"
+          />
+          <div  v-else>
+            <p class="favorite-text KB_C2 mt-5">
+              {{ favoriteList[index].mile_no }} 마일리지 
+            </p>
+            <div class="flex">
+              <div
+                class="KB_C1 mileage-score"
+                style="margin-left: 10px; margin-right: 10px; width: 200px;"
+              >
+                {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
               </div>
-              <div v-else class="no-data-message chart-container">
-                <div class="mb-3 " style=" position: absolute;  z-index: 0;  top: -10px;">
-                  <span><i class="bi bi-exclamation-circle-fill" style="color:#FFCA05; font-size: 17pt;"></i></span>
-                  <p class="mt-2">마일리지 점수가 없습니다.</p></div>
+              <div
+                class="chart-wrapper mx-auto"
+                
+              >
+                <div v-if="hasMileageData(favoriteList[index].mile_no)" class="chart-container">
+                  <canvas
+                    :id="'chart' + index"
+                    :ref="'chart' + index"
+                    style="
+                      position: absolute;
+                      top: -20px;
+                      left: 50%;
+                      transform: translateX(-50%);
+                      z-index: 0;
+                      height: 190px;
+                    "
+                  ></canvas>
+                </div>
+                <div v-else class="no-data-message chart-container">
+                  <div class="mb-3 " style=" position: absolute;  z-index: 0;  top: -10px;">
+                    <span><i class="bi bi-exclamation-circle-fill" style="color:#FFCA05; font-size: 17pt;"></i></span>
+                    <p class="mt-2">마일리지 점수가 없습니다.</p></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 모달 -->
-<teleport to="body">
-  <div v-if="isModalOpen" class="modal-overlay">
-    <div class="modals-content">
-      <span class="close" @click="closeModal">&times;</span>
-      <div class="modal-body">
-        <p class="text-left fw-bold mb-3" style="font-size: 19pt">
-          즐겨찾기 추가하기
-        </p>
-        <div class="favorite-options">
-          <div
-            v-for="(item, index) in filteredMileageInfo"
-            :key="index"
-            class="btn-favorite favorite-item KB_C2"
-            :class="{ selected: selectedFavorites.includes(item.mile_name) }"
-            @click="toggleFavorite(item.mile_name)"
-          >
-            {{ item.mile_name }}
+      <!-- 모달 -->
+      <teleport to="body">
+        <div v-if="isModalOpen" class="modal-overlay">
+          <div class="modals-content">
+            <span class="close" @click="closeModal">&times;</span>
+            <div class="modal-body">
+              <p class="text-left fw-bold mb-3" style="font-size: 19pt">
+                즐겨찾기 추가하기
+              </p>
+              <div class="favorite-options">
+                <div
+                  v-for="(item, index) in filteredMileageInfo"
+                  :key="index"
+                  class="btn-favorite favorite-item KB_C2"
+                  :class="{ selected: selectedFavorites.includes(item.mile_name) }"
+                  @click="toggleFavorite(item.mile_name)"
+                >
+                  {{ item.mile_name }}
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 text-end">
+              <button
+                class="btn-gray KB_C2"
+                @click="updateFavorites"
+                style="
+                      font-size: 16pt;
+                      width: 20%;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+              >
+                등록
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="mt-3 text-end">
-        <button
-          class="btn-gray KB_C2"
-          @click="updateFavorites"
-          style="
-                font-size: 16pt;
-                width: 20%;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-              "
-        >
-          등록
-        </button>
-      </div>
+      </teleport>
     </div>
   </div>
-</teleport>
+  <div v-else>
+    <div class="cards favorite-container" >
+      <p class="text-left lg2 KB_C2">
+        즐겨찾기 마일리지&nbsp;
+        <i
+          class="bi bi-plus-circle-fill"
+          style="color: #ffca05; cursor: pointer"
+          @click="openModal"
+        ></i>
+      </p>
+      <div class="flex">
+        <div v-for="(item, index) in 4" :key="index" class="cards favorite-card"
+        @click="favoriteList[index] && navigateToLink(favoriteList[index].mile_no)"
+        style="cursor: pointer;">
+        <img
+            v-if="!favoriteList[index]"
+            src="@/assets/img/add.png"
+            class="addImg mx-auto"
+            @click.stop="openModal"
+          />
+          <div  v-else>
+            <p class="favorite-text KB_C2 mt-5">
+              {{ favoriteList[index].mile_no }} 마일리지 
+            </p>
+            <div class="flex">
+              <div
+                class="KB_C1 mileage-score"
+                style="margin-left: 10px; margin-right: 10px; width: 200px;"
+              >
+                {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
+              </div>
+              <div
+                class="chart-wrapper mx-auto"
+                
+              >
+                <div v-if="hasMileageData(favoriteList[index].mile_no)" class="chart-container">
+                  <canvas
+                    :id="'chart' + index"
+                    :ref="'chart' + index"
+                    style="
+                      position: absolute;
+                      top: -20px;
+                      left: 50%;
+                      transform: translateX(-50%);
+                      z-index: 0;
+                      height: 190px;
+                    "
+                  ></canvas>
+                </div>
+                <div v-else class="no-data-message chart-container">
+                  <div class="mb-3 " style=" position: absolute;  z-index: 0;  top: -10px;">
+                    <span><i class="bi bi-exclamation-circle-fill" style="color:#FFCA05; font-size: 17pt;"></i></span>
+                    <p class="mt-2">마일리지 점수가 없습니다.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <!-- 모달 -->
+      <teleport to="body">
+        <div v-if="isModalOpen" class="modal-overlay">
+          <div class="modals-content">
+            <span class="close" @click="closeModal">&times;</span>
+            <div class="modal-body">
+              <p class="text-left fw-bold mb-3" style="font-size: 19pt">
+                즐겨찾기 추가하기
+              </p>
+              <div class="favorite-options">
+                <div
+                  v-for="(item, index) in filteredMileageInfo"
+                  :key="index"
+                  class="btn-favorite favorite-item KB_C2"
+                  :class="{ selected: selectedFavorites.includes(item.mile_name) }"
+                  @click="toggleFavorite(item.mile_name)"
+                >
+                  {{ item.mile_name }}
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 text-end">
+              <button
+                class="btn-gray KB_C2"
+                @click="updateFavorites"
+                style="
+                      font-size: 16pt;
+                      width: 20%;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+              >
+                등록
+              </button>
+            </div>
+          </div>
+        </div>
+      </teleport>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import Chart from "chart.js/auto";
+import MobileDetect from "mobile-detect";
 
 export default {
   name: "FavoriteCom",
@@ -109,7 +210,8 @@ export default {
     return {
       isModalOpen: false,
       selectedFavorites: [],
-      charts: [],
+      favCharts: {},
+      isMobile: false,
     };
   },
   computed: {
@@ -204,12 +306,12 @@ export default {
       await this.$nextTick();
       const canvas = this.$refs[chartId]?.[0];
       if (canvas && canvas.getContext) {
-        if (this.charts[index]) {
-          this.charts[index].destroy();
+        if (this.favCharts[chartId]) {
+          this.favCharts[chartId].destroy();
         }
 
         const ctx = canvas.getContext("2d");
-        this.charts[index] = new Chart(ctx, {
+        this.favCharts[chartId] = new Chart(ctx, {
           type: "bar",
           data: {
             labels: ["전월", "당월"],
@@ -254,7 +356,7 @@ export default {
           await this.createChart(index, fav.mile_no, scoreObj);
         }
       }
-    }
+    },
   },
   watch: {
     mileScores(newMileScores) {
@@ -268,6 +370,9 @@ export default {
   },
   async mounted() {
     console.log("FavoriteCom mounted");
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+
     if (this.loginInfo) {
       await this.$store.dispatch("mileage/getMileage");
       await this.$store.dispatch(
@@ -282,13 +387,46 @@ export default {
       await this.renderCharts();
     }
   },
+  beforeUnmount() {
+    // 컴포넌트가 파괴되기 전에 모든 차트를 파괴
+    for (let chart in this.favCharts) {
+      if (this.favCharts[chart]) {
+        this.favCharts[chart].destroy();
+      }
+    }
+  },
   created() {
     console.log("FavoriteCom created");
   },
 };
 </script>
 
-<style>
+<style scoped>
+@media (max-width: 768px) {
+  .favorite-container {
+    width: 97% !important;
+    height: 530px !important;
+    overflow: auto !important;
+    will-change: transform !important;
+  }
+  .chart-container {
+    will-change: transform !important;
+  }
+  .favorite-card {
+    width: 100% !important;
+    padding: 5px !important;
+  }
+  .chart-wrapper {
+    will-change: transform !important;
+  }
+  
+}
+
+.favorite-container{
+  background-color: #f9f9f9; 
+  height: 430px;
+}
+
 .flex {
   display: flex;
   justify-content: space-between;
@@ -339,6 +477,9 @@ export default {
   justify-content: center;
   align-items: center;
   flex: 1;
+  width: 290px; 
+  position: relative; 
+  margin-left : 0px;
 }
 
 .chart-container {

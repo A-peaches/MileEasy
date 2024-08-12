@@ -1,48 +1,72 @@
 <template>
-    <div key="profile" class="cards fade-up-item" style="height: 430px">
-    <div class="profile-container">
-      <!-- <div class="badge-container">
+  <div v-if="!isMobile">
+    <div key="profile" class="cards fade-up-item profile-cards mx-auto" >
+      <div class="profile-container">
         <img
-          v-if="hasKingBadge"
-          src="@/assets/img/king.png"
-          alt="King"
-          class="chat-icon"
+          v-if="loginInfo && loginInfo.user_no"
+          :src="profileImageUrl"
+          class="profile-large my-3"
+          alt="Profile Picture"
+          @error="setDefaultImage"
         />
+      </div>
+      <div class="profile-header mt-3">
+        <h2 class="lg KB_S4 my-1">
+          {{ loginInfo ? loginInfo.user_name : '' }}
+        </h2>
+      </div>
+      <p class="md" style="margin-bottom: 0px">
+        {{
+          loginInfo
+            ? `${loginInfo.level_no || ''} ${loginInfo.position_no || ''} | ${
+                loginInfo.job_no || ''
+              } 직무`
+            : ''
+        }}
+      </p>
+      <p class="md mb-2" style="margin-bottom: 0px">
+        {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
+      </p>
+      <button class="btn-yellow KB_C2 my-3" @click="goToAIView">
+        나의 AI 리포트
+      </button>
+    </div>
+  </div>
+  <div v-else>
+    <div key="profile" class="cards fade-up-item profile-cards mx-auto" >
+      <div class="profile-container d-flex justify-content-between align-items-center">
         <img
-          v-if="hasJumpBadge"
-          src="@/assets/img/jump.png"
-          alt="Jump"
-          class="chat-icon"
+          v-if="loginInfo && loginInfo.user_no"
+          :src="profileImageUrl"
+          class="profile-large my-3"
+          alt="Profile Picture"
+          @error="setDefaultImage"
         />
-      </div> -->
-      <img
-        v-if="loginInfo && loginInfo.user_no"
-        :src="profileImageUrl"
-        class="profile-large my-3"
-        alt="Profile Picture"
-        @error="setDefaultImage"
-      />
+      
+        <div class="mr-3">
+          <div class="profile-header mt-3">
+            <h2 class="lg KB_S4 my-1">
+              {{ loginInfo ? loginInfo.user_name : '' }}
+            </h2>
+          </div>
+          <p class="md" style="margin-bottom: 0px">
+            {{
+              loginInfo
+                ? `${loginInfo.level_no || ''} ${loginInfo.position_no || ''} | ${
+                    loginInfo.job_no || ''
+                  } 직무`
+                : ''
+            }}
+          </p>
+          <p class="md mb-2" style="margin-bottom: 0px">
+            {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
+          </p>
+          <button class="btn-yellow KB_C2 my-3" @click="goToAIView">
+            나의 AI 리포트
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="profile-header mt-3">
-      <h2 class="lg KB_S4 my-1">
-        {{ loginInfo ? loginInfo.user_name : '' }}
-      </h2>
-    </div>
-    <p class="md" style="margin-bottom: 0px">
-      {{
-        loginInfo
-          ? `${loginInfo.level_no || ''} ${loginInfo.position_no || ''} | ${
-              loginInfo.job_no || ''
-            } 직무`
-          : ''
-      }}
-    </p>
-    <p class="md mb-2" style="margin-bottom: 0px">
-      {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
-    </p>
-    <button class="btn-yellow KB_C2 my-3" @click="goToAIView">
-      나의 AI 리포트
-    </button>
   </div>
 </template>
 
@@ -50,12 +74,14 @@
 <script>
 import { mapGetters } from 'vuex';
 import api from '@/api/axios';
+import MobileDetect from "mobile-detect";
 
 export default {
   name: 'ProfileCom',
   data() {
     return {
       badgeList: [], // 초기값을 빈 배열로 설정
+      isMobile: false,
     };
   },
   computed: {
@@ -114,6 +140,9 @@ export default {
     },
   },
   mounted() {
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+
     if (this.loginInfo && this.loginInfo.user_no) {
       this.badgeData(); // 컴포넌트가 마운트 될 때 배지 데이터를 가져옵니다.
     }
@@ -122,11 +151,30 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .profile-cards {
+    height: 230px !important;
+    width: 97% !important;
+    
+  }
+  .profile-large {
+    width: 85px !important;
+    height: 85px !important;
+  }
+  .profile-container {
+    width: 90% !important;
+  }
+}
+
 .cards {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.profile-cards {
+  height: 430px;
 }
 
 .profile-container {
