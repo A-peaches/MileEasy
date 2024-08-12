@@ -24,6 +24,8 @@ public class TargetService {
 
     @Transactional //트랜잭션 내에서 하나의 작업이 실패하면, 트랜잭션 내의 모든 작업이 롤백(취소)
     public void addTarget(Target target) {
+        System.out.print("addTarget 도착 !  ");
+        System.out.print("target :"+ target);
         // 1. Target 테이블에 삽입
         targetDao.insertTarget(target);
 
@@ -46,6 +48,13 @@ public class TargetService {
         System.out.println("userNo:" + userNo);  // userNo 출력
         return targetDao.getTargetsByUserNo(userNo);
     }
+
+    // 참여형 목표 정보 불러오기 (userNo 기반)
+    public List<Target> getAdminTargets(String userNo) {
+        System.out.println("getAdminTargets 메소드 도착!");
+        return targetDao.getAdminTargets(userNo);
+    }
+
 
 
 }

@@ -19,7 +19,7 @@ public class TargetController {
         //개인형 목표 추가하기
         @PostMapping("/create")
         public void createTarget(@RequestBody Target target) {
-            System.out.print("target created 메소드 도착 ! ");
+            System.out.println("target created 메소드 도착 ! " + target);
             targetService.addTarget(target);
             System.out.print("target:"+target);
          }
@@ -29,4 +29,12 @@ public class TargetController {
             System.out.print("target getTarget 메소드 도착 ! ");
             return targetService.getTargetByUserNo(userNo);
         }
+
+        // 참여형 목표 불러오기
+        @GetMapping("/admin/targets/{userNo}")
+        public List<Target> getAdminTargets(@PathVariable String userNo) {
+            System.out.println("Admin targets !");
+            return targetService.getAdminTargets(userNo);
+        }
+
 }

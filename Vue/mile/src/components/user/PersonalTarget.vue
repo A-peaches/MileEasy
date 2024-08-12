@@ -1,20 +1,24 @@
 <template>
   <div>
     <!-- 완료(오늘날짜 지난것) / 미완료 필터링 -->
-    <div class="d-flex justify-content-start align-items-center mb-5" style="margin-left: 5%;">
-      <div class="form-check p-3 lg2 mr-3">
-        <input class="form-check-input" type="radio" name="targetList" id="finished" value="finished" v-model="sortBy" />
-        <label class="form-check-label" for="finished">
-          완료
-        </label>
-      </div>
-      <div class="form-check p-3 lg2">
-        <input class="form-check-input" type="radio" name="targetList" id="notFinished" value="not-finished" v-model="sortBy" >
-        <label class="form-check-label" for="notFinished">
-          진행중
-        </label>
-      </div>
+    
+  <div class="d-flex justify-content-start align-items-center mb-5" style="margin-left: 5%;">
+    <div class="radio-container p-3 lg2 mr-3">
+      <input class="radio-input" type="radio" name="targetList" id="finished" value="finished" v-model="sortBy" />
+      <label class="radio-label" for="finished">
+        <span class="custom-radio"></span>
+        종료
+      </label>
     </div>
+  <div class="radio-container p-3 lg2">
+      <input class="radio-input" type="radio" name="targetList" id="notFinished" value="not-finished" v-model="sortBy" />
+      <label class="radio-label" for="notFinished">
+        <span class="custom-radio"></span>
+        진행중
+      </label>
+    </div>
+  </div>
+
 
     <!-- 목표가 없는 경우 메시지 표시 -->
     <div v-if="filteredMileages.length === 0" class="text-center mb-4" style="color: gray;">
@@ -25,18 +29,20 @@
       <div v-for="(targets, index) in filteredMileages" :key="targets.mile_no" class="col-md-4 mb-3">
         <div class="p-3">
           <div style="text-align: center; font-family: KB_C2; font-size: 16pt;" class="mb-2">{{ targets.mile_name }} 마일리지</div>
-          <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 250px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box">
-            <!-- 여기 하드코딩 한 부분 데이터 불러오기!! -->
+          <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 250px; height:330px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box">
             <div class="py-4">
               <span class="lg2" style="font-family: 'KB_C1';">목표기간</span><br>
               <span class="md">{{ targets.start_date }} - {{ targets.end_date }}</span>
             </div>
-            <div class="py-3">
-              <span class="lg2" style="font-family: 'KB_C1';">목표 마일리지</span><br>
-              <span class="lg2">{{targets.target_mileage}}</span>
-            </div>
-            <div class="py-3">
-              <span class="bold-x-lg" style="font-family: 'KB_C1';">{{ targets.achievementRate }} / {{targets.target_mileage }}</span>
+            <div class="py-3" style=" margin-bottom: 10px;">
+                <span class="lg2" style="font-family: 'KB_C1';">진행률</span><br>
+                <div class="progress mx-auto" role="progressbar" aria-label="Animated striped example" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 80%;">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" :style="{width: calculateProgress(targets), backgroundColor: '#FFC700'}"></div>
+                </div>
+              </div>
+              <span class="lg2" style="font-family: 'KB_C1'; font-size: 15px; ">나의 마일리지 / 목표 마일리지 </span>
+            <div class="py-5" style=" margin-top: -30px;">
+              <span class="bold-x-lg" style="font-family: 'KB_C1';">{{ targets.totalMileScoreByMileNo }} / {{targets.target_mileage }}</span>
             </div>
           </div>
         </div>
@@ -45,10 +51,10 @@
   </div>
   <div class="d-flex justify-content-center" style="margin-top: 12vh;">
     <button
-      class="btn-green mt-2 KB_C2"
+      class="addbtn"
       @click="openModal"
       style="
-        width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2;
+        width:8vw; height: 3vw; font-size:1.2vw; font-family: KB_C2; background-color: #FFAF00; border-radius: 10px;
       "
     >
       추가하기
@@ -171,13 +177,13 @@ export default {
     },
     async addAction() {
       const target = {
-        mileNo: this.selectedLabel.mile_no,
-        userNo: this.loginInfo.user_no, // 유저 아이디를 적절히 변경
-        startDate: this.startDate,
-        endDate: this.endDate,
-        targetMileage: this.targetScore,
-        isTogether: false,
-        isManagerPlan: false,
+        mile_no: this.selectedLabel.mile_no,
+        user_no: this.loginInfo.user_no, // 유저 아이디를 적절히 변경
+        start_date: this.startDate,
+        end_date: this.endDate,
+        target_mileage: this.targetScore,
+        is_together: false,
+        is_manager_plan: false,
         month: new Date().getMonth() + 1, //1~12월 범위를 맞추기 위해서
         achievementRate: 0 //목표 달성률
       };
@@ -185,10 +191,15 @@ export default {
       try {
         await this.addTarget(target);
         this.closeModal();
+        window.location.reload(); // 페이지 새로고침 추가
       } catch (error) {
         console.error('Error adding target:', error.response ? error.response.data : error.message);
       }
     },
+    calculateProgress(target) { //진행률 계산
+  if (!target.target_mileage || target.target_mileage === 0) return '0%'; // 목표 마일리지가 0이면 진행률은 0
+  return ((target.achievementRate / target.target_mileage) * 100).toFixed(2) + '%'; // 진행률 계산 및 % 추가
+}
   },
     
 //====================================================================
@@ -217,18 +228,19 @@ export default {
 
     filteredMileages() {
     const currentDate = new Date();
-    return this.targets.filter((mileage) => {
-      if (!mileage || !mileage.end_date) { // end_date가 없으면 경고 메시지를 출력
+     // mile_no 기준으로 오름차순 정렬
+     const sortedTargets = [...this.targets].sort((a, b) => a.mile_no - b.mile_no);
+
+    return sortedTargets.filter((mileage) => {
+      if (!mileage || !mileage.end_date) {
         console.warn('Skipping mileage due to missing endDate:', mileage);
         return false;
       }
 
-      // end_date를 Date 객체로 변환
       const endDate = new Date(mileage.end_date);
-
       if (isNaN(endDate.getTime())) {
         console.warn('Invalid date format in endDate:', mileage.end_date);
-        return false; // 날짜 형식이 유효하지 않으면 제외
+        return false;
       }
 
       if (this.sortBy === 'finished') {
@@ -244,11 +256,6 @@ export default {
 
 };
 </script>
-
-
-
-
-
 
 
 
@@ -377,12 +384,48 @@ export default {
   pointer-events: none; /* 아이콘이 선택을 방해하지 않도록 */
 }
 
-.form-check-input:checked {
-  background-color: #32ab8b;
-  border-color: #32ab8b;
+.radio-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
 }
 
-.form-check-input:checked::before {
-  color: #fff; /* 체크 마크 색상 */
+.radio-input {
+  display: none; /* 기본 라디오 버튼을 숨깁니다 */
 }
+
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  display: inline-block;
+  position: relative;
+}
+
+.radio-input:checked + .radio-label .custom-radio {
+  background-color: #f6a319; /* 체크된 상태일 때 배경색 */
+  border: none; /* 체크된 상태일 때 테두리 제거 */
+}
+
+.radio-input:checked + .radio-label .custom-radio::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px; /* 체크된 상태일 때 체크 표시 스타일 */
+}
+
+.radio-label {
+  display: flex; /* label을 flex로 설정하여 전체가 클릭 가능하도록 */
+  align-items: center;
+  font-family: 'KB_C2';
+  font-size: 20px;
+  color: #333; /* 라벨 텍스트 색상 */
+}
+
 </style>

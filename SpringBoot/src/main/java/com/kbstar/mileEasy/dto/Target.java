@@ -21,4 +21,6 @@ public class Target {
     private boolean is_manager_plan;
     private String mile_name;
     private int achievementRate;
+    private int participantCount;
+    private int totalMileScoreByMileNo;
 }
