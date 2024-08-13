@@ -179,9 +179,25 @@ export default {
     selectSampleMessage(sample) {
       this.message = sample.content;
     },
-    generateAIContent() {
-      // AI 내용 생성 로직 구현
+    async generateAIContent() {
       console.log("AI 내용 생성");
+      this.AIAlret()
+      try {
+        const response = await api.post('bot/sms', null, {
+          params: {
+            prompt:
+              `우리 회사 인사고과와 연결되는 마일리지 관리 사이트에서 ${this.mile_name} 마일리지에 관해서 홍보하고 방문을 독려하려고 홍보성 문자메시지를 보내려고해.` +
+              '그 홍보하는 문자 메시지 문구를 만들어주면 되는데, 마일리지는 이벤트성으로 종종 생성되는 공동목표에 참여해서 달성하면 뿌듯함을 얻기도하고, ' +
+              '마일리지가 전월에비해 크게 증가했거나, 마일리지부문에서 1등을하면 마왕(마일리지왕)이라는 배지를 획득하여 뿌듯함을 느낄수 있기도해. 이 사이트의 출석체크 또는 직원들과 마일리지 꿀팁을 공유하는 M-Tip게시판의 베스트 글로 선정되면 마왕 선정에 가점이 있어. 하지만 가장 중요한것은 인사고과에 반영된다는거야.  ' +
+              `내가 예시로 직접 만든 문자문구를 몇개 줄게! ${this.mile_name} 마일리지의 신규 목표가 생성 되었습니다. 마왕 선정에 도움이 되는 목표 설정 지금 함께 떠나볼까요?,${this.mile_name} 마일리지, M-Tip 게시판에서 직원들과 꿀팁을 공유해보세요! 당신도 마일리지 왕으로 거듭날수 있어요!,현재 다른직원들의 ${this.mile_name} 마일리지 관심도가 낮아졌어요! 이때가 기회예요! 얼른 잡아버리세요 🧐 `+
+              '꼭 이런 멘트가 들어가지않아도 마일리지에 관심이 돋거나 독려하는 문장으로도 충분해. 100자이내로 하나의 메시지만 생성 부탁할게. 바로 문자메시지를 발송할거니까  하나의 문자메시지내용 그대로를 줘.'
+          },
+        });
+        console.log(response.data);
+        this.message = response.data;
+      } catch (error) {
+        console.error('Error during API request:', error);
+      }
     },
     reset() {
       this.message = "";
@@ -311,15 +327,51 @@ export default {
         const response = await api.post("/user/sendSms", {
           to: receiversPhone,
           text: this.message,
-          from: this.mile_name + " 담당자",
+          mile : this.mile_name
         });
         console.log(response);
         this.succesAlert();
+        this.reset();
       } catch (error) {
         console.error("Error sending SMS:", error);
         this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
       }
     },
+    AIAlret() {
+    let timerInterval;
+    let timeLeft = 10; 
+    
+    this.$swal({
+      title: "AI 문구 생성",
+      html: "<b>${timeLeft}</b>초 후에 완료됩니다....",
+      timer: 10000,
+      timerProgressBar: true,
+      scrollbarPadding: false,
+      
+      didOpen: () => {
+        const popup = this.$swal.getPopup();
+        popup.style.height = '200px'; // 원하는 높이로 조정
+
+        this.$swal.showLoading();
+        const timer = this.$swal.getHtmlContainer().querySelector("b");
+        timer.textContent = `${timeLeft}`; // 초기 시간 설정
+        timerInterval = setInterval(() => {
+          timeLeft -= 1;
+          timer.textContent = `${timeLeft}`;
+          if (timeLeft === 0) {
+            clearInterval(timerInterval);
+          }
+        }, 1000); // 1초마다 업데이트
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      },
+    }).then((result) => {
+      if (result.dismiss === this.$swal.DismissReason.timer) {
+        console.log("I was closed by the timer");
+      }
+    });
+   }
   },
 
   computed: {

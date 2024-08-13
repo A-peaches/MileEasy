@@ -7,7 +7,7 @@
         <attendance class="fade-up-item attendance-cards"  />
       </div>
 
-      <div class="right-container" style="width: 70%; margin-left: 1%; position: sticky; top: 20px; height: 100vh;">
+      <div class="right-container" style="width: 70%; margin-left: 5%; position: sticky; top: 20px; height: 100vh;">
         <favorite class="fade-up-item favorite-cards"  />
         <milageCharts class="fade-up-item mileageCharts-cards"  />
       </div>
