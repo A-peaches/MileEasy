@@ -42,8 +42,7 @@
           alt="Profile Picture"
           @error="setDefaultImage"
         />
-      
-        <div class="mr-3">
+        <div class="mr-4 mt-2 pl-4">
           <div class="profile-header mt-3">
             <h2 class="lg KB_S4 my-1">
               {{ loginInfo ? loginInfo.user_name : '' }}
@@ -155,11 +154,10 @@ export default {
   .profile-cards {
     height: 230px !important;
     width: 97% !important;
-    
   }
   .profile-large {
-    width: 85px !important;
-    height: 85px !important;
+    width: 90px !important;
+    height: 90px !important;
   }
   .profile-container {
     width: 90% !important;

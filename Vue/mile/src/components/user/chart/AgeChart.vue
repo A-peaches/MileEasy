@@ -94,7 +94,7 @@ export default {
   methods: {
     ...mapActions("mileScore", ["getMileAge"]),
     createChart() {
-      Chart.getChart('ageChart')?.destroy();
+      Chart.getChart('ageChart')?.destroy(); // this.chart.destroy()가 먹히지 않았음! Chart.getChart('ageChart')가 null이 아니면 destroy() 시킨다. 
       
       const ctx = document.getElementById("ageChart").getContext("2d");
       new Chart(ctx, {

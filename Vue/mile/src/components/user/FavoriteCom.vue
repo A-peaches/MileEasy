@@ -4,8 +4,7 @@
       <p class="text-left lg2 KB_C2">
         즐겨찾기 마일리지&nbsp;
         <i
-          class="bi bi-plus-circle-fill"
-          style="color: #ffca05; cursor: pointer"
+          class="bi bi-plus-circle-fill icon-wrapper"
           @click="openModal"
         ></i>
       </p>
@@ -19,7 +18,7 @@
             class="addImg mx-auto"
             @click.stop="openModal"
           />
-          <div  v-else>
+          <div v-else>
             <p class="favorite-text KB_C2 mt-5">
               {{ favoriteList[index].mile_no }} 마일리지 
             </p>
@@ -100,12 +99,12 @@
   </div>
   <div v-else>
     <div class="cards favorite-container" >
-      <p class="text-left lg2 KB_C2">
+      <p class="text-left lg2 KB_C2 ">
         즐겨찾기 마일리지&nbsp;
         <i
-          class="bi bi-plus-circle-fill"
-          style="color: #ffca05; cursor: pointer"
+          class="bi bi-plus-circle-fill icon-wrapper"
           @click="openModal"
+          style="position: absolute; z-index: 1000;"
         ></i>
       </p>
       <div class="flex">
@@ -181,13 +180,9 @@
             </div>
             <div class="mt-3 text-end">
               <button
-                class="btn-gray KB_C2"
+                class="btn-gray KB_C2 btn-submit"
                 @click="updateFavorites"
-                style="
-                      font-size: 16pt;
-                      width: 20%;
-                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    "
+                
               >
                 등록
               </button>
@@ -419,7 +414,41 @@ export default {
   .chart-wrapper {
     will-change: transform !important;
   }
-  
+  .modals-content {
+    width: 90% !important;
+  }
+  .btn-favorite {
+    margin: 8px !important;
+    border-radius: 30px !important;
+    width: 90% !important;
+    height: 60px !important;
+    font-size: 14pt !important;
+    transition: background-color 0s !important;
+  }
+  .btn-favorite.selected:hover {
+    background-color: #ffd849 !important;
+  }
+  .favorite-item:hover {
+    background-color: #fff !important;
+  }
+  .btn-submit {
+    width: 35% !important;
+  }
+  .favorite-container {
+    position: relative !important;
+  }
+
+}
+
+.icon-wrapper {
+  color: #ffca05; 
+  cursor: pointer;
+}
+
+.btn-submit {
+  font-size: 16pt;
+  width: 20%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .favorite-container{
@@ -533,7 +562,6 @@ export default {
 
 .favorite-item:hover {
   background-color: #d5d5d5;
-
 }
 
 .modal-overlay {
