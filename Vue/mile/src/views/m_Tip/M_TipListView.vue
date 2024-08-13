@@ -62,8 +62,8 @@
                 <pre class="notice-date">{{ formatDate(notice.mtip_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
                 <div class="notice-views">{{ notice.mtip_board_hit }} <i class="fa fa-eye"></i></div>
-                <i :class="['bi', isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"
-                :style="{ color: isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? '#dc3545' : 'inherit' }"></i>
+                <i :class="['bi', notice.liked ? 'bi-heart-fill' : 'bi-heart']"
+                :style="{ color: notice.liked ? '#dc3545' : 'inherit' }"></i>
                 <div class="notice-like">{{ notice.mtip_board_like }}</div>
               </div>
             </div>
@@ -249,7 +249,10 @@ filteredNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
         const response = await api.get('/mtip/Mtiplist');
-        this.notices = response.data;
+        this.notices = response.data.map(notice => ({
+          ...notice,
+          liked: notice.liked || false // 서버에서 좋아요 여부를 전달해줬을 경우
+        }));
         console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
         console.error('Error fetching notices:', error.response ? error.response.data : error.message);

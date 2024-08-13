@@ -251,6 +251,7 @@ public class MtipController {
         boolean isLiked = mtipBoardService.checkLikeStatus(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
+
     //m-tip 좋아요
     @PostMapping("/toggle-like")
     public ResponseEntity<?> toggleLike(@RequestBody Map<String, Object> payload) {

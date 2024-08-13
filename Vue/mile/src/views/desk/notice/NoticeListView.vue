@@ -752,4 +752,46 @@ h2::after {
   color: #32ab8b;
   font-size: 20px;
 }
+.radio-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.radio-input {
+  display: none; /* 기본 라디오 버튼을 숨깁니다 */
+}
+
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  display: inline-block;
+  position: relative;
+}
+
+.radio-input:checked + .custom-radio {
+  background-color: #f6a319; /* 체크된 상태일 때 배경색 */
+  border: none; /* 체크된 상태일 때 테두리 제거 */
+}
+
+.radio-input:checked + .custom-radio::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px; /* 체크된 상태일 때 체크 표시 스타일 */
+}
+
+.radio-label {
+  font-family: 'KB_C1';
+  font-size: 16px;
+  color: #333; /* 라벨 텍스트 색상 */
+}
+
 </style>
