@@ -1,7 +1,9 @@
 package com.kbstar.mileEasy.controller;
 
+import com.kbstar.mileEasy.beans.SmsRequest;
 import com.kbstar.mileEasy.dto.*;
 import com.kbstar.mileEasy.service.Chat.ChatService;
+import com.kbstar.mileEasy.service.SmsService;
 import com.kbstar.mileEasy.service.mileage.info.MileService;
 import com.kbstar.mileEasy.service.monthlyKing.MonthlyKingService;
 import com.kbstar.mileEasy.service.user.info.GetUserInfoService;
@@ -10,6 +12,7 @@ import com.kbstar.mileEasy.service.user.request.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +44,11 @@ public class UserController {
 
     @Autowired
     private MonthlyKingService monthlyKingService;
+    @Autowired
+    private GetUserInfoService getUserInfoService;
 
-
+    @Autowired
+    private SmsService smsService;
 
 
     @GetMapping("/{user_no}")
@@ -227,6 +233,24 @@ public class UserController {
         System.out.println("배지배지배지");
         return monthlyKingService.badgeList();
 
+    }
+
+    @GetMapping("/getAllUsers")
+    public ArrayList<User> getAllUsers(){
+
+        return getUserInfoService.getAllUsers();
+    }
+
+    @PostMapping("/sendSms")
+    public ResponseEntity<?> sendSms(@RequestBody SmsRequest request) {
+        try {
+            System.out.println(request.getText() + "이것이 문자메시지");
+            smsService.sendSms(request.getTo(), request.getText(), request.getMile());
+            return ResponseEntity.ok().body("{\"success\":true}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
+        }
     }
 
 }

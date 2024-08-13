@@ -51,4 +51,5 @@ public interface UserDao {
 
     boolean changPassword(String encryptedPassword, String userNo);
 
+    ArrayList<User> getAllUsers();
 }
