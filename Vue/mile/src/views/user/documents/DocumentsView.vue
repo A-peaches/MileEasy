@@ -28,15 +28,14 @@
       </div>
     </div>
   
-  <div class="d-flex justify-content-between align-items-center ">
+  <div class="d-flex justify-content-between align-items-center document-menu">
     <div class="lg2 document-count" >총 {{ countList }}건</div>
     <div
       class="input-search input-base search-container"
       
     >
       <div
-        class="d-flex justify-content-between align-items-center"
-        style="font-size: 14pt; height: 100%; margin-left: 1em"
+        class="d-flex justify-content-between align-items-center search-wrapper"
       >
         <input
           type="text"
@@ -48,8 +47,7 @@
         />
         <button>
           <i
-            class="bi bi-search mr-2"
-            style="font-size: 25px; color: #4b4a4a"
+            class="bi bi-search mr-2 search-icon"
           ></i>
         </button>
       </div>
@@ -260,7 +258,7 @@ export default {
       this.allDocuments = response.data;
 
       const countList = await api.get(
-        `http://localhost:8090/myMile/countListDocuments`
+        `/myMile/countListDocuments`
       );
       this.countList = countList.data;
 
@@ -280,7 +278,7 @@ export default {
       // 마일리지 카테고리 가져오기
       try {
         const response = await api.get(
-          'http://localhost:8090/notice/mileage'
+          '/notice/mileage'
         );
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
@@ -369,9 +367,34 @@ export default {
     font-size: 13pt !important;
   }
   .search-container {
-    width: 230px !important; 
-    margin-right: 10px !important;
+    width: 220px !important; 
+    margin-right: 6px !important;
+    height: 5vh !important;
   }
+  .dropdown-menu {
+    top: 255% !important;
+    background-color: rgba(255, 255, 255, 0.96) !important;
+  }
+  .search-icon {
+    font-size: 20px !important;
+  }
+  .search-wrapper {
+    font-size: 12pt !important;
+  }
+  .document-menu {
+    margin-top: 30px !important;
+  }
+}
+
+.search-wrapper {
+  font-size: 14pt; 
+  height: 100%; 
+  margin-left: 1em;
+}
+
+.search-icon {
+  font-size: 25px; 
+  color: #4b4a4a;
 }
 
 .search-container {
@@ -434,7 +457,7 @@ export default {
   left: 50%;
   z-index: 1;
   border-color: #eeeeee;
-  background-color: rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.96) !important;
   border-radius: 15px;
   cursor: pointer;
   width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
