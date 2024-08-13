@@ -134,7 +134,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('target', ['addTarget','fetchTargets','deleteTarget']),
+    ...mapActions('target', ['addPersonalTarget','fetchPersonalTargets','deleteTarget']),
 
     loginInfo() {
       return this.getLoginInfo;
@@ -195,7 +195,7 @@ export default {
       };
       console.log('target이 서버로 데이터 넘기는 것 :',target);
       try {
-        await this.addTarget(target);
+        await this.addPersonalTarget(target);
         this.closeModal();
         window.location.reload(); // 페이지 새로고침 추가
       } catch (error) {
@@ -349,8 +349,8 @@ export default {
   this.isLoading = true;
   try {
     await this.fetchMileages();
-    await this.fetchTargets(this.loginInfo.user_no).then(() => {
-    console.log('Targets after fetch:', this.getTargets); 
+    await this.fetchPersonalTargets(this.loginInfo.user_no).then(() => {
+    console.log('Targets after fetch:', this.getPersonalTargets); 
   });
   } catch (error) {
     console.error('Error initializing component:', error);
@@ -362,21 +362,21 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapState('login', ['loginInfo']),
-    ...mapGetters('target', ['getTargets']),
+    ...mapGetters('target', ['getPersonalTargets']),
 
     adminTargets() {
-      return this.getTargets || []; // getTargets가 undefined일 경우 빈 배열 반환
+      return this.getPersonalTargets || []; // getTargets가 undefined일 경우 빈 배열 반환
     },
     displayedTargets() {
     const filtered = this.filteredTargets(this.sortBy);
     const sorted = this.sortedAdminTargets(filtered);
     return this.sortBy === 'not-finished' ? this.sortTargets(sorted) : sorted;
-  },
-  totalTargetsCount() {
-    return this.displayedTargets.length;
-  },
-  targets(){
-      const targets = this.getTargets;
+    },
+    totalTargetsCount() {
+      return this.displayedTargets.length;
+    },
+    targets(){
+        const targets = this.getPersonalTargets;
       console.log('Targets:', targets);
       return Array.isArray(targets) ? targets : []; // 배열이 아니면 빈 배열을 반환
     },
@@ -532,6 +532,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index:10000;
 }
 
 .modal-content {
