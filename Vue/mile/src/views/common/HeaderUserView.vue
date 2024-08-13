@@ -189,7 +189,7 @@
                 >
                   <span style="color: red"
                   v-if="index < 5 ">new</span> &nbsp;
-                  {{ item.mile_name }}가 업데이트 되었습니다.
+                  {{ item.mile_name }}이(가) 업데이트 되었습니다.
                   <span style="color: gray; font-size: 7pt">
                     ({{ item.mile_excel_date.substring(0, 10) }})
                   </span>

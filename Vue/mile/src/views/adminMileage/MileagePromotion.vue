@@ -55,6 +55,7 @@
             class="form-control"
             style="width: 100%; height: 50px"
             placeholder="수신인을 추가해주세요."
+            @click="openModal"
             readonly
           />
         </div>
