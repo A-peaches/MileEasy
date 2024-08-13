@@ -97,8 +97,8 @@
         </div>
       </div>
     </div>
-    <div v-else>
-      로딩 중...
+    <div v-else style="font-size: 20px;">
+      <i class="bi bi-arrow-clockwise"></i> 로딩 중...
     </div>
   </div>
 </template>
@@ -175,7 +175,12 @@ export default {
       }
     },
     sortTargets(targets) {
-  return targets.sort((a, b) => {
+      return targets.sort((a, b) => {
+    // 먼저 mile_no로 정렬
+    if (a.mile_no !== b.mile_no) {
+      return a.mile_no - b.mile_no;
+    }
+
     const statusA = this.getStatusText(a);
     const statusB = this.getStatusText(b);
     const isParticipatingA = this.isUserParticipating(a.target_no);
@@ -196,28 +201,19 @@ export default {
     return 0;
   });
 },
-    // sortTargets(targets) {
-    //   return targets.sort((a, b) => {
-    //     const statusA = this.getStatusText(a);
-    //     const statusB = this.getStatusText(b);
-    //     if (statusA === '진행중' && statusB !== '진행중') return -1;
-    //     if (statusA !== '진행중' && statusB === '진행중') return 1;
-    //     if (statusA === '예정' && statusB !== '예정') return -1;
-    //     if (statusA !== '예정' && statusB === '예정') return 1;
-    //     return 0;
-    //   });
-    // },
     filteredTargets(filter) {
   return this.adminTargets.filter(target => {
-    const isParticipating = this.isUserParticipating(target.target_no);
     const status = this.getStatusText(target);
+    const isParticipating = this.isUserParticipating(target.target_no);
 
-    if (filter === 'not-finished') {  // '참여' 필터
-      return isParticipating;
-    } else if (filter === 'notjoin') {  // '미참여' 필터
-    return (!isParticipating && status === '진행중') || status === '예정';
+    if (filter === 'finished') {
+      return status === '종료';
+    } else if (filter === 'not-finished') {
+      return isParticipating && status !== '종료';
+    } else if (filter === 'notjoin') {
+      return (!isParticipating && status === '진행중') || status === '예정';
     } else {
-      return true;  // 다른 경우에는 모든 항목 표시
+      return true;
     }
   });
 },
