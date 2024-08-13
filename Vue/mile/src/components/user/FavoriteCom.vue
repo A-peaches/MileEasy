@@ -18,7 +18,7 @@
             class="addImg mx-auto"
             @click.stop="openModal"
           />
-          <div v-else>
+          <div v-else style="z-index:10px;">
             <p class="favorite-text KB_C2 mt-5">
               {{ favoriteList[index].mile_no }} 마일리지 
             </p>
@@ -443,6 +443,8 @@ export default {
 .icon-wrapper {
   color: #ffca05; 
   cursor: pointer;
+  position: relative;
+  z-index: 11;
 }
 
 .btn-submit {
