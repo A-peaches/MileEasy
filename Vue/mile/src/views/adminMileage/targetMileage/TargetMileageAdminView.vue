@@ -102,6 +102,7 @@ export default {
     ...mapGetters('mile', ['getMileInfo', 'getArrayMiles']),
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getTargets']),
+
     targets() {
       return this.getTargets || [];
     },
@@ -113,13 +114,14 @@ export default {
     },
     formattedTargets(){
       if(!this.targets) return [];
+
       return this.targets.map(target => {
         const startDate = new Date(target.start_date);
         const endDate = new Date(target.end_date);
-
+        
         return{
-            ...target, // ...은 복사의 의미 
-          targetRate: target.achievement_rate,
+          ...target, // ...은 복사의 의미 
+          targetRate: target.achievementRate,
           startDate,
           endDate
         }
@@ -129,17 +131,16 @@ export default {
     currentTargets(){
       const currentDate =new Date();
       currentDate.setHours(0, 0, 0, 0);
-      
       return this.formattedTargets.filter(target =>
-        target.startDate <= currentDate && currentDate <= target.endDate
-      );
+        target.startDate.setHours(0,0,0,0) <= currentDate && currentDate <= target.endDate.setHours(0,0,0,0)
+      ).sort((a, b) => new Date(a.startDate)-new Date(b.startDate)); // 날짜 오름차순으로 정렬
     },
     pastTargets() {
       const currentDate = new Date();
       currentDate.setHours(0, 0, 0, 0);
 
       return this.formattedTargets.filter(target =>
-        target.endDate < currentDate
+        target.endDate.setHours(0,0,0,0) < currentDate
       );
     },
     futureTargets() {
@@ -147,8 +148,8 @@ export default {
       currentDate.setHours(0, 0, 0, 0);
 
       return this.formattedTargets.filter(target =>
-        target.startDate > currentDate
-      );
+        target.startDate.setHours(0,0,0,0) > currentDate
+      ).sort((a, b) => new Date(a.startDate)-new Date(b.startDate)); 
     }
   },
   methods: {
@@ -228,10 +229,11 @@ export default {
 };
 </script>
 
-<style scope>
+<style scoped>
 .page-back {
   padding-bottom: 5%;
 }
+
 .target-btn {
   width: 9vw;
   height: 6vh;
