@@ -18,14 +18,14 @@
             class="addImg mx-auto"
             @click.stop="openModal"
           />
-          <div v-else>
+          <div v-else style="z-index: 10;">
             <p class="favorite-text KB_C2 mt-5">
               {{ favoriteList[index].mile_no }} 마일리지 
             </p>
             <div class="flex">
               <div
                 class="KB_C1 mileage-score"
-                style="margin-left: 10px; margin-right: 10px; width: 200px;"
+                
               >
                 {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
               </div>
@@ -118,13 +118,13 @@
             @click.stop="openModal"
           />
           <div  v-else>
-            <p class="favorite-text KB_C2 mt-5">
+            <p class="favorite-text KB_C2 pt-5">
               {{ favoriteList[index].mile_no }} 마일리지 
             </p>
             <div class="flex">
               <div
                 class="KB_C1 mileage-score"
-                style="margin-left: 10px; margin-right: 10px; width: 200px;"
+                
               >
                 {{ getMileageScore(favoriteList[index]?.mile_no) }}pt
               </div>
@@ -437,12 +437,23 @@ export default {
   .favorite-container {
     position: relative !important;
   }
-
+  .mileage-score {
+    font-size: 27pt;
+    margin-bottom: 40px;
+    margin-top: 5px;
+    text-align: center;
+    flex: 1;
+    margin-left: 10px; 
+    margin-right: 10px; 
+    width: 140px;
+  }
 }
 
 .icon-wrapper {
   color: #ffca05; 
   cursor: pointer;
+  position: relative;
+  z-index: 11;
 }
 
 .btn-submit {
@@ -499,6 +510,9 @@ export default {
   margin-top: 5px;
   text-align: center;
   flex: 1;
+  margin-left: 10px; 
+  margin-right: 10px; 
+  width: 200px;
 }
 
 .chart-wrapper {

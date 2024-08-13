@@ -28,11 +28,11 @@
       </div>
     </div>
   
-  <div class="d-flex justify-content-between align-items-center">
-    <div class="lg2" style="padding: 3em">총 {{ countList }}건</div>
+  <div class="d-flex justify-content-between align-items-center ">
+    <div class="lg2 document-count" >총 {{ countList }}건</div>
     <div
-      class="input-search input-base"
-      style="margin-right: 2em; width: 17vw; height: 6vh"
+      class="input-search input-base search-container"
+      
     >
       <div
         class="d-flex justify-content-between align-items-center"
@@ -364,6 +364,24 @@ export default {
     background-color: #e1e3e4 !important;
     transition: background-color 0s ease !important;
   }
+  .document-count {
+    padding: 30px !important;
+    font-size: 13pt !important;
+  }
+  .search-container {
+    width: 230px !important; 
+    margin-right: 10px !important;
+  }
+}
+
+.search-container {
+  margin-right: 2em; 
+  width: 17vw; 
+  height: 6vh;
+}
+
+.document-count {
+  padding: 3em;
 }
 
 .title-line {

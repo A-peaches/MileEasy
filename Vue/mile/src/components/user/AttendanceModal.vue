@@ -31,7 +31,7 @@
         <button
           class="btn-green my-3 modal-btn"
           @click="handleAddAttendance"
-           style="width: 30%; height: 45px; font-size: 12pt"
+           
         >
           출석체크
         </button>
@@ -153,6 +153,12 @@ body.alret-open {
   overflow: hidden;
 }
 
+.modal-btn {
+  width: 30%; 
+  height: 45px; 
+  font-size: 12pt;
+}
+
 @media (max-width: 768px) {
   .modals .modals-content {
     width: 90%;
@@ -184,7 +190,7 @@ body.alret-open {
   }
 
   .modal-btn {
-    width: 200px;
+    width: 150px;
     height: 45px;
     font-size: 14pt;
   }

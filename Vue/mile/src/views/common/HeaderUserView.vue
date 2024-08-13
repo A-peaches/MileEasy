@@ -525,9 +525,6 @@ export default {
   .dropdown-hover:hover > .dropdown-menu {
     display: block;
   }
-  .notification-mobile-dropdown {
-    right: 0; /* 모바일 화면에서는 오른쪽 끝에 맞춤 */
-  }
   .modals .modals-content {
     width: 90%;
     height: auto;
@@ -601,8 +598,8 @@ export default {
   border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1060;
-  display: none;
+  z-index: 9999;
+  /* display: none; */
 }
 
 .notification-mobile-dropdown .dropdown-item {
