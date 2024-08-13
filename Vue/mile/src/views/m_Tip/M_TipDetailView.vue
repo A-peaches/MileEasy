@@ -75,16 +75,31 @@ import api from '@/api/axios';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import Swal from 'sweetalert2';
 import UserComment from '@/components/m-tip/UserComment';
+import mtipReply from '@/store/mtip/mtipReply';
 
 export default {
   name: 'M_TipDetailView',
   props: ['mtip_board_no'],
+  modules: {
+    mtipReply,
+  },
   data() {
     return {
       isLoading: true,
       comments: [] ,// comments를 초기화
     };
   },
+  watch: {
+  '$route.params.mtip_board_no': {
+    immediate: true,
+    handler(newId, oldId) {
+      if (newId && newId !== oldId) {
+        this.$store.commit('mtipReply/CLEAR_COMMENTS');
+        this.$store.dispatch('mtipReply/fetchComments', newId);
+      }
+    }
+  }
+},
   components: {
     UserComment
   },
@@ -283,17 +298,14 @@ export default {
     return this.$store.getters['mtipBoard/isPostLiked'](this.loginInfo.user_no, this.notice.mtip_board_no);
   },
 },
-  async mounted() {
-    const noticeId = this.$route.params.mtip_board_no;
-    if (noticeId) {
-      await this.fetchNoticeDetail(noticeId);
-    }
-
-    await this.$store.dispatch('mtipBoard/checkLikeStatus', {
-      mtip_board_no: this.notice.mtip_board_no,
-      user_no: this.loginInfo.user_no,
-    });
-  },
+mounted() {
+  const noticeId = this.$route.params.mtip_board_no;
+  if (noticeId) {
+    this.fetchNoticeDetail(noticeId);
+    this.$store.commit('mtipReply/CLEAR_COMMENTS'); // 댓글 초기화
+    this.$store.dispatch('mtipReply/fetchComments', noticeId);
+  }
+},
 };
 </script>
 

@@ -7,6 +7,9 @@ const state = {
 };
 
 const mutations = {
+  CLEAR_COMMENTS(state) {
+    state.comments = [];
+  },
   SET_COMMENTS(state, comments) {
     state.comments = comments;
   },
