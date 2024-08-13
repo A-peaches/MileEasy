@@ -71,5 +71,21 @@ public class TargetController {
         }
     }
 
+    //참여형 참가한 직원 목록
+    @GetMapping("/users/{targetNo}")
+    public List<Map<String, Object>> getUsersByTargetNo(@PathVariable int targetNo) {
+        return targetService.getUsersByTargetNo(targetNo);
+    }
+
+    //개인형 삭제하기
+    @DeleteMapping("/deleteTarget")
+    public String deleteTarget(@RequestParam("user_no") String userNo, @RequestParam("target_no") int targetNo) {
+        boolean isDeleted = targetService.deleteTarget(userNo, targetNo);
+        if (isDeleted) {
+            return "Target successfully deleted.";
+        } else {
+            return "Failed to delete target.";
+        }
+    }
 
 }

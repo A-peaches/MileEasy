@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TargetService {
@@ -81,6 +82,22 @@ public class TargetService {
         targetDao.joinUserTarget(userTarget);
     }
 
+    //참여형 참가하기 직원 목록
+    public List<Map<String, Object>> getUsersByTargetNo(int targetNo) {
+        return targetDao.findUsersByTargetNo(targetNo);
+    }
+
+    //개인형 삭제하기
+    public boolean deleteTarget(String userNo, int targetNo) {
+        try {
+            targetDao.deleteUserTarget(userNo, targetNo);
+            targetDao.deleteTarget(userNo, targetNo);
+            return true;
+        } catch (Exception e) {
+            // 예외 처리 로직 추가 가능
+            return false;
+        }
+    }
 
 
 }

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
@@ -25,4 +26,11 @@ public interface TargetDao {
     Target getTargetByNo(int targetNo);
     // 사용자 목표 참여 정보 추가하기
     void joinUserTarget(Usertarget userTarget);
+    //참여형 참가한 직원 목록
+        List<Map<String, Object>> findUsersByTargetNo(int targetNo);
+    // UserTarget 삭제하기
+    void deleteUserTarget(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
+    // Target 삭제하기
+    void deleteTarget(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
+
 }

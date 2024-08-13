@@ -18,7 +18,14 @@
       <input class="radio-input" type="radio" name="targetList" id="notFinished" value="not-finished" v-model="sortBy" />
       <label class="radio-label" for="notFinished">
         <span class="custom-radio"></span>
-        진행중
+        참여
+      </label>
+    </div>
+    <div class="radio-container p-3 lg2">
+      <input class="radio-input" type="radio" name="targetList" id="notjoin" value="notjoin" v-model="sortBy" />
+      <label class="radio-label" for="notjoin">
+        <span class="custom-radio"></span>
+        미참여
       </label>
     </div>
   </div>
@@ -37,51 +44,19 @@
                      {{ target.mile_name }} 마일리지 
                    </div>
                </div>
-                
-      
-               <!-- <div style="display: flex; align-items: center; justify-content: flex-end; width: 100px;">
-                <template v-if="isUserParticipating(target.target_no)">
-                  <i class="bi bi-person-vcard" style="margin-right: 12px; margin-bottom: 2px; font-size:25px; color:#8c8c8c;"></i>
-                  <span style="margin-right: 25px;">{{ target.participantCount }}</span>
-                </template>
-                <template v-else-if="getStatusText(target) === '진행중'">
-                  <button @click="joinTarget(target.target_no)" class="btn join-button" >참여하기 ></button>
-                </template>
-                 </div> -->
-
-                 <!-- <div style="display: flex; align-items: center; justify-content: flex-end; width: 100px; position: relative; overflow: hidden;">
-                    <div :class="['participation-info', { 'show': isUserParticipating(target.target_no) }]">
-                      <i class="bi bi-person-vcard" style="margin-right: 12px; margin-bottom: 2px; font-size:25px; color:#8c8c8c;"></i>
-                      <span style="margin-right: 25px;">{{ target.participantCount }}</span>
-                    </div>
-                    <button 
-                      @click="joinTarget(target.target_no)" 
-                      :class="['btn join-button', { 'hide': isUserParticipating(target.target_no) }]"
-                      :disabled="getStatusText(target) !== '진행중'"
-                    >
-                      참여하기 >
-                    </button>
-                  </div>  -->
-          
-                  <!-- <div style="display: flex; align-items: center; justify-content: flex-end; width: 100px; position: relative; overflow: hidden;">
-                  <div v-if="isUserParticipating(target.target_no)" class="participation-info show">
-                    <i class="bi bi-person-vcard" style="margin-right: 12px; margin-bottom: 2px; font-size:25px; color:#8c8c8c;"></i>
-                    <span style="margin-right: 25px;">{{ target.participantCount }}</span>
-                  </div>
-                  <button 
-                    v-else
-                    @click="joinTarget(target.target_no)" 
-                    class="btn join-button"
-                    :disabled="getStatusText(target) !== '진행중'"
-                  >
-                    참여하기 >
-                  </button>
-                </div> -->
-
+              
                 <div style="display: flex; align-items: center; justify-content: flex-end; width: 100px; position: relative; overflow: hidden;">
                   <div v-if="isUserParticipating(target.target_no)" class="participation-info">
-                    <i class="bi bi-person-vcard" style="margin-right: 12px; margin-bottom: 2px; font-size:25px; color:#8c8c8c;"></i>
-                    <span style="margin-right: 25px;">{{ target.participantCount }}</span>
+                    <div @click="handleClick(target.target_no)" class="participant-count">
+                       <i class="bi bi-person-vcard" style="margin-right: 12px; margin-bottom: 2px; font-size:25px; color:#8c8c8c;"></i>
+                       <span style="margin-right: 25px;">{{ target.participantCount }}</span>
+                    </div>
+                     <!-- 드롭다운 메뉴 -->
+                      <div v-if="isDropdownVisible(target.target_no)" class="dropdown-menu"  @click.stop>
+                        <p v-for="participant in target.participants" :key="participant.user_no" style="margin: 0; padding: 5px 0;">
+                          {{ participant.user_name }}
+                        </p>
+                      </div>
                   </div>
                   <button 
                     v-else
@@ -141,7 +116,8 @@ export default {
       sortBy: 'not-finished',
       isUserParticipated: {}, // 참여 여부를 저장하는 객체 추가
       userParticipatedTargets: JSON.parse(localStorage.getItem('userParticipatedTargets') || '[]'),
-       isLoading: true,
+      isLoading: true,
+       dropDownVisible: {},
     };
   },
   methods: {
@@ -199,27 +175,52 @@ export default {
       }
     },
     sortTargets(targets) {
-      return targets.sort((a, b) => {
-        const statusA = this.getStatusText(a);
-        const statusB = this.getStatusText(b);
-        if (statusA === '진행중' && statusB !== '진행중') return -1;
-        if (statusA !== '진행중' && statusB === '진행중') return 1;
-        if (statusA === '예정' && statusB !== '예정') return -1;
-        if (statusA !== '예정' && statusB === '예정') return 1;
-        return 0;
-      });
-    },
-  filteredTargets(filter) {
-      const currentDate = new Date();
-      return this.adminTargets.filter(target => {
-        const endDate = new Date(target.end_date);
-        if (filter === 'finished') {
-          return currentDate > endDate;
-        } else {
-          return currentDate <= endDate;
-        }
-      });
-    },
+  return targets.sort((a, b) => {
+    const statusA = this.getStatusText(a);
+    const statusB = this.getStatusText(b);
+    const isParticipatingA = this.isUserParticipating(a.target_no);
+    const isParticipatingB = this.isUserParticipating(b.target_no);
+
+    // 참여 중인 항목을 먼저 정렬
+    if (isParticipatingA && !isParticipatingB) return -1;
+    if (!isParticipatingA && isParticipatingB) return 1;
+
+    // 참여 상태가 같다면 상태에 따라 정렬
+    if (statusA === '진행중' && statusB !== '진행중') return -1;
+    if (statusA !== '진행중' && statusB === '진행중') return 1;
+    if (statusA === '예정' && statusB !== '예정') return -1;
+    if (statusA !== '예정' && statusB === '예정') return 1;
+    if (statusA === '종료' && statusB !== '종료') return 1;  // 종료 상태를 마지막으로
+    if (statusA !== '종료' && statusB === '종료') return -1;
+
+    return 0;
+  });
+},
+    // sortTargets(targets) {
+    //   return targets.sort((a, b) => {
+    //     const statusA = this.getStatusText(a);
+    //     const statusB = this.getStatusText(b);
+    //     if (statusA === '진행중' && statusB !== '진행중') return -1;
+    //     if (statusA !== '진행중' && statusB === '진행중') return 1;
+    //     if (statusA === '예정' && statusB !== '예정') return -1;
+    //     if (statusA !== '예정' && statusB === '예정') return 1;
+    //     return 0;
+    //   });
+    // },
+    filteredTargets(filter) {
+  return this.adminTargets.filter(target => {
+    const isParticipating = this.isUserParticipating(target.target_no);
+    const status = this.getStatusText(target);
+
+    if (filter === 'not-finished') {  // '참여' 필터
+      return isParticipating;
+    } else if (filter === 'notjoin') {  // '미참여' 필터
+    return (!isParticipating && status === '진행중') || status === '예정';
+    } else {
+      return true;  // 다른 경우에는 모든 항목 표시
+    }
+  });
+},
     sortedAdminTargets(targets) {
     return targets.sort((a, b) => a.mile_no - b.mile_no);
   },
@@ -229,17 +230,23 @@ export default {
             targetNo,
             userNo: this.loginInfo.user_no,
         });
-        console.log(`8. Checking participation for target ${targetNo}:`, response.data.isParticipating);
 
-        // 타겟 번호별 참여 여부를 저장
-        this.$set(this.isUserParticipated, targetNo, response.data.isParticipating);
+        if (typeof response === 'boolean') {
+            console.log(`8. Checking participation for target ${targetNo}:`, response);
 
-        return response.data.isParticipating;
+            // 타겟 번호별 참여 여부를 직접 할당
+            this.isUserParticipated[targetNo] = response;
+
+            return response;
+        } else {
+            throw new Error("Invalid response format");
+        }
     } catch (error) {
         console.error('Failed to check user participation:', error);
         return false;
     }
-  },
+},
+
 
   async loadUserParticipatedTargets() {
       try {
@@ -260,38 +267,6 @@ export default {
         this.isLoading = false; // 로딩 상태 해제
       }
   },
-
-  // isUserParticipating(targetNo) {
-  //     // isUserParticipated 객체에서 해당 타겟 번호의 참여 여부를 가져옴
-  //     const result = this.isUserParticipated[targetNo];
-  //     console.log(`8. Checking participation for target ${targetNo}:`, result);
-  //     return result;
-  // },
-
-  // async joinTarget(targetNo) {
-  //   try {
-  //     const response = await this.$store.dispatch('target/joinTarget', {
-  //       targetNo,
-  //       userNo: this.loginInfo.user_no,
-  //     });
-  //     console.log('Join target response:', response); 
-
-  //     if (response && response.success) {
-  //       // 참여 성공 시 상태 업데이트
-  //       this.userParticipatedTargets.push(targetNo);
-  //       this.$set(this.isUserParticipated, targetNo, true);
-
-  //       const target = this.adminTargets.find(t => t.target_no === targetNo);
-  //       if (target) {
-  //         target.participantCount = (target.participantCount || 0) + 1;
-  //       }
-  //     } else {
-  //       console.error('Failed to join target: Response does not indicate success', response);
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to join target:', error);
-  //   }
-  // },
   
   async joinTarget(targetNo) {
     try {
@@ -312,9 +287,7 @@ export default {
     }
   },
 
-  isUserParticipating(targetNo) {
-    return this.userParticipatedTargets.includes(targetNo);
-  },
+
 
   initializeUserParticipation() {
     this.adminTargets.forEach(target => {
@@ -322,78 +295,34 @@ export default {
     });
   },
 
-//   async checkParticipation(targetNo) {
-//     try {
-//         const response = await this.$store.dispatch('target/checkParticipation', {
-//             targetNo,
-//             userNo: this.loginInfo.user_no,
-//         });
-//         console.log(`8. Checking participation for target ${targetNo}:`, response.data.isParticipating);
-//         return response.data.isParticipating;
-//     } catch (error) {
-//         console.error('Failed to check user participation:', error);
-//         return false;
-//     }
-// },
+  handleClick(targetNo) {
+      console.log('Clicked:', targetNo);
+      this.toggleDropdown(targetNo);
+    },
 
-// async loadUserParticipatedTargets() {
-//       try {
-//         const targetNos = this.adminTargets.map(target => target.target_no);
-//         console.log('5. Target numbers:', targetNos);
+    toggleDropdown(targetNo) {
+      console.log('Clicked:', targetNo);
+      this.dropDownVisible[targetNo] = !this.dropDownVisible[targetNo];
+    },
 
-//         for (const targetNo of targetNos) {
-//           const response = await this.checkParticipation({
-//             targetNo,
-//             userNo: this.loginInfo.user_no,
-//           });
-//           console.log(`6. Participation check for target ${targetNo}:`, response.data);
+    isDropdownVisible(targetNo) {
+      return !!this.dropDownVisible[targetNo];
+    },
 
-//           if (response.data.isParticipating) {
-//             this.userParticipatedTargets.push(targetNo);
-//           }
-//           this.$set(this.localParticipantCounts, targetNo, response.data.participantCount);
-//         }
-//         console.log('7. Updated userParticipatedTargets:', this.userParticipatedTargets);
-//       } catch (error) {
-//         console.error('Failed to load user participated targets:', error);
-//       }
-//     },
-  
-//     async joinTarget(targetNo) {
-//   try {
-//     const response = await this.$store.dispatch('target/joinTarget', {
-//       targetNo,
-//       userNo: this.loginInfo.user_no,
-//     });
-//     console.log('Join target response:', response); // 응답 데이터 출력
+    closeAllDropdowns(event) {
+      if (!event.target.closest('.participation-info')) {
+        this.dropDownVisible = {};
+      }
+    },
 
-//     // 응답 데이터에서 success 여부를 확인하기 전에 응답이 제대로 있는지 확인
-//     if (response && response.success) {
-//       // 참여 성공 시 상태 업데이트
-//       this.userParticipatedTargets.push(targetNo);
-//       const target = this.adminTargets.find(t => t.target_no === targetNo);
-//       if (target) {
-//         target.participantCount = (target.participantCount || 0) + 1;
-//       }
-//       this.$forceUpdate();
-//     } else {
-//       console.error('Failed to join target: Response does not indicate success', response);
-//     }
-//   } catch (error) {
-//     console.error('Failed to join target:', error);
-//   }
-// },
+    isUserParticipating(targetNo) {
+      return this.userParticipatedTargets.includes(targetNo);
+    },
 
-    // isUserParticipating(targetNo) {
-    //   const result = this.userParticipatedTargets.includes(targetNo);
-    //   console.log(`8. Checking participation for target ${targetNo}:`, result);
-    //   return result;
-    // },
+    isParticipating(target) {
+    return target.participants && target.participants.length > 0;
+   },
 
-
-    // getParticipantCount(targetNo) {
-    //   return this.localParticipantCounts[targetNo] || 0;
-    // },
   },
  async created() {
   console.log('1. Component created');
@@ -408,7 +337,13 @@ export default {
     this.isLoading = false;
   }
 },
+mounted() {
+    document.addEventListener('click', this.closeAllDropdowns);
+  },
 
+  beforeUnmount() {
+    document.removeEventListener('click', this.closeAllDropdowns);
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapState('login', ['loginInfo']),
@@ -418,9 +353,13 @@ export default {
     },
     displayedTargets() {
     const filtered = this.filteredTargets(this.sortBy);
-    const sorted = this.sortedAdminTargets(filtered);
-    return this.sortBy === 'not-finished' ? this.sortTargets(sorted) : sorted;
+    return this.sortTargets(filtered);
   },
+  //   displayedTargets() {
+  //   const filtered = this.filteredTargets(this.sortBy);
+  //   const sorted = this.sortedAdminTargets(filtered);
+  //   return this.sortBy === 'not-finished' ? this.sortTargets(sorted) : sorted;
+  // },
   totalTargetsCount() {
     return this.adminTargets.length;
   },
@@ -531,10 +470,6 @@ export default {
   border-radius: 20px;
 }
 
-
-
-
-
 .participation-info {
   display: flex;
   align-items: center;
@@ -569,5 +504,44 @@ export default {
 }
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+
+/*--------------------------------*/
+.participation-info {
+  position: relative;
+  display: inline-block;
+}
+
+.participant-count {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 9999;
+  min-width: 200px;
+  padding: 10px;
+  background-color: #ffffff; /* 배경색을 흰색으로 설정 */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  display: block; /* 기본적으로 보여지는 상태로 설정 */
+}
+
+.dropdown-menu p {
+  margin: 0;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu p:last-child {
+  border-bottom: none;
 }
 </style>

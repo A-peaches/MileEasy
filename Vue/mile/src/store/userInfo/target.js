@@ -17,6 +17,9 @@ const state = {  // 애플리케이션의 상태를 저장
       SET_ADMIN_TARGETS(state, targets) {
         state.adminTargets = targets;
     },
+    removeTargetFromList(state, targetNo) {
+      state.targets = state.targets.filter(target => target.target_no !== targetNo);
+    },
   };
   
   const actions = {  // 상태를 변경하는 비동기적 액션
@@ -80,7 +83,18 @@ const state = {  // 애플리케이션의 상태를 저장
           return { success: false, message: error.response?.data?.message || "서버 오류가 발생했습니다" };
         }
       },
-    
+      async deleteTarget({ commit }, { userNo, targetNo }) {
+        try {
+          const response = await api.delete(`/target/deleteTarget`, {
+            params: { user_no: userNo, target_no: targetNo },
+          });
+          commit('removeTargetFromList', targetNo); // 삭제 후 상태를 업데이트하는 뮤테이션 호출
+          return response.data;
+        } catch (error) {
+          console.error('Error deleting target:', error);
+          throw error;
+        }
+      },
   };
   
   const getters = {  // 상태를 가져오는 게터
