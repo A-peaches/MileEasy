@@ -36,7 +36,7 @@ const state = {  // 애플리케이션의 상태를 저장
   const actions = {  // 상태를 변경하는 비동기적 액션
     async addTogetherTarget({ commit }, target) {
       try {
-          const response = await api.post('http://localhost:8090/target/create', target);
+          const response = await api.post('/target/create', target);
           commit('addTogetherTarget', response.data);
       } catch (error) {
           console.error('Error adding together target:', error.response ? error.response.data : error.message);
@@ -45,23 +45,14 @@ const state = {  // 애플리케이션의 상태를 저장
   },
   async addPersonalTarget({ commit }, target) {
       try {
-          const response = await api.post('http://localhost:8090/target/create', target);
+          const response = await api.post('/target/create', target);
           commit('addPersonalTarget', response.data);
       } catch (error) {
           console.error('Error adding personal target:', error.response ? error.response.data : error.message);
           throw error;
       }
   },
-    // async addTarget({ commit }, target) {
-    //     try {
-    //       console.log('target.js addTarget:',target);
-    //       const response = await api.post('http://localhost:8090/target/create', target);
-    //       commit('addTarget', response.data);
-    //     } catch (error) {
-    //       console.error('Error adding target:', error.response ? error.response.data : error.message);
-    //       throw error; // 에러를 상위로 전파하여 컴포넌트에서 처리할 수 있게 함
-    //     }
-    //   },
+
     async fetchTogetherTargets({ commit }, userNo) {
       try {
           const response = await api.get(`/target/user/${userNo}?type=together`);
@@ -70,16 +61,7 @@ const state = {  // 애플리케이션의 상태를 저장
           console.error('Error fetching together targets:', error.response ? error.response.data : error.message);
       }
   },
-      // async fetchTargets({ commit }, userNo) {
-      //   try {
-      //     console.log('Targets userNo:', userNo); // 응답 데이터를 콘솔에 출력
-      //     const response = await api.get(`/target/user/${userNo}`);
-      //     console.log('Targets API Response:', response.data); // 응답 데이터를 콘솔에 출력
-      //     commit('setTargets', response.data);
-      //   } catch (error) {
-      //     console.error('Error fetching targets:', error.response ? error.response.data : error.message);
-      //   }
-      // },
+   
       async fetchPersonalTargets({ commit }, userNo) {
         try {
             const response = await api.get(`/target/user/${userNo}?type=personal`);
