@@ -1,5 +1,5 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 450px; ">
+  <div class="cards mileage-container" >
     <div class="container d-flex justify-content-between">
       <div class="title lg2 KB_C2">
         별별 마일리지
@@ -94,6 +94,28 @@ export default {
 </script>
   
 <style scoped>
+@media (max-width: 768px) {
+  .mileage-container {
+    width: 97% !important;
+    height: 520px !important;
+  }
+  .chartTab {
+    font-size: 13pt !important;
+  }
+  .tabs {
+    margin-top: 3% !important;
+  }
+  .help-popover {
+    width: 210px !important;
+    overflow: auto !important;
+    will-change: transform !important;
+  }
+}
+.mileage-container{
+  background-color: #f9f9f9; 
+  height: 450px;
+}
+
 .chartTab {
   cursor: pointer;
   font-size: 16pt;

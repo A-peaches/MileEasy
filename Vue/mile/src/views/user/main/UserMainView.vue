@@ -1,14 +1,25 @@
 <template>
-  <div class="flex" style="margin-left: 10%; margin-right: 10%">
-    <div class="left-container" style="width: 25%">
-      <profile class="fade-up-item" />
-      <recommand class="my-5 fade-up-item" style="height: 210px"/>
-      <attendance class="fade-up-item" style="min-height: 395px; overflow: visible;" />
-    </div>
+  <div v-if="!isMobile">
+    <div class="flex" style="margin-left: 10%; margin-right: 10%">
+      <div class="left-container" style="width: 25%">
+        <profile class="fade-up-item" />
+        <recommand class="my-5 fade-up-item recommand-cards"/>
+        <attendance class="fade-up-item attendance-cards"  />
+      </div>
 
-    <div class="right-container" style="width: 70%; margin-left: 1%; position: sticky; top: 20px; height: 100vh;">
-      <favorite class="fade-up-item" style="width: 100%; margin-bottom: 49px;" />
-      <milageCharts class="fade-up-item" style="width: 100%; height: 430px; overflow: visible;"  />
+      <div class="right-container" style="width: 70%; margin-left: 5%; position: sticky; top: 20px; height: 100vh;">
+        <favorite class="fade-up-item favorite-cards"  />
+        <milageCharts class="fade-up-item mileageCharts-cards"  />
+      </div>
+    </div>
+  </div>
+  <div v-else>
+    <div class="">
+      <profile class="fade-up-item mx-auto" />
+      <favorite class="fade-up-item favorite-cards mx-auto"  />
+      <milageCharts class="fade-up-item mileageCharts-cards mx-auto" />
+      <recommand class="my-5 fade-up-item recommand-cards"/>
+      <attendance class="fade-up-item attendance-cards" />
     </div>
   </div>
 </template>
@@ -20,12 +31,15 @@ import milageCharts from '@/components/user/MileageChartsCom.vue';
 import attendance from '@/components/user/AttendanceCom.vue';
 import profile from '@/components/user/ProfileCom.vue';
 import { mapGetters } from 'vuex';
+import MobileDetect from "mobile-detect";
 
 export default {
   name: 'UserMainView',
   components: { favorite, recommand, milageCharts, attendance, profile },
   data() {
-    return {}
+    return {
+      isMobile: false,
+    }
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
@@ -41,6 +55,10 @@ export default {
     }
   },
   mounted() {
+    // 모바일 기기 판단 여부 
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+
     this.$nextTick(() => {
       const items = this.$el.querySelectorAll('.fade-up-item');
       items.forEach((item, index) => {
@@ -57,10 +75,35 @@ export default {
 
 <style scoped>
 @media (max-width: 768px) {
-  .left-container,
-  .right-container {
-    width: 100% !important;
+  .fade-up-item {
+    margin-bottom: 20px !important;
   }
+  .mileageCharts-cards{
+    width: 100%; 
+    height: 500px; 
+    overflow: scroll; 
+  }
+
+}
+
+.attendance-cards {
+  min-height: 395px; 
+  overflow: visible;
+}
+
+.recommand-cards{
+  height: 210px;
+}
+
+.mileageCharts-cards{
+  width: 100%; 
+  height: 430px; 
+  overflow: visible; 
+}
+
+.favorite-cards{
+  width: 100%; 
+  margin-bottom: 49px;
 }
 
 .fade-up-item {

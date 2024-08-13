@@ -1,5 +1,42 @@
 <template>
-  <div class="flex">
+  <div v-if="!isMobile" class="flex">
+    <div class="chart-container mt-4">
+      <!-- 직급별 차트 그리기 -->
+      <canvas id="positionChart" ></canvas>
+    </div>
+    <div class="text-container mx-auto mt-3 ">
+
+      <div v-if="userData[1] > positionData[userData[0]-1]">
+        <p class="KB_C2 lg2"><span class="lg">🙌🏻</span> 정말 대단하세요! </p>
+        <p>당신의 마일리지 점수는 직급별 평균점수보다 높습니다. </p>
+      </div>
+      <div v-else-if="userData[1] == positionData[userData[0]-1]">
+        <p class="KB_C2 lg2"><span class="lg">🙌🏻</span> 정말 대단하세요!</p>
+        <p>당신의 마일리지 점수는 직급별 평균점수와 비슷합니다. </p>
+      </div>
+      <div v-else-if="userData[1] < positionData[userData[0]-1]">
+        <p class="KB_C2 lg2"><span class="lg">💪🏻</span> 아자아자 화이팅!</p>
+        <p>"{{getLoginInfo.position_no }}" 직급의 평균에 도달하는 날이 멀지 않았어요. </p>
+      </div>
+
+      <table class="table  table-bordered  table-gray mt-3">
+        <caption class="text-end" style="font-size:10pt; color: gray;">( 최근 업데이트 : {{userData[2]}} )</caption>
+        <thead>
+          <tr>
+            <td class="KB_C2">{{getLoginInfo.position_no }} 직급 평균</td>
+            <td class="KB_C2" >나의 평균</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{positionData[userData[0]-1]}}</td>
+            <td>{{userData[1]}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div v-else>
     <div class="chart-container mt-4">
       <!-- 직급별 차트 그리기 -->
       <canvas id="positionChart" ></canvas>
@@ -41,6 +78,7 @@
 <script>
 import { Chart } from "chart.js";
 import { mapActions, mapGetters } from "vuex";
+import MobileDetect from "mobile-detect";
 
 export default {
   name: "PositionChart",
@@ -49,6 +87,7 @@ export default {
       positionData: [], // 차트데이터
       userData: [],
       positionChart: null, // 차트 인스턴스 저장
+      isMobile: false,
     };
   },
   computed: {
@@ -166,12 +205,31 @@ export default {
     }
   },
   async mounted() {
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+
     await this.loadMilePositionData();
   },
 };
 </script>
 
 <style scoped>
+@media screen and (max-width: 768px) {
+  .flex {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .chart-container, .text-container {
+    width: 100% !important;
+    margin: 10px 0 !important;
+  }
+
+  .chart-container {
+    height: 180px !important; /* 적절한 높이로 조정 */
+  }
+}
+
 .flex {
   display: flex;
   flex-direction: row; /* 수평으로 나열 */

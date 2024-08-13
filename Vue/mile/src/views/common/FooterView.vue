@@ -8,6 +8,7 @@
       margin-bottom: 10px;
     "
   >
+  <div v-if="!isMobile">
     <div style="margin-top: 80px"></div>
 
     <div class="notice-container">
@@ -135,6 +136,110 @@
       />MileEasy
     </div>
     <div>&copy; 2024 MileEasy. All rights reserved.</div>
+    </div>
+
+    <!-- 모바일 버전 코드 -->
+    <div v-else>
+      <div class="mobile-notice-container">
+        <div class="mobile-recent-notice">
+          <span class="mobile-recent-notice-text">최근 공지사항</span>
+        </div>
+        <div class="mobile-notice-item-wrapper">
+          <transition name="slide">
+            <router-link
+              :to="
+                currentNoticeId
+                  ? { name: 'noticeDetailView', params: { id: currentNoticeId } }
+                  : ''
+              "
+              class="mobile-notice-item"
+              :key="currentIndex"
+              v-if="currentNoticeId !== null"
+              style="text-decoration: none; color: #4b4b4b"
+            >
+              <span class="mobile-notice-title">
+                {{ currentNotice.notice_board_title }}
+              </span>
+              <span class="mobile-notice-date">
+                {{
+                  currentNotice.notice_board_date
+                    ? currentNotice.notice_board_date.substring(0, 10)
+                    : ""
+                }}
+              </span>
+            </router-link>
+            <div v-else class="mobile-notice-item" :key="currentIndex">
+              공지사항이 없습니다.
+            </div>
+          </transition>
+        </div>
+        <div class="mobile-notice-nav">
+          <button @click="prev" class="mobile-nav-button">&lt;</button>
+          <button @click="next" class="mobile-nav-button">&gt;</button>
+        </div>
+      </div>
+
+      <!-- <div class="mobile-menu-container">
+        <div class="mobile-menu-section">
+          <span class="mobile-menu-title">My Mileage</span>
+          <div class="mobile-menu-items">
+            <template v-if="getIsChecked == false">
+              <router-link
+                v-for="(item, index) in filteredMileageInfo"
+                :key="index"
+                :to="{
+                  name: 'mileageDetail',
+                  params: { mile_no: item.mile_no },
+                }"
+                class="mobile-menu-link"
+              >
+                {{ item.mile_name }}
+              </router-link>
+            </template>
+          </div>
+        </div>
+
+        <div class="mobile-menu-section">
+          <span class="mobile-menu-title">Info Zone</span>
+          <div class="mobile-menu-items">
+            <a href="/documentsView" class="mobile-menu-link">문서모아</a>
+            <a href="/m_TipMainView" class="mobile-menu-link">M-Tip</a>
+            <a href="/noticeListView" class="mobile-menu-link">공지사항</a>
+          </div>
+        </div>
+
+        <div class="mobile-menu-section">
+          <span class="mobile-menu-title">Help Desk</span>
+          <div class="mobile-menu-items">
+            <a href="/mileEasyContactView" class="mobile-menu-link">업무별 연락처</a>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="mobile-contact-info">
+        <template v-if="getLoginInfo?.user_is_admin && isChecked">
+          <p class="mobile-contact-item" @click="sendEmail">
+            <i class="bi bi-envelope-at icon"></i> mileage@kbfg.com
+          </p>
+        </template>
+        <p class="mobile-contact-item">
+          <i class="bi bi-send-plus icon"></i>
+          <a href="/mileageRequesList" style="text-decoration:none; color: #989898">마일리지 요청</a>
+        </p>
+        <p class="mobile-contact-item" @click="connecting">
+          <i class="bi bi-telephone-outbound icon"></i> +82 02-2073-5959
+        </p>
+      </div>
+
+      <div class="mobile-footer-logo">
+        <img
+          src="@/assets/img/mini_logo2.png"
+          class="mobile-logo-image"
+        />
+        MileEasy
+      </div>
+      <div class="mobile-copyright">&copy; 2024 MileEasy. All rights reserved.</div>
+    </div>
   </footer>
 </template>
 
@@ -150,6 +255,7 @@ export default {
       currentIndex: 0,
       autoSlide: null,
       loginInfoLoaded: false,
+      isMobile: false,
     };
   },
   async mounted() {
@@ -171,6 +277,9 @@ export default {
     }
 
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
+
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
   },
   beforeUnmount() {
     this.stopAutoSlide();
@@ -178,6 +287,7 @@ export default {
       "visibilitychange",
       this.handleVisibilityChange
     );
+    window.removeEventListener('resize', this.checkMobile);
   },
   computed: {
     ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
@@ -208,6 +318,9 @@ export default {
   methods: {
     ...mapActions("notice", ["getFooterNotice"]),
     ...mapActions("mileage", ["getMileage"]), // mileage 스토어의 액션 매핑
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 768; // 768px 이하를 모바일로 간주
+    },
     next() {
       if (this.getFooterNotices.length > 0) {
         this.currentIndex =
@@ -317,6 +430,138 @@ export default {
 
 
 <style scoped>
+/* 모바일 버전 스타일 */
+@media (max-width: 768px) {
+  .mobile-notice-container {
+    padding: 10px;
+    border-bottom: 1px solid #dedede;
+    position: relative;
+  }
+
+  .mobile-recent-notice-text {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .mobile-notice-item-wrapper {
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .mobile-notice-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    width: 100%;
+    transition: all 0.5s ease;
+  }
+
+  .mobile-notice-title {
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .mobile-notice-date {
+    font-size: 0.8rem;
+    color: gray;
+  }
+
+  .mobile-notice-nav {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .mobile-nav-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  .mobile-menu-container {
+    padding: 15px;
+  }
+
+  .mobile-menu-section {
+    margin-bottom: 20px;
+  }
+
+  .mobile-menu-title {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .mobile-menu-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mobile-menu-link {
+    text-decoration: none;
+    color: #5e5e5e;
+    margin-right: 15px;
+    margin-bottom: 5px;
+  }
+
+  .mobile-contact-info {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .mobile-contact-item {
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .mobile-footer-logo {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .mobile-logo-image {
+    width: 30px;
+    margin-right: 5px;
+  }
+
+  .mobile-copyright {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: all 0.5s ease;
+  }
+
+  .slide-enter-from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .slide-leave-to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  .slide-enter-to,
+  .slide-leave-from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .notice-container {
   position: relative;
   display: flex;

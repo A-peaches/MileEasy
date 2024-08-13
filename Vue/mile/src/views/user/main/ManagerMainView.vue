@@ -22,7 +22,7 @@
         <p class="md" style="margin-bottom: 10px">
           {{ loginInfo ? loginInfo.dp_no : '' }}
         </p>
-        <button @click="goToMileageIntroView" class="btn-yellow KB_C2 my-3">{{ mile_name }}</button>
+        <button @click="goToMileagePromotion" class="btn-yellow KB_C2 my-3">{{ mile_name }}</button>
 
       </div>
       <CardComponent
@@ -130,8 +130,8 @@ export default {
       event.target.src = require('@/assets/img/test.png');
     },
     
-    goToMileageIntroView() {
-      this.$router.push('/introduceMileageAdminView');
+    goToMileagePromotion() {
+      this.$router.push({ name: 'promotion', query: { mile_name: this.mile_name } });
     },
   },
   computed: {

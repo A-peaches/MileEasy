@@ -374,6 +374,19 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 /* 공통 스타일 */
+@media (max-width: 768px) {
+  .page-back {
+    width: 95% !important;
+    height: 100%;
+    margin-top: 5% !important;
+    padding-bottom: 5% !important;
+  }
+  .cards {
+    padding: 10px !important;
+  }
+
+}
+
 .page-back {
   width: 70%;
   height: 100%;

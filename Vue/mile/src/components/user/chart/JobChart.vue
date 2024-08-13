@@ -1,40 +1,81 @@
 <template>
-  <div class="flex">
-    <div class="chart-container mt-3" style="width: 45%; margin-left: 29px">
-      <canvas id="jobChart"></canvas>
-    </div>
-    <div class="text-center mx-auto" style="width: 45%">
-      <p class="KB_C2 lg2">직무별 마일리지 인사이트</p>
-      <hr />
-      <div v-if="userData[0] > jobChartData[jobNo]">
-      <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수를 뛰어넘는 성과를 이루셨습니다. <br>
-        뛰어난 성과에 박수를 보냅니다! 앞으로도 많은 발전을 기원합니다. </span>
+  <!-- 데스트탑 버전 -->
+  <div v-if="!isMobile" style="width: 100%; height: 100%; margin: 0;">
+    <div class="flex">
+      <div class="chart-container mt-3" style="width: 45%; margin-left: 29px">
+        <canvas id="jobChart"></canvas>
       </div>
-      <div v-if="userData[0] == jobChartData[jobNo]">
-      <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수에 도달했습니다. <br>
-        좋은 성과입니다! 앞으로 더 높은 목표를 향해 나아가세요.</span>
-      </div>
-      <div v-if="userData[0] < jobChartData[jobNo]">
-      <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수에 도달하지 못했습니다. <br>
-        지금도 충분히 잘하고 계십니다. 앞으로 더 좋은 성과를 기대합니다! </span>
-      </div>
+      <div class="text-center mx-auto" style="width: 45%">
+        <p class="KB_C2 lg2">직무별 마일리지 인사이트</p>
+        <hr />
+        <div v-if="userData[0] > jobChartData[jobNo]">
+        <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수를 뛰어넘는 성과를 이루셨습니다. <br>
+          뛰어난 성과에 박수를 보냅니다! 앞으로도 많은 발전을 기원합니다. </span>
+        </div>
+        <div v-if="userData[0] == jobChartData[jobNo]">
+        <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수에 도달했습니다. <br>
+          좋은 성과입니다! 앞으로 더 높은 목표를 향해 나아가세요.</span>
+        </div>
+        <div v-if="userData[0] < jobChartData[jobNo]">
+        <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수에 도달하지 못했습니다. <br>
+          지금도 충분히 잘하고 계십니다. 앞으로 더 좋은 성과를 기대합니다! </span>
+        </div>
 
-      
-      <div class="progress-container mx-auto " style="margin-top : 80px; width:90%">
-        <span>나의 직급위치</span>
-        <div class="progress-bar"></div>
-        <div class="indicator" :style="{ left: relativeUserScorePercentage + '%'  }">
-          <span>My</span>
+        <div class="progress-container mx-auto " style="margin-top : 80px; width:90%">
+          <span>나의 직급위치</span>
+          <div class="progress-bar"></div>
+          <div class="indicator" :style="{ left: relativeUserScorePercentage + '%'  }">
+            <span>My</span>
+          </div>
+          <div
+            class="indicator average " style="left: 50%; margin-bottom: 12px"
+          >
+            <span>{{ userData[2] }}</span>
+          </div>
         </div>
-        <div
-          class="indicator average " style="left: 50%; margin-bottom: 12px"
-        >
-          <span>{{ userData[2] }}</span>
-        </div>
-      </div>
+      </div>  
     </div>
-    
-    <div class="text-start w-100 mt-3">
+    <div class="text-end w-100 mt-3">
+      <span class="text-end" style="font-size: 10pt; color: gray">( 최근 업데이트 : {{ userData[1] }} )</span>
+    </div>
+  </div>
+  <!-- 모바일 버전 -->
+  <div v-else>
+    <div class="flex">
+      <div class="chart-container">
+        <canvas id="jobChart"></canvas>
+      </div>
+      <div class="text-center mx-auto" style="width: 90%">
+        <p class="KB_C2 lg2">직무별 마일리지 인사이트</p>
+        <hr />
+        <div v-if="userData[0] > jobChartData[jobNo]">
+        <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수를 뛰어넘는 성과를 이루셨습니다. 
+          뛰어난 성과에 박수를 보냅니다! 앞으로도 많은 발전을 기원합니다. </span>
+        </div>
+        <div v-if="userData[0] == jobChartData[jobNo]">
+        <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수에 도달했습니다. 
+          좋은 성과입니다! 앞으로 더 높은 목표를 향해 나아가세요.</span>
+        </div>
+        <div v-if="userData[0] < jobChartData[jobNo]">
+        <span><strong>"{{ userData[2] }}"</strong> 직무의 평균 점수에 도달하지 못했습니다. 
+          지금도 충분히 잘하고 계십니다. 앞으로 더 좋은 성과를 기대합니다! </span>
+        </div>
+        
+        <div class="progress-container mx-auto " style="margin-top : 55px; width:90%">
+          <span></span>
+          <div class="progress-bar"></div>
+          <div class="indicator" :style="{ left: relativeUserScorePercentage + '%'  }">
+            <span>My</span>
+          </div>
+          <div
+            class="indicator average " style="left: 50%; margin-bottom: 12px"
+          >
+            <span>{{ userData[2] }}</span>
+          </div>
+        </div>
+      </div>  
+    </div>
+    <div class="text-start w-100 mt-2">
       <span class="text-end" style="font-size: 10pt; color: gray">( 최근 업데이트 : {{ userData[1] }} )</span>
     </div>
   </div>
@@ -43,11 +84,13 @@
 <script>
 import { Chart } from "chart.js";
 import { mapActions, mapGetters } from "vuex";
+import MobileDetect from "mobile-detect";
 
 export default {
   name: "JobChart",
   data() {
     return {
+      isMobile: false,
       jobChart: null,
       jobChartData: [],
       userData: [],
@@ -71,16 +114,14 @@ export default {
       const diff = userScore - averageScore;
       const maxDiff = Math.max(this.maxValue - averageScore, averageScore - this.minValue);
       return 50 + (diff / maxDiff) * 50 >= 100 ? 100 : 50 + (diff / maxDiff) * 50;
-    
-
-  },
+    },
   },
   methods: {
     ...mapActions("mileScore", ["getMileJob"]),
 
     createChart() {
       var ctx = document.getElementById("jobChart").getContext("2d");
-
+      
       new Chart(ctx, {
         type: "bubble",
         data: {
@@ -158,6 +199,86 @@ export default {
         },
       });
     },
+    createMobileChart() {
+      var ctx = document.getElementById("jobChart").getContext("2d");
+      
+      new Chart(ctx, {
+        type: "bubble",
+        data: {
+          datasets: [
+            {
+              label: this.jobs[0],
+              data: [
+                {
+                  x: this.jobChartData[0],
+                  y: this.jobChartData[0],
+                  r: this.jobChartData[0] / 50,
+                },
+              ],
+              backgroundColor: this.colors[0],
+            },
+            {
+              label: this.jobs[1],
+              data: [
+                {
+                  x: this.jobChartData[1],
+                  y: this.jobChartData[1],
+                  r: this.jobChartData[1] / 50,
+                },
+              ],
+              backgroundColor: this.colors[1],
+            },
+            {
+              label: this.jobs[2],
+              data: [
+                {
+                  x: this.jobChartData[2],
+                  y: this.jobChartData[2],
+                  r: this.jobChartData[2] / 50,
+                },
+              ],
+              backgroundColor: this.colors[2],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              display: false,
+              min: Math.floor(this.minValue / 100) * 100 - 500,
+              max: Math.ceil(this.maxValue / 100) * 100 + 500,
+              ticks: {
+             stepSize: 100,
+        },
+            },
+            y: {
+              min: Math.floor(this.minValue / 100) * 100 - 500,
+              max: Math.ceil(this.maxValue / 100) * 100 + 500,
+              ticks: {
+            stepSize: 100, 
+        },
+            },
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: "right",
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  var label = context.dataset.label || "";
+                  var xValue = context.parsed.x;
+                  return label + ": " + xValue;
+                },
+              },
+            },
+          },
+        },
+      });
+    },
     async loadMileJobData() {
       try {
         await this.getMileJob(this.getLoginInfo.user_no);
@@ -179,7 +300,14 @@ export default {
           this.maxValue = Math.max(...this.jobChartData);
           this.minValue = Math.min(...this.jobChartData);
           this.jobNo = this.jobs.indexOf(this.userData[2]);
-          this.createChart();
+          
+          this.$nextTick(() => {
+            if(!this.isMobile){
+              this.createChart();
+            }else{
+              this.createMobileChart();
+            }
+          })
         } else {
           console.error("No data available for mileJobs");
         }
@@ -189,6 +317,9 @@ export default {
     },
   },
   async mounted() {
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+
     await this.loadMileJobData();
   },
   beforeUnmount() {
@@ -200,6 +331,20 @@ export default {
 </script>
 
 <style scoped>
+@media screen and (max-width: 768px) {
+  .flex {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  #jobChart {
+    width: 100% !important;
+    height: 90% !important;
+  }
+  .progress-container {
+    height: 18px !important;
+  }
+}
+
 .chart-container {
   width: 100%;
   height: 100%;
