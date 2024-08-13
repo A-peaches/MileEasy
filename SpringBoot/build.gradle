@@ -37,7 +37,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:2.7.12'
     implementation 'org.apache.poi:poi:5.2.3'           // POI 기본 라이브러리
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
-
+    implementation 'net.nurigo:javaSDK:2.2'
+    implementation 'net.nurigo:sdk:4.2.7'
 
 }
 
