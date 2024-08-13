@@ -101,23 +101,23 @@ export default {
         console.error('Notice data is not available');
         return;
       }
-
       try {
-        await this.toggleLikeAction({
-          mtip_board_no: this.notice.mtip_board_no,
-          user_no: this.loginInfo.user_no
-        });
+      await this.toggleLikeAction({
+        mtip_board_no: this.notice.mtip_board_no,
+        user_no: this.loginInfo.user_no
+      });
 
-        // // 좋아요 수 업데이트
-        // if (this.computedIsPostLiked) {
-        //   this.notice.mtip_board_like++;
-        // } else {
-        //   this.notice.mtip_board_like--;
-        // }
-      } catch (error) {
-        console.error('Error toggling like:', error);
-      }
-    },
+        // 좋아요 상태를 로컬 스토리지에 저장
+        const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
+      likedPosts[this.notice.mtip_board_no] = !likedPosts[this.notice.mtip_board_no];
+      localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+
+      // 좋아요 이모티콘 업데이트
+      this.notice.liked = likedPosts[this.notice.mtip_board_no];
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    }
+  },
 
     async deleteNotice() {
       Swal.fire({
@@ -244,6 +244,11 @@ export default {
     async fetchNoticeDetail(id) {
       this.isLoading = true;
       await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
+
+      // 로컬 스토리지에서 좋아요 상태를 복원
+    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
+    this.notice.liked = likedPosts[this.notice.mtip_board_no] || false;
+
       this.isLoading = false;
     },
   },
@@ -268,8 +273,9 @@ export default {
       return this.$route.params.notice.mtip_board_no;
     },
     computedIsPostLiked() {
-      return this.isPostLiked(this.loginInfo.user_no, this.notice.mtip_board_no);
-    },
+    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
+    return likedPosts[this.notice.mtip_board_no] || false;
+  },
   },
   async mounted() {
     const noticeId = this.$route.params.mtip_board_no;
