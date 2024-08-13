@@ -30,4 +30,5 @@ public class User {
     private Boolean is_hr;
     private int group_no;
     private String group_name;
+    private String user_tel;
 }

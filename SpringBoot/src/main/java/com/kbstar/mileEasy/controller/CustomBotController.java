@@ -38,7 +38,7 @@ public class CustomBotController {
         return chatGPTResponse.getChoices().get(0).getMessage().getContent();
     }
 
-    @PostMapping("/chatMMS")
+    @PostMapping("/sms")
     public String PostchatMMS(@RequestParam(name = "prompt") String prompt){
         ChatGPTRequest request = new ChatGPTRequest(model, prompt);
         ChatGPTResponse chatGPTResponse =  template.postForObject(apiURL, request, ChatGPTResponse.class);
