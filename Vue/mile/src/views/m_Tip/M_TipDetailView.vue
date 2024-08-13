@@ -51,12 +51,12 @@
           </div>
           <div class="views-text">{{ notice.mtip_board_hit }}</div>
         </div>
-        <div class="icon-container">
-          <div class="heart-icon" @click="toggleLike">
-            <i :class="['bi', computedIsPostLiked ? 'bi-heart-fill' : 'bi-heart']"
-              :style="{ color: computedIsPostLiked ? '#dc3545' : 'inherit' }"></i>
-          </div>
-          <div class="views-text">{{ notice.mtip_board_like }}</div>
+        <div class="icon-container"  @click="toggleLike">
+          <div class="heart-icon">
+            <i :class="['bi', isLiked ? 'bi-heart-fill' : 'bi-heart']"
+              :style="{ color: isLiked ? '#dc3545' : 'inherit' }"></i>
+        </div>
+        <div class="views-text">{{ notice.mtip_board_like }}</div>
         </div>
        </div>
         <hr style="margin-top: 100px;">
@@ -89,36 +89,43 @@ export default {
     UserComment
   },
   methods: {
-    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction']),
+    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'likePost', 'unlikePost', 'checkLikeStatus']),
 
     async toggleLike() {
-      if (!this.loginInfo) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
+  if (!this.loginInfo) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
 
-      if (!this.notice) {
-        console.error('Notice data is not available');
-        return;
-      }
-      try {
-      await this.toggleLikeAction({
-        mtip_board_no: this.notice.mtip_board_no,
-        user_no: this.loginInfo.user_no
-      });
+  if (!this.notice) {
+    console.error('Notice data is not available');
+    return;
+  }
 
-        // 좋아요 상태를 로컬 스토리지에 저장
-        const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-      likedPosts[this.notice.mtip_board_no] = !likedPosts[this.notice.mtip_board_no];
-      localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+  try {
+    const action = this.isLiked ? 'unlikePost' : 'likePost';
+    const result = await this.$store.dispatch(`mtipBoard/${action}`, {
+      mtip_board_no: this.notice.mtip_board_no,
+      user_no: this.loginInfo.user_no,
+    });
 
-      // 좋아요 이모티콘 업데이트
-      this.notice.liked = likedPosts[this.notice.mtip_board_no];
-    } catch (error) {
-      console.error('Error toggling like:', error);
+    console.log('서버에서 받은 좋아요 상태:', result);
+
+    // 좋아요 상태 업데이트
+    await this.$store.dispatch('mtipBoard/checkLikeStatus', {
+      mtip_board_no: this.notice.mtip_board_no,
+      user_no: this.loginInfo.user_no,
+    });
+
+    // 서버에서 받아온 좋아요 수를 직접 설정
+    if (result !== -1) {
+      this.notice.mtip_board_like =  result.isLiked;  // 서버에서 받은 좋아요 수를 그대로 반영
     }
-  },
 
+  } catch (error) {
+    console.error('Error toggling like:', error);
+  }
+},
     async deleteNotice() {
       Swal.fire({
         title: '정말로 삭제하시겠습니까?',
@@ -242,19 +249,18 @@ export default {
       }
     },
     async fetchNoticeDetail(id) {
-      this.isLoading = true;
-      await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
+        this.isLoading = true;
+        await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
 
-      // 로컬 스토리지에서 좋아요 상태를 복원
-    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-    this.notice.liked = likedPosts[this.notice.mtip_board_no] || false;
+        const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
+        this.isLiked = likedPosts[this.notice.mtip_board_no] || false;
 
-      this.isLoading = false;
+        this.isLoading = false;
     },
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
-    ...mapGetters('mtipBoard', ['getNotice', 'isPostLiked']),
+    ...mapGetters('mtipBoard', ['getNotice']),
     ...mapState('login', ['loginInfo']),
 
     notice() {
@@ -272,16 +278,20 @@ export default {
     mileNo() {
       return this.$route.params.notice.mtip_board_no;
     },
-    computedIsPostLiked() {
-    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-    return likedPosts[this.notice.mtip_board_no] || false;
+    isLiked() {
+    return this.$store.getters['mtipBoard/isPostLiked'](this.loginInfo.user_no, this.notice.mtip_board_no);
   },
-  },
+},
   async mounted() {
     const noticeId = this.$route.params.mtip_board_no;
     if (noticeId) {
       await this.fetchNoticeDetail(noticeId);
     }
+
+    await this.$store.dispatch('mtipBoard/checkLikeStatus', {
+      mtip_board_no: this.notice.mtip_board_no,
+      user_no: this.loginInfo.user_no,
+    });
   },
 };
 </script>

@@ -245,22 +245,31 @@ public class MtipController {
             return ResponseEntity.notFound().build();
         }
     }
-    //m-tip 좋아요
-    @GetMapping("/check-like/{mtipBoardNo}/{userNo}")
-    public ResponseEntity<?> checkLikeStatus(@PathVariable int mtipBoardNo, @PathVariable String userNo) {
-        boolean isLiked = mtipBoardService.checkLikeStatus(mtipBoardNo, userNo);
-        return ResponseEntity.ok(Map.of("isLiked", isLiked));
-    }
-
-    //m-tip 좋아요
-    @PostMapping("/toggle-like")
-    public ResponseEntity<?> toggleLike(@RequestBody Map<String, Object> payload) {
+    //좋아요 수 증가
+    @PostMapping("/like")
+    public ResponseEntity<?> likePost(@RequestBody Map<String, Object> payload) {
         int mtipBoardNo = Integer.parseInt(payload.get("mtip_board_no").toString());
         String userNo = payload.get("user_no").toString();
 
-        boolean isLiked = mtipBoardService.toggleLike(mtipBoardNo, userNo);
+        int isLiked = mtipBoardService.likePost(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
+    //좋아요 수 감소
+    @PostMapping("/unlike")
+    public ResponseEntity<?> unlikePost(@RequestBody Map<String, Object> payload) {
+        int mtipBoardNo = Integer.parseInt(payload.get("mtip_board_no").toString());
+        String userNo = payload.get("user_no").toString();
+
+        int isLiked = mtipBoardService.unlikePost(mtipBoardNo, userNo);
+        return ResponseEntity.ok(Map.of("isLiked", isLiked));
+    }
+    //좋아요 확인
+    @GetMapping("/check-like")
+    public ResponseEntity<?> checkLike(@RequestParam("mtip_board_no") int mtipBoardNo, @RequestParam("user_no") String userNo) {
+        boolean isLiked = mtipBoardService.checkLike(mtipBoardNo, userNo);
+        return ResponseEntity.ok(Map.of("isLiked", isLiked));
+    }
+
 
     //m-tip 수정
     @PostMapping("/update")
