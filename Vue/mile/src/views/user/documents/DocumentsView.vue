@@ -3,14 +3,14 @@
     <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">
       문서모아
       <hr
-        style="width: 13%; border: 0; height: 2px; background: black"
-        class="mx-auto"
+        
+        class="mx-auto title-line"
       />
     </h2>
   
     <!-- 카테고리 목록 -->
     <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-      <div class="category-button list-wrapper" style="width: 10vw">
+      <div class="category-button list-wrapper" >
         {{ selectedCategory ? selectedCategory : '카테고리' }}
       </div>
       <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
@@ -159,9 +159,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-// import axios from 'axios';
 import api from '@/api/axios';
 import moment from 'moment';
+
 export default {
   name: 'DocumentsView',
   data() {
@@ -349,6 +349,29 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .title-line {
+    width: 30% !important;
+  }
+  .category-button {
+    width: 40vw !important;
+    font-size: 15pt !important;
+  }
+  .category-button:hover {
+    transition: background-color 0s ease !important;
+  }
+  .list-wrapper:hover {
+    background-color: #e1e3e4 !important;
+    transition: background-color 0s ease !important;
+  }
+}
+
+.title-line {
+  width: 13%; 
+  border: 0; 
+  height: 2px; 
+  background: black;
+}
 
 /* 드롭다운 메뉴 스타일 */
 .QnA {
@@ -365,10 +388,10 @@ export default {
   font-size: 17pt;
   font-family: 'KB_S5', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+  width: 10vw;
 }
 .category-button:hover {
   cursor: pointer;
-  /* background-color: #E1E3E4 !important; */
   transition: background-color 0.3s ease;
 }
 .menu-items {

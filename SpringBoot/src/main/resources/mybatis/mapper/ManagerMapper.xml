@@ -82,7 +82,7 @@
         WHEN ts.total_participants > 0 THEN
         ROUND((ts.achieved_participants * 100.0 / ts.total_participants), 2)
         ELSE 0
-        END AS achievement_rate
+        END AS achievementRate
         FROM target t
         LEFT JOIN target_summary ts ON t.target_no = ts.target_no
         WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
