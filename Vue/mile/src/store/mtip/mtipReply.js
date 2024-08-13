@@ -32,19 +32,24 @@ const actions = {
     try {
       console.log('fetchComments 메소드 실행');
       const response = await api.get(`/mtip/comments/${mtip_board_no}`);
+      console.log('fetchComments 메소드  response:', response);  // 추가된 로그 
       commit('SET_COMMENTS', response.data.map(comment => ({
         ...comment,
         isEditing: false,
         editingContent: comment.mtip_reply_content,
       })));
+      console.log('SET_COMMENTS 커밋 완료');
     } catch (error) {
       console.error('댓글 가져오기 중 오류가 발생했습니다:', error);
     }
   },
   async addComment({ commit }, commentData) {
     try {
+      console.log('Sending comment data to the server:', commentData);  // 추가된 로그
       const response = await api.post('/mtip/comments', commentData);
+      console.log('Server response:', response);  // 추가된 로그
       commit('ADD_COMMENT', response.data);
+      return response.data;  // 응답을 반환해야 합니다.
     } catch (error) {
       console.error('댓글 등록 중 오류가 발생했습니다:', error);
     }

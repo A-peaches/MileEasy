@@ -89,17 +89,6 @@ export default {
       comments: [] ,// comments를 초기화
     };
   },
-  watch: {
-  '$route.params.mtip_board_no': {
-    immediate: true,
-    handler(newId, oldId) {
-      if (newId && newId !== oldId) {
-        this.$store.commit('mtipReply/CLEAR_COMMENTS');
-        this.$store.dispatch('mtipReply/fetchComments', newId);
-      }
-    }
-  }
-},
   components: {
     UserComment
   },
@@ -226,7 +215,7 @@ export default {
       
       if (isNaN(date.getTime())) {
         console.error('Invalid date string:', dateString);
-        return 'Invalid Date';
+        return ' ↺ 댓글 등록 중';
       }
       
       const options = { 

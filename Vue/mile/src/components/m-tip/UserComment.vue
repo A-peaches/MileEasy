@@ -23,7 +23,7 @@
 ></textarea>
     <button 
     class="btn-yellow btn-yellow:hover"
-      @click="addComment" 
+      @click="addComment"  @keydown.enter.prevent="addComment" 
       style="font-family: 'KB_C2', sans-serif; font-size: 18px; width: 80px; height: 80px;color: #4b4a4a;"
     >등록</button>
   </div>
@@ -98,27 +98,20 @@ export default {
       // editingCommentId: null, // 추가된 부분
     };
   },
-  watch: {
-    mtip_board_no: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchComments();
-        }
-      }
-    }
-  },
+ 
   created() { // 추가된 부분
   console.log('UserComment component created 확인해보기');
   console.log('mtip_board_no 확인 중:', this.mtip_board_no);
   console.log('loginInfo 확인 중:', this.loginInfo);
   console.log('API URL 확인 중:', process.env.VUE_APP_API_URL);
   // this.$store.dispatch('mtipReply/fetchComments', this.mtip_board_no);
+  console.log('mtip_board_no:', this.mtip_board_no); // 이 부분을 추가하여 값이 올바르게 전달되었는지 확인합니다.
   this.fetchComments(this.mtip_board_no);
   },
   computed: {
     ...mapGetters('mtipReply', ['getComments']),
     comments() {
+      console.log('Computed comments:', this.getComments);
       return this.getComments;
     },
   },
@@ -155,19 +148,23 @@ export default {
   async addComment() {
     if (!this.newComment.trim()) return;
     const commentData = {
-      user_no: this.loginInfo.user_no,
-      user_name: this.loginInfo.user_name,
-      mtip_board_no: this.mtip_board_no,
-      mtip_reply_content: this.newComment.trim(),
+        user_no: this.loginInfo.user_no,
+        user_name: this.loginInfo.user_name,
+        mtip_board_no: this.mtip_board_no,
+        mtip_reply_content: this.newComment.trim(),
     };
-    console.log('commentData:', commentData);
+    console.log('Comment data to be sent:', commentData);  // 추가된 로그
     try {
-      await this.$store.dispatch('mtipReply/addComment', commentData);
-      this.newComment = '';
+        const response = await this.$store.dispatch('mtipReply/addComment', commentData);
+        console.log('댓글 등록 응답:', response);  // 추가된 로그
+        this.newComment = '';
+        window.location.reload()
     } catch (error) {
-      console.error('댓글 등록 중 오류가 발생했습니다:', error);
+        console.error('댓글 등록 중 오류가 발생했습니다:', error);  // 에러 발생 시 로그
     }
-  },
+},
+
+
     // 기본 프로필 사진
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
