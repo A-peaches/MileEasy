@@ -137,6 +137,9 @@ public class MtipBoardService {
         return status;
     }
 
+    public List<Long> getLikedPostsByUser(String userNo) {
+        return mtipDao.findLikedPostsByUserNo(userNo);
+    }
 
 
 //    @Transactional

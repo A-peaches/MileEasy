@@ -31,6 +31,7 @@ const mutations = {
       state.likedPosts[user_no].splice(index, 1);
     }
   },
+  
   setFooterNotices(state, payload) {
     state.footerNotices = payload;
   },
@@ -161,6 +162,15 @@ async checkLikeStatus({ commit }, { mtip_board_no, user_no }) {
       console.error('Error checking like status:', error);
   }
 },
+async fetchLikedPosts({ commit }, user_no) {
+  try {
+    const response = await api.get(`/mtip/liked-posts/${user_no}`);
+    commit('SET_LIKED_POSTS', { user_no, likedPosts: response.data });
+  } catch (error) {
+    console.error('Error fetching liked posts:', error);
+  }
+},
+
   async fetchNoticeDetail({ commit }, noticeId) {
     if (!noticeId) {
       console.error('Notice ID is undefined');

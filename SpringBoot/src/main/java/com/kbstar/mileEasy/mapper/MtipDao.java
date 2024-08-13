@@ -8,7 +8,9 @@ import java.util.List;
 @Mapper
 public interface MtipDao {
 
-
+    //사용자 좋아요 목록
+    @Select("SELECT mtip_board_no FROM mtip_like WHERE user_no = #{userNo}")
+    List<Long> findLikedPostsByUserNo(@Param("userNo") String userNo);
     // 좋아요 상태 확인
     @Select("SELECT COUNT(*) FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
     int checkLikeStatus(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);

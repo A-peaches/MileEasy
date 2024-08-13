@@ -262,6 +262,7 @@ export default {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mtipBoard', ['getNotice']),
     ...mapState('login', ['loginInfo']),
+    ...mapState('mtipBoard', ['likedPosts']),
 
     notice() {
       return this.getNotice || null;

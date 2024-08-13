@@ -58,12 +58,14 @@
                 <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
                 <div class="notice-mile">{{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}</div>
-                <div class="notice-title">{{ notice.mtip_board_title }}</div>
+                <div class="notice-title">
+                  {{ notice.mtip_board_title.length > 30 ? notice.mtip_board_title.substring(0, 30) + ' ...' : notice.mtip_board_title }}
+                </div>
                 <pre class="notice-date">{{ formatDate(notice.mtip_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
                 <div class="notice-views">{{ notice.mtip_board_hit }} <i class="fa fa-eye"></i></div>
-                <i :class="['bi', notice.liked ? 'bi-heart-fill' : 'bi-heart']"
-                :style="{ color: notice.liked ? '#dc3545' : 'inherit' }"></i>
+                <!-- 좋아요 아이콘과 카운트 -->
+                <i :class="['bi', notice.liked ? 'bi-heart-fill' : 'bi-heart']" :style="{ color: notice.liked ? '#dc3545' : 'inherit' }"></i>
                 <div class="notice-like">{{ notice.mtip_board_like }}</div>
               </div>
             </div>
@@ -106,6 +108,17 @@ export default {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapState('login', ['loginInfo']),
     ...mapGetters('mtipBoard', ['isPostLiked']),
+
+    paginatedNotices() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredNotices.slice(start, end).map((notice) => {
+        return {
+          ...notice,
+          liked: this.isPostLiked(this.loginInfo.user_no, notice.mtip_board_no),
+        };
+      });
+    },
 
     uniqueMileages() {
     return [...new Set(this.notices.filter(notice => notice.mile_name).map(notice => notice.mile_name))];
@@ -187,15 +200,10 @@ filteredNotices() {
     totalPages() {
       return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
     },
-    paginatedNotices() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.filteredNotices.slice(start, end);
-  },
 
   },
   methods: {
-    ...mapActions('mtipBoard', ['fetchNotices', 'fetchLikedPosts']),
+    ...mapActions('mtipBoard', ['fetchNotices','checkLikeStatus','fetchLikedPosts']),
     ...mapActions('mileage', ['fetchMileages']),
 
     goBack() {
@@ -268,44 +276,91 @@ filteredNotices() {
       }
     },
     async handleNoticeClick(notice) {
-    console.log("notice:", notice);
-    if (this.isProcessing) return;
-    this.isProcessing = true;
-    try {
-    console.log("게시글 상세보기+조회수 메소드 도달", notice);
-    // 조회수 증가 요청
-    await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
+      console.log("notice:", notice);
+      if (this.isProcessing) return;
+      this.isProcessing = true;
+      try {
+        console.log("게시글 상세보기+조회수 메소드 도달", notice);
+        
+        // 조회수 증가 요청
+        await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
+
+        // 게시글 상세 정보 요청
+        const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
+        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response);
+        const noticeDetails = response.data;
+
+        // 좋아요 상태 확인 요청
+        await this.checkLikeStatus({
+          mtip_board_no: notice.mtip_board_no,
+          user_no: this.loginInfo.user_no,
+        });
+
+        // 조회수 업데이트
+        notice.mtip_board_hit += 1;
+
+        const noticeToPass = {
+          ...noticeDetails,
+          mile_no: noticeDetails.mile_no,
+          mile_name: noticeDetails.mile_name,
+          file: noticeDetails.mtip_board_file || null,
+          mtip_board_hit: notice.mtip_board_hit, // 업데이트된 조회수 사용
+        };
+
+        console.log('Navigating to noticeDetailView with notice:', {
+          id: notice.mtip_board_no,
+          notice: noticeToPass,
+        });
+        this.$router.push({
+          name: 'm_TipDetailView',
+          params: { mtip_board_no: notice.mtip_board_no },
+        });
+      } catch (error) {
+        console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+      } finally {
+        this.isProcessing = false;
+      }
+    },
+
+//     async handleNoticeClick(notice) {
+//     console.log("notice:", notice);
+//     if (this.isProcessing) return;
+//     this.isProcessing = true;
+//     try {
+//     console.log("게시글 상세보기+조회수 메소드 도달", notice);
+//     // 조회수 증가 요청
+//     await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
     
-    // 게시글 상세 정보 요청
-    const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-    console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
-    const noticeDetails = response.data;
-    console.log('Fetched notice details:', noticeDetails);
+//     // 게시글 상세 정보 요청
+//     const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
+//     console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
+//     const noticeDetails = response.data;
+//     console.log('Fetched notice details:', noticeDetails);
 
-    // 조회수 업데이트
-    notice.mtip_board_hit += 1;
+//     // 조회수 업데이트
+//     notice.mtip_board_hit += 1;
 
-    const noticeToPass = {
-      ...noticeDetails,
-      mile_no: noticeDetails.mile_no,
-      mile_name: noticeDetails.mile_name,
-      file: noticeDetails.mtip_board_file || null,
-      mtip_board_hit: notice.mtip_board_hit // 업데이트된 조회수 사용
-    };
+//     const noticeToPass = {
+//       ...noticeDetails,
+//       mile_no: noticeDetails.mile_no,
+//       mile_name: noticeDetails.mile_name,
+//       file: noticeDetails.mtip_board_file || null,
+//       mtip_board_hit: notice.mtip_board_hit // 업데이트된 조회수 사용
+//     };
 
-    console.log('Navigating to noticeDetailView with notice:', {
-      id: notice.mtip_board_no,
-      notice: noticeToPass
-    });
-    console.log("MtipListView에서 넘기는 notice:", notice);
-    this.$router.push({ name: 'm_TipDetailView', params: { mtip_board_no: notice.mtip_board_no } });
+//     console.log('Navigating to noticeDetailView with notice:', {
+//       id: notice.mtip_board_no,
+//       notice: noticeToPass
+//     });
+//     console.log("MtipListView에서 넘기는 notice:", notice);
+//     this.$router.push({ name: 'm_TipDetailView', params: { mtip_board_no: notice.mtip_board_no } });
 
-  } catch (error) {
-    console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
-  } finally {
-    this.isProcessing = false;
-  }
-},
+//   } catch (error) {
+//     console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+//   } finally {
+//     this.isProcessing = false;
+//   }
+// },
 
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -324,17 +379,12 @@ filteredNotices() {
       this.currentPage = 1;
     },
     async initializeData() {
-    try {
       await this.fetchNotices();
       await this.fetchMileages();
-
       if (this.loginInfo) {
         await this.fetchLikedPosts(this.loginInfo.user_no);
       }
-    } catch (error) {
-      console.error('Error initializing data:', error);
-    }
-  },
+    },
   },
   mounted() {
     console.log('loginInfo:', this.loginInfo);

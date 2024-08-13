@@ -58,7 +58,9 @@
                 <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
                 <div class="notice-mile">{{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}</div>
-                <div class="notice-title">{{ notice.mtip_board_title }}</div>
+                <div class="notice-title">
+                  {{ notice.mtip_board_title.length > 30 ? notice.mtip_board_title.substring(0, 30) + ' ...' : notice.mtip_board_title }}
+                </div>
                 <pre class="notice-date">{{ formatDate(notice.mtip_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
                 <div class="notice-views">{{ notice.mtip_board_hit }} <i class="fa fa-eye"></i></div>

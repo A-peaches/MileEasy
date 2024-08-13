@@ -245,6 +245,13 @@ public class MtipController {
             return ResponseEntity.notFound().build();
         }
     }
+    //로그인 정보 좋아요 목록
+    @GetMapping("/liked-posts/{userNo}")
+    public ResponseEntity<List<Long>> getLikedPosts(@PathVariable String userNo) {
+        List<Long> likedPosts = mtipBoardService.getLikedPostsByUser(userNo);
+        return ResponseEntity.ok(likedPosts);
+    }
+
     //좋아요 수 증가
     @PostMapping("/like")
     public ResponseEntity<?> likePost(@RequestBody Map<String, Object> payload) {
