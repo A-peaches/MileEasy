@@ -180,6 +180,7 @@ export default {
     if (a.mile_no !== b.mile_no) {
       return a.mile_no - b.mile_no;
     }
+    
 
     const statusA = this.getStatusText(a);
     const statusB = this.getStatusText(b);
