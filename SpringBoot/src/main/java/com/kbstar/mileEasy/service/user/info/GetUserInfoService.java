@@ -80,4 +80,8 @@ public class GetUserInfoService {
             return false;
         }
     }
+
+    public ArrayList<User> getAllUsers() {
+        return userDao.getAllUsers();
+    }
 }
