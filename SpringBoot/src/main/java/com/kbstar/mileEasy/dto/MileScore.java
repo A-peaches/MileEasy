@@ -36,4 +36,15 @@ public class MileScore {
     private int total_history_points; // 쿼리 결과의 history_points를 저장
     private int total_points; // 쿼리 결과의 total_points를 저장
 
+    private int group_no;
+    private String group_name;
+    private double weight;
+    private double weighted_average;
+    private int total_mile_score_point;
+    private double weight_adjusted;
+    private double weighted_score;
+    private double average_score;
+
+
+
 }

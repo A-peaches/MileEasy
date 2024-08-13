@@ -649,14 +649,28 @@
     </select>
 
     <select id="myScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+        -- mile_is_delete가 0인 mileage 테이블의 항목만 포함시키고,
+-- mile_no가 없으면 total_score를 0으로 설정
+        WITH mile_scores AS (
+            SELECT
+                m.mile_name,
+                s.mile_no,
+                COALESCE(SUM(s.mile_score_point), 0) AS total_score
+            FROM
+                mileage m
+                    LEFT JOIN mile_score s ON m.mile_no = s.mile_no AND s.user_no = #{usesrNo}
+            WHERE
+                m.mile_is_delete = 0
+            GROUP BY
+                m.mile_name, s.mile_no
+        )
         SELECT
-            m.mile_name,
-            s.mile_no,
-            SUM(s.mile_score_point) AS total_score
-        FROM mile_score s
-                 JOIN mileage m ON s.mile_no = m.mile_no
-        WHERE s.user_no = #{userNo}
-        GROUP BY m.mile_name, s.mile_no;
+            mile_name,
+            mile_no,
+            total_score
+        FROM
+            mile_scores;
+
     </select>
 
     <select id="avgScore" resultType="com.kbstar.mileEasy.dto.MileScore">
@@ -710,6 +724,82 @@
             percentile_rank * 100 AS user_percentile
         FROM PercentileCalculation
         WHERE user_no = #{userNo};
+
+    </select>
+
+    <select id="myGroup" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT sg.group_no, sg.group_name
+        FROM user u
+                 JOIN sales_group sg ON u.group_no = sg.group_no
+        WHERE u.user_no = #{userNo};
+    </select>
+
+    <select id="group_weight" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT
+            gw.weight,
+            m.mile_name
+        FROM
+            user u
+                JOIN
+            group_weight gw ON u.group_no = gw.group_no
+                JOIN
+            mileage m ON gw.mile_no = m.mile_no
+        WHERE
+            u.user_no = #{userNo};
+
+    </select>
+
+    <select id="group_weight_avg" resultType="com.kbstar.mileEasy.dto.MileScore">
+        SELECT
+            m.mile_name,
+            COALESCE(SUM(ms.mile_score_point * (gw.weight + 1)) / NULLIF(COUNT(DISTINCT ms.user_no), 0), SUM(ms.mile_score_point) / NULLIF(COUNT(DISTINCT ms.user_no), 0)) AS weighted_average
+        FROM
+            user u
+                JOIN
+            mile_score ms ON u.user_no = ms.user_no
+                LEFT JOIN
+            (SELECT mile_no, SUM(weight) AS weight
+             FROM group_weight
+             WHERE group_no = #{groupNo}
+             GROUP BY mile_no) gw ON ms.mile_no = gw.mile_no
+                JOIN
+            mileage m ON ms.mile_no = m.mile_no
+        WHERE
+            u.group_no = #{groupNo}
+        GROUP BY
+            ms.mile_no, m.mile_name;
+
+    </select>
+    <select id="my_weight_avg" resultType="com.kbstar.mileEasy.dto.MileScore">
+        WITH user_score AS (
+            SELECT
+                ms.mile_no,
+                SUM(ms.mile_score_point) AS total_mile_score_point
+            FROM mile_score ms
+            WHERE ms.user_no = #{userNo}
+            GROUP BY ms.mile_no
+        ),
+
+             weight_summary AS (
+                 SELECT
+                     gw.mile_no,
+                     COALESCE(SUM(gw.weight), 0) AS total_weight
+                 FROM group_weight gw
+                 WHERE gw.group_no = #{groupNo}
+                 GROUP BY gw.mile_no
+             )
+
+        SELECT
+            m.mile_name,
+            us.total_mile_score_point,
+            COALESCE(ws.total_weight + 1, 1) AS weight_adjusted,
+            us.total_mile_score_point * COALESCE(ws.total_weight + 1, 1) AS weighted_score
+        FROM
+            user_score us
+                LEFT JOIN
+            weight_summary ws ON us.mile_no = ws.mile_no
+                JOIN
+            mileage m ON us.mile_no = m.mile_no;
 
     </select>
 

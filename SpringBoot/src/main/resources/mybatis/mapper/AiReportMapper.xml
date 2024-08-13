@@ -1,6 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbstar.mileEasy.mapper.AiRepooetDao">
 
-</beans>
+    <insert id="saveChat" >
+        INSERT INTO ai_report (user_no, user_rank, comprehensive_analysis, my_score_json, avg_score_json)
+        VALUES (#{user_no}, #{percentageJson}, #{chat}, #{myScoreJson},#{avgScoreJson});
+    </insert>
+
+
+    <select id="findIndex"  resultType="int">
+        SELECT MAX(ai_report_index) AS max_ai_report_index
+        FROM ai_report;
+    </select>
+
+    <update id="saveRanking">
+        UPDATE ai_report
+        SET ranking_analysis = #{content}
+        WHERE ai_report_index = #{no}
+
+    </update>
+
+    <update id="saveCatch">
+        UPDATE ai_report
+        SET catchup_strategy = #{content}
+        WHERE ai_report_index = #{no}
+    </update>
+
+    <update id="saveMile">
+        UPDATE ai_report
+        SET mileage_analyze = #{content}
+        WHERE ai_report_index = #{no}
+    </update>
+
+    <select id="getAiReport"  parameterType="int" resultType="com.kbstar.mileEasy.dto.AIReport">
+        SELECT *
+        FROM ai_report
+        WHERE user_no = #{userNo}
+        ORDER BY ai_report_date DESC
+        LIMIT 1;
+    </select>
+
+
+</mapper>

@@ -98,4 +98,12 @@ public interface MileageDao {
     ArrayList<MileScore> avgScore();
 
     ArrayList<MileScore> percentageScore(String userNo);
+
+    ArrayList<MileScore> myGroup(String userNo);
+
+    ArrayList<MileScore> group_weight(String userNo);
+
+    ArrayList<MileScore> group_weight_avg(int groupNo);
+
+    ArrayList<MileScore> my_weight_avg(String userNo, int groupNo);
 }
