@@ -1,11 +1,13 @@
 <template>
-  <div class="cards page-back mx-auto" style="color: #4b4a4a">
-    <h2 class="bold-x-lg my-5 ml-5" ref="helpIcon" style="font-family: KB_C3">
+ <div class="cards page-back mx-auto" style="color: #4b4a4a">
+  <div class="help-container">
+    <h2 class="bold-x-lg my-5 ml-5" style="font-family: KB_C3">
       나의 마일리지
       <i
         class="bi bi-question-circle help-icon"
         @click="toggleHelpPopover"
         style="font-size: 20pt"
+        ref="helpIcon"
       ></i>
     </h2>
 
@@ -18,6 +20,7 @@
         </span>
       </div>
     </div>
+  </div>
 
     <div class="row mx-2" style="margin-top: 60px" v-if="dataLoaded">
       <div
@@ -268,8 +271,8 @@ export default {
 }
 
 .page-back {
-  padding-left: 1.5%;
-  padding-right: 1.5%;
+  padding-left: 2%;
+  padding-right: 2%;
 }
 .progress-bar {
   width: 60px;
@@ -279,6 +282,12 @@ export default {
   border-radius: 5px;
   overflow: visible;
 }
+
+.bold-x-lg {
+  display: inline-flex;
+  align-items: center;
+}
+
 
 .progress {
   width: 100%;
@@ -314,23 +323,28 @@ export default {
   color: gray;
 }
 
-.help-icon {
-  cursor: pointer;
+.help-container {
   position: relative;
   display: inline-block;
 }
 
+.help-icon {
+  cursor: pointer;
+  /* position: relative;
+  display: inline-block; */
+  margin-left: 10px; /* 아이콘과 텍스트 사이 간격 */
+  /* vertical-align: middle; */
+}
+
 .help-popover {
   position: absolute;
-  left: 980px;
-  top: 335px;
+  left:  calc(50%);
+  top: calc(100% - 35px); /* 아이콘 바로 아래에 위치 */
   padding: 10px;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10000;
-  width: 600px;
-  margin-left: 10px;
-  display: block;
+  width: 600px; /* 너비를 600px로 설정 */
   background-color: white;
   border: 2px solid #e4e4e4;
 }
@@ -382,11 +396,9 @@ h2.bold-x-lg {
 
 @media (max-width: 1200px) {
   .help-popover {
-    left: 50%;
-    top: 100%;
-    transform: translateX(-50%);
     width: 90%;
     max-width: 600px;
+    left: 0;
   }
   
   .mile-name {
