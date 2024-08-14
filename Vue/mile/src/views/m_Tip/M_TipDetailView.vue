@@ -13,11 +13,8 @@
             <button class="edit-button" @click="goToModifyView">수정</button>
             <button class="delete-button" @click="deleteNotice">삭제</button>
           </div>
-
-          <!-- 로그인한 사용자가 관리자인 경우 -->
-          <div v-else-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
-            <button class="report-button" @click="reportNotice">신고하기</button>
-            <span style="font-size: 25pt;">🚨</span>
+          <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+            <button class="revoke-button" @click="revokeNotice">신고취하</button>
           </div>
         </div>
       </div>
@@ -35,7 +32,7 @@
         <div class="file cards" >
           <div style="display: flex; align-items: center;">
               <h2 style="margin-right: 10px;">첨부파일</h2>
-              <span v-if="!notice.mtip_board_file" style="color: #4b4a4a; font-family: 'KB_S5',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
+              <span v-if="!notice.mtip_board_file" style="color: #4b4a4a; font-family: 'KB_C2',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
             </div>
           <div v-if="notice.mtip_board_file" style="margin-top: 10px;">
             <a @click.prevent="downloadFile" href="#" class="file-download-link">
@@ -51,16 +48,24 @@
           </div>
           <div class="views-text">{{ notice.mtip_board_hit }}</div>
         </div>
-        <div class="icon-container">
-          <div class="heart-icon" @click="toggleLike">
-            <i :class="['bi', computedIsPostLiked ? 'bi-heart-fill' : 'bi-heart']"
-              :style="{ color: computedIsPostLiked ? '#dc3545' : 'inherit' }"></i>
-          </div>
-          <div class="views-text">{{ notice.mtip_board_like }}</div>
+        <div class="icon-container"  @click="toggleLike">
+          <div class="heart-icon">
+            <i :class="['bi', isLiked ? 'bi-heart-fill' : 'bi-heart']"
+              :style="{ color: isLiked ? '#dc3545' : 'inherit' }"></i>
+        </div>
+        <div class="views-text">{{ notice.mtip_board_like }}</div>
         </div>
        </div>
-        <hr style="margin-top: 100px;">
-        <UserComment :login-info="loginInfo" :mtip_board_no="notice.mtip_board_no"  />
+       
+      </div>
+      <div class="content-container">
+        <div class="actions">
+          <span class="alert-icon">🚨</span>
+          <button class="report-button" @click="reportNotice">신고하기</button>
+        </div>
+        <hr class="divider">
+
+        <UserComment  v-if="isNoticeLoaded"  :login-info="loginInfo"  :mtip_board_no="notice.mtip_board_no" />
       </div>
     </div>
     <div v-else>
@@ -75,50 +80,74 @@ import api from '@/api/axios';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import Swal from 'sweetalert2';
 import UserComment from '@/components/m-tip/UserComment';
+import mtipReply from '@/store/mtip/mtipReply';
 
 export default {
   name: 'M_TipDetailView',
   props: ['mtip_board_no'],
+  modules: {
+    mtipReply,
+  },
   data() {
     return {
       isLoading: true,
+      isNoticeLoaded: false,
       comments: [] ,// comments를 초기화
     };
   },
+  watch: {
+  '$route.params.mtip_board_no': {
+    immediate: true,
+    handler(newId, oldId) {
+      if (newId && newId !== oldId) {
+        this.fetchNoticeDetail(newId);
+        this.$store.commit('mtipReply/CLEAR_COMMENTS');
+        this.$store.dispatch('mtipReply/fetchComments', newId);
+      }
+    }
+  }
+},
   components: {
     UserComment
   },
   methods: {
-    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'toggleLikeAction']),
+    ...mapActions('mtipBoard', ['fetchNoticeDetail', 'likePost', 'unlikePost', 'checkLikeStatus']),
 
     async toggleLike() {
-      if (!this.loginInfo) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
+  if (!this.loginInfo) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
 
-      if (!this.notice) {
-        console.error('Notice data is not available');
-        return;
-      }
-      try {
-      await this.toggleLikeAction({
-        mtip_board_no: this.notice.mtip_board_no,
-        user_no: this.loginInfo.user_no
-      });
+  if (!this.notice) {
+    console.error('Notice data is not available');
+    return;
+  }
 
-        // 좋아요 상태를 로컬 스토리지에 저장
-        const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-      likedPosts[this.notice.mtip_board_no] = !likedPosts[this.notice.mtip_board_no];
-      localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+  try {
+    const action = this.isLiked ? 'unlikePost' : 'likePost';
+    const result = await this.$store.dispatch(`mtipBoard/${action}`, {
+      mtip_board_no: this.notice.mtip_board_no,
+      user_no: this.loginInfo.user_no,
+    });
 
-      // 좋아요 이모티콘 업데이트
-      this.notice.liked = likedPosts[this.notice.mtip_board_no];
-    } catch (error) {
-      console.error('Error toggling like:', error);
+    console.log('서버에서 받은 좋아요 상태:', result);
+
+    // 좋아요 상태 업데이트
+    await this.$store.dispatch('mtipBoard/checkLikeStatus', {
+      mtip_board_no: this.notice.mtip_board_no,
+      user_no: this.loginInfo.user_no,
+    });
+
+    // 서버에서 받아온 좋아요 수를 직접 설정
+    if (result !== -1) {
+      this.notice.mtip_board_like =  result.isLiked;  // 서버에서 받은 좋아요 수를 그대로 반영
     }
-  },
 
+  } catch (error) {
+    console.error('Error toggling like:', error);
+  }
+},
     async deleteNotice() {
       Swal.fire({
         title: '정말로 삭제하시겠습니까?',
@@ -204,7 +233,7 @@ export default {
       
       if (isNaN(date.getTime())) {
         console.error('Invalid date string:', dateString);
-        return 'Invalid Date';
+        return ' ↺ 댓글 등록 중';
       }
       
       const options = { 
@@ -241,21 +270,23 @@ export default {
         this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
       }
     },
-    async fetchNoticeDetail(id) {
+        async fetchNoticeDetail(id) {
       this.isLoading = true;
+      this.isNoticeLoaded = false;
       await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
 
-      // 로컬 스토리지에서 좋아요 상태를 복원
-    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-    this.notice.liked = likedPosts[this.notice.mtip_board_no] || false;
+      const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
+      this.isLiked = likedPosts[this.notice.mtip_board_no] || false;
 
       this.isLoading = false;
+      this.isNoticeLoaded = true;
     },
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
-    ...mapGetters('mtipBoard', ['getNotice', 'isPostLiked']),
+    ...mapGetters('mtipBoard', ['getNotice']),
     ...mapState('login', ['loginInfo']),
+    ...mapState('mtipBoard', ['likedPosts']),
 
     notice() {
       return this.getNotice || null;
@@ -272,17 +303,18 @@ export default {
     mileNo() {
       return this.$route.params.notice.mtip_board_no;
     },
-    computedIsPostLiked() {
-    const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-    return likedPosts[this.notice.mtip_board_no] || false;
+    isLiked() {
+    return this.$store.getters['mtipBoard/isPostLiked'](this.loginInfo.user_no, this.notice.mtip_board_no);
   },
-  },
-  async mounted() {
-    const noticeId = this.$route.params.mtip_board_no;
-    if (noticeId) {
-      await this.fetchNoticeDetail(noticeId);
-    }
-  },
+},
+mounted() {
+  const noticeId = this.$route.params.mtip_board_no;
+  if (noticeId) {
+    this.fetchNoticeDetail(noticeId);
+    this.$store.commit('mtipReply/CLEAR_COMMENTS'); // 댓글 초기화
+    this.$store.dispatch('mtipReply/fetchComments', noticeId);
+  }
+},
 };
 </script>
 
@@ -314,7 +346,7 @@ export default {
 .button-container {
   display: flex;
   align-items: center;
-  padding-left: 10px;
+  padding-left: 30px;
   flex: 1; 
 }
 
@@ -328,7 +360,7 @@ export default {
   font-size: 18px;
   cursor: pointer;
   margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .back-button .arrow {
@@ -339,26 +371,20 @@ export default {
   height: 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-right: 8px;
+  margin-right: 15px;
   font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
-.actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  flex: 1;
-}
 
 .edit-button {
   background-color: transparent;
   border: none;
   cursor: pointer;
   font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   color: #714319;
-  padding: 5px 10px;
+  padding: 5px 0px;
 }
 
 .delete-button {
@@ -366,20 +392,23 @@ export default {
   border: none;
   cursor: pointer;
   font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   color: #714319;
-  padding: 5px 10px;
+  padding: 5px 40px;
 }
-
-.report-button{
+/* 신고취하 버튼*/
+.revoke-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
   font-size: 20px;
-  font-family: 'KB_S5', sans-serif;
-  color: red;
-  margin-top: 15px;
+  font-family: 'KB_C2', sans-serif;
+  color: #714319;
+  padding: 5px 40px;
 }
 
 .content {
-  padding: 20px;
+  padding: 30px;
   width: 95%;
   max-width: 1300px;
   box-sizing: border-box;
@@ -400,7 +429,8 @@ export default {
   font-size: 35px;
   font-weight: bold;
   margin-bottom: 10px;
-  font-family: 'KB_S2', sans-serif;
+  font-family: 'KB_C2', sans-serif;
+  font-weight:bold;
 }
 
 .meta {
@@ -411,7 +441,7 @@ export default {
   font-size: 14px;
   color: #888;
   margin-bottom: 95px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .meta .author {
@@ -440,25 +470,25 @@ export default {
 .file.cards {
   background-color: hsl(0, 0%, 95%);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
+  border-radius: 15px;
   padding: 20px;
   position: relative;
   left: 50%;
   transform: translateX(-48%);
-  width: 110%;
+  width: 102%;
 }
 
 .file h2 {
   text-align: left;
   font-size: 21px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   color: #4b4a4a;
 }
 
 .file a {
   text-align: left;
   font-size: 19px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   margin-left: 3%;
   display: block; /* 변경된 부분 */
 }
@@ -507,7 +537,7 @@ export default {
   flex: 0 0 auto;
   text-align: left;
   font-size: 1.2vw;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   color: #4b4a4a;
   margin-left: 0.8vw;
   margin-top: 80px;
@@ -518,10 +548,39 @@ export default {
   /* margin-left: 5px; */
   text-align: center;
   font-size:18px;
-  font-family: 'KB_S3', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   margin-left:0%;
   display: inline-block;
   margin-bottom: 8px;
+}
+
+.content-container {
+  margin-top: 20px; /* 상단 여백 추가 */
+  width: 95%;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* 왼쪽 정렬 */
+  margin-left: 10px; /* 전체를 오른쪽으로 살짝 이동 */
+}
+
+.report-button {
+  font-size: 18px;
+  font-family: 'KB_C2', sans-serif;
+  color: red;
+  margin-right: 5px; /* 버튼과 아이콘 사이의 간격 조정 */
+}
+
+.alert-icon {
+  font-size: 20pt;
+  margin-left: 5px; /* 아이콘을 버튼과의 간격 조정 */
+  margin-bottom: 10px;
+}
+
+.divider {
+  margin-bottom: 20px;
 }
 
 </style>
