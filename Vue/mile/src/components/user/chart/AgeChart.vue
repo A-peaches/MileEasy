@@ -11,7 +11,7 @@
           <sup><img src="@/assets/img/left-quote.png" class="quote mb-2" /></sup>
           &nbsp;
           <span class="KB_C2 ageSpan"
-            >{{ userData[0] + 0 + "대" }} 마일리지 총 평균 :  
+            >{{ userData[0] ? userData[0] + 0 + "대" : '' }} 마일리지 총 평균 :  
           </span>
           <span class="KB_C2 ageSpan" style="font-size: 23px">
             <mark class=KB_C2 ageSpan>{{ ageChartData[userData[0]-2] }}점</mark></span>&nbsp;
@@ -19,13 +19,13 @@
         </p>
 
         <div style="font-size: 13pt" v-if=" userData[1] > ageChartData[userData[0]-2]">
-          "대단해요! {{ userData[0] + 0 + "대" }} 평균보다 더 많은 점수를 획득하셨어요. 멋진 성과입니다!"
+          "대단해요! {{ userData[0] ? userData[0] + 0 + "대" : '' }} 평균보다 더 많은 점수를 획득하셨어요. 멋진 성과입니다!"
         </div>
         <div v-else-if=" userData[1] == ageChartData[userData[0]-2]" style="font-size: 13pt">
-          "정말 멋져요! {{ userData[0] + 0 + "대" }} 평균과 점수가 비슷해요. 계속해서 좋은 성과를 기대할게요!"
+          "정말 멋져요! {{ userData[0] ? userData[0] + 0 + "대" : '' }} 평균과 점수가 비슷해요. 계속해서 좋은 성과를 기대할게요!"
         </div>
           <div v-else-if=" userData[1] < ageChartData[userData[0]-2]" style="font-size: 13pt">
-          "지금도 충분히 잘하고 계세요. 조금만 더 노력하면 {{ userData[0] + 0 + "대" }} 평균을 넘을 수 있을 거예요!"
+          "지금도 충분히 잘하고 계세요. 조금만 더 노력하면 {{ userData[0] ? userData[0] + 0 + "대" : '' }} 평균을 넘을 수 있을 거예요!"
         </div>
       </div>
     </div>
