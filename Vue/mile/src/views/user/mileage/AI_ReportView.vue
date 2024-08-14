@@ -9,11 +9,11 @@
     </div>
 
     <!-- 데이터가 없을 때 메시지 표시 -->
-    <div v-if="!hasReport" class="text-center">
+    <div v-if="!all" class="text-center">
       <h4>조회한 이력이 없습니다.</h4>
     </div>
 
-    <div v-else class="null">
+    <div v-else>
       <div class="row">
         <div class="col-md-3 mb-4">
           <div class="card h-100 shadow-sm fade-in">
@@ -53,7 +53,7 @@
       <div class="row">
         <div class="col-md-5 mb-4">
           <div class="card h-100 shadow-sm fade-in">
-            <div class="card-body">
+            <div v-if="successYN" class="text-center">
               <canvas id="myChart1" style="height: 30vh"></canvas>
             </div>
           </div>
@@ -85,9 +85,7 @@
                 제안해드립니다.
               </p>
               <div class="card-gray">
-                <span>
-                  {{ mile }}
-                </span>
+                <span> {{ mile }} </span>
               </div>
             </div>
           </div>
@@ -128,7 +126,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import api from '@/api/axios';
@@ -141,19 +139,9 @@ export default {
 
   data() {
     return {
-      all: '조회한 이력이 없습니다',
-      rank: '',
-      catchTop: '조회한 이력이 없습니다.',
-      mile: '조회한 이력이 없습니다.',
-      dateAi: '',
-      myRank: '',
-      chartRank: '조회한 이력이 없습니다.',
-      avg_score_json: '',
-      label: '',
-      avg_data: '',
-      my_score_json: '',
-      my_data: '',
       hasReport: true, // 리포트 데이터 존재 여부
+      chart1: null,
+      chart2: null,
     };
   },
   methods: {
@@ -161,14 +149,12 @@ export default {
       try {
         const response = await api.post('bot/chat', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님을
-              위해 분석하여,  예시: '홍길동님은 상위 25%에 해당하며, 전반적으로 우수한 성과를 보이고 있습니다. 연수 마일리지와 Monthly Best에 조금 더 집중하시면, 연말 평가에서 더욱 좋은 결과를 얻으실 수 있을 것으로 예상됩니다."`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님을`,
 
             user_no: this.loginInfo.user_no,
           },
         });
         console.log(response.data);
-        this.all = response.data;
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -178,14 +164,12 @@ export default {
       try {
         const response = await api.post('bot/chatRank', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님을
-              위해 분석하여,  예시: '김근미님은 전체 직원 중 상위 25%에 위치해 있으며, 꾸준한 노력으로 상위권을 유지하고 계십니다. 다음 분기까지 'HotTip' 마일리지를 20점 추가로 획득하시면 귀하의 전체 순위가 5% 정도 상승할 것으로 예상됩니다."`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
 
             user_no: this.loginInfo.user_no,
           },
         });
         console.log(response.data);
-        this.rank = response.data;
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -201,7 +185,6 @@ export default {
           },
         });
         console.log(response.data);
-        this.catchTop = response.data;
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -210,13 +193,12 @@ export default {
       try {
         const response = await api.post('bot/chatMile', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}에 대한 분석이야`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
         });
         console.log(response.data);
-        this.mile = response.data;
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -228,59 +210,50 @@ export default {
       await this.delay(5000);
       await this.airank();
       await this.delay(5000);
-      await this.aiCatch();
-      await this.delay(5000);
       await this.aiMile();
+      await this.delay(10000);
+      await this.aiCatch();
     },
     delay(ms) {
       return new Promise((resolve) => setTimeout(resolve, ms));
     },
-
-    async getAiReport() {
+    ...mapActions('aireport', ['getReport']),
+    async getReport() {
       try {
-        const response = await api.post('bot/getAiReport', null, {
-          params: {
-            user_no: this.loginInfo.user_no,
-          },
-        });
-        if (!response.data.success) {
-          this.hasReport = false;
-          return;
+        await this.$store.dispatch(
+          'aireport/getReport',
+          this.loginInfo.user_no
+        );
+        if (this.all) {
+          // 데이터가 있는 경우에만 차트 생성
+          this.createCharts();
         }
-
-        this.all = response.data.data.comprehensive_analysis;
-        this.rank = response.data.data.ranking_analysis;
-        this.catchTop = response.data.data.catchup_strategy;
-        this.mile = response.data.data.mileage_analyze;
-        this.dateAi = response.data.data.ai_report_date.substring(0, 10);
-        this.myRank = response.data.data.user_rank;
-        this.chartRank = 100 - this.myRank * 1;
-        this.avg_score_json = JSON.parse(response.data.data.avg_score_json);
-        this.my_score_json = JSON.parse(response.data.data.my_score_json);
-
-        this.$nextTick(() => {
-          this.destroyCharts();
-          this.createChart1();
-          this.createChart2();
-        });
       } catch (error) {
-        console.error('Error during API request:', error);
+        console.error('Failed to get report:', error);
+        // 에러 처리 로직 (예: 사용자에게 알림)
       }
+    },
+
+    createCharts() {
+      this.$nextTick(() => {
+        this.destroyCharts();
+        this.createChart1();
+        this.createChart2();
+      });
     },
 
     destroyCharts() {
-      const chart1 = Chart.getChart('myChart1');
-      const chart2 = Chart.getChart('myChart2');
-
-      if (chart1) {
-        chart1.destroy();
+      if (this.chart1) {
+        this.chart1.destroy();
+        this.chart1 = null;
       }
-      if (chart2) {
-        chart2.destroy();
+      if (this.chart2) {
+        this.chart2.destroy();
+        this.chart2 = null;
       }
     },
 
-    analysis() {
+    async analysis() {
       const today = new Date().toISOString().split('T')[0];
       if (this.dateAi === today) {
         Swal.fire({
@@ -292,50 +265,80 @@ export default {
         return;
       }
 
-      this.analysisAlret();
-    },
-    async analysisAlret() {
       try {
-        // runAnalysis 실행
+        // 분석 알림창을 표시하고, 동시에 백그라운드에서 분석 작업을 시작합니다.
+        const alertPromise = this.analysisAlert();
+        const analysisPromise = this.runAnalysis();
 
-        // SweetAlert2 다이얼로그 표시
-        await this.$swal({
-          timer: 50000,
+        // 두 작업이 모두 완료될 때까지 기다립니다.
+        await Promise.all([alertPromise, analysisPromise]);
+
+        // 분석이 완료되면 데이터를 가져옵니다.
+        await this.getReport();
+
+        // 데이터 로딩 완료 후 상태 업데이트
+
+        this.createCharts();
+
+        // 분석 완료 메시지를 표시합니다.
+        Swal.fire({
+          title: '분석 완료',
+          text: '마일리지 분석이 완료되었습니다.',
+          icon: 'success',
+          confirmButtonText: '확인',
+        });
+      } catch (error) {
+        console.error('분석 중 오류가 발생했습니다:', error);
+        Swal.fire({
+          title: '오류',
+          text: '분석 중 문제가 발생했습니다. 다시 시도해 주세요.',
+          icon: 'error',
+          confirmButtonText: '확인',
+        });
+      }
+    },
+
+    async analysisAlert() {
+      return new Promise((resolve) => {
+        Swal.fire({
+          timer: 100000,
           timerProgressBar: true,
           imageUrl: require('@/assets/img/analysis.gif'),
           imageClass: 'custom-image-class',
           scrollbarPadding: false,
           title: '분석중..',
           html: `${this.getLoginInfo.user_name}님의 마일리지를 분석중입니다`,
-          showCloseButton: true, // X 버튼 추가
+          showCloseButton: true,
           didOpen: () => {
-            const popup = this.$swal.getPopup();
-            const image = this.$swal.getImage();
+            const popup = Swal.getPopup();
+            const image = Swal.getImage();
             const title = popup.querySelector('.swal2-title');
             const img = popup.querySelector('.swal2-image');
 
-            title.style.marginTop = '0'; // 타이틀 상단 마진 제거
-            title.style.paddingTop = '0'; // 타이틀 상단 패딩 제거
-
-            popup.style.height = '400px'; // 원하는 높이로 조정
+            title.style.marginTop = '0';
+            title.style.paddingTop = '0';
+            popup.style.height = '400px';
             img.style.margin = '15px auto 0px auto';
             image.style.width = '200px';
             image.style.height = 'auto';
             image.style.padding = '0px 0px 0px 30px';
 
-            this.$swal.showLoading();
+            Swal.showLoading();
+          },
+          willClose: () => {
+            resolve();
           },
         });
-        await this.runAnalysis();
-        this.getAiReport();
-        console.log('분석이 완료되었습니다.');
-      } catch (error) {
-        console.error('분석 중 오류가 발생했습니다:', error);
-        // 오류 처리 로직 추가
-      }
+      });
     },
+
     createChart1() {
       const ctx = document.getElementById('myChart1');
+      if (!ctx) {
+        console.error('Chart context not found');
+        return;
+      }
+
       const score = parseInt(this.chartRank);
 
       const getPointColor = (score) => {
@@ -358,7 +361,7 @@ export default {
 
       const xPosition = getXPosition(score);
 
-      new Chart(ctx, {
+      this.chart1 = new Chart(ctx, {
         type: 'line',
         data: {
           labels: ['0%', '30%', '70%', '100%'],
@@ -522,8 +525,11 @@ export default {
         ],
       });
     },
+
     createChart2() {
-      const ctx = document.getElementById('myChart2').getContext('2d');
+      const canvas = document.getElementById('myChart2');
+
+      const ctx = canvas.getContext('2d');
 
       this.label = this.avg_score_json.map((item) => item.mile_name);
       this.avg_data = this.avg_score_json.map((item) => item.average_score);
@@ -591,20 +597,81 @@ export default {
         },
       };
 
-      new Chart(ctx, config);
+      this.chart2 = new Chart(ctx, config);
     },
   },
-  mounted() {
-    this.getAiReport();
-  },
+  mounted() {},
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+
+    ...mapGetters('aireport', [
+      'getAll',
+      'getRank',
+      'getCatchTops',
+      'getDateAi',
+      'getMyRank',
+      'getChartRank',
+      'getAvg_score_json',
+      'getMy_score_json',
+      'getSuccessYN',
+      'getMile',
+    ]),
+
     loginInfo() {
       return this.getLoginInfo;
     },
+    all() {
+      return this.getAll;
+    },
+    rank() {
+      return this.getRank;
+    },
+    catchTop() {
+      return this.getCatchTops;
+    },
+    mile() {
+      return this.getMile;
+    },
+    dateAi() {
+      return this.getDateAi;
+    },
+    myRank() {
+      return this.getMyRank;
+    },
+    chartRank() {
+      return this.getChartRank;
+    },
+    avg_score_json() {
+      return this.getAvg_score_json;
+    },
+    my_score_json() {
+      return this.getMy_score_json;
+    },
+    successYN() {
+      return this.getSuccessYN;
+    },
   },
 
-  watch: {},
+  watch: {
+    loginInfo: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.getReport();
+        }
+      },
+    },
+    all: {
+      handler(newVal) {
+        if (newVal) {
+          this.$nextTick(() => {
+            this.createCharts();
+          });
+        }
+      },
+      immediate: true,
+    },
+  },
 };
 </script>
 

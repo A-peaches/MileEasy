@@ -633,22 +633,43 @@
     </update>
 
 
-    <select id="allScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="allScore" resultType="com.kbstar.mileEasy.beans.allScore">
+        -- Aggregate scores by user_no and mile_name, then get top 10 users by total score
+        WITH AggregatedScores AS (
+            SELECT
+                s.user_no,
+                m.mile_name,
+                COALESCE(SUM(s.mile_score_point), 0) AS total_score
+            FROM
+                mile_score s
+                    JOIN mileage m ON s.mile_no = m.mile_no
+            WHERE
+                m.mile_is_delete = 0  -- Include only non-deleted mileage records
+            GROUP BY
+                s.user_no, m.mile_name, s.mile_no
+        ),
+             UserTotalScores AS (
+                 SELECT
+                     user_no,
+                     COALESCE(SUM(total_score), 0) AS total_user_score
+                 FROM
+                     AggregatedScores
+                 GROUP BY
+                     user_no
+             )
         SELECT
-            ms.mile_no,
-            m.mile_name,
-            ms.user_no,
-            SUM(ms.mile_score_point) AS total_score
-        FROM mile_score ms
-                 JOIN mileage m ON ms.mile_no = m.mile_no
-        GROUP BY ms.mile_no, m.mile_name, ms.user_no
-        ORDER BY total_score DESC
+            a.user_no,
+            a.mile_name,
+            a.total_score
+        FROM
+            AggregatedScores a
+                JOIN UserTotalScores u ON a.user_no = u.user_no
+        ORDER BY
+            u.total_user_score DESC
             LIMIT 10;
-
-
     </select>
 
-    <select id="myScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="myScore" resultType="com.kbstar.mileEasy.beans.myScore">
         -- mile_is_delete가 0인 mileage 테이블의 항목만 포함시키고,
 -- mile_no가 없으면 total_score를 0으로 설정
         WITH mile_scores AS (
@@ -666,14 +687,13 @@
         )
         SELECT
             mile_name,
-            mile_no,
             total_score
         FROM
             mile_scores;
 
     </select>
 
-    <select id="avgScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="avgScore" resultType="com.kbstar.mileEasy.beans.avgScore">
         WITH TotalScores AS (
             SELECT
                 mile_no,
@@ -690,7 +710,6 @@
              )
         SELECT
             m.mile_name,
-            t.mile_no,
             t.total_score / u.user_count AS average_score
         FROM TotalScores t
                  JOIN UserCounts u ON t.mile_no = u.mile_no
@@ -700,7 +719,7 @@
     </select>
 
 
-    <select id="percentageScore" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="percentageScore" resultType="int">
         WITH UserTotalScores AS (
             -- Calculate total points for each user
             SELECT
@@ -724,7 +743,6 @@
             percentile_rank * 100 AS user_percentile
         FROM PercentileCalculation
         WHERE user_no = #{userNo};
-
     </select>
 
     <select id="myGroup" resultType="com.kbstar.mileEasy.dto.MileScore">
@@ -734,7 +752,7 @@
         WHERE u.user_no = #{userNo};
     </select>
 
-    <select id="group_weight" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="group_weight" resultType="com.kbstar.mileEasy.beans.group_weight">
         SELECT
             gw.weight,
             m.mile_name
@@ -749,7 +767,7 @@
 
     </select>
 
-    <select id="group_weight_avg" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="group_weight_avg" resultType="com.kbstar.mileEasy.beans.group_weight_avg">
         SELECT
             m.mile_name,
             COALESCE(SUM(ms.mile_score_point * (gw.weight + 1)) / NULLIF(COUNT(DISTINCT ms.user_no), 0), SUM(ms.mile_score_point) / NULLIF(COUNT(DISTINCT ms.user_no), 0)) AS weighted_average
@@ -770,7 +788,7 @@
             ms.mile_no, m.mile_name;
 
     </select>
-    <select id="my_weight_avg" resultType="com.kbstar.mileEasy.dto.MileScore">
+    <select id="my_weight_avg" resultType="com.kbstar.mileEasy.beans.my_weight_avg">
         WITH user_score AS (
             SELECT
                 ms.mile_no,
@@ -791,8 +809,7 @@
 
         SELECT
             m.mile_name,
-            us.total_mile_score_point,
-            COALESCE(ws.total_weight + 1, 1) AS weight_adjusted,
+
             us.total_mile_score_point * COALESCE(ws.total_weight + 1, 1) AS weighted_score
         FROM
             user_score us

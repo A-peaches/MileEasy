@@ -41,9 +41,9 @@ public class MileScore {
     private double weight;
     private double weighted_average;
     private int total_mile_score_point;
-    private double weight_adjusted;
-    private double weighted_score;
-    private double average_score;
+    private int weight_adjusted;
+    private int weighted_score;
+    private int average_score;
 
 
 
