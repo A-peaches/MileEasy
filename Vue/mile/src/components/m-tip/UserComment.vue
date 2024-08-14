@@ -23,10 +23,12 @@
 ></textarea>
     <button 
     class="btn-yellow btn-yellow:hover"
-      @click="addComment" 
+      @click="addComment"  @keydown.enter.prevent="addComment" 
       style="font-family: 'KB_C2', sans-serif; font-size: 18px; width: 80px; height: 80px;color: #4b4a4a;"
     >등록</button>
   </div>
+
+  
     <div v-if="comments && comments.length">
       <div class="comment" v-for="comment in comments" :key="comment.mtip_reply_no">
         <img
@@ -76,7 +78,7 @@
 </template>
 
 <script>
-import api from '@/api/axios';
+// import api from '@/api/axios';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -98,26 +100,22 @@ export default {
       // editingCommentId: null, // 추가된 부분
     };
   },
-  watch: {
-    mtip_board_no: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          this.fetchComments();
-        }
-      }
-    }
-  },
+ 
   created() { // 추가된 부분
   console.log('UserComment component created 확인해보기');
   console.log('mtip_board_no 확인 중:', this.mtip_board_no);
   console.log('loginInfo 확인 중:', this.loginInfo);
   console.log('API URL 확인 중:', process.env.VUE_APP_API_URL);
-  this.$store.dispatch('mtipReply/fetchComments', this.mtip_board_no);
+  // this.$store.dispatch('mtipReply/fetchComments', this.mtip_board_no);
+  console.log('mtip_board_no:', this.mtip_board_no); // 이 부분을 추가하여 값이 올바르게 전달되었는지 확인합니다.
+  this.fetchComments(this.mtip_board_no);
   },
+
+
   computed: {
     ...mapGetters('mtipReply', ['getComments']),
     comments() {
+      console.log('Computed comments:', this.getComments);
       return this.getComments;
     },
   },
@@ -147,38 +145,30 @@ export default {
       comment.editingContent = comment.mtip_reply_content;
     },
 
-    async fetchComments() {
-    console.log('Fetching comments...');
-    try {
-      const response = await api.get(`/mtip/comments/${this.mtip_board_no}`);
-      console.log('서버에서 댓글 정보 가져오기 :', response.data); // 로그 추가
-      this.comments = response.data.map(comment => ({
-        ...comment,
-        isEditing: false,
-        editingContent: comment.mtip_reply_content
-      }));
-    } catch (error) {
-      console.error('댓글 가져오기 중 오류가 발생했습니다:', error);
-    }
+    async fetchComments(mtip_board_no) {
+    await this.$store.dispatch('mtipReply/fetchComments', mtip_board_no);
   },
+
   async addComment() {
     if (!this.newComment.trim()) return;
     const commentData = {
-      user_no: this.loginInfo.user_no,
-      user_name: this.loginInfo.user_name,
-      mtip_board_no: this.mtip_board_no,
-      mtip_reply_content: this.newComment.trim(),
+        user_no: this.loginInfo.user_no,
+        user_name: this.loginInfo.user_name,
+        mtip_board_no: this.mtip_board_no,
+        mtip_reply_content: this.newComment.trim(),
     };
-    console.log('commentData:', commentData);
+    console.log('Comment data to be sent:', commentData);  // 추가된 로그
     try {
-      const response = await api.post('/mtip/comments', commentData);
-      this.comments.unshift(response.data);
-      this.newComment = '';
-      window.location.reload();
+        const response = await this.$store.dispatch('mtipReply/addComment', commentData);
+        console.log('댓글 등록 응답:', response);  // 추가된 로그
+        this.newComment = '';
+        window.location.reload()
     } catch (error) {
-      console.error('댓글 등록 중 오류가 발생했습니다:', error);
+        console.error('댓글 등록 중 오류가 발생했습니다:', error);  // 에러 발생 시 로그
     }
-  },
+},
+
+
     // 기본 프로필 사진
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
@@ -201,36 +191,35 @@ export default {
     this.editingCommentId = comment.mtip_reply_no;
   },
   async finishEditing(comment) {
-      if (!comment.editingContent.trim()) return;
+    if (!comment.editingContent.trim()) return;
 
-      const commentData = {
-        mtip_reply_no: comment.mtip_reply_no,
-        mtip_reply_content: comment.editingContent.trim(),
-      };
+    const commentData = {
+      mtip_reply_no: comment.mtip_reply_no,
+      mtip_reply_content: comment.editingContent.trim(),
+    };
 
-      try {
-        await api.post(`/mtip/updateComment/${comment.mtip_reply_no}`, commentData);
-        comment.mtip_reply_content = comment.editingContent.trim();
-        comment.isEditing = false;
-      } catch (error) {
-        console.error('댓글 수정 중 오류가 발생했습니다:', error);
-      }
-    },
-    async deleteComment(mtip_reply_no) {
-      try {
-        await api.delete(`/mtip/deleteComment/${mtip_reply_no}`);
-        this.$store.commit('mtipReply/DELETE_COMMENT', mtip_reply_no);
-      } catch (error) {
-        console.error('댓글 삭제 중 오류가 발생했습니다:', error);
-      }
+    try {
+      await this.$store.dispatch('mtipReply/updateComment', commentData);
+      comment.mtip_reply_content = comment.editingContent.trim();
+      comment.isEditing = false;
+    } catch (error) {
+      console.error('댓글 수정 중 오류가 발생했습니다:', error);
     }
   },
-  beforeRouteUpdate(to, from, next) {
-    if (to.params.mtip_board_no !== from.params.mtip_board_no) {
-      this.$store.dispatch('mtipReply/fetchComments', to.params.mtip_board_no);
+  async deleteComment(mtip_reply_no) {
+    try {
+      await this.$store.dispatch('mtipReply/deleteComment', mtip_reply_no);
+    } catch (error) {
+      console.error('댓글 삭제 중 오류가 발생했습니다:', error);
     }
-    next();
   },
+  },
+  // beforeRouteUpdate(to, from, next) {
+  //   if (to.params.mtip_board_no !== from.params.mtip_board_no) {
+  //     this.$store.dispatch('mtipReply/fetchComments', to.params.mtip_board_no);
+  //   }
+  //   next();
+  // },
 };
 </script>
 

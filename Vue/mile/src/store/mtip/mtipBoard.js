@@ -20,12 +20,18 @@ const mutations = {
     console.log('Setting notice in store:', notice);
     state.notice = notice;
   },
-  INCREMENT_VIEWS(state, noticeId) {
-    const notice = state.notices.find((n) => n.notice_board_no === noticeId);
-    if (notice) {
-      notice.notice_board_hit = (notice.notice_board_hit || 0) + 1;
+  SET_LIKE_STATUS(state, { user_no, mtip_board_no, isLiked }) {
+    if (!state.likedPosts[user_no]) {
+      state.likedPosts[user_no] = [];
+    }
+    const index = state.likedPosts[user_no].indexOf(mtip_board_no);
+    if (isLiked && index === -1) {
+      state.likedPosts[user_no].push(mtip_board_no);
+    } else if (!isLiked && index !== -1) {
+      state.likedPosts[user_no].splice(index, 1);
     }
   },
+  
   setFooterNotices(state, payload) {
     state.footerNotices = payload;
   },
@@ -43,48 +49,10 @@ const mutations = {
       mtipGuide.mtip_guide_hit = (mtipGuide.mtip_guide_hit || 0) + 1;
     }
   },
-  SET_LIKE_STATUS(state, { user_no, mtip_board_no, isLiked }) {
-    if (!state.likedPosts[user_no]) {
-      state.likedPosts[user_no] = [];
-    }
-    if (isLiked) {
-      state.likedPosts[user_no].push(mtip_board_no);
-    } else {
-      const index = state.likedPosts[user_no].indexOf(mtip_board_no);
-      if (index !== -1) {
-        state.likedPosts[user_no].splice(index, 1);
-      }
-    }
-  },
   SET_LIKED_POSTS(state, { user_no, likedPosts }) {
     state.likedPosts[user_no] = likedPosts;
   },
-  TOGGLE_LIKE(state, { user_no, mtip_board_no }) {
-    if (!state.likedPosts[user_no]) {
-      state.likedPosts[user_no] = [];
-    }
-    const index = state.likedPosts[user_no].indexOf(mtip_board_no);
-    if (index !== -1) {
-      state.likedPosts[user_no].splice(index, 1);
-      if (state.notice && state.notice.mtip_board_no === mtip_board_no) {
-        state.notice.mtip_board_like--;
-      }
-    } else {
-      state.likedPosts[user_no].push(mtip_board_no);
-      if (state.notice && state.notice.mtip_board_no === mtip_board_no) {
-        state.notice.mtip_board_like++;
-      }
-    }
-  },
-  UPDATE_LIKE_COUNT(state, { mtip_board_no, isLiked }) {
-    const notice = state.notices.find(n => n.mtip_board_no === mtip_board_no);
-    if (notice) {
-      notice.mtip_board_like += isLiked ? 1 : -1;
-    }
-    if (state.notice && state.notice.mtip_board_no === mtip_board_no) {
-      state.notice.mtip_board_like += isLiked ? 1 : -1;
-    }
-  },
+  
   SET_USER_TOTAL_NOTICES(state, count) {
     state.userTotalNotices = count;
   },
@@ -113,31 +81,7 @@ const actions = {
       console.error('Error fetching notices:', error);
     }
   },
-  // async fetchNoticeDetail({ commit }, noticeId) {
-  //   if (!noticeId) {
-  //     console.error('Notice ID is undefined');
-  //     return;
-  //   }
-  //   try {
-  //     console.log('Fetching notice detail for ID:', noticeId);
-  //     const { data } = await api.get(`/mtip/${noticeId}`);
-  //     console.log('API Response:', data); // 전체 응답 로깅
-  //     if (data) {
-  //       console.log('Fetched notice details:', data);
-  //       commit('SET_NOTICE', data);
-  //       return data; // 명시적으로 데이터 반환
-  //     } else {
-  //       console.error('No data in response');
-  //       throw new Error('No data in response');
-  //     }
-  //   } catch (error) {
-  //     console.error(
-  //       'Error fetching notice detail:',
-  //       error.response ? error.response.data : error.message
-  //     );
-  //     throw error; // 에러를 다시 throw하여 컴포넌트에서 캐치할 수 있게 함
-  //   }
-  // },
+
   async incrementViews({ commit }, noticeId) {
     try {
       await api.post(`/mtip/MtipViews/${noticeId}`);
@@ -171,27 +115,62 @@ const actions = {
       console.error('Error getting footer Notice data:', error);
     }
   },
-  async checkLikeStatus({ commit }, { mtip_board_no, user_no }) {
+  async likePost({ commit }, { mtip_board_no, user_no }) {
     try {
-      const response = await api.get(`/mtip/check-like/${mtip_board_no}/${user_no}`);
-      commit('SET_LIKE_STATUS', {
-        user_no,
-        mtip_board_no,
-        isLiked: response.data.isLiked
+      const response = await api.post('/mtip/like', { mtip_board_no, user_no });
+      console.log('좋아요 증가 :', response.data); // 서버 응답 로그 출력
+  
+      // 서버에서 받은 상태를 기반으로 상태를 업데이트
+      if (response.data !== -1) {
+        commit('SET_LIKE_STATUS', { user_no, mtip_board_no, isLiked: true });
+      }
+      console.log('좋아요 증가 :', response.data); // 서버 응답 로그 출력
+      return response.data;
+    } catch (error) {
+      console.error('Error liking post:', error);
+      throw error;
+    }
+  },
+  
+  async unlikePost({ commit }, { mtip_board_no, user_no }) {
+    try {
+      const response = await api.post('/mtip/unlike', { mtip_board_no, user_no });
+      console.log('좋아요 감소:', response.data); // 서버 응답 로그 출력
+  
+      // 서버에서 받은 상태를 기반으로 상태를 업데이트
+      if (response.data !== -1) {
+        commit('SET_LIKE_STATUS', { user_no, mtip_board_no, isLiked: false });
+      }
+      console.log('좋아요 감소 :', response.data); // 서버 응답 로그 출력
+      return response.data;
+    } catch (error) {
+      console.error('Error unliking post:', error);
+      throw error;
+    }
+  },
+
+async checkLikeStatus({ commit }, { mtip_board_no, user_no }) {
+  try {
+      const response = await api.get('/mtip/check-like', {
+          params: { mtip_board_no, user_no },
       });
-    } catch (error) {
+      // 필요한 로직 처리
+      const isLiked = response.data.isLiked;
+      commit('SET_LIKE_STATUS', { user_no, mtip_board_no, isLiked });
+      return isLiked;
+  } catch (error) {
       console.error('Error checking like status:', error);
-    }
-  },
-  async toggleLikeAction({ commit }, { mtip_board_no, user_no }) {
-    try {
-      const response = await api.post('/mtip/toggle-like', { mtip_board_no, user_no });
-      commit('TOGGLE_LIKE', { user_no, mtip_board_no });
-      console.log('like',response);
-    } catch (error) {
-      console.error('Error toggling like:', error);
-    }
-  },
+  }
+},
+async fetchLikedPosts({ commit }, user_no) {
+  try {
+    const response = await api.get(`/mtip/liked-posts/${user_no}`);
+    commit('SET_LIKED_POSTS', { user_no, likedPosts: response.data });
+  } catch (error) {
+    console.error('Error fetching liked posts:', error);
+  }
+},
+
   async fetchNoticeDetail({ commit }, noticeId) {
     if (!noticeId) {
       console.error('Notice ID is undefined');

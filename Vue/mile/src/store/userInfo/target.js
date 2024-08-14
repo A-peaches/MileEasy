@@ -30,6 +30,9 @@ const state = {  // 애플리케이션의 상태를 저장
       SET_ADMIN_TARGETS(state, targets) {
         state.adminTargets = targets;
       },
+      setTargets(state, targets) {
+        state.targets = targets;
+      },
    
   };
   

@@ -90,30 +90,56 @@ public class MtipBoardService {
         return mtipDao.findById(id);
     }
 
-    //좋아요
-    public boolean checkLikeStatus(int mtipBoardNo, String userNo) {
-        return mtipDao.checkLikeStatus(mtipBoardNo, userNo) > 0;
+    public boolean checkLike(int mtipBoardNo, String userNo) {
+        Integer count = mtipDao.checkLikeStatus(mtipBoardNo, userNo);
+        return count != null && count > 0;
     }
-    //좋아요
-    @Transactional
-    public boolean toggleLike(int mtipBoardNo, String userNo) {
-        boolean isLiked = checkLikeStatus(mtipBoardNo, userNo);
 
-        if (isLiked) {
-            mtipDao.deleteLike(mtipBoardNo, userNo);
-            mtipDao.decrementLikeCount(mtipBoardNo);
-            return false;
-        } else {
+    @Transactional
+    public int likePost(int mtipBoardNo, String userNo) {
+        boolean likeExists = checkLike(mtipBoardNo, userNo);
+        System.out.println("checkLike result: " + likeExists);
+
+        if (!likeExists) {
             mtipDao.insertLike(mtipBoardNo, userNo);
             mtipDao.incrementLikeCount(mtipBoardNo);
-            return true;
+
+            try {
+                Thread.sleep(100); // 0.1초 지연
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
+
+        int status = mtipDao.checkStatus(mtipBoardNo, userNo);
+        System.out.println("checkStatus after like: " + status);
+        return status;
     }
 
-//    // 좋아요한 게시글 ID 목록 가져오기
-//    public List<Integer> getLikedPostIds(String userNo, int noticeId) {
-//        return mtipDao.getLikedPostIds(userNo, noticeId);
-//    }
+    @Transactional
+    public int unlikePost(int mtipBoardNo, String userNo) {
+        boolean unlikeExists = checkLike(mtipBoardNo, userNo);
+        System.out.println("checkLike result: " + unlikeExists);
+
+        if (unlikeExists) {
+            mtipDao.deleteLike(mtipBoardNo, userNo);
+            mtipDao.decrementLikeCount(mtipBoardNo);
+
+            try {
+                Thread.sleep(100); // 0.1초 지연
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        int status = mtipDao.checkStatus(mtipBoardNo, userNo);
+        System.out.println("checkStatus after unlike: " + status);
+        return status;
+    }
+
+    public List<Long> getLikedPostsByUser(String userNo) {
+        return mtipDao.findLikedPostsByUserNo(userNo);
+    }
 
     //mtip 수정하기
     @Transactional

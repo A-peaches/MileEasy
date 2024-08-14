@@ -148,6 +148,7 @@ export default {
               );
           }
       },
+      
       getStatusClass(target) {
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
@@ -245,25 +246,32 @@ export default {
 },
 
 
-  async loadUserParticipatedTargets() {
-      try {
+async loadUserParticipatedTargets() {
+    try {
         const targetNos = this.adminTargets.map(target => target.target_no);
         console.log('5. Target numbers:', targetNos);
 
-        for (const targetNo of targetNos) {
-          const isParticipating = await this.checkParticipation(targetNo);
-          if (isParticipating) {
-            this.userParticipatedTargets.push(targetNo);
-          }
-        }
+        // 참여 여부 확인을 병렬로 처리
+        const participationPromises = targetNos.map(targetNo => 
+            this.checkParticipation(targetNo)
+                .then(isParticipating => {
+                    if (isParticipating) {
+                        this.userParticipatedTargets.push(targetNo);
+                    }
+                })
+        );
+
+        // 모든 요청이 완료될 때까지 대기
+        await Promise.all(participationPromises);
 
         console.log('7. Updated userParticipatedTargets:', this.userParticipatedTargets);
-      } catch (error) {
+    } catch (error) {
         console.error('Failed to load user participated targets:', error);
-      } finally {
+    } finally {
         this.isLoading = false; // 로딩 상태 해제
-      }
-  },
+    }
+},
+
   
   async joinTarget(targetNo) {
     try {
@@ -321,6 +329,8 @@ export default {
    },
 
   },
+
+  
  async created() {
   console.log('1. Component created');
   this.isLoading = true;

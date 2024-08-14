@@ -26,9 +26,6 @@ public class MtipGuideService {
     private NoticeDao noticeDao;
 
     @Autowired
-    private UserDao userDao;
-
-    @Autowired
     private MtipGuideDao mtipGuideDao;
 
 
@@ -70,28 +67,9 @@ public class MtipGuideService {
         }
     }
 
-
-
-
-
-
-    @Transactional
-    public void updateNotice(Notice notice) {
-        noticeDao.updateNotice(notice);
-    }
-
-
-
-    public List<Notice> getFooterNotice() {
-        return noticeDao.getFooterNotice();
-    }
-
-
-
     public ArrayList<MtipGuide> mTipGuideList() {
         return mtipGuideDao.mTipGuideList();
     }
-
 
     public void updateGuide(MtipGuide mtipGuide) {
         mtipGuideDao.updateGuide(mtipGuide);

@@ -27,6 +27,7 @@ export default [
     name: 'm_TipDetailView',
     component: () => import('../views/m_Tip/M_TipDetailView.vue'),
     meta: { requiresAuth: true },
+    props: true // 이 부분이 중요합니다.
   },
   {
     //사용자 : m-tip 작성화면

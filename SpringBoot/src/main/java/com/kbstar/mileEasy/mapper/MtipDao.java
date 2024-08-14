@@ -8,22 +8,34 @@ import java.util.List;
 @Mapper
 public interface MtipDao {
 
-
+    //사용자 좋아요 목록
+    @Select("SELECT mtip_board_no FROM mtip_like WHERE user_no = #{userNo}")
+    List<Long> findLikedPostsByUserNo(@Param("userNo") String userNo);
+    // 좋아요 상태 확인
     @Select("SELECT COUNT(*) FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
     int checkLikeStatus(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
+    // 좋아요 수 확인
+    @Select("SELECT mtip_board_like FROM mtip_board WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
+    int checkStatus(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
+
+    // 좋아요 추가
     @Insert("INSERT INTO mtip_like (mtip_board_no, user_no) VALUES (#{mtipBoardNo}, #{userNo})")
     void insertLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
+    // 좋아요 삭제
     @Delete("DELETE FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
     void deleteLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
-    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like - 1 WHERE mtip_board_no = #{mtipBoardNo}")
+    // 좋아요 수 증가
+    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like + 1 WHERE mtip_board_no = #{mtipBoardNo}")
     void incrementLikeCount(@Param("mtipBoardNo") int mtipBoardNo);
 
-    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like + 1 WHERE mtip_board_no = #{mtipBoardNo}")
+    // 좋아요 수 감소
+    @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like - 1 WHERE mtip_board_no = #{mtipBoardNo}")
     void decrementLikeCount(@Param("mtipBoardNo") int mtipBoardNo);
-    /*좋아요 코드 */
+
+
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
