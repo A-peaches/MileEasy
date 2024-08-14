@@ -36,7 +36,7 @@ const state = {  // 애플리케이션의 상태를 저장
   const actions = {  // 상태를 변경하는 비동기적 액션
     async addTogetherTarget({ commit }, target) {
       try {
-          const response = await api.post('http://localhost:8090/target/create', target);
+          const response = await api.post('/target/create', target);
           commit('addTogetherTarget', response.data);
       } catch (error) {
           console.error('Error adding together target:', error.response ? error.response.data : error.message);
@@ -45,7 +45,7 @@ const state = {  // 애플리케이션의 상태를 저장
   },
   async addPersonalTarget({ commit }, target) {
       try {
-          const response = await api.post('http://localhost:8090/target/create', target);
+          const response = await api.post('/target/create', target);
           commit('addPersonalTarget', response.data);
       } catch (error) {
           console.error('Error adding personal target:', error.response ? error.response.data : error.message);

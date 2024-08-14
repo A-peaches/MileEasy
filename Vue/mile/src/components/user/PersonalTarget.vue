@@ -150,7 +150,7 @@ export default {
     async fetchMileages() {  // 마일리지 카테고리 가져오기
       try {
           const response = await api.get(
-          'http://localhost:8090/notice/mileage'
+          '/notice/mileage'
           );
           console.log('fetchMileages 메소드 :', response.data); // 응답 데이터를 콘솔에 출력
           this.labels = response.data;
@@ -299,6 +299,7 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
+        scrollbarPadding: false,
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
