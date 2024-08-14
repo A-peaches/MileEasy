@@ -20,7 +20,7 @@
       </div>
       <div class="content">
         <span v-if="isNew(notice.mtip_board_date)" class="new-label">NEW</span>
-        <h1 class="title">{{ notice.mtip_board_title }}</h1>
+        <h1 class="title">{{ notice?.mtip_board_title }}</h1>
         <div class="meta">
           <span class="author">{{ notice.user_name }}</span>
           <span class="date">{{ formatDate(notice?.mtip_board_date) }}</span>
@@ -58,14 +58,16 @@
        </div>
        
       </div>
-      <div class="content-container">
+      <div class="content-container mx-auto">
         <div class="actions">
           <span class="alert-icon">🚨</span>
           <button class="report-button" @click="reportNotice">신고하기</button>
-        </div>
+        </div> 
+        <div class="mx-auto" style="width:100%">
         <hr class="divider">
-
+      
         <UserComment  v-if="isNoticeLoaded"  :login-info="loginInfo"  :mtip_board_no="notice.mtip_board_no" />
+        </div>
       </div>
     </div>
     <div v-else>
@@ -114,18 +116,21 @@ export default {
     ...mapActions('mtipBoard', ['fetchNoticeDetail', 'likePost', 'unlikePost', 'checkLikeStatus']),
 
     async toggleLike() {
+
+      console.log('여기까지오긴옴')
   if (!this.loginInfo) {
     alert('로그인이 필요합니다.');
     return;
   }
-
+  console.log('로그인확인완룡')
   if (!this.notice) {
     console.error('Notice data is not available');
     return;
   }
-
+  console.log('노티스확인완룡!')
   try {
     const action = this.isLiked ? 'unlikePost' : 'likePost';
+    console.log('이제 엑시오스 갈거임.')
     const result = await this.$store.dispatch(`mtipBoard/${action}`, {
       mtip_board_no: this.notice.mtip_board_no,
       user_no: this.loginInfo.user_no,
@@ -412,7 +417,7 @@ mounted() {
   width: 95%;
   max-width: 1300px;
   box-sizing: border-box;
-  min-height: 100vh;
+  min-height: 90vh;
 }
 
 .content.cards {
@@ -532,6 +537,7 @@ mounted() {
 .heart-icon i {
   font-size: 1.3vw;
   color: #dc3545;
+  cursor : pointer
 }
 .views-text {
   flex: 0 0 auto;
@@ -555,7 +561,6 @@ mounted() {
 }
 
 .content-container {
-  margin-top: 20px; /* 상단 여백 추가 */
   width: 95%;
 }
 
