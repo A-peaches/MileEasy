@@ -24,7 +24,7 @@
     <button 
     class="btn-yellow btn-yellow:hover"
       @click="addComment"  @keydown.enter.prevent="addComment" 
-      style="font-family: 'KB_C2', sans-serif; font-size: 18px; width: 80px; height: 80px;color: #4b4a4a;"
+      style="font-family: 'KB_C2', sans-serif; font-size: 18px; width: 100px; height: 80px;color: #4b4a4a;"
     >등록</button>
   </div>
 
@@ -162,7 +162,10 @@ export default {
         const response = await this.$store.dispatch('mtipReply/addComment', commentData);
         console.log('댓글 등록 응답:', response);  // 추가된 로그
         this.newComment = '';
-        window.location.reload()
+        // window.location.reload()
+
+         // fetchComments 호출하여 댓글 목록을 다시 불러옵니다.
+         await this.fetchComments(this.mtip_board_no);
     } catch (error) {
         console.error('댓글 등록 중 오류가 발생했습니다:', error);  // 에러 발생 시 로그
     }
