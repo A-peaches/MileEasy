@@ -1,11 +1,11 @@
 <template>
   <div class="cards card-white" >
-    <p class="lg2 KB_S4" style="margin-right: 90px; margin-bottom: 10px;">
+    <p class="lg2 KB_S4 recommand-title" >
       <i class="bi bi-award-fill" style="color: #ffca05;"></i>&nbsp;오늘의 추천
     </p>
     <div class="flex" style="margin-left: 15px; margin-top:30px; width:65%;">
       <div v-if="recommand && recommand.mile_mention">
-        <div class="KB_S5">
+        <div class="KB_S5 recommand-mention">
           {{ recommand.mile_mention }}
         </div>
         <br />
@@ -98,7 +98,21 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+@media (max-width: 768px) {
+  .recommand-title {
+    margin-right: 50px !important; 
+  }
+  .recommand-mention {
+    font-size: 15pt !important;
+  }
+}
+
+.recommand-title {
+  margin-right: 90px; 
+  margin-bottom: 10px;
+}
+
 .cards {
   position: relative;
   overflow: hidden;

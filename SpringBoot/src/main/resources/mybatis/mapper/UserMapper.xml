@@ -222,4 +222,8 @@
     <update id="changPassword">
         update user set user_pw=#{encryptedPassword} where user_no = #{userNo}
     </update>
+
+    <select id="getAllUsers" resultType="com.kbstar.mileEasy.dto.User">
+        select user_no, user_name, job_no, user_tel from user order by 2;
+    </select>
 </mapper>

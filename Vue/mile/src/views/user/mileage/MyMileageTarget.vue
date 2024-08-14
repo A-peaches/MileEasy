@@ -53,8 +53,9 @@ components: {
         }
     },
     methods: {
-        setActiveTab(tab) {
-            this.activeTab = tab;
+            setActiveTab(tab) {
+        this.activeTab = tab;
+        this.$router.push({ query: { tab: tab } }); // 라우터에 탭 정보 추가
         },
     },
     created(){
@@ -71,11 +72,23 @@ components: {
           return 'TogetherTarget';
       }
     },
-    watch: {},
-  },
+},
+    watch: {
+    '$route.query.tab': {
+      immediate: true,
+      handler(newTab) {
+        if (newTab) {
+          this.activeTab = newTab;
+            }
+        }
+      }
+    },
 };
 </script>
 
 <style scoped>
-
+.page-back {
+  padding-left: 2% !important;
+  padding-right: 2% !important;
+}
 </style>

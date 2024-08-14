@@ -1,107 +1,92 @@
 <template>
-  <div class="cards page-back mx-auto" style="color: #4b4a4a">
-    <h2
-      class="bold-x-lg my-5 ml-5"
-      ref="helpIcon"
-      style="font-family: KB_C3"
-    >
+ <div class="cards page-back mx-auto" style="color: #4b4a4a">
+  <div class="help-container">
+    <h2 class="bold-x-lg my-5 ml-5" style="font-family: KB_C3">
       나의 마일리지
       <i
         class="bi bi-question-circle help-icon"
         @click="toggleHelpPopover"
         style="font-size: 20pt"
+        ref="helpIcon"
       ></i>
     </h2>
 
     <div v-if="showHelpPopover" class="help-popover" ref="helpPopover">
       <div style="font-size: 12pt">
-        <span
-          >이것은 마일리지 카드입니다. 여기에서 귀하의 마일리지 포인트와 최대
+        <span>
+          이것은 마일리지 카드입니다. 여기에서 귀하의 마일리지 포인트와 최대
           마일리지, <br />
-          그리고 다른 사용자들과 비교한 귀하의 위치를 확인할 수 있습니다.</span
-        >
+          그리고 다른 사용자들과 비교한 귀하의 위치를 확인할 수 있습니다.
+        </span>
       </div>
     </div>
-    <div class="row mx-2" style="margin-top: 100px" v-if="dataLoaded">
+  </div>
+
+    <div class="row mx-2" style="margin-top: 60px" v-if="dataLoaded">
       <div
         v-for="(card, index) in filteredMyMile"
         :key="index"
-        class="col-6 mb-3"
+        class="col-6"
       >
-        <div
-          class="cards mx-3 fade-up-item"
-          style="background-color: #f9f9f9; height: 280px; position: relative"
-        >
-          <div class="flex-between">
-            <div class="flex mb-2">
-              <div
-                class="text-start KB_C3 fw-bolder"
-                style="font-size: 18pt; margin: 0"
+        <div class="cards fade-up-item mx-2 my-2" style="background-color: #f9f9f9;">
+          <div class="card-header">
+            <div class="text-start KB_C3 fw-bolder mile-name">
+              {{ card.mile_name }}
+            </div>
+            <div class="shortcut-link-container">
+              <router-link
+                :to="{
+                  name: 'mileageDetail',
+                  params: { mile_no: card.mile_no },
+                }"
+                class="KB_C3 brown shortcut-link"
               >
-                {{ card.mile_name }}
+                <strong>바로가기 ></strong>
+              </router-link>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="score-container">
+              <div class="score-wrapper">
+                <span class="KB_C2">
+                  <span class="KB_C2 highlight">{{ card.user_point }}</span>
+                  / {{ card.mile_max != 0 ? card.mile_max : "-" }}
+                </span>
               </div>
-              <div class="text-end" style="top: -12px; position: relative">
-                <router-link
-                  :to="{
-                    name: 'mileageDetail',
-                    params: { mile_no: card.mile_no },
-                  }"
-                  class="KB_C3 brown"
-                  style="text-decoration: none; font-size: 12pt"
-                >
-                  <strong>바로가기 ></strong>
-                </router-link>
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar">
+                  <div
+                    class="progress"
+                    :style="{
+                      height: calculateProgressHeight(card.all_point) + '%',
+                    }"
+                  ></div>
+                </div>
+                <div class="markers">
+                  <div class="marker top">
+                    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 20%
+                  </div>
+                  <div class="marker middle">
+                    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 60%
+                  </div>
+                  <div class="marker bottom">
+                    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 100%
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div
-            class="flex justify-content-between align-items-center"
-            style="padding-bottom: 60px"
-          >
-            <div style="width: 55%; font-size: 32pt; position: relative">
-              <span class="KB_C2">
-                <span class="KB_C2 highlight">{{ card.user_point }}</span>
-                / {{ card.mile_max != 0 ? card.mile_max : "-" }}</span
-              >
-              <div class="text-start recent-update">
-                ( 최근 업데이트 : {{ card.mile_date }} )
-              </div>
+          <div class="bottom-info">
+            <div class="recent-update">
+              ( 최근 업데이트 : {{ card.mile_date }} )
             </div>
-            <div
-              class="flex progress-container"
-              style="
-                width: 43%;
-                height: 105%;
-                position: relative;
-                padding-right: 5%;
-              "
-            >
-            <div class="progress-bar mb-4">
-  <div
-    class="progress"
-    :style="{
-      height: calculateProgressHeight(card.all_point)+'%'
-    }"
-  ></div>
-  <div class="marker top">
-    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 20%
-  </div>
-  <div class="marker middle">
-    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 60%
-  </div>
-  <div class="marker bottom">
-    <i class="bi bi-caret-right-fill"></i>&nbsp;상위 100%
-  </div>
-</div>
-              <div class="below-text mb-2 ml-">
-                &lt; 총 평균 대비 상위 그래프 &gt;
-              </div>
-            </div>
+            <div class="below-text">&lt; 총 평균 대비 상위 그래프 &gt;</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="my-5"></div>
   </div>
 </template>
 
@@ -121,12 +106,9 @@ export default {
     ...mapActions("mileScore", ["getMyMiles"]),
 
     calculateProgressHeight(allPoint) {
-  // all_point가 0이면 프로그레스 바를 표시하지 않음
-  if (allPoint === 0) return 0.1;
-  
-  // all_point가 낮을수록 (상위권일수록) 높이가 높아야 함
-  return Math.max(0, Math.min(100, 100 - allPoint));
-},
+      if (allPoint === 0) return 0.1;
+      return Math.max(0, Math.min(100, 100 - allPoint));
+    },
     setTransitionDelay(el, index) {
       el.style.setProperty("--index", index);
     },
@@ -139,7 +121,6 @@ export default {
         item.style.setProperty("--index", index);
         item.style.setProperty("z-index", items.length - index);
 
-        // 모든 항목에 대해 약간의 기본 지연 시간을 설정
         const baseDelay = 50;
         const delay = baseDelay + 50 * index;
 
@@ -149,10 +130,10 @@ export default {
       });
     },
     toggleHelpPopover(event) {
-      event.stopPropagation(); // 이벤트 전파 중지
+      event.stopPropagation();
       console.log("toggleHelpPopover 클릭");
       this.showHelpPopover = !this.showHelpPopover;
-      console.log("showHelpPopover:", this.showHelpPopover); // 추가
+      console.log("showHelpPopover:", this.showHelpPopover);
       if (this.showHelpPopover) {
         document.addEventListener("click", this.handleClickOutside);
       } else {
@@ -178,18 +159,20 @@ export default {
     ...mapGetters("mileScore", ["getMyMile"]),
 
     filteredMyMile() {
-  const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
-  if (!jobNo) {
-    return [];
-  }
-  let filteredData = jobNo === "기획" 
-    ? this.getMyMile.filter((item) => item.mile_is_branch === false)
-    : this.getMyMile;
-  
-  // 고유 식별자를 사용한 중복 제거
-  const uniqueData = Array.from(new Map(filteredData.map(item => [item.mile_no, item])).values());
-  return uniqueData;
-}
+      const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
+      if (!jobNo) {
+        return [];
+      }
+      let filteredData =
+        jobNo === "기획"
+          ? this.getMyMile.filter((item) => item.mile_is_branch === false)
+          : this.getMyMile;
+
+      const uniqueData = Array.from(
+        new Map(filteredData.map((item) => [item.mile_no, item])).values()
+      );
+      return uniqueData;
+    },
   },
   watch: {
     getLoginInfo: {
@@ -203,7 +186,6 @@ export default {
             });
           });
         } else {
-          // 로그인 정보가 없을 때 데이터 초기화
           this.dataLoaded = false;
         }
       },
@@ -213,27 +195,6 @@ export default {
 </script>
 
 <style scoped>
-.help-icon {
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-}
-
-.help-popover {
-  position: absolute;
-  left: 980px; /* 조정 가능 */
-  top: 335px; /* 조정 가능 */
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10000;
-  width: 600px;
-  margin-left: 10px; /* 아이콘과의 간격 */
-  display: block; /* 추가 */
-  background-color: white; /* 임시로 눈에 띄는 색상 사용 */
-  border: 2px solid #e4e4e4;
-}
-
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -246,41 +207,87 @@ export default {
   max-width: 50%;
   padding-right: 15px;
   padding-left: 15px;
+  margin-bottom: 30px;
 }
 
-.card {
-  border: 1px solid #ddd;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 10px; /* 모서리 둥글게 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 살짝의 그림자 추가 */
-}
-
-.flex {
+.cards {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   height: 100%;
-  margin-bottom: 0px;
+  min-height: 250px;
+  padding: 20px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.recent-update {
-  font-size: 10pt;
-  position: absolute;
-  margin-top: 60px;
-  color: gray;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
+.mile-name {
+  font-size: 18pt;
+  margin: 0;
+  flex-grow: 1;
+  padding-right: 10px;
+}
+
+.shortcut-link-container {
+  flex-shrink: 0;
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.score-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.score-wrapper {
+  text-align: center;
+}
+
+.progress-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.progress-bar-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 200px;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-back {
+  padding-left: 2%;
+  padding-right: 2%;
+}
 .progress-bar {
   width: 60px;
-  height: 95%;
+  height: 200px;
   background-color: #e0e0e0;
   position: relative;
   border-radius: 5px;
-  margin: 0 auto;
   overflow: visible;
 }
+
+.bold-x-lg {
+  display: inline-flex;
+  align-items: center;
+}
+
 
 .progress {
   width: 100%;
@@ -291,46 +298,62 @@ export default {
   transition: height 0.5s;
 }
 
-.marker {
-  position: absolute;
-  left: 70px;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.top {
-  top: 20%;
-}
-
-.middle {
-  top: 60%;
-}
-
-.bottom {
-  bottom: 0;
-}
-
-.below-text {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  white-space: nowrap;
-  color: gray; /* 텍스트 색상 변경 */
-}
-
-.progress-container {
+.markers {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  height: 200px;
+  margin-left: 10px;
+}
+
+.marker {
+  font-size: calc(10px + 0.2vw);
+  white-space: nowrap;
+}
+
+.bottom-info {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-top: 3px;
+}
+
+.recent-update, .below-text {
+  font-size: calc(10px + 0.2vw);
+  color: gray;
+}
+
+.help-container {
+  position: relative;
+  display: inline-block;
+}
+
+.help-icon {
+  cursor: pointer;
+  /* position: relative;
+  display: inline-block; */
+  margin-left: 10px; /* 아이콘과 텍스트 사이 간격 */
+  /* vertical-align: middle; */
+}
+
+.help-popover {
+  position: absolute;
+  left:  calc(50%);
+  top: calc(100% - 35px); /* 아이콘 바로 아래에 위치 */
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  width: 600px; /* 너비를 600px로 설정 */
+  background-color: white;
+  border: 2px solid #e4e4e4;
 }
 
 .highlight {
   background-color: #fff6d4;
-  border-radius: 30px; /* 둥근 모서리 */
-  padding: 4px 8spx; /* 내부 여백을 추가하여 크기 조절 */
-  display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
+  border-radius: 30px;
+  padding: 4px 8px;
+  display: inline-block;
 }
 
 .fade-up-item {
@@ -338,10 +361,122 @@ export default {
   transform: translateY(20px);
   transition: all 0.5s ease-out;
   transition-delay: calc(var(--index) * 100ms);
-  position: relative; /* z-index가 작동하도록 */
+  position: relative;
 }
+
 .fade-up-active {
   opacity: 1;
   transform: translateY(0);
+}
+
+h2.bold-x-lg {
+  font-size: calc(24px + 1vw);
+}
+
+.help-icon {
+  font-size: calc(16px + 0.5vw) !important;
+}
+
+.KB_C3.fw-bolder {
+  font-size: calc(16px + 0.5vw);
+}
+
+.KB_C3.brown strong {
+  font-size: calc(8px + 0.5vw);
+}
+
+.KB_C2 {
+  font-size: calc(24px + 1vw);
+}
+
+.shortcut-link {
+  text-decoration: none;
+  font-size: 12pt;
+}
+
+@media (max-width: 1200px) {
+  .help-popover {
+    width: 90%;
+    max-width: 600px;
+    left: 0;
+  }
+  
+  .mile-name {
+    font-size: 16pt;
+  }
+}
+
+@media (max-width: 992px) {
+  .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .mile-name {
+    font-size: 14pt;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .score-container, .progress-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .bottom-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .recent-update, .below-text {
+    margin-bottom: 5px;
+  }
+
+  h2.bold-x-lg {
+    font-size: calc(20px + 1vw);
+  }
+
+  .KB_C2 {
+    font-size: calc(20px + 1vw);
+  }
+
+  .KB_C3.fw-bolder {
+    font-size: calc(14px + 0.5vw);
+  }
+
+  .mile-name {
+    font-size: 14pt;
+  }
+}
+
+@media (max-width: 480px) {
+  h2.bold-x-lg {
+    font-size: calc(18px + 1vw);
+  }
+
+  .KB_C2 {
+    font-size: calc(18px + 1vw);
+  }
+
+  .KB_C3.fw-bolder {
+    font-size: calc(12px + 0.5vw);
+  }
+
+  .progress-bar {
+    height: 150px;
+  }
+
+  .markers {
+    height: 150px;
+  }
+
+  .mile-name {
+    font-size: 14pt;
+  }
 }
 </style>

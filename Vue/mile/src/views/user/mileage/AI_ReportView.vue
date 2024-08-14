@@ -9,8 +9,17 @@
     </div>
 
     <!-- 데이터가 없을 때 메시지 표시 -->
-    <div v-if="!all" class="text-center">
-      <h4>조회한 이력이 없습니다.</h4>
+    <div
+      v-if="!all"
+      class="text-center"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 300px;
+      "
+    >
+      <h4 class="text-center">조회한 이력이 없습니다.</h4>
     </div>
 
     <div v-else>

@@ -5,39 +5,37 @@
     </video>
     <div class="overlay"></div>
   </div>
+ 
   <div
     class="d-flex justify-content-center align-items-center"
     style="height: 100vh"
   >
     <div class="d-flex flex-column align-items-center">
 
-      <div class="KB_C1 mr-2 logofont" style="font-size:48pt; color:#ffffff;   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-      margin-bottom:24px">
+      <div class="KB_C1 mr-2 logofont">
         <img src="@/assets/img/logo.png" class='mr-5 mb-2 ' style="
         width:10%">MileEasy</div>
       <div>
         <input
           type="text"
-          class="input-base input-white"
+          class="input-base input-white input-id"
           v-model="user_no"
           placeholder="직원번호를 입력하세요"
-          style="height: 70px; width: 400px; opacity: 75%"
+          
         />
       </div>
       <div>
         <input
           type="password"
-          class="input-base input-white"
+          class="input-base input-white input-id"
           v-model="user_pw"
           placeholder="비밀번호를 입력하세요"
-          style="height: 70px; width: 400px; opacity: 75%"
           @keyup.enter="goLogin"
         />
       </div>
       <div>
         <button
-          class="btn-green lg2"
-          style="height: 70px; width: 400px; color: white"
+          class="btn-green lg2 login-btn"
           @click="goLogin"
         >
           로그인
@@ -78,6 +76,7 @@ export default {
       user_no: '',
       user_pw: '',
       isChecked: false, // 관리자 로그인 여부
+      isMobile: false,
     };
   },
   methods: {
@@ -123,6 +122,44 @@ export default {
 <style scoped>
 @import url('../../../assets/css/css.css');
 
+/* 모바일 버전 스타일 */
+@media (max-width: 768px) {
+  .background-video-wrapper {
+    height: 100vh;
+  }
+
+  .KB_C1.logofont {
+    font-size: 36pt; /* 폰트 크기 조정 */
+    margin-bottom: 16px;
+    color:#ffffff;   
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .KB_C1.logofont img {
+    width: 25%; /* 로고 이미지 크기 조정 */
+  }
+
+  .input-base.input-white {
+    height: 70px; /* 입력 필드 높이 조정 */
+    width: 290px; /* 입력 필드 너비 조정 */
+    font-size: 14pt; /* 텍스트 크기 조정 */
+  }
+
+  .btn-green.lg2 {
+    height: 60px; /* 버튼 높이 조정 */
+    width: 285px; /* 버튼 너비 조정 */
+    font-size: 14pt; /* 텍스트 크기 조정 */
+  }
+
+  .d-flex.justify-content-center.my-3 p {
+    font-size: 12pt; /* 체크박스 텍스트 크기 조정 */
+  }
+
+  .ml-8 a {
+    font-size: 12pt; /* 비밀번호 재발급 링크 텍스트 크기 조정 */
+  }
+}
+
 .background-video-wrapper {
   position: fixed;
   top: 0;
@@ -157,6 +194,25 @@ export default {
   ); /* Adjust the opacity to control the darkness */
   backdrop-filter: blur(4px);
   z-index: 0;
+}
+
+.logofont {
+  font-size:48pt; 
+  color:#ffffff;   
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom:24px;
+}
+
+.input-id {
+  height: 70px; 
+  width: 400px; 
+  opacity: 75%;
+}
+
+.login-btn {
+  height: 70px; 
+  width: 400px; 
+  color: white;
 }
 </style>
 

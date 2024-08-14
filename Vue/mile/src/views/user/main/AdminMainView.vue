@@ -23,7 +23,7 @@
         <p class="md mb-2" style="margin-bottom: 0px">
           {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
         </p>
-        <button class="btn-yellow KB_C2 my-3" disabled>운영 관리자</button>
+        <button  @click="goToAdminPromotion" class="btn-yellow KB_C2 my-3">운영 관리자</button>
       </div>
 
       <!-- 여기 메뉴 -->
@@ -148,6 +148,10 @@ export default {
     },
     setTransitionDelay(el, index) {
       el.style.setProperty('--index', index);
+    },
+
+    goToAdminPromotion() {
+      window.location.href='/adminPromotion';
     },
 
     checkFirstBusinessDay() {

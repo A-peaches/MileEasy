@@ -334,7 +334,7 @@ h2 {
   font-size: 35px;
   font-weight: bold;
   margin-bottom: 50px;
-  font-family: 'KB_S2', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 /* form-group content의 높이 조정 */
 .form-group.content {
@@ -351,7 +351,7 @@ h2 {
   line-height: 1.5; /* 줄 높이를 조절하여 텍스트 간격 변경 */
   height: 500px; /* 필요에 따라 높이 조정 */
   resize: none; /* 텍스트 영역 크기 조정 금지 */
-  font-family: 'KB_s5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   font-size: 20px;
   color: #4b4a4a;
   border-radius: 5px;
@@ -395,7 +395,7 @@ h2 {
   font-size: 35px;
   font-weight: bold;
   margin-bottom: 13%;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .button-container {
@@ -416,7 +416,7 @@ h2 {
   font-size: 18px;
   cursor: pointer;
   margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .back-button .arrow {
@@ -427,9 +427,9 @@ h2 {
   height: 40px;
   border: 1px solid #ccc; /* 둥근 직사각형 */
   border-radius: 5px; /* 둥근 모서리 */
-  margin-right: 8px;
+  margin-right: 15px;
   font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 form {
@@ -452,7 +452,7 @@ form {
 
 .form-group label {
   flex: 0 0 10%; /* label의 너비를 설정합니다. */
-  font-family: 'KB_s4', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   font-size: 20px;
   color: #4b4a4a;
   display: block;
@@ -471,7 +471,7 @@ form {
   margin-bottom: 0.5vh;
   text-align: left; /* 왼쪽 정렬 */
   letter-spacing: 1px;
-  font-family: 'KB_s5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .form-group textarea {
@@ -514,7 +514,7 @@ form {
   line-height: 50px;
   padding: 0 20px;
   font-size: 22px;
-  font-family: 'KB_s5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   color: #7a7a7a;
   width: 100%; /* 가로로 길게 설정 */
   max-width: 500px; /* 필요에 따라 최대 너비 설정 */
@@ -594,7 +594,7 @@ form {
   width: 7vw;
   height: 6vh;
   font-size : 23px;
-  font-family: 'KB_s5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .btn-yellow:hover {
@@ -608,7 +608,7 @@ form {
   margin: 5px 5px 5px 5px;
   width: 7vw;
   height: 6vh;
-  font-family: 'KB_s5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .file-modify-button {

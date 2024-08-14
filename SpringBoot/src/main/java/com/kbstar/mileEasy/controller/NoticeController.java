@@ -242,7 +242,6 @@ public class NoticeController {
         }
     }
 
-
     // DELETE 요청을 처리하는 엔드포인트
     @DeleteMapping("/delete/{noticeId}")
     public ResponseEntity<String> deleteNotice(@PathVariable Long noticeId) {
@@ -256,15 +255,12 @@ public class NoticeController {
         }
     }
 
-
-
     @GetMapping("/getFooterNotice")
     public List<Notice> getFooterNotice() {
         List<Notice> notices =  noticeService.getFooterNotice();
 
         return notices;
     }
-
 
     //MTIP가이드 첨부파일
     @PostMapping("/mTipGuideUpload")
@@ -361,8 +357,6 @@ public class NoticeController {
         }
     }
 
-
-
     @GetMapping("/downloadGuide/{originalFileName:.+}")
     public ResponseEntity<Resource> GuidedownloadFile(@PathVariable String originalFileName) throws IOException {
         System.out.println("도착");
@@ -394,13 +388,6 @@ public class NoticeController {
         }
     }
 
-
-
-
-
-
-
-
     // 서버에 저장된 파일 이름을 찾는 메서드 (예시)
     private String findSavedFileGuideName(String originalFileName) throws IOException {
         try (Stream<Path> paths = Files.walk(Paths.get(mTipGuideUploadPath))) {
@@ -413,8 +400,6 @@ public class NoticeController {
                     .orElse(null);
         }
     }
-
-
 
     @PostMapping("/GuideUpdate")
     public ResponseEntity<?> GuideUpdate(
@@ -465,7 +450,6 @@ public class NoticeController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
 
 
