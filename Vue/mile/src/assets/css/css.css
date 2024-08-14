@@ -226,35 +226,30 @@ body.swal2-shown > [aria-hidden="true"] {
 /* 강조큰글씨 (ex. 페이지별 제목) */
 .bold-x-lg {
   font-family: 'KB_C1';
-  font-size: 28pt;
+  font-size: 20pt;
   font-weight: bold;
   color: #4b4a4a;
 }
 
-/* 큰글씨 (ex. 프로필 이름) */
 .lg {
-  font-size: 22pt;
-  color: #4b4a4a;
-}
-
-/* 큰글씨2 (ex. 메뉴 이름) */
-.lg2 {
   font-size: 16pt;
   color: #4b4a4a;
 }
 
-/* 중간글씨 (ex. 추천멘트) */
-.md {
+.lg2 {
   font-size: 12pt;
   color: #4b4a4a;
 }
 
-/* 작은 글씨 (ex. 그래프 내용) */
-.sm {
+.md {
   font-size: 9pt;
   color: #4b4a4a;
 }
 
+.sm {
+  font-size: 6pt;
+  color: #4b4a4a;
+}
 /* 기타 글씨 색상
 빨간색 강조: CF2222,
  회색 강조: AEAEB2, 
@@ -690,5 +685,75 @@ transition: transform 0.3s ease, background 0.3s ease;
   
   .input-search-container {
     width: 90%;
+  }
+}
+
+
+/* 태블릿 화면 */
+@media screen and (min-width: 768px) {
+  .bold-x-lg {
+    font-size: 24pt;
+  }
+
+  .lg {
+    font-size: 20pt;
+  }
+
+  .lg2 {
+    font-size: 15pt;
+  }
+
+  .md {
+    font-size: 11.5pt;
+  }
+
+  .sm {
+    font-size: 8.5pt;
+  }
+}
+
+/* 데스크톱 화면 */
+@media screen and (min-width: 1024px) {
+  .bold-x-lg {
+    font-size: 28pt;
+  }
+
+  .lg {
+    font-size: 22pt;
+  }
+
+  .lg2 {
+    font-size: 16pt;
+  }
+
+  .md {
+    font-size: 12pt;
+  }
+
+  .sm {
+    font-size: 9pt;
+  }
+}
+
+/* 대형 화면 */
+@media screen and (min-width: 1440px) {
+  .bold-x-lg {
+    font-size: 28pt;
+  }
+
+  .lg {
+    font-size: 22pt;
+  }
+
+  .lg2 {
+    font-size: 16pt;
+  }
+
+  .md {
+    font-size: 12pt;
+  }
+
+  .sm {
+    font-size: 9pt;
   }
 }
