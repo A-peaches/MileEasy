@@ -569,7 +569,7 @@ mounted() {
 .report-button {
   font-size: 18px;
   font-family: 'KB_C2', sans-serif;
-  color: red;
+  color: #4b4a4a ;
   margin-right: 5px; /* 버튼과 아이콘 사이의 간격 조정 */
 }
 

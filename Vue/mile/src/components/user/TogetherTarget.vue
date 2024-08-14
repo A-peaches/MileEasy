@@ -113,7 +113,7 @@ export default {
       mileages: [],
       // backgroundColors: ["#FDF5F5", "#FBF4EE", "#FCFBF1", "#F4FBF2", "#F3FBFE", "#F5F5FF", "#FFF2FD", "#F4F4F4"],
       backgroundColors: ["#F5F5F5"],
-      sortBy: 'not-finished',
+      sortBy: 'notjoin',
       isUserParticipated: {}, // 참여 여부를 저장하는 객체 추가
       userParticipatedTargets: JSON.parse(localStorage.getItem('userParticipatedTargets') || '[]'),
       isLoading: true,
