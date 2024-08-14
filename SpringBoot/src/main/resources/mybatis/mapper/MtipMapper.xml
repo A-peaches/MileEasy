@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kbstar.mileEasy.mapper.MtipDao">
+    <select id="complain" >
+        UPDATE mtip_board
+        SET mtip_complain = TRUE
+        WHERE mtip_board_no = #{noticeId};
+    </select>
 
+    <select id="complainBack" >
+        UPDATE mtip_board
+        SET mtip_complain = FALSE
+        WHERE mtip_board_no = #{noticeId};
+    </select>
 </mapper>
