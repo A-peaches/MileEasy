@@ -59,19 +59,18 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row d-flex">
         <div class="col-md-5 mb-4">
-          <div class="card h-100 shadow-sm fade-in">
+          <div class="card shadow-sm fade-in">
             <div v-if="successYN" class="text-center">
               <div class="card-body">
-                <canvas id="myChart1" style="height: 30vh"></canvas>
+                <canvas id="myChart1"></canvas>
               </div>
-              <!-- <canvas ref="makeChart1" style="height: 30vh"></canvas> -->
             </div>
           </div>
         </div>
         <div class="col-md mb-4">
-          <div class="card h-100 shadow-sm fade-in">
+          <div class="card shadow-sm fade-in">
             <div class="card-body card-ml">
               <h5 class="text-gray text-start">순위 분석</h5>
               <div class="card-gray">
@@ -86,10 +85,10 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row d-flex">
         <div class="col-md mb-4">
-          <div class="card h-100 shadow-sm fade-in">
-            <div class="card-body card-ml">
+          <div class="card shadow-sm fade-in">
+            <div class="card-body card-ml mileReport">
               <h5 class="text-gray text-start">마일리지별 분석</h5>
               <p class="text-start addInfo">
                 * 마일이지가 사용자의 포지션에 따라 분석한 결과로, 마일리지
@@ -103,7 +102,7 @@
           </div>
         </div>
         <div class="col-md-5 mb-4">
-          <div class="card h-100 shadow-sm fade-in">
+          <div class="card shadow-sm fade-in">
             <div class="card-body">
               <canvas id="myChart2" style="height: 30vh"></canvas>
             </div>
@@ -570,6 +569,8 @@ export default {
         type: 'radar',
         data: data,
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
           elements: {
             line: {
               borderWidth: 3,
@@ -771,5 +772,40 @@ span {
 
 .fade-in {
   animation: fadeIn 0.5s ease-out;
+}
+
+.row.d-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row.d-flex > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+.row.d-flex > [class*='col-'] > .card {
+  flex: 1;
+}
+
+.mileReport {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-gray {
+  flex: 1;
+  overflow-y: auto;
+}
+
+#myChart2 {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+canvas#myChart1 {
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>
