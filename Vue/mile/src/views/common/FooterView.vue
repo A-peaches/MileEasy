@@ -157,64 +157,31 @@
               v-if="currentNoticeId !== null"
               style="text-decoration: none; color: #4b4b4b"
             >
-              <span class="mobile-notice-title">
-                {{ currentNotice.notice_board_title }}
-              </span>
-              <span class="mobile-notice-date">
-                {{
-                  currentNotice.notice_board_date
-                    ? currentNotice.notice_board_date.substring(0, 10)
-                    : ""
-                }}
-              </span>
+              <div class="d-flex align-items-center mt-2">
+                <span class="mobile-notice-date" style="width: 150px;">
+                  {{
+                    currentNotice.notice_board_date
+                      ? currentNotice.notice_board_date.substring(0, 10)
+                      : ""
+                  }}
+                </span>
+                <span class="mobile-notice-title">
+                  {{ currentNotice.notice_board_title
+                      ? currentNotice.notice_board_title.substring(0,20) : ""
+                  }}
+                </span>
+              </div>
             </router-link>
             <div v-else class="mobile-notice-item" :key="currentIndex">
               공지사항이 없습니다.
             </div>
           </transition>
-        </div>
-        <div class="mobile-notice-nav">
-          <button @click="prev" class="mobile-nav-button">&lt;</button>
-          <button @click="next" class="mobile-nav-button">&gt;</button>
+          <div class="mobile-notice-nav">
+            <button @click="prev" class="mobile-nav-button">&lt;</button>
+            <button @click="next" class="mobile-nav-button">&gt;</button>
+          </div>
         </div>
       </div>
-
-      <!-- <div class="mobile-menu-container">
-        <div class="mobile-menu-section">
-          <span class="mobile-menu-title">My Mileage</span>
-          <div class="mobile-menu-items">
-            <template v-if="getIsChecked == false">
-              <router-link
-                v-for="(item, index) in filteredMileageInfo"
-                :key="index"
-                :to="{
-                  name: 'mileageDetail',
-                  params: { mile_no: item.mile_no },
-                }"
-                class="mobile-menu-link"
-              >
-                {{ item.mile_name }}
-              </router-link>
-            </template>
-          </div>
-        </div>
-
-        <div class="mobile-menu-section">
-          <span class="mobile-menu-title">Info Zone</span>
-          <div class="mobile-menu-items">
-            <a href="/documentsView" class="mobile-menu-link">문서모아</a>
-            <a href="/m_TipMainView" class="mobile-menu-link">M-Tip</a>
-            <a href="/noticeListView" class="mobile-menu-link">공지사항</a>
-          </div>
-        </div>
-
-        <div class="mobile-menu-section">
-          <span class="mobile-menu-title">Help Desk</span>
-          <div class="mobile-menu-items">
-            <a href="/mileEasyContactView" class="mobile-menu-link">업무별 연락처</a>
-          </div>
-        </div>
-      </div> -->
 
       <div class="mobile-contact-info">
         <template v-if="getLoginInfo?.user_is_admin && isChecked">
@@ -460,7 +427,6 @@ export default {
 
   .mobile-notice-title {
     font-size: 0.9rem;
-    margin-bottom: 3px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

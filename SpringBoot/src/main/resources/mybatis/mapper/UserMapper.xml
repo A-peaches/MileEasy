@@ -53,13 +53,13 @@
     </select>
 
     <select id="selectContactMileage" resultType="com.kbstar.mileEasy.dto.User">
-        select user_no, user_name, mile_name, user_phone
+        select user_no, user_name, mile_name, user_phone, u.mile_no
         from user u join mileage m on u.mile_no = m.mile_no
-        where user_is_manager=1;
+        where user_is_manager=1 order by mile_no, user_name;
     </select>
 
     <select id="selectContactMileEasy" resultType="com.kbstar.mileEasy.dto.User">
-        select user_no, user_name, user_phone from user where user_is_admin=1;
+        select user_no, user_name, user_phone from user where user_is_admin=1 order by user_name;
     </select>
 
     <select id ="selectUserByEmail" resultType="com.kbstar.mileEasy.dto.User">

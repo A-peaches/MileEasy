@@ -48,7 +48,8 @@ public class ManagerService {
     public MileIntroduce mileModifyDetail(String mile_introduce_no, String mile_no) {
         return managerDao.selectModifyMile(mile_introduce_no, mile_no);
     }
-
+    public int deleteTarget(int target_no) { return managerDao.deleteTarget(target_no);}
+    public int deleteUserTarget(int target_no) { return managerDao.deleteUserTarget(target_no);}
     public int updateMileage(String mile_title, String mile_content, String mile_route, String mile_introduce_no) {
         return managerDao.updateMile(mile_title, mile_content, mile_route, Integer.parseInt(mile_introduce_no));
     }
