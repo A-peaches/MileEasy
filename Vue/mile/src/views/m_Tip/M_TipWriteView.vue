@@ -474,7 +474,7 @@ h2 {
   height: 40px;
   border: 1px solid #ccc; /* 둥근 직사각형 */
   border-radius: 5px; /* 둥근 모서리 */
-  margin-right: 8px;
+  margin-right: 15px;
   font-size: 17px;
   font-family: 'KB_S5', sans-serif;
 }

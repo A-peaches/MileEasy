@@ -87,7 +87,12 @@ public class SmsService {
             String imageId = messageService.uploadFile(imageFile, StorageType.MMS, null);
             message.setImageId(imageId);
             message.setType(MessageType.MMS);
-            message.setSubject(mile + "마일리지 알림");
+            if(mile.equals("site")) {
+                message.setSubject("MileEasy 운영자 알림");
+            } else {
+                message.setSubject(mile + " 마일리지 알림");
+            }
+
         } catch (Exception e) {
             logger.error("Error uploading image file: {}", e.getMessage());
             setLmsProperties(message, mile);

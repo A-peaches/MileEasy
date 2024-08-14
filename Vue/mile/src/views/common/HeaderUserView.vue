@@ -33,9 +33,9 @@
             <div class="nav-item">
               <a class="nav-link hover" href="/noticeListView">공지사항</a>
             </div>
-            <div class="nav-item">
+            <!-- <div class="nav-item">
               <a class="nav-link hover" href="/qnaListView">Q&A</a>
-            </div>
+            </div> -->
             <div class="nav-item">
               <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
             </div>
@@ -189,7 +189,7 @@
                 >
                   <span style="color: red"
                   v-if="index < 5 ">new</span> &nbsp;
-                  {{ item.mile_name }}가 업데이트 되었습니다.
+                  {{ item.mile_name }}이(가) 업데이트 되었습니다.
                   <span style="color: gray; font-size: 7pt">
                     ({{ item.mile_excel_date.substring(0, 10) }})
                   </span>

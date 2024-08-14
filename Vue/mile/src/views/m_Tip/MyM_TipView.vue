@@ -58,7 +58,9 @@
                 <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
                 <div v-else class="notice-num">{{ notice.display_num }}</div>
                 <div class="notice-mile">{{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}</div>
-                <div class="notice-title">{{ notice.mtip_board_title }}</div>
+                <div class="notice-title">
+                  {{ notice.mtip_board_title.length > 30 ? notice.mtip_board_title.substring(0, 30) + ' ...' : notice.mtip_board_title }}
+                </div>
                 <pre class="notice-date">{{ formatDate(notice.mtip_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
                 <div class="notice-views">{{ notice.mtip_board_hit }} <i class="fa fa-eye"></i></div>
@@ -473,7 +475,7 @@ h2::after {
   font-size: 18px;
   cursor: pointer;
   margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .back-button .arrow {
@@ -484,9 +486,9 @@ h2::after {
   height: 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-right: 8px;
+  margin-right: 15px;
   font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 .search-button {
   position: absolute;
@@ -564,7 +566,7 @@ h2::after {
 
 .checkbox-label {
   margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
-  font-family: 'KB_C5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
   font-size: 20px;
 }
 
@@ -763,7 +765,7 @@ h2::after {
   background-color: transparent;
   margin-left: 89%; /* 왼쪽으로 이동 */
   margin-bottom: 3vh;
-  font-family: 'KB_C5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .write-button i {
