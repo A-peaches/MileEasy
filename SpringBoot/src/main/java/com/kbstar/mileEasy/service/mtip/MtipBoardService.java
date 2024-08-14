@@ -86,7 +86,7 @@ public class MtipBoardService {
 
     // ID로 공지사항 찾기
     public MtipBoard findById(Long id) {
-        System.out.println("findById: " + id);
+
         return mtipDao.findById(id);
     }
 
@@ -196,4 +196,11 @@ public class MtipBoardService {
         return mtipDao.selectTopLikedMtiplistPlus();
     }
 
+    public void complain(Long noticeId) {
+        mtipDao.complain(noticeId);
+    }
+
+    public void complainBack(Long noticeId) {
+        mtipDao.complainBack(noticeId);
+    }
 }

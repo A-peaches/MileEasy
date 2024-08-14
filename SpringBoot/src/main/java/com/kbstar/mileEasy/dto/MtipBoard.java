@@ -28,5 +28,6 @@ public class MtipBoard {
     private int mtip_reply_no;
     private String mtip_reply_content;
     private Timestamp mtip_reply_date;
+    private boolean mtip_complain;
 
 }
