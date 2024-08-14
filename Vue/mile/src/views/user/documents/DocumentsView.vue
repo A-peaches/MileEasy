@@ -31,7 +31,7 @@
   <div class="d-flex justify-content-between align-items-center document-menu">
     <div class="lg2 document-count" >총 {{ countList }}건</div>
     <div
-      class="input-search input-base search-container"
+      class="input-search input-base search-mobile"
     >
       <div
         class="d-flex justify-content-between align-items-center search-wrapper"
@@ -46,7 +46,7 @@
         />
         <button>
           <i
-            class="bi bi-search mr-2 search-icon"
+            class="bi bi-search mr-2"
           ></i>
         </button>
       </div>
@@ -378,20 +378,9 @@ export default {
     padding: 30px !important;
     font-size: 11pt !important;
   }
-  .search-container {
-    width: 220px !important; 
-    margin-right: 6px !important;
-    height: 5vh !important;
-  }
   .dropdown-menu {
     top: 255% !important;
     background-color: rgba(255, 255, 255, 0.96) !important;
-  }
-  .search-icon {
-    font-size: 20px !important;
-  }
-  .search-wrapper {
-    font-size: 12pt !important;
   }
   .document-menu {
     margin-top: 30px !important;
@@ -457,23 +446,6 @@ export default {
 
 .document-container {
   margin-top: 8vh;
-}
-
-.search-wrapper {
-  font-size: 14pt; 
-  height: 100%; 
-  margin-left: 1em;
-}
-
-.search-icon {
-  font-size: 25px; 
-  color: #4b4a4a;
-}
-
-.search-container {
-  margin-right: 2em; 
-  width: 17vw; 
-  height: 6vh;
 }
 
 .document-count {

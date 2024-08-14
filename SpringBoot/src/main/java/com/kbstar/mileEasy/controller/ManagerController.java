@@ -82,6 +82,7 @@ public class ManagerController {
             return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Invalid email\"}");
         }
     }
+
     // addTarget 마일리지 목표 설정 추가하기(param: targetInfo)
     @PostMapping("/addTarget")
     public ResponseEntity<?> addTarget(@RequestBody Target target) {
@@ -99,6 +100,18 @@ public class ManagerController {
     public List<Target> getTargets(@PathVariable String mile_no) {
         List<Target> mileageTargets = managerService.getTargets(Integer.parseInt(mile_no));
         return mileageTargets;
+    }
+
+    // targetDelete 마일리지 목표 삭제하기
+    @GetMapping("/targetDelete/{target_no}")
+    public ResponseEntity<?> targetDelete(@PathVariable String target_no) {
+        int result = managerService.deleteTarget(Integer.parseInt(target_no));
+
+        if (result > 0) {
+            return ResponseEntity.ok().body("{\"success\":true}");
+        } else {
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"fail delete detail\"}");
+        }
     }
 
     // 마일리지 상세내용 가져오기
