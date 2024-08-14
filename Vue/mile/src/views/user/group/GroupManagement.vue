@@ -30,23 +30,21 @@
       </div>
     </div>
       <!-- 날짜 선택 -->
-  
-        <div class="d-flex justify-content-end align-items-center mb-4" style="padding-left: 3%; padding-right: 5%;">
-          <Datepicker v-model="selectedDate" :format="formatDate" style="width:25%"></Datepicker>
-          
-        <i class="bi bi-download" @click="downloadExcel"></i>
-        </div>
+      <div class="date-download-container">
+    <Datepicker v-model="selectedDate" :format="formatDate" class="custom-datepicker"></Datepicker>
+    <i class="bi bi-download download-icon" @click="downloadExcel"></i>
+  </div>
 
 
     
       <div class="table-responsive">
-        
-        <table class="table table-hover custom-table  mx-auto mt-3" style="width:90%">
-            <caption class="text-start text-gary">
-            
-            * 본 데이터는 지역영업그룹별 가중치가 적용된 점수입니다. <br>
+        <div class="text-start text-gray mx-auto mt-3 custom-caption" style="width:90%">
+                      
+          * 본 데이터는 지역영업그룹별 가중치가 적용된 점수입니다. <br>
             * 마일리지는 기준일자의 마일리지 점수로 책정됩니다. 마일리지별 업데이트 날짜가 상이할 수 있습니다.
-        </caption>
+        </div>
+        <table class="table table-hover custom-table  mx-auto " style="width:90%">
+
           <thead>
             <tr>
               <th>마일리지 순위</th>
@@ -246,14 +244,47 @@
 
 <style scoped>
 
+/*반응형 */
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+
 table caption {
   caption-side: top;
 }
+
+.date-download-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 5% 20px;
+  gap: 15px;
+  
+  flex-wrap: nowrap;  /* 추가: 줄바꿈 방지 */
+}
+
+.custom-datepicker {
+  width: 200px;
+  
+  min-width: 200px;  /* 추가: 최소 너비 설정 */
+  flex-shrink: 1;  /* 추가: 필요시 축소 허용 */
+}
+
+.download-icon {
+  cursor: pointer;
+  font-size: 24px;
+  
+  flex-shrink: 0;  /* 추가: 아이콘 크기 유지 */
+}
+
 
 .custom-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 10px;
+  min-width: 600px;
 }
 
 .custom-table thead th {
@@ -302,7 +333,19 @@ table caption {
     display: block;
     width: 100%;
   }
-  
+  .date-download-container {
+    white-space: nowrap;
+    justify-content: flex-start;  /* 변경: 왼쪽 정렬 */
+  }
+
+  .custom-datepicker {
+    width: calc(100% - 40px);  /* 변경: 다운로드 아이콘 공간 확보 */
+    min-width: unset;  /* 제거: 최소 너비 제한 해제 */
+  }
+
+  .download-icon {
+    margin-left: auto;  /* 추가: 오른쪽 정렬 */
+  }
   .custom-table tr {
     margin-bottom: 15px;
   }
@@ -437,5 +480,117 @@ table caption {
   background-color: #fff59d; /* 호버 시 약간 더 진한 노란색 */
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+
+/* 반응형 스타일 */
+@media (max-width: 1024px) {
+  .bold-x-lg {
+    margin-bottom: 30px;
+  }
+
+  .custom-table thead th,
+  .custom-table tbody td {
+    font-size: 16px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards {
+  }
+
+  .bold-x-lg {
+  }
+
+  .custom-table {
+    min-width: unset;
+  }
+
+  .custom-table thead {
+    display: none;
+  }
+  
+  .custom-table, .custom-table tbody, .custom-table tr, .custom-table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .custom-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    padding: 10px;
+  }
+  
+  .custom-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border: none;
+  }
+  
+  .custom-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .pagination button {
+    padding: 8px 15px;
+    font-size: 16px;
+  }
+
+  .help-popover {
+    right: 10%;
+    top: 40%;
+    width: 80%;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .date-download-container {
+    align-items: stretch;
+  }
+  .custom-datepicker {
+    
+    white-space: nowrap;
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .download-icon {
+    align-self: flex-end;
+    margin-bottom:8px;
+  }
+  .custom-caption {
+    font-size : 13px;
+    margin-bottom:20px;
+  }
+
+  .custom-table td {
+    font-size: 14px;
+  }
+
+  .pagination button {
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+
+  .help-popover {
+    right: 5%;
+    width: 90%;
+    top: 23% !important;
+  }
+
+  .pagination-container{
+    padding-bottom: 20px;
+  }
 }
 </style>

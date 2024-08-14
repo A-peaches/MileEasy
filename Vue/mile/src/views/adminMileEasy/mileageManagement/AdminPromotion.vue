@@ -34,7 +34,7 @@
             <div class="receiver-area">{{ receiverDisplay || "" }}</div>
             <div class="message-area">
               <div v-if="message" class="message-bubble">
-                {{ message }}
+                {{ message || "" }}
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@
               class="sample-button"
               @click="selectSampleMessage(sample)"
             >
-              {{ sample.title }}
+              {{ sample?.title }}
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@
               @change="handleFilterChange(option.value)"
             />
             <span class="custom-checkbox"></span>
-            <span class="checkbox-label">{{ option.label }}</span>
+            <span class="checkbox-label">{{ option?.label }}</span>
           </label>
         </div>
         <input
@@ -129,7 +129,7 @@
               @click="addReceiver(employee)"
               :class="{ selected: isSelected(employee) }"
             >
-              {{ employee.user_no }} - {{ employee.user_name }}
+              {{ employee?.user_no }} - {{ employee?.user_name }}
               <span v-if="isSelected(employee)" class="checkmark">✓</span>
             </li>
           </ul>

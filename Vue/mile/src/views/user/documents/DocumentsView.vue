@@ -260,7 +260,7 @@ export default {
       this.allDocuments = response.data;
 
       const countList = await api.get(
-        `http://localhost:8090/myMile/countListDocuments`
+        `/myMile/countListDocuments`
       );
       this.countList = countList.data;
 
@@ -280,7 +280,7 @@ export default {
       // 마일리지 카테고리 가져오기
       try {
         const response = await api.get(
-          'http://localhost:8090/notice/mileage'
+          '/notice/mileage'
         );
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
