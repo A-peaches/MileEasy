@@ -20,7 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:8090", "http://localhost:8080", "http://digicampus01.cafe24.com:8090"
-                ,"http://210.114.18.177:8090")
+                ,"http://210.114.18.177:8090","http://localhost:80", "http://digicampus01.cafe24.com:80"
+                        ,"http://210.114.18.177:80","http://digicampus01.cafe24.com","http://210.114.18.177")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

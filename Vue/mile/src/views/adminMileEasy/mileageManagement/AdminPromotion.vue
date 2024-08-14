@@ -1,7 +1,7 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
     <h2 class="bold-x-lg mt-5 mb-5 ml-5" style="font-family: KB_C3">
-      마일리지 프로모션
+      MileEasy 프로모션
     </h2>
     <div
       class="card shadow-sm mb-4 fade-in"
@@ -11,10 +11,10 @@
         <h5 class="text-emphasis text-start">
           <i class="bi bi-info-circle-fill"></i> 유의 사항
         </h5>
-        <span class="ml-5" style="font-size: 13pt">
-          본 서비스는 직원들의 마일리지에 대한 관심을 높이고, 관련 혜택을
-          적극적으로 알리기 위해 제작되었습니다. 마일리지 홍보 이외의 목적으
-          <span class="ml-5">로는 사용이 제한됩니다.</span>
+        <span class="ml-5 " style="font-size: 13pt">
+          본 서비스는 직원들의 MileEasy 사이트 대한 관심을 높이고, 관련 혜택을
+          적극적으로 알리기 위해 제작되었습니다. MileEasy 홍보 이외의
+          <span class="ml-5">목적으로는 사용이 제한됩니다.</span>
           <br />
         </span>
         <span class="ml-5">
@@ -144,8 +144,7 @@
 import api from "@/api/axios";
 
 export default {
-  name: "MileagePromotion",
-  props: ["mile_name"],
+  name: "AdminPromotion",
   data() {
     return {
       message: "",
@@ -162,16 +161,16 @@ export default {
       employees: [],
       sampleMessages: [
         {
-          title: "신규 목표 안내",
-          content: `${this.mile_name} 마일리지의 신규 목표가 생성 되었습니다🤗. 마왕 선정에 도움이 되는 목표 설정🎯 지금 함께 떠나볼까요?`,
+          title: "마왕 업데이트 안내",
+          content: `저번 달 마왕 결과가 드디어 나왔습니다! 내가 마왕이 됐을수도..?🤩 서둘러 확인해보세요!`,
         },
         {
-          title: "M-Tip 방문 제안",
-          content: `${this.mile_name} 마일리지, M-Tip 게시판에서 직원들과 🍯꿀팁을 공유해보세요! 당신도 마일리지 왕으로 거듭날수 있어요!`,
+          title: "M-Tip Best 안내",
+          content: `M-Tip 게시판에서 이뤄지는 🔥🔥치열한 Best 경쟁! 이번 달의 Best M-Tip은 바로 당신의 것! 지금 바로 작성해보세요!`,
         },
         {
-          title: "동기 부여",
-          content: `현재 다른직원들의 ${this.mile_name} 마일리지 관심도가 낮아졌어요! 이때가 기회예요! 얼른 잡아버리세요 🧐`,
+          title: "AI 리포트 안내",
+          content: `매일 하루 한번, AI 리포트로 나의 마일리지를 분석해보세요! MileEasy가 당신의 길잡이가 되어줄 것입니다.🤗`,
         },
       ],
     };
@@ -187,10 +186,10 @@ export default {
         const response = await api.post('bot/sms', null, {
           params: {
             prompt:
-              `우리 회사 인사고과와 연결되는 마일리지 관리 사이트에서 ${this.mile_name} 마일리지에 관해서 홍보하고 방문을 독려하려고 홍보성 문자메시지를 보내려고해.` +
-              '그 홍보하는 문자 메시지 문구를 만들어주면 되는데, 마일리지는 이벤트성으로 종종 생성되는 공동목표에 참여해서 달성하면 뿌듯함을 얻기도하고, ' +
+              `우리 회사 인사고과와 연결되는 마일리지 관리 사이트인 MileEasy를 홍보하고 방문을 독려하려고 홍보성 문자메시지를 보내려고해.` +
+              '그 홍보하는 문자 메시지 문구를 만들어주면 되는데, 이 사이트는 전직원의 마일리지 점수를 분석하여 직원별 맞춤형 AI 리포트를 작성해서 앞으로 어떤식으로 마일리지를 향상하는게 유리하고 적절한지 방향성을 제공해줘.' +
               '마일리지가 전월에비해 크게 증가했거나, 마일리지부문에서 1등을하면 마왕(마일리지왕)이라는 배지를 획득하여 뿌듯함을 느낄수 있기도해. 이 사이트의 출석체크 또는 직원들과 마일리지 꿀팁을 공유하는 M-Tip게시판의 베스트 글로 선정되면 마왕 선정에 가점이 있어. 하지만 가장 중요한것은 인사고과에 반영된다는거야.  ' +
-              `내가 예시로 직접 만든 문자문구를 몇개 줄게! ${this.mile_name} 마일리지의 신규 목표가 생성 되었습니다. 마왕 선정에 도움이 되는 목표 설정 지금 함께 떠나볼까요?,${this.mile_name} 마일리지, M-Tip 게시판에서 직원들과 꿀팁을 공유해보세요! 당신도 마일리지 왕으로 거듭날수 있어요!,현재 다른직원들의 ${this.mile_name} 마일리지 관심도가 낮아졌어요! 이때가 기회예요! 얼른 잡아버리세요 🧐 `+
+              `내가 예시로 직접 만든 문자문구를 몇개 줄게! 저번 달 마왕 결과가 드디어 나왔습니다! 내가 마왕이 됐을수도..? 서둘러 확인해보세요!, M-Tip 게시판에서 이뤄지는 치열한 Best 경쟁! 이번 달의 Best M-Tip은 바로 당신의 것! 지금 바로 작성해보세요! ,  매일 하루 한번, AI 리포트로 나의 마일리지를 분석해보세요! MileEasy가 당신의 길잡이가 되어줄 것입니다.🤗`+
               '꼭 이런 멘트가 들어가지않아도 마일리지에 관심이 돋거나 독려하는 문장으로도 충분해. 100자이내로 하나의 메시지만 생성 부탁할게. 바로 문자메시지를 발송할거니까  하나의 문자메시지내용 그대로를 줘.'
           },
         });
@@ -328,7 +327,7 @@ export default {
         const response = await api.post("/user/sendSms", {
           to: receiversPhone,
           text: this.message,
-          mile : this.mile_name
+          mile : 'site'
         });
         console.log(response);
         this.succesAlert();
@@ -400,6 +399,7 @@ export default {
 
 <style scoped>
 .page-back {
+  padding-top: 0% !important;
   padding-left: 5%;
   padding-right: 5%;
   max-width: 1200px;

@@ -1,14 +1,11 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
     <div class="d-flex p-4">
-      <button type="button" @click="goBack">
-        <p class="lg2">
-          <i
-            class="bi bi-chevron-left lg2 border border-secondary p-2 rounded-2"
-          ></i
-          >&nbsp;&nbsp;이전
-        </p>
-      </button>
+    <div class="back-container">
+          <button class="back-button" @click="goBack">
+            <span class="arrow">❮</span> 이전
+          </button>
+        </div>
     </div>
     <h2
       class="bold-x-lg mb-5 ml-5 help-icon"
