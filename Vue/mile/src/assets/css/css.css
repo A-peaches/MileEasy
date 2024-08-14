@@ -312,11 +312,11 @@ body.swal2-shown > [aria-hidden="true"] {
   position: relative;
   /* 아이콘 배치를 위해 */
   flex: 0 1 auto; /* flex-grow: 0, flex-shrink: 1, flex-basis: auto */
-  width: 300px; /* 원하는 기본 너비 설정 */
+  width: 17vw; /* 원하는 기본 너비 설정 */
   max-width: 100%; /* 화면 너비를 넘지 않도록 */
+  height: 6vh;
+  margin-right: 2em; 
 }
-
-
 
 /* 다른 입력란 스타일 (필요한 경우) */
 .input-other {
@@ -382,7 +382,7 @@ body.swal2-shown > [aria-hidden="true"] {
 
 /* 카테고리 드롭다운 스타일 */
 .drop-category {
-  background-color: rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.80);
   /* 배경색상: FFFFFF, 투명도 69% */
   border-radius: 30px;
   /* 모서리 30px */
@@ -414,7 +414,30 @@ body.swal2-shown > [aria-hidden="true"] {
   .cards {
     padding: 10px !important;
   }
+  .input-search {
+    margin-right: 6px !important;
+    height: 5vh !important;
+  }
+  .bi-search {
+    font-size: 20px !important;
+  }
+  .search-wrapper {
+    font-size: 12pt !important;
+  }
+  .search-mobile {
+    width: 220px !important;
+  }
+}
 
+.search-wrapper {
+  font-size: 14pt; 
+  height: 100%; 
+  margin-left: 1em;
+}
+
+.bi-search {
+  font-size: 25px; 
+  color: #4b4a4a;
 }
 
 .page-back {

@@ -96,7 +96,7 @@ export default {
 <style scoped>
 @media (max-width: 768px) {
   .mileage-container {
-    width: 97% !important;
+    width: 100% !important;
     height: 520px !important;
   }
   .chartTab {
@@ -106,10 +106,13 @@ export default {
     margin-top: 3% !important;
   }
   .help-popover {
-    width: 210px !important;
+    width: 80% !important;
     overflow: auto !important;
     will-change: transform !important;
+    left: 50px !important;  /* 조정 가능 */
+    top: 45px !important;   /* 조정 가능 */
   }
+  
 }
 .mileage-container{
   background-color: #f9f9f9; 

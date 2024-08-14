@@ -50,6 +50,16 @@ const actions = {
       console.error('Error get mile Target:', error);
       throw error;
     }
+  },
+  // 마일리지 담당자가 등록한 목표 삭제하기
+  async targetDelete(context, target_no){
+    try{
+      const response = await api.get(`/mana/targetDelete/${target_no}`);
+      return response;
+    }catch(error){
+      console.error('Error delete mile Target:', error);
+      throw error;
+    }
   }
 };
 

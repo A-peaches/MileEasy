@@ -24,6 +24,8 @@ public interface ManagerDao {
     int updateRecommand(String mile_mention, int mile_recommand_no);
     int insertRecommand(String mile_no, String mile_mention);
     int deleteRecommand(String mile_recommand_no);
+    int deleteTarget(int target_no);
+    int deleteUserTarget(int target_no);
     int insertTarget(int mile_no, String user_no, Date start_date, Date end_date, int target_mileage, boolean is_together, boolean is_manager_plan);
     ArrayList<HitMile> mileCount(String start, String end, String mile);
 
