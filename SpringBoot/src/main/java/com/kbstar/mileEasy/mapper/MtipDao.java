@@ -94,7 +94,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,,mb.mtip_complain, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -105,7 +105,7 @@ public interface MtipDao {
 
     @Select("SELECT DISTINCT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,,mb.mtip_complain, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -118,7 +118,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,,mb.mtip_complain, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
