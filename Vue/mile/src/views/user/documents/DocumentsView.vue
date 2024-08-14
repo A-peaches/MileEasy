@@ -360,12 +360,15 @@ export default {
 
 <style scoped>
 @media (max-width: 768px) {
+  .page-back{
+    height: 120vh !important;
+  }
   .title-line {
     width: 30% !important;
   }
   .category-button {
-    width: 40vw !important;
-    font-size: 15pt !important;
+    width: 25vw !important;
+    font-size: 12pt !important;
   }
   .category-button:hover {
     transition: background-color 0s ease !important;
@@ -379,7 +382,7 @@ export default {
     font-size: 11pt !important;
   }
   .dropdown-menu {
-    top: 255% !important;
+    top: 260% !important;
     background-color: rgba(255, 255, 255, 0.96) !important;
   }
   .document-menu {
