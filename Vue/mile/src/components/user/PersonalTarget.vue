@@ -303,18 +303,59 @@ export default {
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
+        willOpen: () => {
+            // 스크롤바 패딩 제거
+            document.body.style.paddingRight = '0px';
+        },
+        willClose: () => {
+            // 스크롤바 패딩 제거
+            document.body.style.paddingRight = '0px';
+        }
     }).then(async result => {
         if (result.isConfirmed) {
             try {
                 const userNo = this.$store.getters['login/getLoginInfo'].user_no;
                 await this.$store.dispatch('target/deleteTarget', { userNo, targetNo });
-                Swal.fire('삭제 완료', '삭제가 완료되었습니다.', 'success');
+                Swal.fire({
+                    title: '삭제 완료',
+                    text: '삭제가 완료되었습니다.',
+                    icon: 'success',
+                    scrollbarPadding: false,
+                    willOpen: () => {
+                        document.body.style.paddingRight = '0px';
+                    },
+                    willClose: () => {
+                        document.body.style.paddingRight = '0px';
+                    }
+                });
             } catch (error) {
                 console.error('Error deleting target:', error);
-                Swal.fire('오류 발생', '삭제 중 오류가 발생했습니다. 다시 시도해 주세요.', 'error');
+                Swal.fire({
+                    title: '오류 발생',
+                    text: '삭제 중 오류가 발생했습니다. 다시 시도해 주세요.',
+                    icon: 'error',
+                    scrollbarPadding: false,
+                    willOpen: () => {
+                        document.body.style.paddingRight = '0px';
+                    },
+                    willClose: () => {
+                        document.body.style.paddingRight = '0px';
+                    }
+                });
             }
         } else {
-            Swal.fire('취소됨', '삭제가 취소되었습니다.', 'info');
+            Swal.fire({
+                title: '취소됨',
+                text: '삭제가 취소되었습니다.',
+                icon: 'info',
+                scrollbarPadding: false,
+                willOpen: () => {
+                    document.body.style.paddingRight = '0px';
+                },
+                willClose: () => {
+                    document.body.style.paddingRight = '0px';
+                }
+            });
         }
     });
 },

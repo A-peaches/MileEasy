@@ -52,16 +52,7 @@ const state = {  // 애플리케이션의 상태를 저장
           throw error;
       }
   },
-    // async addTarget({ commit }, target) {
-    //     try {
-    //       console.log('target.js addTarget:',target);
-    //       const response = await api.post('http://localhost:8090/target/create', target);
-    //       commit('addTarget', response.data);
-    //     } catch (error) {
-    //       console.error('Error adding target:', error.response ? error.response.data : error.message);
-    //       throw error; // 에러를 상위로 전파하여 컴포넌트에서 처리할 수 있게 함
-    //     }
-    //   },
+
     async fetchTogetherTargets({ commit }, userNo) {
       try {
           const response = await api.get(`/target/user/${userNo}?type=together`);
@@ -70,16 +61,7 @@ const state = {  // 애플리케이션의 상태를 저장
           console.error('Error fetching together targets:', error.response ? error.response.data : error.message);
       }
   },
-      // async fetchTargets({ commit }, userNo) {
-      //   try {
-      //     console.log('Targets userNo:', userNo); // 응답 데이터를 콘솔에 출력
-      //     const response = await api.get(`/target/user/${userNo}`);
-      //     console.log('Targets API Response:', response.data); // 응답 데이터를 콘솔에 출력
-      //     commit('setTargets', response.data);
-      //   } catch (error) {
-      //     console.error('Error fetching targets:', error.response ? error.response.data : error.message);
-      //   }
-      // },
+   
       async fetchPersonalTargets({ commit }, userNo) {
         try {
             const response = await api.get(`/target/user/${userNo}?type=personal`);

@@ -138,7 +138,7 @@ export default {
           // 마일리지 카테고리 가져오기
           try {
               const response = await api.get(
-              'http://localhost:8090/notice/mileage'
+              '/notice/mileage'
               );
               this.mileages = response.data;
           } catch (error) {
@@ -180,7 +180,7 @@ export default {
     if (a.mile_no !== b.mile_no) {
       return a.mile_no - b.mile_no;
     }
-    
+
 
     const statusA = this.getStatusText(a);
     const statusB = this.getStatusText(b);
