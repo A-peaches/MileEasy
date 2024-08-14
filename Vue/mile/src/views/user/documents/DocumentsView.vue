@@ -161,7 +161,8 @@ export default {
       showCategory: false, // 카테고리: 전체
       totalPages: 0, // 총 페이지 수
       isMobile: false,
-      searchPages: 0
+      searchPages: 0,
+      lastSearchQuery: '',
     };
   },
   computed: {
@@ -262,7 +263,6 @@ export default {
     },
     updateSearchPages() {
       this.searchPages = Math.ceil(this.filteredDocuments.length / this.itemsPerPage);
-      this.currentPage = 1; // 검색 결과가 변경되면 첫 페이지로 이동 
     },
     onSearch() {
       // 검색
@@ -271,6 +271,10 @@ export default {
 
       if (timeSinceLastInput > 500) {
         this.lastInputTime = currentTime;
+        if(this.searchQuery !== this.lastSearchQuery){
+          this.currentPage = 1; //검색어가 변경되었을 때만 첫 페이지로 이동
+          this.lastSearchQuery = this.searchQuery;
+        }
         this.updateSearchPages();
       }
     },
