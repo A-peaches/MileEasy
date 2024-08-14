@@ -399,7 +399,6 @@ export default {
 
 <style scoped>
 .page-back {
-  padding-top: 0% !important;
   padding-left: 5%;
   padding-right: 5%;
   max-width: 1200px;

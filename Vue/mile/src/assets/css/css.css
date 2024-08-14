@@ -647,6 +647,10 @@ transition: transform 0.3s ease, background 0.3s ease;
 }
 
 
+body {
+  user-select: none;
+}
+
 /* select tap reactive wep*/
 
 @media screen and (max-width: 480px) {
