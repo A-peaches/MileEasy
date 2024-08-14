@@ -27,6 +27,8 @@
       style="font-family: 'KB_C2', sans-serif; font-size: 18px; width: 80px; height: 80px;color: #4b4a4a;"
     >등록</button>
   </div>
+
+  
     <div v-if="comments && comments.length">
       <div class="comment" v-for="comment in comments" :key="comment.mtip_reply_no">
         <img
@@ -108,6 +110,8 @@ export default {
   console.log('mtip_board_no:', this.mtip_board_no); // 이 부분을 추가하여 값이 올바르게 전달되었는지 확인합니다.
   this.fetchComments(this.mtip_board_no);
   },
+
+
   computed: {
     ...mapGetters('mtipReply', ['getComments']),
     comments() {

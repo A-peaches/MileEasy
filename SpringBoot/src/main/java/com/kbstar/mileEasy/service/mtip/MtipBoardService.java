@@ -141,24 +141,6 @@ public class MtipBoardService {
         return mtipDao.findLikedPostsByUserNo(userNo);
     }
 
-
-//    @Transactional
-//    public int unlikePost(int mtipBoardNo, String userNo) {
-//        boolean unlikeExists = checkLike(mtipBoardNo, userNo);
-//        System.out.println("unlike result: " + unlikeExists);
-//
-//        if(unlikeExists) {
-//            mtipDao.deleteLike(mtipBoardNo, userNo);
-//            mtipDao.decrementLikeCount(mtipBoardNo);
-//
-//            int status = mtipDao.checkStatus(mtipBoardNo, userNo);
-//            System.out.println("checkStatus after unlike: " + status);
-//            return status;
-//        }
-//        return -1;
-//    }
-
-
     //mtip 수정하기
     @Transactional
     public void updateNotice(MtipBoard notice) {

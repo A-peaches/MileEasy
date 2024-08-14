@@ -447,7 +447,7 @@ h2::after {
   font-size: 18px;
   cursor: pointer;
   margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .back-button .arrow {
@@ -458,9 +458,9 @@ h2::after {
   height: 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-right: 8px;
+  margin-right: 15px;
   font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 .search-button {
   position: absolute;

@@ -521,7 +521,7 @@ h2::after {
   font-size: 18px;
   cursor: pointer;
   margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .back-button .arrow {
@@ -532,9 +532,9 @@ h2::after {
   height: 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-right: 8px;
+  margin-right: 15px;
   font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 .search-button {
   position: absolute;
@@ -612,7 +612,7 @@ h2::after {
 
 .checkbox-label {
   margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
-  font-family: 'KB_C5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
   font-size: 20px;
 }
 
@@ -811,7 +811,7 @@ h2::after {
   background-color: transparent;
   margin-left: 89%; /* 왼쪽으로 이동 */
   margin-bottom: 3vh;
-  font-family: 'KB_C5', sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 
 .write-button i {

@@ -28,11 +28,14 @@ const mutations = {
 };
 
 const actions = {
+
+
   async fetchComments({ commit }, mtip_board_no) {
     try {
       console.log('fetchComments 메소드 실행');
       const response = await api.get(`/mtip/comments/${mtip_board_no}`);
       console.log('fetchComments 메소드  response:', response);  // 추가된 로그 
+      console.log('store의 댓글불러오기에서 매개변수로받은 게시글번호 : ',mtip_board_no);
       commit('SET_COMMENTS', response.data.map(comment => ({
         ...comment,
         isEditing: false,
