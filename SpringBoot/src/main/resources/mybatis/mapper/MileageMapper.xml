@@ -719,7 +719,7 @@
     </select>
 
 
-    <select id="percentageScore" resultType="int">
+    <select id="percentageScore" resultType="double">
         WITH UserTotalScores AS (
             -- Calculate total points for each user
             SELECT

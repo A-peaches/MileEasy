@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -55,7 +56,13 @@ public class CustomBotController {
         ArrayList<allScore> allScore = aiReportService.allScore();
         ArrayList<myScore> myScore = aiReportService.myScore(user_no);
         ArrayList<avgScore> avgScore = aiReportService.avgScore();
-        int percentageScore = aiReportService.percentageScore(user_no);
+        double percentageScore = aiReportService.percentageScore(user_no);
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.0");
+
+        // percentageScore를 소수점 1자리까지 포맷
+        String formattedScore = decimalFormat.format(percentageScore);
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         String allScoreJson = objectMapper.writeValueAsString(allScore);
@@ -69,7 +76,7 @@ public class CustomBotController {
         fullPromptBuilder.append("\n\n 상위10명에 대한 마일리지별 점수: ").append(allScoreJson);
         fullPromptBuilder.append("\n\n나의 마일리지별 점수: ").append(myScoreJson);
         fullPromptBuilder.append("\n\n각 마일리지별 평균 마일리지점수: ").append(avgScoreJson);
-        fullPromptBuilder.append("\n\n나의 상위 퍼센티지: ").append(percentageScore).append("%");
+        fullPromptBuilder.append("\n\n나의 상위 퍼센티지: ").append(formattedScore).append("%");
         fullPromptBuilder.append(prompt);
         fullPromptBuilder.append("\n\n이 정보를 바탕으로, 다음 형식으로 응답을 작성해주세요:");
         fullPromptBuilder.append("\n\n[이름]님은 상위 [퍼센티지]%에 해당하며, 전반적으로 [성과 평가]를 보이고 있습니다.");
@@ -94,7 +101,11 @@ public class CustomBotController {
         ArrayList<allScore> allScore = aiReportService.allScore();
         ArrayList<myScore> myScore = aiReportService.myScore(user_no);
         ArrayList<avgScore> avgScore = aiReportService.avgScore();
-        int percentageScore = aiReportService.percentageScore(user_no);
+        double percentageScore = aiReportService.percentageScore(user_no);
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.0");
+        // percentageScore를 소수점 1자리까지 포맷
+        String formattedScore = decimalFormat.format(percentageScore);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String allScoreJson = objectMapper.writeValueAsString(allScore);
@@ -107,7 +118,7 @@ public class CustomBotController {
         fullPromptBuilder.append("\n\n 상위10명에 대한 마일리지별 점수: ").append(allScoreJson);
         fullPromptBuilder.append("\n\n나의 마일리지별 점수: ").append(myScoreJson);
         fullPromptBuilder.append("\n\n각 마일리지별 평균 마일리지점수: ").append(avgScoreJson);
-        fullPromptBuilder.append("\n\n나의 상위 퍼센티지: ").append(percentageScore).append("%");
+        fullPromptBuilder.append("\n\n나의 상위 퍼센티지: ").append(formattedScore).append("%");
         fullPromptBuilder.append(prompt);
         fullPromptBuilder.append("\n\n이 정보를 바탕으로, 다음 형식으로 응답을 작성해주세요:");
         fullPromptBuilder.append("\n[이름]님은 전체 직원 중 상위 [퍼센티지]%에 위치해 있으며, [성과 평가]를 보여주고 계십니다. ");

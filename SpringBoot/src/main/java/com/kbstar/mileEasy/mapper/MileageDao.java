@@ -95,7 +95,7 @@ public interface MileageDao {
 
     ArrayList<avgScore> avgScore();
 
-    int  percentageScore(String userNo);
+    double  percentageScore(String userNo);
 
     ArrayList<MileScore> myGroup(String userNo);
 

@@ -10,5 +10,5 @@ import lombok.*;
 @NoArgsConstructor
 public class avgScore {
     private String mile_name;
-    private int total_score;
+    private int average_score;
 }

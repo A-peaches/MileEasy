@@ -66,9 +66,10 @@ const actions = {
         commit('setDateAi', response.data.data.ai_report_date.substring(0, 10));
         commit('setMyRank', response.data.data.user_rank);
         commit('setChartRank', 100 - response.data.data.user_rank * 1);
+
         commit(
           'setAvg_score_json',
-          JSON.parse(response.data.data.weighted_average)
+          JSON.parse(response.data.data.avg_score_json)
         );
         commit(
           'setMy_score_json',

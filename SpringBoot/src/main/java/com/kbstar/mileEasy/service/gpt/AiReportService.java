@@ -33,7 +33,7 @@ public class AiReportService {
         return mileageDao.avgScore();
     }
 
-    public int percentageScore(String userNo) {
+    public double percentageScore(String userNo) {
         return mileageDao.percentageScore(userNo);
     }
 

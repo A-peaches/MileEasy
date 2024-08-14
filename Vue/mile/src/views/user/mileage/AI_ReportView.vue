@@ -54,7 +54,10 @@
         <div class="col-md-5 mb-4">
           <div class="card h-100 shadow-sm fade-in">
             <div v-if="successYN" class="text-center">
-              <canvas id="myChart1" style="height: 30vh"></canvas>
+              <div class="card-body">
+                <canvas id="myChart1" style="height: 30vh"></canvas>
+              </div>
+              <!-- <canvas ref="makeChart1" style="height: 30vh"></canvas> -->
             </div>
           </div>
         </div>
@@ -140,8 +143,6 @@ export default {
   data() {
     return {
       hasReport: true, // 리포트 데이터 존재 여부
-      chart1: null,
-      chart2: null,
     };
   },
   methods: {
@@ -218,12 +219,11 @@ export default {
       return new Promise((resolve) => setTimeout(resolve, ms));
     },
     ...mapActions('aireport', ['getReport']),
-    async getReport() {
+    // async
+    getReport() {
       try {
-        await this.$store.dispatch(
-          'aireport/getReport',
-          this.loginInfo.user_no
-        );
+        // await
+        this.$store.dispatch('aireport/getReport', this.loginInfo.user_no);
         if (this.all) {
           // 데이터가 있는 경우에만 차트 생성
           this.createCharts();
@@ -234,23 +234,9 @@ export default {
       }
     },
 
-    createCharts() {
-      this.$nextTick(() => {
-        this.destroyCharts();
-        this.createChart1();
-        this.createChart2();
-      });
-    },
-
-    destroyCharts() {
-      if (this.chart1) {
-        this.chart1.destroy();
-        this.chart1 = null;
-      }
-      if (this.chart2) {
-        this.chart2.destroy();
-        this.chart2 = null;
-      }
+    async createCharts() {
+      this.createChart1();
+      this.createChart2();
     },
 
     async analysis() {
@@ -273,20 +259,16 @@ export default {
         // 두 작업이 모두 완료될 때까지 기다립니다.
         await Promise.all([alertPromise, analysisPromise]);
 
-        // 분석이 완료되면 데이터를 가져옵니다.
-        await this.getReport();
-
-        // 데이터 로딩 완료 후 상태 업데이트
-
-        this.createCharts();
-
-        // 분석 완료 메시지를 표시합니다.
         Swal.fire({
           title: '분석 완료',
           text: '마일리지 분석이 완료되었습니다.',
           icon: 'success',
           confirmButtonText: '확인',
         });
+        // 분석이 완료되면 데이터를 가져옵니다.
+        await this.getReport();
+
+        // 분석 완료 메시지를 표시합니다.
       } catch (error) {
         console.error('분석 중 오류가 발생했습니다:', error);
         Swal.fire({
@@ -301,7 +283,7 @@ export default {
     async analysisAlert() {
       return new Promise((resolve) => {
         Swal.fire({
-          timer: 100000,
+          timer: 45000,
           timerProgressBar: true,
           imageUrl: require('@/assets/img/analysis.gif'),
           imageClass: 'custom-image-class',
@@ -333,12 +315,17 @@ export default {
     },
 
     createChart1() {
-      const ctx = document.getElementById('myChart1');
-      if (!ctx) {
-        console.error('Chart context not found');
-        return;
+      console.log('차트1', document.getElementById('myChart1'));
+      let myChart1 = document.getElementById('myChart1');
+      // const myChart1 = this.$refs.makeChart1;
+      const ctx = myChart1.getContext('2d');
+      if (Chart.getChart(myChart1)) {
+        Chart.getChart(myChart1)?.destroy();
       }
 
+      if (!ctx) {
+        return;
+      }
       const score = parseInt(this.chartRank);
 
       const getPointColor = (score) => {
@@ -361,7 +348,7 @@ export default {
 
       const xPosition = getXPosition(score);
 
-      this.chart1 = new Chart(ctx, {
+      myChart1 = new Chart(ctx, {
         type: 'line',
         data: {
           labels: ['0%', '30%', '70%', '100%'],
@@ -527,16 +514,23 @@ export default {
     },
 
     createChart2() {
-      const canvas = document.getElementById('myChart2');
+      let myChart2 = document.getElementById('myChart2');
 
-      const ctx = canvas.getContext('2d');
+      const ctx = myChart2.getContext('2d');
+      if (Chart.getChart(myChart2)) {
+        Chart.getChart(myChart2)?.destroy();
+      }
+
+      if (!ctx) {
+        return;
+      }
 
       this.label = this.avg_score_json.map((item) => item.mile_name);
       this.avg_data = this.avg_score_json.map((item) => item.average_score);
       this.my_data = this.my_score_json.map((item) => item.total_score);
 
       console.log();
-      const data = {
+      let data = {
         labels: this.label,
 
         datasets: [
@@ -597,10 +591,12 @@ export default {
         },
       };
 
-      this.chart2 = new Chart(ctx, config);
+      myChart2 = new Chart(ctx, config);
     },
   },
-  mounted() {},
+  mounted() {
+    this.getReport();
+  },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
 
