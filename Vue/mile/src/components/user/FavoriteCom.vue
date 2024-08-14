@@ -432,7 +432,8 @@ export default {
     background-color: #fff !important;
   }
   .btn-submit {
-    width: 35% !important;
+    width: 30% !important;
+    font-size: 14pt !important;
   }
   .favorite-container {
     position: relative !important;
