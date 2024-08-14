@@ -20,7 +20,6 @@ public class MtipBoardService {
     public List<MtipBoard> getMtiplist() throws Exception {
         try {
             List<MtipBoard> notices = mtipDao.selectMtiplist();
-            System.out.println("Fetched notices: " + notices);  // 로그 추가
             return notices;
         } catch (Exception e) {
             System.err.println("Error in getAllNotices: " + e.getMessage());  // 로그 추가
@@ -86,13 +85,13 @@ public class MtipBoardService {
 
     // ID로 공지사항 찾기
     public MtipBoard findById(Long id) {
-        System.out.println("findById: " + id);
+
         return mtipDao.findById(id);
     }
 
     public boolean checkLike(int mtipBoardNo, String userNo) {
-        Integer count = mtipDao.checkLikeStatus(mtipBoardNo, userNo);
-        return count != null && count > 0;
+        int count = mtipDao.checkLikeStatus(mtipBoardNo, userNo);
+        return count > 0;
     }
 
     @Transactional
@@ -101,17 +100,25 @@ public class MtipBoardService {
         System.out.println("checkLike result: " + likeExists);
 
         if (!likeExists) {
-            mtipDao.insertLike(mtipBoardNo, userNo);
-            mtipDao.incrementLikeCount(mtipBoardNo);
+            int insertResult = mtipDao.insertLike(mtipBoardNo, userNo);
+            System.out.println("Insert Like 결과: " + insertResult);
 
+            int incrementResult = mtipDao.incrementLikeCount(mtipBoardNo);
+            System.out.println("Increment Like Count 결과: " + incrementResult);
+
+            System.out.println("예외처리된다." );
             try {
+                System.out.println("예외처리된다." );
                 Thread.sleep(100); // 0.1초 지연
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-
-        int status = mtipDao.checkStatus(mtipBoardNo, userNo);
+        System.out.println("mtipBoardNo: " + mtipBoardNo+","+userNo);
+        Integer status = mtipDao.checkStatus(mtipBoardNo);
+        if (status == null) {
+            status = 0;  // 기본값을 설정합니다.
+        }
         System.out.println("checkStatus after like: " + status);
         return status;
     }
@@ -132,7 +139,9 @@ public class MtipBoardService {
             }
         }
 
-        int status = mtipDao.checkStatus(mtipBoardNo, userNo);
+        int status = mtipDao.checkStatus(mtipBoardNo);
+
+
         System.out.println("checkStatus after unlike: " + status);
         return status;
     }
@@ -163,7 +172,6 @@ public class MtipBoardService {
                 throw new IllegalArgumentException("User number is required");
             }
             List<MtipBoard> notices = mtipDao.selectMymtiplist(user_no);
-            System.out.println("Fetched notices for user " + user_no + ": " + notices);  // 로그 추가
             return notices;
         } catch (Exception e) {
             System.err.println("Error in getMymtiplist for user " + user_no + ": " + e.getMessage());  // 로그 추가
@@ -178,7 +186,6 @@ public class MtipBoardService {
                 throw new IllegalArgumentException("User number is required");
             }
             List<MtipBoard> notices = mtipDao.selectMyBestmtiplist(user_no);
-            System.out.println("Fetched notices for user " + user_no + ": " + notices);  // 로그 추가
             return notices;
         } catch (Exception e) {
             System.err.println("Error in getMymtiplist for user " + user_no + ": " + e.getMessage());  // 로그 추가
@@ -196,4 +203,11 @@ public class MtipBoardService {
         return mtipDao.selectTopLikedMtiplistPlus();
     }
 
+    public void complain(Long noticeId) {
+        mtipDao.complain(noticeId);
+    }
+
+    public void complainBack(Long noticeId) {
+        mtipDao.complainBack(noticeId);
+    }
 }
