@@ -1,142 +1,135 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
     <h2 class="bold-x-lg mt-5 mb-5 ml-5" style="font-family: KB_C3">
-      김근미님의 AI 리포트
+      {{ this.loginInfo.user_name }}님의 AI 리포트
     </h2>
 
     <div class="text-end mb-4 mr-3">
       <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
     </div>
 
-    <div class="row">
-      <div class="col-md-3 mb-4">
-        <div class="card h-100 shadow-sm fade-in">
-          <div class="card-body">
-            <h5 class="card-title text-goal" style="font-size: 20pt">
-              전체 순위
-            </h5>
-            <hr />
-            <p
-              class="mt-4"
-              style="font-size: 35pt; font-family: 'KB_C1'; font-weight: 600"
-            >
-              <span class="fs-4">상위</span> 25%
-            </p>
-            <span class="addInfo">( 순위 분석 기준일 : 2024.08.01 )</span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md mb-4">
-        <div class="card h-100 shadow-sm fade-in">
-          <div class="card-body card-ml">
-            <h5 class="text-primary text-start" style="font-size: 20pt">
-              AI 종합 분석
-            </h5>
-            <p class="text-start addInfo">
-              * 마일이지 AI가 예측한 마일리지 추이와 점수를 토대로 앞으로의
-              마일리지 취득 전략을 제안해드립니다.
-            </p>
-            <div class="card-gray">
-              <span>
-                <!-- 김근미님은 2024.08.01 기준으로 상위 25%에 해당하며, 전반적으로
-                우수한 성과를 보이고 있습니다. '연수 마일리지'와 'Monthly
-                Best'에 조금 더 집중하시면, 연말 평가에서 더욱 좋은 결과를
-                얻으실 수 있을 것으로 예상됩니다. -->
-                {{ all }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- 데이터가 없을 때 메시지 표시 -->
+    <div
+      v-if="!all"
+      class="text-center"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 300px;
+      "
+    >
+      <h4 class="text-center">조회한 이력이 없습니다.</h4>
     </div>
 
-    <div class="row">
-      <div class="col-md-5 mb-4">
-        <div class="card h-100 shadow-sm fade-in">
-          <div class="card-body">
-            <canvas id="myChart1" style="height: 30vh"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="col-md mb-4">
-        <div class="card h-100 shadow-sm fade-in">
-          <div class="card-body card-ml">
-            <h5 class="text-gray text-start">순위 분석</h5>
-            <div class="card-gray">
-              <span>
-                김근미님은 전체 직원 중 상위 25%에 위치해 있으며, 꾸준한
-                노력으로 상위권을 유지하고 계십니다. 다음 분기까지 'HotTip'
-                마일리지를 20점 추가로 획득하시면 귀하의 전체 순위가 5% 정도
-                상승할 것으로 예상됩니다.
-              </span>
-            </div>
-            <h5 class="text-gray text-start mt-4">1등 추격 전략 🎯</h5>
-            <div class="card-gray" style="text-align: start">
-              <span>
-                현재 1등과의 점수 차이는 500점입니다. 연말까지 1등을 추격하려면
-                <span class="text-goal">하루 평균 5.5점</span>
-                의 마일리지를 쌓으셔야 합니다.
-              </span>
+    <div v-else>
+      <div class="row">
+        <div class="col-md-3 mb-4">
+          <div class="card h-100 shadow-sm fade-in">
+            <div class="card-body">
+              <h5 class="card-title text-goal" style="font-size: 20pt">
+                전체 순위
+              </h5>
+              <hr />
+              <p
+                class="mt-4"
+                style="font-size: 35pt; font-family: 'KB_C1'; font-weight: 600"
+              >
+                <span class="fs-4">상위</span> {{ myRank }}%
+              </p>
+              <span class="addInfo">( 순위분석 기준일 : {{ dateAi }} )</span>
             </div>
           </div>
         </div>
+        <div class="col-md mb-4">
+          <div class="card h-100 shadow-sm fade-in">
+            <div class="card-body card-ml">
+              <h5 class="text-primary text-start" style="font-size: 20pt">
+                AI 종합 분석
+              </h5>
+              <p class="text-start addInfo">
+                * 마일이지 AI가 예측한 마일리지 추이와 점수를 토대로 앞으로의
+                마일리지 취득 전략을 제안해드립니다.
+              </p>
+              <div class="card-gray">
+                <span>{{ all }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md mb-4">
-        <div class="card h-100 shadow-sm fade-in">
-          <div class="card-body card-ml">
-            <h5 class="text-gray text-start">마일리지별 분석</h5>
-            <p class="text-start addInfo">
-              * 마일이지가 사용자의 포지션에 따라 분석한 결과로, 마일리지 가중치
-              및 연간 최대 한도를 고려하여 전략과 개선 사항을 제안해드립니다.
-            </p>
-            <div class="card-gray">
-              <span>
-                김근미님이 속한 '경인지역영업' 그룹에서는 '리그 테이블'
-                마일리지의 가중치가 가장 높습니다. 이 활동에 집중하시면 더 빠른
-                마일리지 점수 상승이 가능할 것으로 보입니다. <br /><br />
-                다른 직원들에 비해 'BEST PG' 마일리지가 20% 낮은 편입니다. 이
-                영역에 조금 더 신경 쓰시면 전체 순위 상승에 도움이 될 것
-                같습니다.
-                <br /><br />
-                '소비자 지원' 부문에서 탁월한 성과를 보여주셨습니다. 김근미님의
-                꾸준한 노력과 소비자 지원에 대한 관심도가 전체 마일리지 평균
-                점수를 크게 향상시켰습니다. 이는 매우 가치 있는 기여입니다.
-                꾸준히 유지해주세요.
-              </span>
+      <div class="row">
+        <div class="col-md-5 mb-4">
+          <div class="card h-100 shadow-sm fade-in">
+            <div v-if="successYN" class="text-center">
+              <div class="card-body">
+                <canvas id="myChart1" style="height: 30vh"></canvas>
+              </div>
+              <!-- <canvas ref="makeChart1" style="height: 30vh"></canvas> -->
+            </div>
+          </div>
+        </div>
+        <div class="col-md mb-4">
+          <div class="card h-100 shadow-sm fade-in">
+            <div class="card-body card-ml">
+              <h5 class="text-gray text-start">순위 분석</h5>
+              <div class="card-gray">
+                <span>{{ rank }}</span>
+              </div>
+              <h5 class="text-gray text-start mt-4">1등 추격 전략 🎯</h5>
+              <div class="card-gray" style="text-align: start">
+                <span> {{ catchTop }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-md-5 mb-4">
-        <div class="card h-100 shadow-sm fade-in">
-          <div class="card-body">
-            <canvas id="myChart2" style="height: 30vh"></canvas>
+
+      <div class="row">
+        <div class="col-md mb-4">
+          <div class="card h-100 shadow-sm fade-in">
+            <div class="card-body card-ml">
+              <h5 class="text-gray text-start">마일리지별 분석</h5>
+              <p class="text-start addInfo">
+                * 마일이지가 사용자의 포지션에 따라 분석한 결과로, 마일리지
+                가중치 및 연간 최대 한도를 고려하여 전략과 개선 사항을
+                제안해드립니다.
+              </p>
+              <div class="card-gray">
+                <span> {{ mile }} </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5 mb-4">
+          <div class="card h-100 shadow-sm fade-in">
+            <div class="card-body">
+              <canvas id="myChart2" style="height: 30vh"></canvas>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md">
-        <div
-          class="card shadow-sm mb-4 fade-in"
-          style="background-color: #f5f5f5; border: #f5f5f5"
-        >
-          <div class="card-body text-start card-ml">
-            <h5 class="text-emphasis text-start">
-              <i class="bi bi-info-circle-fill"></i> 유의 사항
-            </h5>
-            <span class="ml-5">
-              본 리포트는 마일이지 플랫폼에 축척된 데이터를 학습한 AI 모델의
-              예측에 기반하고 있습니다. <br
-            /></span>
-            <span class="ml-5">
-              본 리포트는 마일리지 관리를 위한 참고 목적으로 활용할 수 있도록
-              제공되며, 증빙 등의 다른 목적으로는 사용할 수 없습니다.
-            </span>
+      <div class="row">
+        <div class="col-md">
+          <div
+            class="card shadow-sm mb-4 fade-in"
+            style="background-color: #f5f5f5; border: #f5f5f5"
+          >
+            <div class="card-body text-start card-ml">
+              <h5 class="text-emphasis text-start">
+                <i class="bi bi-info-circle-fill"></i> 유의 사항
+              </h5>
+              <span class="ml-5">
+                본 리포트는 마일이지 플랫폼에 축척된 데이터를 학습한 AI 모델의
+                예측에 기반하고 있습니다. <br />
+              </span>
+              <span class="ml-5">
+                본 리포트는 마일리지 관리를 위한 참고 목적으로 활용할 수 있도록
+                제공되며, 증빙 등의 다른 목적으로는 사용할 수 없습니다.
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -145,10 +138,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import api from '@/api/axios';
+import Swal from 'sweetalert2';
 
 Chart.register(annotationPlugin);
 
@@ -157,7 +151,7 @@ export default {
 
   data() {
     return {
-      all: '',
+      hasReport: true, // 리포트 데이터 존재 여부
     };
   },
   methods: {
@@ -165,62 +159,183 @@ export default {
       try {
         const response = await api.post('bot/chat', null, {
           params: {
-            prompt:
-              '우리 회사 인사고과와 연결되는 마일리지 관리 사이트에서 어떤방법으로 마일리지를 취득해야 순위향상에 가장 효율적인지 길잡이를 제공하는 리포트 페이지' +
-              '이름은 김현지 이고, 오늘날짜 기준으로 연수마일리지 10점 소비자 지원 마일리지 50점이야  연수마일리지 전체 평균은 3점이고, 소비자 지원 마일리지 전체 평균은 4점이야. 상위15%에 해당돼' +
-              '전체적인 분석과  부족한 부분에 대해서 분석해줘 예시로 김근미님은 ~~~기준으로 상위 25%에 해당하며, 전반적으로 우수한 성과를 보이고 있습니다. ' +
-              "연수 마일리지'와 'Monthly Best'에 조금 더 집중하시면,  연말 평가에서 더욱 좋은 결과를 얻으실 수 있을 것으로 예상됩니다. 이러한 형태로 가장 효율적으로 분석해줘, 예시 형태를 따라줘! 글자수150자 이내로 부탁해 제발 예시를 활용해!! 유눙한 ai비서처럼 말해줘",
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님을`,
+
+            user_no: this.loginInfo.user_no,
           },
         });
         console.log(response.data);
-        this.all = response.data;
       } catch (error) {
         console.error('Error during API request:', error);
       }
     },
 
-    analysis() {
-      this.analysisAlret();
+    async airank() {
+      try {
+        const response = await api.post('bot/chatRank', null, {
+          params: {
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
+
+            user_no: this.loginInfo.user_no,
+          },
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error during API request:', error);
+      }
     },
-    analysisAlret() {
-      this.$swal({
-        timer: 5000,
-        timerProgressBar: true,
-        imageUrl: require('@/assets/img/analysis.gif'),
-        imageClass: 'custom-image-class',
-        scrollbarPadding: false,
-        title: '분석중..',
-        html: `${this.getLoginInfo.user_name}님의 마일리지를 분석중입니다`,
-        showCloseButton: true, // X 버튼 추가
-        didOpen: () => {
-          const popup = this.$swal.getPopup();
-          const image = this.$swal.getImage();
-          const title = popup.querySelector('.swal2-title');
-          const img = popup.querySelector('.swal2-image');
 
-          title.style.marginTop = '0'; // 타이틀 상단 마진 제거
-          title.style.paddingTop = '0'; // 타이틀 상단 패딩 제거
+    async aiCatch() {
+      try {
+        const response = await api.post('bot/chatCatchup', null, {
+          params: {
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
 
-          popup.style.height = '400px'; // 원하는 높이로 조정
-          img.style.margin = '15px auto 0px auto';
-          image.style.width = '200px';
-          image.style.height = 'auto';
-          image.style.padding = '0px 0px 0px 30px';
+            user_no: this.loginInfo.user_no,
+          },
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error during API request:', error);
+      }
+    },
+    async aiMile() {
+      try {
+        const response = await api.post('bot/chatMile', null, {
+          params: {
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
-          this.$swal.showLoading();
-        },
-      }).then((result) => {
-        if (result.dismiss === this.$swal.DismissReason.timer) {
-          console.log('I was closed by the timer');
-        } else if (result.dismiss === this.$swal.DismissReason.close) {
-          console.log('I was closed by the close button');
+            user_no: this.loginInfo.user_no,
+          },
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error during API request:', error);
+      }
+    },
+
+    async runAnalysis() {
+      // 순차적으로 메소드를 실행
+      await this.aitest();
+      await this.delay(5000);
+      await this.airank();
+      await this.delay(5000);
+      await this.aiMile();
+      await this.delay(10000);
+      await this.aiCatch();
+    },
+    delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
+    ...mapActions('aireport', ['getReport']),
+    // async
+    getReport() {
+      try {
+        // await
+        this.$store.dispatch('aireport/getReport', this.loginInfo.user_no);
+        if (this.all) {
+          // 데이터가 있는 경우에만 차트 생성
+          this.createCharts();
         }
+      } catch (error) {
+        console.error('Failed to get report:', error);
+        // 에러 처리 로직 (예: 사용자에게 알림)
+      }
+    },
+
+    async createCharts() {
+      this.createChart1();
+      this.createChart2();
+    },
+
+    async analysis() {
+      const today = new Date().toISOString().split('T')[0];
+      if (this.dateAi === today) {
+        Swal.fire({
+          title: '알림',
+          text: '하루에 한 번만 조회가 가능합니다.',
+          icon: 'info',
+          confirmButtonText: '확인',
+        });
+        return;
+      }
+
+      try {
+        // 분석 알림창을 표시하고, 동시에 백그라운드에서 분석 작업을 시작합니다.
+        const alertPromise = this.analysisAlert();
+        const analysisPromise = this.runAnalysis();
+
+        // 두 작업이 모두 완료될 때까지 기다립니다.
+        await Promise.all([alertPromise, analysisPromise]);
+
+        Swal.fire({
+          title: '분석 완료',
+          text: '마일리지 분석이 완료되었습니다.',
+          icon: 'success',
+          confirmButtonText: '확인',
+        });
+        // 분석이 완료되면 데이터를 가져옵니다.
+        await this.getReport();
+
+        // 분석 완료 메시지를 표시합니다.
+      } catch (error) {
+        console.error('분석 중 오류가 발생했습니다:', error);
+        Swal.fire({
+          title: '오류',
+          text: '분석 중 문제가 발생했습니다. 다시 시도해 주세요.',
+          icon: 'error',
+          confirmButtonText: '확인',
+        });
+      }
+    },
+
+    async analysisAlert() {
+      return new Promise((resolve) => {
+        Swal.fire({
+          timer: 45000,
+          timerProgressBar: true,
+          imageUrl: require('@/assets/img/analysis.gif'),
+          imageClass: 'custom-image-class',
+          scrollbarPadding: false,
+          title: '분석중..',
+          html: `${this.getLoginInfo.user_name}님의 마일리지를 분석중입니다`,
+          showCloseButton: true,
+          didOpen: () => {
+            const popup = Swal.getPopup();
+            const image = Swal.getImage();
+            const title = popup.querySelector('.swal2-title');
+            const img = popup.querySelector('.swal2-image');
+
+            title.style.marginTop = '0';
+            title.style.paddingTop = '0';
+            popup.style.height = '400px';
+            img.style.margin = '15px auto 0px auto';
+            image.style.width = '200px';
+            image.style.height = 'auto';
+            image.style.padding = '0px 0px 0px 30px';
+
+            Swal.showLoading();
+          },
+          willClose: () => {
+            resolve();
+          },
+        });
       });
     },
-    createChart1() {
-      const ctx = document.getElementById('myChart1');
 
-      const score = 75; // 실제 점수를 여기에 설정하세요
+    createChart1() {
+      console.log('차트1', document.getElementById('myChart1'));
+      let myChart1 = document.getElementById('myChart1');
+      // const myChart1 = this.$refs.makeChart1;
+      const ctx = myChart1.getContext('2d');
+      if (Chart.getChart(myChart1)) {
+        Chart.getChart(myChart1)?.destroy();
+      }
+
+      if (!ctx) {
+        return;
+      }
+      const score = parseInt(this.chartRank);
 
       const getPointColor = (score) => {
         if (score > 70) return 'rgba(146, 183, 255)';
@@ -242,7 +357,7 @@ export default {
 
       const xPosition = getXPosition(score);
 
-      new Chart(ctx, {
+      myChart1 = new Chart(ctx, {
         type: 'line',
         data: {
           labels: ['0%', '30%', '70%', '100%'],
@@ -406,24 +521,31 @@ export default {
         ],
       });
     },
-    createChart2() {
-      const ctx = document.getElementById('myChart2').getContext('2d');
 
-      const data = {
-        labels: [
-          'HRD',
-          'Monthly Best',
-          'Monthly Base',
-          'HotTip',
-          'BEST PG',
-          'BEST Branch',
-          '소비자 지원',
-          '리그 테이블',
-        ],
+    createChart2() {
+      let myChart2 = document.getElementById('myChart2');
+
+      const ctx = myChart2.getContext('2d');
+      if (Chart.getChart(myChart2)) {
+        Chart.getChart(myChart2)?.destroy();
+      }
+
+      if (!ctx) {
+        return;
+      }
+
+      this.label = this.avg_score_json.map((item) => item.mile_name);
+      this.avg_data = this.avg_score_json.map((item) => item.average_score);
+      this.my_data = this.my_score_json.map((item) => item.total_score);
+
+      console.log();
+      let data = {
+        labels: this.label,
+
         datasets: [
           {
             label: '내 점수',
-            data: [45, 50, 45, 72, 30, 68, 90, 82],
+            data: this.my_data,
             backgroundColor: 'rgba(255, 0, 46, 0.3)',
             borderColor: 'rgba(255, 0, 46, 0.5)',
             pointBackgroundColor: 'rgb(255, 99, 132)',
@@ -433,7 +555,7 @@ export default {
           },
           {
             label: '평균 점수',
-            data: [90, 65, 80, 75, 68, 72, 85, 78],
+            data: this.avg_data,
             backgroundColor: 'rgba(0, 122, 255, 0.2)',
             borderColor: 'rgba(0, 122, 255, 0.4)',
             pointBackgroundColor: 'rgb(54, 162, 235)',
@@ -478,20 +600,83 @@ export default {
         },
       };
 
-      new Chart(ctx, config);
+      myChart2 = new Chart(ctx, config);
     },
   },
   mounted() {
-    this.$nextTick(() => {
-      this.createChart1();
-      this.createChart2();
-    });
-    this.aitest();
+    this.getReport();
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+
+    ...mapGetters('aireport', [
+      'getAll',
+      'getRank',
+      'getCatchTops',
+      'getDateAi',
+      'getMyRank',
+      'getChartRank',
+      'getAvg_score_json',
+      'getMy_score_json',
+      'getSuccessYN',
+      'getMile',
+    ]),
+
+    loginInfo() {
+      return this.getLoginInfo;
+    },
+    all() {
+      return this.getAll;
+    },
+    rank() {
+      return this.getRank;
+    },
+    catchTop() {
+      return this.getCatchTops;
+    },
+    mile() {
+      return this.getMile;
+    },
+    dateAi() {
+      return this.getDateAi;
+    },
+    myRank() {
+      return this.getMyRank;
+    },
+    chartRank() {
+      return this.getChartRank;
+    },
+    avg_score_json() {
+      return this.getAvg_score_json;
+    },
+    my_score_json() {
+      return this.getMy_score_json;
+    },
+    successYN() {
+      return this.getSuccessYN;
+    },
   },
-  watch: {},
+
+  watch: {
+    loginInfo: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.getReport();
+        }
+      },
+    },
+    all: {
+      handler(newVal) {
+        if (newVal) {
+          this.$nextTick(() => {
+            this.createCharts();
+          });
+        }
+      },
+      immediate: true,
+    },
+  },
 };
 </script>
 
@@ -564,17 +749,13 @@ span {
 .highlight {
   background-color: #fff6d4;
   border-radius: 30px; /* 둥근 모서리 */
-  padding: 4px 8spx; /* 내부 여백을 추가하여 크기 조절 */
+  padding: 4px 8px; /* 내부 여백을 추가하여 크기 조절 */
   display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
 }
 
-
 .page-back {
-
-
   padding-left: 5%;
   padding-right: 5%;
-
 }
 
 @keyframes fadeIn {
