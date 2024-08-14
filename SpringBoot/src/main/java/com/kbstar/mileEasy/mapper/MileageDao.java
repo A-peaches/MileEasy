@@ -1,9 +1,7 @@
 package com.kbstar.mileEasy.mapper;
 
+import com.kbstar.mileEasy.beans.*;
 import com.kbstar.mileEasy.dto.*;
-import com.kbstar.mileEasy.beans.MileByAge;
-import com.kbstar.mileEasy.beans.MileByJob;
-import com.kbstar.mileEasy.beans.MileByPosition;
 import com.kbstar.mileEasy.dto.MileExcel;
 import com.kbstar.mileEasy.dto.HitMile;
 import com.kbstar.mileEasy.dto.MileRecommand;
@@ -90,4 +88,21 @@ public interface MileageDao {
     void deleteDetail(String mileNo);
 
     void adminDelete(String mileNo);
+
+    ArrayList<allScore> allScore();
+
+    ArrayList<myScore> myScore(String userNo);
+
+    ArrayList<avgScore> avgScore();
+
+    double  percentageScore(String userNo);
+
+    ArrayList<MileScore> myGroup(String userNo);
+
+    ArrayList<group_weight
+            > group_weight(String userNo);
+
+    ArrayList<group_weight_avg> group_weight_avg(int groupNo);
+
+    ArrayList<my_weight_avg> my_weight_avg(String userNo, int groupNo);
 }
