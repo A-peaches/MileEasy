@@ -1,6 +1,6 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
-    <div class="d-flex p-4">
+    <div class="d-flex">
     <div class="back-container">
           <button class="back-button" @click="goBack">
             <span class="arrow">❮</span> 이전
@@ -19,21 +19,21 @@
       style="width: 600px; background: #ebebeb"
     >
       <button
-        class="tab-container lg2 fw-bold"
+        class="tab-container lg3 fw-bold"
         :class="{ active: activeTab === 'status' }"
         @click="setActiveTab('status')"
       >
         취득현황
       </button>
       <button
-        class="tab-container lg2 fw-bold"
+        class="tab-container lg3 fw-bold"
         :class="{ active: activeTab === 'intro' }"
         @click="setActiveTab('intro')"
       >
         마일리지 소개
       </button>
       <button
-        class="tab-container lg2 fw-bold"
+        class="tab-container lg3 fw-bold"
         :class="{ active: activeTab === 'documents' }"
         @click="setActiveTab('documents')"
       >
@@ -112,5 +112,6 @@ export default {
 </script>
 
 <style scoped>
+
 
 </style>
