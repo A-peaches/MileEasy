@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-for="list in contactsMileage" :key="list.user_no" style="padding:0 5%;">
+    <div v-for="list in contactsMileage" :key="list.user_no" class="contact-container" >
       <div class="border-bottom p-2">
         <div class="d-flex align-items-center justify-content-between">
-          <span class="p-3" style="text-align: left; font-family: KB_C2; font-size: 18pt;">{{ list.mile_name }} 마일리지</span>
+          <span class="p-3 contact-title" >{{ list.mile_name }} 마일리지</span>
           <div class="d-flex justify-content-end align-items-center">
             <span class="p-3 mr-3" style="text-align: left; font-family: KB_C3; font-size: 15pt;">{{ list.user_name }}</span>
             <span class="highlight" @click="connecting(list.user_phone)" style="text-align: left; font-family: KB_C3; font-size: 15pt;">
@@ -83,6 +83,27 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .contact-title{
+    text-align: left; 
+    font-family: KB_C2; 
+    font-size: 14pt !important;
+  }
+  .contact-container {
+    padding:0 2% !important;
+  }
+}
+
+.contact-container {
+  padding:0 5%;
+}
+
+.contact-title{
+  text-align: left; 
+  font-family: KB_C2; 
+  font-size: 18pt;
+}
+
 .highlight {
   background-color: #CFD4E7;
   border-radius: 30px; /* 둥근 모서리 */
