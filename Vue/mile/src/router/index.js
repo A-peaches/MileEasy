@@ -29,6 +29,12 @@ const routes = [
     meta: { hideHeader: true },
   },
   {
+    path: '/error',
+    name: 'ErrorPageView',
+    component: () => import('../views/common/ErrorPage.vue'),
+    meta: { hideHeader: true },
+  },
+  {
     path: '/noAccess',
     name: 'AlertView',
     component: () => import('../views/common/AlretView.vue'),

@@ -154,7 +154,15 @@ export default {
       hasReport: true, // 리포트 데이터 존재 여부
     };
   },
+  created() {
+    this.checkLoginInfo();
+  },
   methods: {
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
     async aitest() {
       try {
         const response = await api.post('bot/chat', null, {
@@ -609,7 +617,7 @@ export default {
     this.getReport();
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
 
     ...mapGetters('aireport', [
       'getAll',

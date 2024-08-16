@@ -168,7 +168,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
     ...mapGetters('mileExcel', ['getArrayMileDocument', 'getDocumentSum']),
 
     computedHeight() {
@@ -230,6 +230,11 @@ export default {
     ...mapActions('mileExcel', ['downloadDocument']),
     ...mapActions('mileDocument', ['fetchMileDocument']),
 
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
     formatDate(dateString) {
       return moment(dateString).format('YYYY-MM-DD');
     },
@@ -343,6 +348,9 @@ export default {
     },
   },
   created() {
+
+    this.checkLoginInfo();
+    
     const user_no = this.getLoginInfo ? this.getLoginInfo.user_no : null;
     if (user_no) {
       this.fetchMileInfo(user_no);

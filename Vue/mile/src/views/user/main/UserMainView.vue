@@ -53,7 +53,7 @@ export default {
   },
   methods : {
    checkLoginInfo() {
-      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+    if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
           window.location.href="/noAccess"
         } 
     },
