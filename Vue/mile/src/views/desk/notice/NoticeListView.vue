@@ -1,11 +1,12 @@
 <template>
-  <div class="d-flex justify-content-center">
-    <div class="cards page-back" @click="handleClick">
-      <div>
-        <h2 class="bold-x-lg mt-5" style="font-family: KB_C3;">공지사항</h2>
-      </div>
+  <div class="app-container">
+    <div class="content cards page-back mx-auto" @click="handleClick">
+      <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">공지사항</h2>
+      <hr
+      class="mx-auto title-line"
+    />
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button list-wrapper">카테고리</div>
+        <div class="category-button list-wrapper-category">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
@@ -21,8 +22,9 @@
           </div>
         </div>
       </div>
+
       <div class="notice-count-container">
-        <div class="notice-count">총 {{ filteredNotices.length }}건</div>
+        <div class="lg2 notice-count">총 {{ filteredNotices.length }}건</div>
         <label class="checkbox-container">
           <input
             type="checkbox"
@@ -30,7 +32,7 @@
             @change="handleCheckboxChange('views')"
           />
           <span class="custom-checkbox"></span>
-          <span class="checkbox-label">조회수</span>
+          <span class="lg2 checkbox-label">조회수</span>
         </label>
         <label class="checkbox-container">
           <input
@@ -39,7 +41,7 @@
             @change="handleCheckboxChange('date')"
           />
           <span class="custom-checkbox"></span>
-          <span class="checkbox-label">최신순</span>
+          <span class="lg2 checkbox-label">최신순</span>
         </label>
       </div>
       <div>
@@ -377,56 +379,127 @@ export default {
 
 
 <style scoped>
-html,
+@media (max-width: 768px) {
+  .title-line {
+    width: 30% !important;
+  }
+  .dropdown-menu {
+    top: 280% !important;
+    background-color: rgba(255, 255, 255, 0.96) !important;
+  }
+  .category-button {
+    width: 25vw !important;
+    font-size: 12pt !important;
+  }
+  .category-button:hover {
+    transition: background-color 0s ease !important;
+  }
+  .notice-count {
+    padding: 0 !important;
+    padding-left: 3% !important;
+    padding-top: 5% !important;
+    font-size: 11pt !important;
+  }
+  .checkbox-label {
+    margin-left: 7px !important; /* 체크박스와 텍스트 사이 간격 */
+    font-size: 11pt !important;
+  }
+  .checkbox-container {
+    top: 0 !important;
+    padding-top: 5% !important;
+  }
+}
+
+.title-line {
+  width: 13%; 
+  border: 0; 
+  height: 2px; 
+  background: black;
+}
+
+.list-wrapper-category {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.list-wrapper-category:hover {
+  cursor: pointer;
+  background-color: #e1e3e4 !important;
+  transition: background-color 0.3s ease;
+}
+/* html,
 body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* 수평 스크롤바 제거 */
-  height: 100%; /* 페이지 높이를 100%로 설정 */
+  font-family: "Arial, sans-serif";
+  overflow-x: hidden; 
+  height: 100%; 
 }
 
 body {
-  overflow-y: scroll; /* 수직 스크롤바 유지 */
-}
+  overflow-y: scroll; 
+} */
 
-h2 {
+/* h2 {
   font-family: "KB_C2", sans-serif;
   font-size: 40px;
   margin-top: 30px;
-  display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
+  display: inline-block;
   position: relative;
-}
+} */
 
-h2::after {
+/* h2::after {
   content: "";
   display: block;
-  width: 120%; /* 텍스트보다 긴 밑줄을 위해 조정 */
-  height: 1px; /* 밑줄 두께 */
-  background-color: #8d8d8d; /* 밑줄 색상 */
+  width: 120%;
+  height: 1px;
+  background-color: #8d8d8d; 
   position: absolute;
-  bottom: -5px; /* 텍스트와 밑줄 사이의 간격을 위해 조정 */
-  left: -10%; /* 중앙 정렬을 위해 조정 */
-}
+  bottom: -5px; 
+  left: -10%; 
+} */
 
+/* .app-container {
+  width: 100%;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4%;
+} */
 
-.page-back {
-  padding-left: 3%;
-  padding-right: 3%;
-}
+/* .content {
+  text-align: center;
+  padding: 20px;
+  width: 95%;
+  max-width: 1300px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: auto;
+} */
 
+/* .content {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 60px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  max-width: 1300px;
+  margin: 0 auto;
+} */
 
 .category-button {
   background-color: #f9f9f9;
   border-radius: 25px;
-  padding: 12px 40px;
+  padding: 12px 20px;
   cursor: pointer;
-  margin-bottom: 80px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px; /* 공지사항과 카테고리 버튼 사이의 간격 */
   display: inline-block;
-  font-size: 20px;
-  font-family: "KB_C3", sans-serif;
+  font-size: 17pt;
+  font-family: 'KB_S5', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+  width: 10vw;
 }
 
 .search-container {
@@ -475,11 +548,12 @@ h2::after {
 }
 
 .notice-count {
-  margin-bottom: 10px;
+  /* margin-bottom: 10px;
   font-size: 19px;
   font-family: "KB_C3", sans-serif;
-  text-align: left; /* 왼쪽 정렬 */
-  padding-left: 3%;
+  text-align: left; 
+  padding-left: 3%; */
+  padding: 2em;
 }
 
 .notice-count-container {
@@ -493,7 +567,6 @@ h2::after {
   align-items: center;
   cursor: pointer;
   position: relative;
-  top: -5px; /* 위치를 살짝 위로 올립니다 */
 }
 
 .checkbox-container input[type="checkbox"] {
@@ -528,7 +601,6 @@ h2::after {
 .checkbox-label {
   margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
   font-family: "KB_S5", sans-serif;
-  font-size: 20px;
 }
 
 .input-base {
@@ -625,17 +697,17 @@ h2::after {
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 100%;
+  top: 250%;
   left: 50%;
   z-index: 1;
-  border: none; /* 테두리 제거 */
-  background-color: rgba(255, 255, 255, 0.69);
-  border-radius: 30px;
+  border-color: #eeeeee;
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-radius: 15px;
   cursor: pointer;
   width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
   transform: translate(
     -50%,
-    -16%
+    -17%
   ); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
 }
 
