@@ -2,66 +2,67 @@
   <div class="app-container">
     <div class="content cards">
       <div>
-        <h2>마일리지 요청</h2>
+        <h2 class="lg">마일리지 요청</h2>
       </div>
-      <br /><br /><br /><br /><br />
-      <div class="notice-count-container">
+      <div class="topbuton" style="display: flex">
         <div class="notice-count">총 {{ filteredNotices.length }}건</div>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="all"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">전체</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="processing"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">접수요청</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="completed"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">접수완료</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="rejected"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">승인완료</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="false"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">승인거절</span>
-        </label>
+        <div class="notice-count-container">
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="all"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="lg2 radio-label">전체</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="processing"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">접수요청</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="completed"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">접수완료</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="rejected"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">승인완료</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="false"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">승인거절</span>
+          </label>
+        </div>
       </div>
       <div>
         <div>
@@ -716,5 +717,90 @@ h2::after {
   font-size: 16px;
   cursor: pointer;
 }
-/* @import url('C:\MileEasy\Vue\mile\src\assets\css\css.css'); */
+.notice-count {
+  margin-top: 5pt;
+}
+.notice-count-container {
+  display: flex;
+  flex-direction: row; /* 수평 배치 */
+
+  align-items: center; /* 세로축 가운데 정렬 */
+  gap: 15px; /* 버튼 간 간격 */
+  flex-wrap: wrap; /* 공간 부족 시 줄바꿈 */
+  padding: 10px;
+}
+
+.notice-count-container label {
+  display: flex;
+  align-items: center; /* 라디오 버튼과 텍스트 수직 정렬 */
+}
+
+.notice-count-container input[type='radio'] {
+  margin-right: 8px; /* 라디오 버튼과 텍스트 사이의 간격 */
+}
+.topbuton {
+  margin-top: 80px;
+}
+/* 모바일 화면에서의 스타일 */
+/* 모바일 화면에서의 스타일 */
+@media (max-width: 768px) {
+  .notice-count {
+    font-size: 11pt; /* 총 0건 텍스트의 폰트 크기 조정 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    width: 100%; /* 텍스트가 가로 전체를 차지하도록 설정 */
+    padding-left: 13px; /* 왼쪽 여백 추가 */
+    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+  }
+
+  .topbuton {
+    display: flex;
+    flex-direction: column; /* 버튼들을 세로로 배치 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    width: 100%; /* 전체 너비 설정 */
+    padding: 0 10px; /* 좌우 여백 추가 */
+    margin-top: 25px;
+  }
+
+  .notice-count-container {
+    display: flex;
+    flex-direction: row; /* 버튼들을 가로로 배치 */
+    flex-wrap: wrap; /* 공간 부족 시 줄바꿈 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    gap: 10px; /* 버튼들 간의 간격 */
+  }
+
+  .notice-count-container label {
+    display: flex;
+    align-items: center; /* 라디오 버튼과 텍스트 수직 정렬 */
+    font-size: 11px; /* 모바일에서 폰트 크기 조정 */
+    margin: 5px; /* 각 버튼과 텍스트 사이의 간격 */
+  }
+
+  .notice-count-container input[type='radio'] {
+    margin-right: 5px; /* 라디오 버튼과 텍스트 사이의 간격 */
+  }
+  .radio-label {
+    font-size: 11pt !important;
+    cursor: pointer;
+  }
+  .lg {
+    font-size: 20pt;
+  }
+  .write-button {
+    margin-left: 67%;
+    margin-top: 10px;
+  }
+  .input-search {
+    width: 67%;
+    padding-right: 29px;
+  }
+  .search-button {
+    right: 15px;
+    width: 30px;
+    height: 30px;
+  }
+  .no-results {
+    margin-top: 100px;
+  }
+}
 </style>

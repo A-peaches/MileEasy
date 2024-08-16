@@ -260,20 +260,20 @@ export default {
       }
 
       const formData = {
-        request_is_branch: commonMileage.value === '1',
+        request_is_branch: commonMileage.value === '1' ? '1' : '0',
         request_mile_name: mileageName.value,
-        request_mil_max: parseInt(annualLimit.value, 10),
-        request_admin: JSON.stringify(
-          rows.value.map((row) => row.id) // Extract only user_no
-        ),
+        request_mil_max: annualLimit.value,
+        request_admin: JSON.stringify(rows.value.map((row) => row.id)),
         request_etc: additionalNotes.value,
-        request_no: request.value,
-        mile_no: loginInfo.value.mile_no || 0,
-        user_no: loginInfo.value.user_no, // Add user_no from loginInfo
+        request_no: request.value.toString(), // 문자열로 변환
+        mile_no: (loginInfo.value.mile_no || 0).toString(), // 문자열로 변환
+        user_no: loginInfo.value.user_no,
       };
 
       try {
-        const response = await api.post('/user/requestAdd', formData);
+        const response = await api.post('/user/requestAdd', formData, {
+          headers: { 'Content-Type': 'application/json' },
+        });
         Swal.fire({
           icon: 'success',
           title: '성공',
