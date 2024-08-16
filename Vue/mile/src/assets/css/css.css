@@ -629,6 +629,7 @@ body.swal-open {
   cursor: pointer;
   margin-top: 0;
   font-family: 'KB_S5', sans-serif;
+  transition: all 0.3s ease;
 }
 
 .back-button .arrow {
@@ -642,15 +643,64 @@ body.swal-open {
   margin-right: 8px;
   font-size: 17px;
   font-family: 'KB_S5', sans-serif;
+  transition: all 0.3s ease;
 }
 
 .back-container {
   display: flex;
   align-items: center;
-  padding-left: 10px;
-  flex: 1; 
   padding: 1.5rem;
+  flex: 1;
 }
+/* 반응형 스타일 */
+@media (max-width: 1024px) {
+  .back-button {
+    font-size: 16px;
+  }
+
+  .back-button .arrow {
+    width: 45px;
+    height: 35px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .back-button {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .back-button .arrow {
+    width: 40px;
+    height: 30px;
+    font-size: 14px;
+    margin-right: 6px;
+  }
+
+  .back-container {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .back-button .arrow {
+    width: 35px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .back-container {
+    padding: 0.5rem;
+  }
+}
+
 
 .btn-analysis {
   background: linear-gradient(to right, #ffca05, #fcebaf); /* 그라데이션 색상 설정 */
@@ -675,6 +725,12 @@ body {
 }
 
 /* select tap reactive wep*/
+
+@media screen and (max-width: 370px) {
+  .lg2 {
+    font-size : 12pt;
+  }
+}
 
 @media screen and (max-width: 480px) {
   .tab-container {
