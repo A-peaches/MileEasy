@@ -74,7 +74,7 @@ public class MtipController {
         }
 
         // 파일 경로 설정 (실제 경로로 수정 필요)
-        Path filePath = Paths.get( mTipGuideUploadPath).resolve(savedFileName).normalize();
+        Path filePath = Paths.get(mTipGuideUploadPath).resolve(savedFileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
 
         if (resource.exists()) {
@@ -123,6 +123,7 @@ public class MtipController {
             return ResponseEntity.status(500).body("Error retrieving notices: " + e.getMessage());
         }
     }
+
     // m-tip 게시글 상세보기
     @GetMapping("/details/{noticeId}")
     public ResponseEntity<?> getMtipDetails(@PathVariable int noticeId) {
@@ -143,6 +144,7 @@ public class MtipController {
                     .body("{\"error\": \"Error fetching notice details: " + e.getMessage() + "\"}");
         }
     }
+
     // m-tip 조회수 불러오기
     @GetMapping("/MtipViews/{noticeId}")
     public ResponseEntity<String> incrementNoticeViews(@PathVariable("noticeId") int noticeId) {
@@ -167,8 +169,8 @@ public class MtipController {
 
     // 마일리지 카테고리
     @GetMapping("/Mtipmileage")
-    public ResponseEntity<List<Mileage>> getTipMileageList(){
-        List<Mileage> mileages =mtipBoardService.getTipMileageList();
+    public ResponseEntity<List<Mileage>> getTipMileageList() {
+        List<Mileage> mileages = mtipBoardService.getTipMileageList();
         return ResponseEntity.ok(mileages);
     }
 
@@ -176,11 +178,11 @@ public class MtipController {
     // 게시글 등록
     @PostMapping("/write")
     public ResponseEntity<?> MtipWrite(@RequestParam("title") String title,
-                                         @RequestParam(value = "mile_no", required = false) String mileNoStr,
-                                         @RequestParam("content") String content,
-                                         @RequestParam("user_no") String userNo,
-                                         @RequestParam("user_name") String userName,
-                                         @RequestParam(value = "file", required = false) String fileInfo) {
+                                       @RequestParam(value = "mile_no", required = false) String mileNoStr,
+                                       @RequestParam("content") String content,
+                                       @RequestParam("user_no") String userNo,
+                                       @RequestParam("user_name") String userName,
+                                       @RequestParam(value = "file", required = false) String fileInfo) {
         try {
             MtipBoard notice = new MtipBoard();
             notice.setMtip_board_title(title);
@@ -223,7 +225,7 @@ public class MtipController {
             String uuid = UUID.randomUUID().toString();
             String savedFileName = uuid + "_" + originalFileName;
 
-            Path filePath = Paths.get( mTipGuideUploadPath).resolve(savedFileName);
+            Path filePath = Paths.get(mTipGuideUploadPath).resolve(savedFileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             // 여기서는 파일명만 반환하고, 데이터베이스 저장은 별도의 서비스 로직에서 처리
@@ -233,18 +235,18 @@ public class MtipController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     //m-tip id로 정보 불러오기
     @GetMapping("/{id}")
     public ResponseEntity<MtipBoard> getNotice(@PathVariable Long id) {
-        System.out.println("이것은 id다" + id);
         MtipBoard notice = mtipBoardService.findById(id);
         if (notice != null) {
-            System.out.println("프론트엔드로 보내는 데이터: " + notice); // 응답 데이터를 로그에 출력
             return ResponseEntity.ok(notice);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     //로그인 정보 좋아요 목록
     @GetMapping("/liked-posts/{userNo}")
     public ResponseEntity<List<Long>> getLikedPosts(@PathVariable String userNo) {
@@ -261,6 +263,7 @@ public class MtipController {
         int isLiked = mtipBoardService.likePost(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
+
     //좋아요 수 감소
     @PostMapping("/unlike")
     public ResponseEntity<?> unlikePost(@RequestBody Map<String, Object> payload) {
@@ -270,6 +273,7 @@ public class MtipController {
         int isLiked = mtipBoardService.unlikePost(mtipBoardNo, userNo);
         return ResponseEntity.ok(Map.of("isLiked", isLiked));
     }
+
     //좋아요 확인
     @GetMapping("/check-like")
     public ResponseEntity<?> checkLike(@RequestParam("mtip_board_no") int mtipBoardNo, @RequestParam("user_no") String userNo) {
@@ -448,5 +452,14 @@ public class MtipController {
         }
     }
 
+    @PostMapping("/complain/{noticeId}")
+    public void complain(@PathVariable Long noticeId) {
+        mtipBoardService.complain(noticeId);
+    }
 
+
+    @PostMapping("/complainBack/{noticeId}")
+    public void complainBack(@PathVariable Long noticeId) {
+        mtipBoardService.complainBack(noticeId);
+    }
 }

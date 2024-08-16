@@ -237,6 +237,11 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .lg2 {
+  font-size: 14pt;
+  color: #4b4a4a;
+}
+
+.lg3 {
   font-size: 12pt;
   color: #4b4a4a;
 }
@@ -644,6 +649,7 @@ body.swal-open {
   align-items: center;
   padding-left: 10px;
   flex: 1; 
+  padding: 1.5rem;
 }
 
 .btn-analysis {
@@ -664,6 +670,10 @@ transition: transform 0.3s ease, background 0.3s ease;
 }
 
 
+body {
+  user-select: none;
+}
+
 /* select tap reactive wep*/
 
 @media screen and (max-width: 480px) {
@@ -675,6 +685,10 @@ transition: transform 0.3s ease, background 0.3s ease;
   .input-base, .input-search {
     width: 100%;
     margin: 5px 0;
+  }
+
+  .back-container {
+    padding: 0rem;
   }
 }
 
@@ -719,10 +733,14 @@ transition: transform 0.3s ease, background 0.3s ease;
   }
 
   .lg {
-    font-size: 20pt;
+    font-size: 18pt;
   }
 
   .lg2 {
+    font-size: 15pt;
+  }
+
+  .lg3 {
     font-size: 15pt;
   }
 
@@ -749,6 +767,10 @@ transition: transform 0.3s ease, background 0.3s ease;
     font-size: 16pt;
   }
 
+  .lg3 {
+    font-size: 16pt;
+  }
+
   .md {
     font-size: 12pt;
   }
@@ -756,6 +778,8 @@ transition: transform 0.3s ease, background 0.3s ease;
   .sm {
     font-size: 9pt;
   }
+
+
 }
 
 /* 대형 화면 */
@@ -772,6 +796,9 @@ transition: transform 0.3s ease, background 0.3s ease;
     font-size: 16pt;
   }
 
+  .lg3 {
+    font-size: 16pt;
+  }
   .md {
     font-size: 12pt;
   }

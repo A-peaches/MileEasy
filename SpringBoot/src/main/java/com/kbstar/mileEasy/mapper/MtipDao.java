@@ -39,7 +39,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -49,7 +49,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, mb.mtip_complain," +
             "mb.mile_no, m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -71,7 +71,7 @@ public interface MtipDao {
     void insertMtip(MtipBoard notice);
     /* 게시글 글작성 */
 
-    @Select("SELECT m.mtip_board_no, m.user_no, m.user_name, m.mtip_board_title, m.mtip_board_content, m.mtip_board_file, m.mtip_board_date, m.mtip_board_hit, m.mile_no, mil.mile_name, m.mtip_board_like " +
+    @Select("SELECT m.mtip_board_no, m.user_no, m.user_name, m.mtip_board_title, m.mtip_board_content, m.mtip_board_file, m.mtip_board_date, m.mtip_board_hit, m.mile_no, mil.mile_name, m.mtip_board_like, m.mtip_complain " +
             "FROM mtip_board m " +
             "LEFT JOIN mileage mil ON m.mile_no = mil.mile_no " +
             "WHERE m.mtip_board_no = #{id} AND m.mtip_board_is_delete = 0")
@@ -94,7 +94,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -105,7 +105,7 @@ public interface MtipDao {
 
     @Select("SELECT DISTINCT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -118,7 +118,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -130,7 +130,7 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
             "m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
@@ -154,5 +154,9 @@ public interface MtipDao {
     /*mtip 댓글 수정*/
     @Delete("DELETE FROM mtip_reply WHERE mtip_reply_no = #{mtipReplyNo}")
     void deleteComment(@Param("mtipReplyNo") int mtipReplyNo);
+
+    void complain(Long noticeId);
+
+    void complainBack(Long noticeId);
     /*mtip 댓글 삭제*/
 }

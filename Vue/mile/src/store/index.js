@@ -27,6 +27,7 @@ import badge from './badge/badge';
 import mileDocument from './mileage/mileDocument';
 import request from './admin/request';
 import contact from './contact/contact';
+import aireport from './userInfo/aireport';
 
 export default createStore({
   modules: {
@@ -57,5 +58,6 @@ export default createStore({
     mileDocument,
     request,
     contact,
+    aireport,
   },
 });

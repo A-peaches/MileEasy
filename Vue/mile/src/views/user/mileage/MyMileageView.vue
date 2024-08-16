@@ -436,17 +436,17 @@ h2.bold-x-lg {
   .recent-update, .below-text {
     margin-bottom: 5px;
   }
-
+/* 
   h2.bold-x-lg {
     font-size: calc(20px + 1vw);
-  }
+  } */
 
   .KB_C2 {
     font-size: calc(20px + 1vw);
   }
 
   .KB_C3.fw-bolder {
-    font-size: calc(14px + 0.5vw);
+    font-size: calc(16px + 0.5vw);
   }
 
   .mile-name {
@@ -455,16 +455,16 @@ h2.bold-x-lg {
 }
 
 @media (max-width: 480px) {
-  h2.bold-x-lg {
+  /* h2.bold-x-lg {
     font-size: calc(18px + 1vw);
-  }
+  } */
 
   .KB_C2 {
-    font-size: calc(18px + 1vw);
+    font-size: calc(24px + 1vw);
   }
 
   .KB_C3.fw-bolder {
-    font-size: calc(12px + 0.5vw);
+    font-size: calc(19px + 0.5vw);
   }
 
   .progress-bar {
@@ -478,5 +478,10 @@ h2.bold-x-lg {
   .mile-name {
     font-size: 14pt;
   }
+
+  .KB_C3.brown strong {
+  font-size: calc(14px + 0.5vw);
+}
+
 }
 </style>
