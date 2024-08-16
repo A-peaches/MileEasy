@@ -104,6 +104,10 @@ export default {
       sortByViews: false, // 조회 수 정렬 여부
     };
   },
+  created() {
+    this.checkLoginInfo();
+  },
+
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapState('login', ['loginInfo']),
@@ -200,6 +204,12 @@ filteredNotices() {
     ...mapActions('mtipBoard', ['fetchNotices', 'fetchLikedPosts']),
     ...mapActions('mileage', ['fetchMileages']),
 
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
+    
     goBack() {
       this.$router.go(-1);
     },
