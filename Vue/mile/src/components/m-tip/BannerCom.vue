@@ -79,6 +79,8 @@
   .video-overlay {
     width: 30%;
   }
+
+  
 }
 
 @media (max-width: 480px) {

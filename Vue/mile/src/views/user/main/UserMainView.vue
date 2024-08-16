@@ -41,14 +41,22 @@ export default {
       isMobile: false,
     }
   },
+  created() {
+    this.checkLoginInfo();
+  },
+
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
     loginInfo() {
       return this.getLoginInfo;
     },
   },
   methods : {
-  
+   checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
 
     setTransitionDelay(el, index) {
       el.style.setProperty('--index', index);

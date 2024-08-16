@@ -1,6 +1,6 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
-    <h2 class="bold-x-lg mt-5 mb-5 ml-5" style="font-family: KB_C3">
+    <h2 class="bold-x-lg mt-5 mb-5" style="font-family: KB_C3">
       {{ this.loginInfo.user_name }}님의 AI 리포트
     </h2>
 
