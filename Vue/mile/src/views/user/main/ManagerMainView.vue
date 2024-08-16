@@ -133,26 +133,36 @@ export default {
     goToMileagePromotion() {
       this.$router.push({ name: 'promotion', query: { mile_name: this.mile_name } });
     },
+    showAlert() {
+      this.$swal({
+        title: '유효하지 않은 로그인정보 입니다',
+        icon: 'error',
+        scrollbarPadding: false
+      });
+    },
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mile', ['getMileInfo']),
     profileImageUrl() {
-  if (this.loginInfo && this.loginInfo.user_no) {
-    if (process.env.NODE_ENV === 'development') {
-      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
-    } else {
-      return `/profile/${this.loginInfo.user_no}.jpg`;
-    }
-  }
-  return ''; // 또는 기본 이미지 URL
-},
+      if (this.loginInfo && this.loginInfo.user_no) {
+        if (process.env.NODE_ENV === 'development') {
+          return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+        } else {
+          return `/profile/${this.loginInfo.user_no}.jpg`;
+        }
+      }
+      return ''; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
     mileInfo() {
       return this.getMileInfo;
     },
+    isChecked() {
+      return this.getIsChecked;
+    }
   },
   async created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
