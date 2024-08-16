@@ -253,6 +253,7 @@ export default {
   .document-title {
     font-size: 11pt !important;
     width: 80% !important;
+    margin-left: 5% !important;
   }
   .document-date {
     font-size: 9pt !important;
