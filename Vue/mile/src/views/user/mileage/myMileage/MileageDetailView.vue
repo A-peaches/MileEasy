@@ -72,6 +72,11 @@ export default {
   },
   methods: {
     ...mapActions('hitMile', ['hit_mile']),
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
     setActiveTab(tab) {
       this.activeTab = tab;
     },
@@ -90,7 +95,7 @@ export default {
     console.log('Mile No:', this.mile_no);
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
     currentComponent() {
       switch (this.activeTab) {
         case 'status':
@@ -106,6 +111,7 @@ export default {
     watch: {},
   },
   created() {
+    this.checkLoginInfo();
     this.hit_mile(this.mile_no);
   },
 };

@@ -40,6 +40,8 @@
 // import api from '@/api/axios';
 import TogetherTarget from '@/components/user/TogetherTarget.vue';
 import PersonalTarget from '@/components/user/PersonalTarget.vue';
+import { mapGetters } from "vuex";
+
 export default {
   name: 'MyMileageTarget',
   components: {
@@ -52,13 +54,23 @@ export default {
     };
   },
   methods: {
+    
     setActiveTab(tab) {
       this.activeTab = tab;
       this.$router.push({ query: { tab: tab } }); // 라우터에 탭 정보 추가
     },
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
   },
-  created() {},
+  created() {
+
+    this.checkLoginInfo();
+  },
   computed: {
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
     currentComponent() {
       switch (this.activeTab) {
         case 'together':
