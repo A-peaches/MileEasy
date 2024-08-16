@@ -214,6 +214,15 @@ export default {
       return Math.ceil(this.filteredDocuments.length/this.itemsPerPage);
     }
   },
+  watch: {
+    searchQuery() {
+      this.lastInputTime = Date.now();
+      this.onSearch();
+    },
+    filteredDocuments() {
+      this.updateSearchPages();
+    }
+  },
   methods: {
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
     ...mapActions('mileExcel', ['downloadDocument']),
@@ -345,15 +354,6 @@ export default {
     // 모바일 기기 판단 여부 
     const md = new MobileDetect(window.navigator.userAgent);
     this.isMobile = md.mobile() !== null;
-  },
-  watch: {
-    searchQuery() {
-      this.lastInputTime = Date.now();
-      this.onSearch();
-    },
-    filteredDocuments() {
-      this.updateSearchPages();
-    }
   },
 };
 </script>
