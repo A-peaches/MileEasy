@@ -1,6 +1,6 @@
 <template>
   <div class="cards banner-back">
-    <video autoplay muted loop class="video-background">
+    <video autoplay muted loop playsInline webkit-playsinline class="video-background">
       <source :src="currentVideoSrc" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
