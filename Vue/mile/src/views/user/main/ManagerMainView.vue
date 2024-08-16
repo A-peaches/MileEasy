@@ -129,32 +129,42 @@ export default {
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
-    
     goToMileagePromotion() {
       this.$router.push({ name: 'promotion', query: { mile_name: this.mile_name } });
     },
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo.user_is_manager == 1 && this.getIsChecked == false)) {
+          window.location.href="/noAccess"
+        } 
+    },
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mile', ['getMileInfo']),
     profileImageUrl() {
-  if (this.loginInfo && this.loginInfo.user_no) {
-    if (process.env.NODE_ENV === 'development') {
-      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
-    } else {
-      return `/profile/${this.loginInfo.user_no}.jpg`;
-    }
-  }
-  return ''; // 또는 기본 이미지 URL
-},
+      if (this.loginInfo && this.loginInfo.user_no) {
+        if (process.env.NODE_ENV === 'development') {
+          return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+        } else {
+          return `/profile/${this.loginInfo.user_no}.jpg`;
+        }
+      }
+      return ''; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
     mileInfo() {
       return this.getMileInfo;
     },
+    isChecked() {
+      return this.getIsChecked;
+    }
   },
   async created(){
+    // 마일리지 담당자 로그인 여부 확인
+    this.checkLoginInfo();
+
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
     if(user_no){
       await this.fetchMileInfo(user_no);
