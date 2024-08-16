@@ -67,6 +67,10 @@ public class TargetService {
         System.out.println("joinTarget service 도착 ! ");
         // 목표 정보를 가져오기
         Target target = targetDao.getTargetByNo(targetNo);
+        if (target == null) {
+            throw new RuntimeException("해당 목표가 존재하지 않습니다.");
+        }
+
 
         // 사용자 목표에 참여시키기
         Usertarget userTarget = new Usertarget();
@@ -79,7 +83,11 @@ public class TargetService {
         userTarget.set_together(target.is_together());
         System.out.println("userTarget dao 들렸다가 옴 : "+userTarget);
         // user_target 테이블에 삽입
-        targetDao.joinUserTarget(userTarget);
+        targetDao.insertjoinTarget(userTarget);
+        System.out.println("insertUserTarget 들렸다 옴");
+        // initial_mileage 업데이트
+        targetDao.updateInitialMileage(target.getTarget_no(), userNo, target.getMile_no());
+
     }
 
     //참여형 참가하기 직원 목록

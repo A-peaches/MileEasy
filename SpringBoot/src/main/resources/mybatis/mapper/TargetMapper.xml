@@ -152,9 +152,8 @@
         WHERE target_no = #{targetNo}
     </select>
 
-    <!-- 사용자 목표 참여 정보 추가하기 -->
-    <insert id="joinUserTarget" parameterType="Usertarget">
-        <!-- Step 1: 사용자 목표 참여 정보 삽입 -->
+    <!-- 사용자 목표 참여 정보 삽입 (INSERT) -->
+    <insert id="insertjoinTarget" parameterType="com.kbstar.mileEasy.dto.Usertarget">
         INSERT INTO user_target (
         target_no,
         user_no,
@@ -173,26 +172,27 @@
         #{end_date},
         #{target_mileage},
         #{is_together},
-        0  <!-- 일단 0으로 초기화 -->
+        0  <!-- 초기값을 0으로 설정 -->
         )
         ON DUPLICATE KEY UPDATE
         start_date = VALUES(start_date),
         end_date = VALUES(end_date),
         target_mileage = VALUES(target_mileage),
         is_together = VALUES(is_together);
-
-        <!-- Step 2: initial_mileage 업데이트 -->
-        UPDATE user_target
-        SET initial_mileage = (
-        SELECT COALESCE(SUM(ms.score), 0)
-        FROM mile_score ms
-        WHERE ms.user_no = #{user_no}
-        AND ms.mile_no = #{mile_no}
-        )
-        WHERE user_no = #{user_no}
-        AND target_no = #{target_no};
     </insert>
 
+    <!-- initial_mileage 업데이트 (UPDATE) -->
+    <update id="updateInitialMileage">
+        UPDATE user_target
+        SET initial_mileage = (
+            SELECT COALESCE(SUM(ms.mile_score_point), 0)
+            FROM mile_score ms
+            WHERE ms.user_no = #{user_no}
+              AND ms.mile_no = #{mile_no}
+        )
+        WHERE user_no = #{user_no}
+          AND target_no = #{target_no};
+    </update>
 
     <!-- 참여형 참가한 직원 목록 -->
     <select id="findUsersByTargetNo" resultType="map">
