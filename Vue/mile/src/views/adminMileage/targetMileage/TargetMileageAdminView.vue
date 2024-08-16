@@ -105,7 +105,7 @@ export default {
   },
   computed :{ // 데이터를 가공하는 곳. 
     ...mapGetters('mile', ['getMileInfo', 'getArrayMiles']),
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mileage', ['getTargets']),
 
     targets() {
@@ -155,6 +155,9 @@ export default {
       return this.formattedTargets.filter(target =>
         target.startDate.setHours(0,0,0,0) > currentDate
       ).sort((a, b) => new Date(a.startDate)-new Date(b.startDate)); 
+    },
+    isChecked() {
+      return this.getIsChecked;
     }
   },
   methods: {
@@ -213,8 +216,15 @@ export default {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     },
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo.user_is_manager == 1 && this.getIsChecked == false)) {
+          window.location.href="/noAccess"
+        } 
+    },
   },
   async created(){
+    // 마일리지 담당자 로그인 여부 확인
+    this.checkLoginInfo();
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
     if(user_no){
       await this.fetchMileInfo(user_no);

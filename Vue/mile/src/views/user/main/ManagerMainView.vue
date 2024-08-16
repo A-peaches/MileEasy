@@ -129,16 +129,13 @@ export default {
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
-    
     goToMileagePromotion() {
       this.$router.push({ name: 'promotion', query: { mile_name: this.mile_name } });
     },
-    showAlert() {
-      this.$swal({
-        title: '유효하지 않은 로그인정보 입니다',
-        icon: 'error',
-        scrollbarPadding: false
-      });
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo.user_is_manager == 1 && this.getIsChecked == false)) {
+          window.location.href="/noAccess"
+        } 
     },
   },
   computed: {
@@ -165,6 +162,9 @@ export default {
     }
   },
   async created(){
+    // 마일리지 담당자 로그인 여부 확인
+    this.checkLoginInfo();
+
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
     if(user_no){
       await this.fetchMileInfo(user_no);

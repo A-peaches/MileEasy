@@ -55,7 +55,7 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
   name: 'IntroduceMileageAddAdminView',
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mile', ['getMileInfo']),
     loginInfo(){
       return this.getLoginInfo;
@@ -63,6 +63,9 @@ export default {
     mileInfo() {
       return this.getMileInfo;
     },
+    isChecked() {
+      return this.getIsChecked;
+    }
   },
   data(){
     return{
@@ -112,8 +115,15 @@ export default {
         }
       })
     },
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo.user_is_manager == 1 && this.getIsChecked == false)) {
+          window.location.href="/noAccess"
+        } 
+    },
   },
   created(){
+    // 마일리지 담당자 로그인 여부 확인
+    this.checkLoginInfo();
     const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
     if(mile_no){
       this.getMileDetail(mile_no);
