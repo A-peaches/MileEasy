@@ -70,12 +70,12 @@
                 </div>
              </div>
              <div class="py-3" style="display: flex; flex-direction: column; align-items: flex-start; margin-left: 20px;">
-              <span class="lg2" style="font-family: 'KB_C1'; font-size: 20px; margin-bottom: -25px;">그룹 달성률</span><br>
+              <span class="lg2" style="font-family: 'KB_C1'; font-size: 20px; margin-bottom: -25px;">개인 달성률</span><br>
               <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-right: 10px;">
                   <div class="progress-bar progress-bar-striped progress-bar-animated" :style="{width: Math.min(target.achievementRate, 100) + '%', backgroundColor: '#FB773C '}"></div>
                 </div>
-                <span style="font-weight: bold; white-space: nowrap; font-family: 'KB_C2'; font-size: 25px; margin-right: 10px;">{{ Math.min(target.achievementRate, 100) }}%</span>
+                <span style="font-weight: bold; white-space: nowrap; font-family: 'KB_C2'; font-size: 25px; margin-right: 10px;">{{ getDisplayableAchievementRate(target) }}</span>
               </div>
               <span class="md" style="margin-top: 5px; font-size: 13px; font-family: 'KB_C2';">{{ target.start_date }} - {{ target.end_date }}</span>
             </div>
@@ -152,6 +152,16 @@ export default {
       } else {
         return 'ongoing';
       }
+    },
+      // 달성률 계산을 종료 상태에 따라 처리
+    getDisplayableAchievementRate(target) {
+      const status = this.getStatusText(target);
+      // 종료된 목표는 달성률을 그대로 반환
+      if (status === '종료') {
+        return `${Math.min(target.achievementRate, 100)}%`;  // 종료 상태에서 달성률 고정
+      }
+      // 진행 중인 경우도 달성률 반환 (이미 서버에서 계산된 값)
+      return `${Math.min(target.achievementRate, 100)}%`;
     },
       getStatusText(target) {
       const currentDate = new Date();
@@ -403,6 +413,20 @@ mounted() {
       this.applyFadeUpEffect();
     });
   },
+  displayedTargets: {
+      handler(newTargets) {
+        newTargets.forEach(target => {
+          if (Math.min(target.achievementRate, 100) === 100) {
+            console.log('마왕 서버로 갑니다.:', target.target_no); // 로그 추가
+            this.$store.dispatch('target/increaseMawangScore', {
+            targetNo: target.target_no,
+            userNo: this.loginInfo.user_no
+            });
+          }
+        });
+      },
+      deep: true,
+    },
   },
 };
 </script>

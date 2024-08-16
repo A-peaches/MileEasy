@@ -32,5 +32,6 @@ public interface TargetDao {
     void deleteUserTarget(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
     // Target 삭제하기
     void deleteTarget(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
-
+    //마왕점수 업그레이드
+    int updateMawangScore(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
 }

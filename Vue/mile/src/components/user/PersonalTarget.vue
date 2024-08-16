@@ -56,7 +56,7 @@
             <span class="lg2" style="font-family: 'KB_C1'; font-size: 17px; "> 🎯 나의 마일리지 / 목표 마일리지 </span>
               <div class="py-3">
                 <span class="bold-x-lg" style="font-family: 'KB_C1';">
-                  <span class="highlight-score">{{ targets.achievementRate}}</span>  / {{targets.target_mileage }}</span>
+                  <span class="highlight-score">{{ targets.totalMileScoreByMileNo}}</span>  / {{targets.target_mileage }}</span>
               </div>
             </div>
           </div>
@@ -203,11 +203,25 @@ export default {
       }
     },
     calculateProgress(target) {
-    if (!target.target_mileage || target.target_mileage === 0) return '0%'; // 목표 마일리지가 0이면 진행률은 0
-    if (this.getStatusText(target) === '예정') return '0%'; // 예정 상태이면 진행률은 0%
-    const progress = (target.achievementRate / target.target_mileage) * 100;
-    return progress > 100 ? '100%' : Math.round(progress) + '%'; // 최대 진행률은 100%
-  },
+    // 종료된 목표는 고정된 진행률 반환 (목표 종료 시 프론트엔드 또는 서버에서 저장된 값)
+    if (this.getStatusText(target) === '종료') {
+        return target.achievementRate + '%';  // 종료 상태에서는 계산된 진행률 고정
+    }
+
+    // 목표 마일리지가 0이거나 없으면 진행률은 0%
+    if (!target.target_mileage || target.target_mileage === 0) {
+        return '0%';
+    }
+
+    // 달성한 마일리지 비율을 계산
+    const progress = (target.totalMileScoreByMileNo / target.target_mileage) * 100;
+
+    // 목표 진행률을 업데이트
+    target.achievementRate = progress > 100 ? 100 : Math.round(progress);
+
+    return target.achievementRate + '%';
+},
+
 
 
 
@@ -229,14 +243,15 @@ export default {
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
 
-      if (currentDate < startDate) {
-        return '예정';
-      } else if (currentDate > endDate) {
-        return '종료';
-      } else {
-        return '진행중';
-      }
-    },
+      if (currentDate > endDate) {
+     // 종료된 상태이므로 진행률 고정
+     return '종료';
+   } else if (currentDate < startDate) {
+     return '예정';
+   } else {
+     return '진행중';
+   }
+ },
     sortTargets(targets) {
   return targets.sort((a, b) => {
     const statusA = this.getStatusText(a);

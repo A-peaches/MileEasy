@@ -99,5 +99,11 @@ public class TargetService {
         }
     }
 
+    //마왕 점수 업그레이드
+    public int increaseMawangScore(String userNo,int targetNo) {
+        System.out.println("dao로 갑니다.");
+        return targetDao.updateMawangScore(userNo,targetNo);
+    }
+
 
 }
