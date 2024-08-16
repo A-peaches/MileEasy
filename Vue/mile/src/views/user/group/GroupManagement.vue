@@ -102,8 +102,12 @@ export default {
       popoverStyle: {},
     }
   },
+  created() {
+    this.checkLoginInfo();
+  },
+
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -132,6 +136,12 @@ export default {
     },
   },
   methods: {
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true) ||
+    this.getLoginInfo.is_hr == false) {
+          window.location.href="/noAccess"
+        } 
+    },
     formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');

@@ -206,6 +206,11 @@ filteredNotices() {
     ...mapActions('mtipBoard', ['fetchNotices','checkLikeStatus','fetchLikedPosts']),
     ...mapActions('mileage', ['fetchMileages']),
 
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -401,7 +406,12 @@ filteredNotices() {
 
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
-  }
+  },
+  created() {
+    this.checkLoginInfo();
+  },
+
+
 };
 </script>
 

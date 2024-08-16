@@ -196,10 +196,17 @@ filteredNotices() {
   },
 
   },
+  created() {
+    this.checkLoginInfo();
+  },
   methods: {
     ...mapActions('mtipBoard', ['fetchNotices', 'fetchLikedPosts']),
     ...mapActions('mileage', ['fetchMileages']),
-
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
     goBack() {
       this.$router.go(-1);
     },
