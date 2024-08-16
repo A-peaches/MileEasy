@@ -54,13 +54,13 @@
                 >
               </div>
             </div>
-            <div
-              class="text-star"
-              style="font-size: 10pt; color: gray; margin-top: 35px"
-            >
-              ( 과거 업데이트 일자 : {{ item.prev_date }} / 최신 업데이트 일자 :
-              {{ item.mile_date }} )
-            </div>
+            <div v-if="!isMobile" class="text-star" style="font-size: 10pt; color: gray; margin-top: 35px">
+      ( 과거 업데이트 일자 : {{ item.prev_date }} / 최신 업데이트 일자 : {{ item.mile_date }} )
+    </div>
+    <div v-else class="text-star" style="font-size: 9pt; color: gray; margin-top: 20px">
+      과거 업데이트 : {{ item.prev_date }} <br>
+      최신 업데이트 : {{ item.mile_date }}
+    </div>
           </div>
         </div>
       </div>
@@ -128,6 +128,9 @@ export default {
   computed: {
     ...mapGetters("login", ["getLoginInfo"]),
     ...mapGetters("mileScore", ["getMileStatus"]),
+    isMobile() {
+      return window.innerWidth <= 768; // 768px 이하를 모바일로 간주
+    },
     filteredMileStatus() {
       const jobNo = this.getLoginInfo ? this.getLoginInfo.job_no : null;
       if (!jobNo) {
@@ -156,5 +159,97 @@ export default {
 .fade-up-active {
   opacity: 1;
   transform: translateY(0);
+}
+
+.cards {
+  background-color: #f9f9f9;
+  height: 200px;
+  position: relative;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.cards:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-start {
+  font-size: 16pt;
+  margin: 0;
+}
+
+.KB_C2 {
+  font-size: 32pt;
+}
+
+.text-star {
+  font-size: 10pt;
+  color: gray;
+  margin-top: 35px;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1200px) {
+  .col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 992px) {
+  .cards {
+    height: auto;
+    min-height: 200px;
+  }
+
+  .text-start {
+    font-size: 14pt;
+  }
+
+  .KB_C2 {
+    font-size: 28pt;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .cards {
+    margin-bottom: 20px;
+  }
+
+  .text-start {
+    font-size: 16pt;
+  }
+
+  .KB_C2 {
+    font-size: 30pt;
+  }
+}
+
+@media (max-width: 576px) {
+  .text-start {
+    font-size: 14pt;
+  }
+
+  .KB_C2 {
+    font-size: 26pt;
+  }
+
+  .text-star {
+    font-size: 9pt;
+  }
 }
 </style>

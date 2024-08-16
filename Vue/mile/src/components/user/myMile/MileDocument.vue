@@ -2,10 +2,10 @@
   <div :style="{height:computedHeight}">
     <div class="d-flex justify-content-between align-items-center">
       <div class="lg2" style="padding: 3em">총 {{ documentSum }}건</div>
-      <div class="input-search input-base" style="margin-right: 2em; width:17vw; height: 6vh;">
-        <div class="d-flex justify-content-between align-items-center" style="font-size: 14pt; height: 100%; margin-left: 1em;">
+      <div class="input-search input-base search-mobile">
+        <div class="d-flex justify-content-between align-items-center search-wrapper">
           <input type="text" v-model="searchQuery" @input="onSearch" placeholder="검색어를 입력하세요" class="w-100 h-100 d-inline-block" style="text-align: left;"/>
-          <button><i class="bi bi-search mr-2" style="font-size: 25px; color: #4b4a4a"></i></button>
+          <button><i class="bi bi-search mr-2"></i></button>
         </div>
       </div>
     </div>

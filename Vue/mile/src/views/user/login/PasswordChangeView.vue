@@ -148,6 +148,9 @@ export default {
         this.msg = "서버 오류가 발생했습니다.";
         this.errorAlert();
       }
+
+      this.password = '';
+      this.confirm_password ='';
     },
     goBack() {
       this.$router.back(-1);

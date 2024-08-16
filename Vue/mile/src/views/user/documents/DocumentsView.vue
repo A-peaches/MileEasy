@@ -10,7 +10,7 @@
   
     <!-- 카테고리 목록 -->
     <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-      <div class="category-button list-wrapper" >
+      <div class="category-button list-wrapper-category" >
         {{ selectedCategory ? selectedCategory : '카테고리' }}
       </div>
       <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
@@ -28,15 +28,13 @@
       </div>
     </div>
   
-  <div class="d-flex justify-content-between align-items-center">
-    <div class="lg2" style="padding: 3em">총 {{ countList }}건</div>
+  <div class="d-flex justify-content-between align-items-center document-menu">
+    <div class="lg2 document-count" >총 {{ countList }}건</div>
     <div
-      class="input-search input-base"
-      style="margin-right: 2em; width: 17vw; height: 6vh"
+      class="input-search input-base search-mobile"
     >
       <div
-        class="d-flex justify-content-between align-items-center"
-        style="font-size: 14pt; height: 100%; margin-left: 1em"
+        class="d-flex justify-content-between align-items-center search-wrapper"
       >
         <input
           type="text"
@@ -49,7 +47,6 @@
         <button>
           <i
             class="bi bi-search mr-2"
-            style="font-size: 25px; color: #4b4a4a"
           ></i>
         </button>
       </div>
@@ -59,28 +56,21 @@
     <!-- 문서 리스트 불러오기 -->
     <div
       v-if="filteredDocuments.length > 0"
-      class="pr-5 pl-5 pb-5 pt-2"
-      style="margin-top: 8vh"
+      class="pr-5 pl-5 pb-5 pt-2 document-container"
     >
       <div
         v-for="document in paginatedDocuments"
         :key="document.documnet_mile_no"
         class="mx-auto mb-4 border-bottom p-4 input-base input-white list-wrapper"
-        style="
-          width: 95%;
-          height: 5em;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-          background-color: #fbfbfb;
-        "
       >
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between list-container">
           <button style="width: 90%; text-align: left">
             <div class="d-flex align-items-center justify-content-start">
               <div
-                v-if="isNew(document.document_date)"
+                v-if="isNew(document.document_date) && !isMobile"
                 style="width: 5%; padding-left: 3%"
               >
-                <span class="md" style="color: #edbb00; font-family: 'KB_C2'"
+                <span class="" style="color: #edbb00; font-family: 'KB_C2'; font-size: 11pt;"
                   >NEW</span
                 >
               </div>
@@ -89,42 +79,32 @@
                 style="width: 100%"
               >
                 <span
-                  class="pl-4"
-                  style="
-                    width: 20%;
-                    margin-left: 3%;
-                    text-align: left;
-                    font-family: 'KB_C2';
-                    font-size: 14pt;
-                    color: #9c8480;
-                  "
+                  class="pl-1 document-category"
                   >{{ document.mile_name }}</span
                 >
                 <span
-                  class="lg2"
-                  style="
-                    width: 65%;
-                    margin-left: 3%;
-                    text-align: center;
-                    font-family: 'KB_C2';
-                  "
+                  class="lg2 document-title"
                   >{{ document.document_file }}</span
                 >
-                <span
-                  class="md pl-3"
-                  style="
-                    width: 15%;
-                    margin-right: 3%;
-                    text-align: right;
-                    font-family: 'KB_C3';
-                  "
-                  >{{ formatDate(document.document_date) }}</span
-                >
+                <div v-if="!isMobile">
+                  <span
+                    class="md mr-5 document-date"
+                    >{{ formatDate(document.document_date) }}</span
+                  >
+                </div>
+                
               </div>
             </div>
           </button>
           <button @click.stop="downloadDocu(document.document_file)">
-            <span class="md" style="text-align: right">파일 다운로드 〉</span>
+            <div v-if="!isMobile">
+              <span class="md download-font" style="text-align: right">파일 다운로드 〉</span>
+            </div>
+            <div v-else>
+              <span class="md download-font" style="text-align: right">
+                <i class="bi bi-download"></i>
+              </span>
+            </div>
           </button>
         </div>
       </div>
@@ -142,14 +122,14 @@
     <div class="pagination">
       <button @click="prevPage" :disabled="currentPage === 1">〈</button>
       <button
-        v-for="page in totalPages"
+        v-for="page in searchPages"
         :key="page"
         @click="goToPage(page)"
         :class="{ active: currentPage === page }"
       >
         {{ page }}
       </button>
-      <button @click="nextPage" :disabled="currentPage === totalPages">
+      <button @click="nextPage" :disabled="currentPage === searchPages">
         〉
       </button>
     </div>
@@ -161,6 +141,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import api from '@/api/axios';
 import moment from 'moment';
+import MobileDetect from "mobile-detect";
 
 export default {
   name: 'DocumentsView',
@@ -179,6 +160,9 @@ export default {
       selectedCategory: '', // 선택된 카테고리
       showCategory: false, // 카테고리: 전체
       totalPages: 0, // 총 페이지 수
+      isMobile: false,
+      searchPages: 0,
+      lastSearchQuery: '',
     };
   },
   computed: {
@@ -186,17 +170,21 @@ export default {
     ...mapGetters('mileExcel', ['getArrayMileDocument', 'getDocumentSum']),
 
     computedHeight() {
-      let height =
-        this.baseHeight + this.paginatedDocuments.length * this.increment;
-      if (
-        this.paginatedDocuments.length % this.itemsPerPage === 0 &&
-        this.paginatedDocuments.length > 0
-      ) {
-        height += this.buttonHeight / 2;
-      } else {
-        height += this.buttonHeight / 2;
+      if(this.isMobile){
+        return "110vh";
+      }else{
+        let height =
+          this.baseHeight + this.paginatedDocuments.length * this.increment;
+        if (
+          this.paginatedDocuments.length % this.itemsPerPage === 0 &&
+          this.paginatedDocuments.length > 0
+        ) {
+          height += this.buttonHeight / 2;
+        } else {
+          height += this.buttonHeight / 2;
+        }
+        return `${height}vh`;
       }
-      return `${height}vh`;
     },
     documentSum() {
       return this.getDocumentSum;
@@ -209,8 +197,11 @@ export default {
           (document) => document.mile_name === this.selectedCategory
         );
       }
+
+      // 검색어와 문서 파일명을 소문자로 변환하여 비교
+      const searchQueryLower = this.searchQuery.toLowerCase();
       return documents.filter((document) =>
-        document.document_file.includes(this.searchQuery)
+        document.document_file.toLowerCase().includes(searchQueryLower)
       );
     },
     paginatedDocuments() {
@@ -219,6 +210,9 @@ export default {
         this.currentPage * this.itemsPerPage
       );
     },
+    totalFilteredPages() {
+      return Math.ceil(this.filteredDocuments.length/this.itemsPerPage);
+    }
   },
   methods: {
     ...mapActions('mile', ['fetchMileInfo', 'getMileDetail']),
@@ -260,11 +254,15 @@ export default {
       this.allDocuments = response.data;
 
       const countList = await api.get(
-        `http://localhost:8090/myMile/countListDocuments`
+        `/myMile/countListDocuments`
       );
       this.countList = countList.data;
 
       this.totalPages = Math.ceil(this.countList / this.itemsPerPage);
+      this.updateSearchPages();
+    },
+    updateSearchPages() {
+      this.searchPages = Math.ceil(this.filteredDocuments.length / this.itemsPerPage);
     },
     onSearch() {
       // 검색
@@ -273,14 +271,18 @@ export default {
 
       if (timeSinceLastInput > 500) {
         this.lastInputTime = currentTime;
-        this.loadDocuments();
+        if(this.searchQuery !== this.lastSearchQuery){
+          this.currentPage = 1; //검색어가 변경되었을 때만 첫 페이지로 이동
+          this.lastSearchQuery = this.searchQuery;
+        }
+        this.updateSearchPages();
       }
     },
     async fetchMileages() {
       // 마일리지 카테고리 가져오기
       try {
         const response = await api.get(
-          'http://localhost:8090/notice/mileage'
+          '/notice/mileage'
         );
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
@@ -339,11 +341,19 @@ export default {
     this.loadDocuments(); // 첫 페이지 로드
     this.fetchMileages();
   },
+  mounted() {
+    // 모바일 기기 판단 여부 
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isMobile = md.mobile() !== null;
+  },
   watch: {
     searchQuery() {
       this.lastInputTime = Date.now();
       this.onSearch();
     },
+    filteredDocuments() {
+      this.updateSearchPages();
+    }
   },
 };
 </script>
@@ -364,6 +374,82 @@ export default {
     background-color: #e1e3e4 !important;
     transition: background-color 0s ease !important;
   }
+  .document-count {
+    padding: 30px !important;
+    font-size: 11pt !important;
+  }
+  .dropdown-menu {
+    top: 255% !important;
+    background-color: rgba(255, 255, 255, 0.96) !important;
+  }
+  .document-menu {
+    margin-top: 30px !important;
+  }
+  .document-container {
+    margin-top: 4vh !important;
+    padding: 0 !important;
+  }
+  .list-wrapper {
+    width: 100% !important;
+    height: 3em !important;
+    padding: 3% !important;
+  }
+  .document-category {
+    margin-left: 0 !important;
+    font-size: 8pt !important;
+    width: 20% !important;
+    padding-left: 0 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .document-title {
+    font-size: 11pt !important;
+    width: 80% !important;
+  }
+  .document-date {
+    font-size: 9pt !important;
+    padding: 0 !important;
+  }
+  .download-font {
+    font-size: 13pt !important;
+  }
+  .list-container {
+    padding: 0 !important;
+  }
+}
+
+.document-date {
+  width: 20%;
+  margin-right: 3%;
+  text-align: left;
+  font-family: 'KB_C3';
+}
+
+.document-title {
+  width: 65%;
+  text-align: center;
+  font-family: 'KB_C2';
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.document-category {
+  width: 15%;
+  margin-left: 3%;
+  text-align: left;
+  font-family: 'KB_C2';
+  font-size: 14pt;
+  color: #9c8480;
+}
+
+.document-container {
+  margin-top: 8vh;
+}
+
+.document-count {
+  padding: 3em;
 }
 
 .title-line {
@@ -378,6 +464,7 @@ export default {
   position: relative;
   display: inline-block;
 }
+
 .category-button {
   background-color: #f9f9f9;
   border-radius: 25px;
@@ -390,20 +477,38 @@ export default {
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
   width: 10vw;
 }
+
 .category-button:hover {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
 .menu-items {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .list-wrapper {
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 95%;
+  height: 5em;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #fbfbfb;
 }
+
 .list-wrapper:hover {
+  cursor: pointer;
+  background-color: #e1e3e4 !important;
+  transition: background-color 0.3s ease;
+}
+
+.list-wrapper-category {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.list-wrapper-category:hover {
   cursor: pointer;
   background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
@@ -416,7 +521,7 @@ export default {
   left: 50%;
   z-index: 1;
   border-color: #eeeeee;
-  background-color: rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.96) !important;
   border-radius: 15px;
   cursor: pointer;
   width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */

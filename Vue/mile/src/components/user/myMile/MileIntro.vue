@@ -1,13 +1,17 @@
 <template>
   <div>
-    <div v-for="detail in arrayMiles" :key="detail.mile_introduce_no" style="padding:0 5%;">
-      <div class="border-bottom p-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">{{ detail.mile_title }} 마일리지</h3>
-        </div>
-        <div class="d-flex justify-content-between align-items-center input-gray p-4">
-          <span><pre class="lg2" style="text-align: left; font-family: KB_C3; font-size: 15pt">{{ detail.mile_content }}</pre></span>
-          <button @click="download(detail.mile_route)"><p class="md" v-if="detail.mile_route" style="text-align: right;">상세보기 〉</p></button>
+    <div v-for="detail in arrayMiles" :key="detail.mile_introduce_no" class="mile-card">
+      <div class="mile-card-content">
+        <h3 class="mile-title">{{ detail.mile_title }} 마일리지</h3>
+        <div class="mile-content-container">
+          <div class="mile-content">
+            <pre class="mile-content-text">{{ detail.mile_content }}</pre>
+          </div>
+          <div class="mile-detail-button">
+            <button v-if="detail.mile_route" @click="download(detail.mile_route)" class="detail-button text-brown">
+              <p>상세보기 〉</p>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -73,3 +77,115 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.mile-card {
+  padding: 0 5%;
+  margin-bottom: 20px;
+}
+
+.mile-card-content {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 20px;
+}
+
+.mile-title {
+  text-align: left;
+  font-family: KB_C2, sans-serif;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.mile-content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.mile-content {
+  flex: 1;
+  min-width: 0;
+  margin-right: 20px;
+}
+
+.mile-content-text {
+  text-align: left;
+  font-family: KB_C3, sans-serif;
+  font-size: 15pt;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.mile-detail-button {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.detail-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.detail-button p {
+  text-align: right;
+  margin: 0;
+  font-size: 14pt;
+}
+
+@media (max-width: 768px) {
+  .mile-title {
+    font-size: 20px;
+  }
+
+  .mile-content-text {
+    font-size: 14pt;
+  }
+
+  .mile-content-container {
+    flex-direction: column;
+  }
+
+  .mile-content {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .mile-detail-button {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .mile-card {
+    padding: 0 3%;
+  }
+
+  .mile-card-content {
+    padding: 15px;
+  }
+
+  .mile-title {
+    font-size: 18px;
+  }
+
+  .mile-content-text {
+    font-size: 12pt;
+  }
+
+  .mile-content-container {
+    padding: 15px;
+  }
+
+  .detail-button p {
+    font-size: 12pt;
+  }
+}
+</style>

@@ -259,30 +259,30 @@
               </div>
             </div>
             <div class="nav-item">
-              <div class="nav-link mx-auto" style="width:80%; font-size: 18pt; border-bottom: 1px solid gray;"></div>
+              <div class="nav-mobile-link mx-auto" style="width:80%; font-size: 18pt; border-bottom: 1px solid gray;"></div>
             </div>
             <div class="nav-item">
-              <a class="nav-link hover" href="/myMileageView">나의 마일리지</a>
+              <a class="nav-mobile-link hover" href="/myMileageView">나의 마일리지</a>
             </div>
             <div class="nav-item">
-              <a class="nav-link hover" href="/myMileagetarget">목표 설정</a>
+              <a class="nav-mobile-link hover" href="/myMileagetarget">목표 설정</a>
             </div>
             <div class="nav-item">
-              <a class="nav-link hover" aria-current="page" href="/documentsView">문서모아</a>
+              <a class="nav-mobile-link hover" aria-current="page" href="/documentsView">문서모아</a>
             </div>
             <div v-if="loginInfo.is_hr == true">
               <div class="nav-item">
-                <a class="nav-link hover" href="/group">그룹 관리</a>
+                <a class="nav-mobile-link hover" href="/group">그룹 관리</a>
               </div>
             </div>
             <div class="nav-item">
-              <a class="nav-link hover" href="/M-Tip">M-Tip</a>
+              <a class="nav-mobile-link hover" href="/M-Tip">M-Tip</a>
             </div>
             <div class="nav-item">
-              <a class="nav-link hover" href="/noticeListView">공지사항</a>
+              <a class="nav-mobile-link hover" href="/noticeListView">공지사항</a>
             </div>
             <div class="nav-item">
-              <a class="nav-link hover" href="/mileEasyContactView">연락처</a>
+              <a class="nav-mobile-link hover" href="/mileEasyContactView">연락처</a>
             </div>
           </div>
         </div>
@@ -525,9 +525,6 @@ export default {
   .dropdown-hover:hover > .dropdown-menu {
     display: block;
   }
-  .notification-mobile-dropdown {
-    right: 0; /* 모바일 화면에서는 오른쪽 끝에 맞춤 */
-  }
   .modals .modals-content {
     width: 90%;
     height: auto;
@@ -539,7 +536,6 @@ export default {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     background-color: white;
   }
-
   .modals {
     display: flex;
     justify-content: center;
@@ -547,12 +543,20 @@ export default {
     height: 100vh;
     overflow-y: auto;
   }
+  
 }
 
 .nav-link.hover {
   position: relative;
   text-decoration: none;
   color: #fff;
+  transition: color 0.3s ease;
+}
+
+.nav-mobile-link.hover {
+  position: relative;
+  text-decoration: none;
+  /* color: #fff; */
   transition: color 0.3s ease;
 }
 
@@ -569,6 +573,21 @@ export default {
 
 .nav-link.hover:hover {
   color: #ffffff;
+}
+
+.nav-mobile-link.hover::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #ffffffaa;
+  transition: width 0.3s ease;
+}
+
+.nav-mobile-link.hover:hover {
+  color: #333;
 }
 
 .nav-link.hover:hover::after {
@@ -601,8 +620,8 @@ export default {
   border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  z-index: 1060;
-  display: none;
+  z-index: 9999;
+  /* display: none; */
 }
 
 .notification-mobile-dropdown .dropdown-item {
@@ -711,6 +730,12 @@ export default {
 }
 
 .mobile-menu .nav-link {
+  color: #333;
+  font-size: 15pt;
+  font-family: 'KB_C3';
+}
+
+.mobile-menu .nav-mobile-link {
   color: #333;
   font-size: 15pt;
   font-family: 'KB_C3';

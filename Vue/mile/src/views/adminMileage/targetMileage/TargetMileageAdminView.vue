@@ -31,9 +31,14 @@
     <div style="width:90%;" class="mx-auto mt-5">
       <h3 class="lg p-3 ml-5" style="text-align: left; font-family: 'KB_S4'; font-size: 18pt;">예정된 마일리지 목표 내역</h3>
       <div v-for="detail in futureTargets" :key="detail.target_no" class="cards card-red mx-auto m-3 pointer" style="width: 90%; height: 6vh;">
-        <div class="d-flex justify-content-evenly pr-3 pl-3">
-          <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>
-          <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>
+        <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-evenly pr-3 pl-3 future-wrapper">
+            <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>
+            <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>
+          </div>
+          <div class="delete-wrapper">
+            <button class="delete-btn" @click="deleteTarget(detail.target_no)">삭제</button>
+          </div>
         </div>
       </div>
     </div>
@@ -154,7 +159,7 @@ export default {
   },
   methods: {
   ...mapActions('mile', ['fetchMileInfo']),
-  ...mapActions('mileage', ['addTarget', 'fetchMileTarget']),
+  ...mapActions('mileage', ['addTarget', 'fetchMileTarget', 'targetDelete']),
     async addAction() {
       const targetInfo = {
         mile_no: this.loginInfo.mile_no,
@@ -193,6 +198,15 @@ export default {
         }
       })
     },
+    async deleteTarget(target_no) {
+      const response = await this.targetDelete(target_no);
+
+      if(response && response.data.success){
+        this.showAlert('목표가 삭제되었습니다', 'success', '#');
+      }else{
+        this.showAlert('목표 삭제에 실패했습니다', 'fail', '#');
+      }
+    },
     formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -230,6 +244,21 @@ export default {
 </script>
 
 <style scoped>
+.delete-wrapper{
+  width: 10%;
+}
+
+.delete-btn{
+  color: #dc3545;
+  font-size: 14pt;
+  font-family: 'KB_C2';
+
+}
+
+.future-wrapper{
+  width: 80%;
+}
+
 .page-back {
   padding-bottom: 5%;
 }
@@ -367,7 +396,7 @@ export default {
 }
 
 .target-list {
-  font-family: 'KB_C3';
+  font-family: 'KB_C2';
   font-size: 14pt;
 }
 
@@ -381,7 +410,7 @@ export default {
 }
 
 .pointer:hover {
-  transform: scale(1.02); /* 호버 시 크기를 1.02배로 확대 */
+  transform: translateY(-3px);
 }
 
 .mileage-goals-container {
@@ -423,14 +452,13 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.3rem;
-  
 }
 
 .goal-mileage, .goal-rate {
   background-color: #FFE082;
   padding: 0.3rem 0.6rem;
   border-radius: 20px;
-  font-family: 'KB_S5';
+  font-family: 'KB_S4';
   font-size: 16pt;
 }
 
