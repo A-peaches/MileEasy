@@ -1,10 +1,11 @@
 <template>
   <div class="cards page-back mx-auto" :style="{ height: computedHeight }">
-    <div class="button-container">
+    <div class="back-container">
       <button class="back-button" @click="goBack">
         <span class="arrow">❮</span> 이전
       </button>
     </div>
+
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 요청</h2>
     <div class="button_user">
       <!-- mile_no가 있을 때만 라디오 버튼 그룹을 표시 -->
@@ -205,6 +206,21 @@ export default {
   .button_user {
     padding: 0%;
     margin-left: 10px;
+  }
+  .back-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .back-button .arrow {
+    width: 35px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .back-container {
+    padding: 0.5rem;
   }
 }
 </style>

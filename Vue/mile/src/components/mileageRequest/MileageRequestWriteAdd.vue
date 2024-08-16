@@ -394,5 +394,20 @@ textarea {
   textarea {
     width: 330px;
   }
+  .back-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .back-button .arrow {
+    width: 35px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .back-container {
+    padding: 0.5rem;
+  }
 }
 </style>
