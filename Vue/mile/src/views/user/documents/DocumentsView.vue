@@ -119,19 +119,21 @@
     </div>
 
     <!-- 페이지네이션 -->
-    <div class="pagination">
-      <button @click="prevPage" :disabled="currentPage === 1">〈</button>
-      <button
-        v-for="page in searchPages"
-        :key="page"
-        @click="goToPage(page)"
-        :class="{ active: currentPage === page }"
-      >
-        {{ page }}
-      </button>
-      <button @click="nextPage" :disabled="currentPage === searchPages">
-        〉
-      </button>
+    <div class="pagination-container">
+      <div class="pagination">
+        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
+        <button
+          v-for="page in searchPages"
+          :key="page"
+          @click="goToPage(page)"
+          :class="{ active: currentPage === page }"
+        >
+          {{ page }}
+        </button>
+        <button @click="nextPage" :disabled="currentPage === searchPages">
+          〉
+        </button>
+      </div>
     </div>
   
   </div>
@@ -560,12 +562,14 @@ export default {
   border-radius: 25px;
   width: auto; /* 너비를 자동으로 설정 */
 }
+
 /* 페이지 네이션 및 글쓰기 버튼 스타일 */
 .pagination-container {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
+  object-fit:contain;
 }
 
 .pagination {
@@ -573,7 +577,6 @@ export default {
   justify-content: center;
   margin-top: 100px;
   gap: 5px;
-  object-fit:contain;
 }
 
 .pagination button {
