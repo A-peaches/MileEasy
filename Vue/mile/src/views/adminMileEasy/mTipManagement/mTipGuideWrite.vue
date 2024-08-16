@@ -75,7 +75,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
   },
   mounted() {
     this.fetchMileages();
@@ -86,6 +86,15 @@ export default {
     document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
     async handleFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -206,6 +215,9 @@ export default {
     },
   },
   watch: {},
+  created() {
+    this.checkLoginInfo();
+  },
 };
 </script>
 

@@ -6,7 +6,7 @@
       <p class="lg2 KB_S4 mb-3" style="margin-bottom: 0px">
         마왕 배지 디자인 변경
       </p>
-      <br>
+      <br />
       <input type="file" @change="onFileChange" />
       <button @click="uploadFile">파일 업로드</button>
     </div>
@@ -16,6 +16,7 @@
 <script>
 import api from '@/api/axios';
 import Swal from 'sweetalert2';
+import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -24,6 +25,16 @@ export default {
     };
   },
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     onFileChange(event) {
       this.file = event.target.files[0];
     },
@@ -50,6 +61,12 @@ export default {
         Swal.fire('실패', '파일 업로드가 실패하였습니다.', 'error');
       }
     },
+  },
+  created() {
+    this.checkLoginInfo();
+  },
+  computed: {
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
   },
 };
 </script>

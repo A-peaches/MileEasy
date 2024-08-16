@@ -86,7 +86,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
     loginInfo() {
       return this.getLoginInfo;
@@ -99,6 +99,12 @@ export default {
   },
 
   methods: {
+    checkLoginInfo() {
+      if (!this.getLoginInfo || this.getLoginInfo.user_is_admin === true) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     handleCheckboxChange() {
       // 체크박스 상태 변경 처리
     },
@@ -108,6 +114,9 @@ export default {
   },
 
   mounted() {},
+  created() {
+    this.checkLoginInfo();
+  },
 };
 </script>
 
