@@ -1,6 +1,6 @@
 <template>
   <div class="background-video-wrapper">
-    <video autoplay muted loop class="background-video">
+    <video autoplay muted loop playsInline webkit-playsinline class="background-video">
       <source src="../../../assets/background_login.mp4" type="video/mp4" />
     </video>
     <div class="overlay"></div>
@@ -214,6 +214,17 @@ export default {
   width: 400px; 
   color: white;
 }
+
+/* @supports (-webkit-touch-callout: none) {
+  .background-video-wrapper {
+    background: url('../../../assets/fallback-image.jpg') center center / cover no-repeat fixed;
+  }
+  
+  .background-video {
+    display: none;
+  }
+} */
+
 </style>
 
 

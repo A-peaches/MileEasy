@@ -33,7 +33,7 @@ public class RequestService {
     }
 
 
-    public void insertRequestMileage(boolean isBranch, String mileName, String milMax, String admin, String etc ,int request_no, String user_no, int mile_no) {
+    public void insertRequestMileage(String isBranch, String mileName, String milMax, String admin, String etc ,int request_no, String user_no, int mile_no) {
         userDao.insertRequestMileage(isBranch,mileName,milMax,admin,etc,request_no,user_no,mile_no);
     }
 

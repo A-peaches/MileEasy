@@ -158,5 +158,10 @@ public interface MtipDao {
     void complain(Long noticeId);
 
     void complainBack(Long noticeId);
+
+    List<MtipBoard> MtiplistComplain();
     /*mtip 댓글 삭제*/
+
+
+
 }

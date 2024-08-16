@@ -237,6 +237,11 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .lg2 {
+  font-size: 14pt;
+  color: #4b4a4a;
+}
+
+.lg3 {
   font-size: 12pt;
   color: #4b4a4a;
 }
@@ -307,11 +312,11 @@ body.swal2-shown > [aria-hidden="true"] {
   position: relative;
   /* 아이콘 배치를 위해 */
   flex: 0 1 auto; /* flex-grow: 0, flex-shrink: 1, flex-basis: auto */
-  width: 300px; /* 원하는 기본 너비 설정 */
+  width: 17vw; /* 원하는 기본 너비 설정 */
   max-width: 100%; /* 화면 너비를 넘지 않도록 */
+  height: 6vh;
+  margin-right: 2em; 
 }
-
-
 
 /* 다른 입력란 스타일 (필요한 경우) */
 .input-other {
@@ -377,7 +382,7 @@ body.swal2-shown > [aria-hidden="true"] {
 
 /* 카테고리 드롭다운 스타일 */
 .drop-category {
-  background-color: rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.80);
   /* 배경색상: FFFFFF, 투명도 69% */
   border-radius: 30px;
   /* 모서리 30px */
@@ -409,7 +414,30 @@ body.swal2-shown > [aria-hidden="true"] {
   .cards {
     padding: 10px !important;
   }
+  .input-search {
+    margin-right: 6px !important;
+    height: 5vh !important;
+  }
+  .bi-search {
+    font-size: 20px !important;
+  }
+  .search-wrapper {
+    font-size: 12pt !important;
+  }
+  .search-mobile {
+    width: 220px !important;
+  }
+}
 
+.search-wrapper {
+  font-size: 14pt; 
+  height: 100%; 
+  margin-left: 1em;
+}
+
+.bi-search {
+  font-size: 25px; 
+  color: #4b4a4a;
 }
 
 .page-back {
@@ -601,6 +629,7 @@ body.swal-open {
   cursor: pointer;
   margin-top: 0;
   font-family: 'KB_S5', sans-serif;
+  transition: all 0.3s ease;
 }
 
 .back-button .arrow {
@@ -614,14 +643,64 @@ body.swal-open {
   margin-right: 8px;
   font-size: 17px;
   font-family: 'KB_S5', sans-serif;
+  transition: all 0.3s ease;
 }
 
 .back-container {
   display: flex;
   align-items: center;
-  padding-left: 10px;
-  flex: 1; 
+  padding: 1.5rem;
+  flex: 1;
 }
+/* 반응형 스타일 */
+@media (max-width: 1024px) {
+  .back-button {
+    font-size: 16px;
+  }
+
+  .back-button .arrow {
+    width: 45px;
+    height: 35px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .back-button {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .back-button .arrow {
+    width: 40px;
+    height: 30px;
+    font-size: 14px;
+    margin-right: 6px;
+  }
+
+  .back-container {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .back-button .arrow {
+    width: 35px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .back-container {
+    padding: 0.5rem;
+  }
+}
+
 
 .btn-analysis {
   background: linear-gradient(to right, #ffca05, #fcebaf); /* 그라데이션 색상 설정 */
@@ -641,7 +720,17 @@ transition: transform 0.3s ease, background 0.3s ease;
 }
 
 
+body {
+  user-select: none;
+}
+
 /* select tap reactive wep*/
+
+@media screen and (max-width: 370px) {
+  .lg2 {
+    font-size : 12pt;
+  }
+}
 
 @media screen and (max-width: 480px) {
   .tab-container {
@@ -652,6 +741,10 @@ transition: transform 0.3s ease, background 0.3s ease;
   .input-base, .input-search {
     width: 100%;
     margin: 5px 0;
+  }
+
+  .back-container {
+    padding: 0rem;
   }
 }
 
@@ -696,10 +789,14 @@ transition: transform 0.3s ease, background 0.3s ease;
   }
 
   .lg {
-    font-size: 20pt;
+    font-size: 18pt;
   }
 
   .lg2 {
+    font-size: 15pt;
+  }
+
+  .lg3 {
     font-size: 15pt;
   }
 
@@ -726,6 +823,10 @@ transition: transform 0.3s ease, background 0.3s ease;
     font-size: 16pt;
   }
 
+  .lg3 {
+    font-size: 16pt;
+  }
+
   .md {
     font-size: 12pt;
   }
@@ -733,6 +834,8 @@ transition: transform 0.3s ease, background 0.3s ease;
   .sm {
     font-size: 9pt;
   }
+
+
 }
 
 /* 대형 화면 */
@@ -749,6 +852,9 @@ transition: transform 0.3s ease, background 0.3s ease;
     font-size: 16pt;
   }
 
+  .lg3 {
+    font-size: 16pt;
+  }
   .md {
     font-size: 12pt;
   }

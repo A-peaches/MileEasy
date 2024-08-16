@@ -1,34 +1,30 @@
 <template>
-  <div key="profile" class="cards" style="height: 320px; padding-left:30px">
-    <div class="profile-remark">
-      {{ loginInfo ? loginInfo.user_name : "" }}님, 오늘도 좋은하루 되세요!
-    </div>
-    <div class="text-start brown mt-2">나의 M-Tip 작성 건수 :  {{ userTotalNotices }} 건</div>
+  <div key="profile" class="cards profile-card">
+    <div class="profile-content">
+      <div class="profile-remark">
+        {{ loginInfo ? loginInfo.user_name : "" }}님, 오늘도 좋은하루 되세요!
+      </div>
+      <div class="text-start brown mt-2 md">나의 M-Tip 작성 건수 : {{ userTotalNotices }} 건</div>
 
-    <!-- 버튼구간 -->
-    <div class="text-start" style="margin-top : 80px">
-      <a class="btn-mtip" href="/m_TipWriteView">
-        <i class="bi bi-pencil mr-2"></i>
-        <span class="btn-text">글작성</span> 
-        <span class="right-arrow">></span>
-      </a><br>
-      <div class="mt-2"></div>
-      <a class="btn-mtip" href="/myM_TipView">
-        <i class="bi bi-file-earmark-text mr-2 "></i>
-        <span class="btn-text">나의 M-Tip</span>
-         <span class="right-arrow">></span>
-      </a><br>
-      <div class="mt-2"></div>
-      <a class="btn-mtip " href="/MyM_TipBestView">
-        <i class="bi bi-heart mr-2 "></i>
-        <span class="btn-text">내가 좋아요한 M-Tip</span>
-         <span class="right-arrow">></span>
-      </a>
-      <br>
+      <div class="button-container">
+        <a class="btn-mtip" href="/m_TipWriteView">
+          <i class="bi bi-pencil mr-2"></i>
+          <span class="btn-text">글작성</span> 
+          <span class="right-arrow">></span>
+        </a>
+        <a class="btn-mtip" href="/myM_TipView">
+          <i class="bi bi-file-earmark-text mr-2 "></i>
+          <span class="btn-text">나의 M-Tip</span>
+           <span class="right-arrow">></span>
+        </a>
+        <a class="btn-mtip " href="/MyM_TipBestView">
+          <i class="bi bi-heart mr-2 "></i>
+          <span class="btn-text">내가 좋아요한 M-Tip</span>
+           <span class="right-arrow">></span>
+        </a>
+      </div>
     </div>
   </div>
-
-
 </template>
 
 <script>
@@ -77,28 +73,42 @@ export default {
 </script>
 
 <style scoped>
-.btn-mtip{
-  font-size :13pt;
-  color:black;
-  text-align: left; /* 버튼 내부 텍스트 왼쪽 정렬 */
-  margin-top : 6px;
-  text-decoration: none;
+
+.profile-card {
+  height: 100%;
+  min-height: 320px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
-
-
+.profile-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
 .profile-remark {
-  margin-top: 20px;
+  margin-top: 15px;
   text-align: start;
   font-size: 14pt;
   font-family: "KB_C2";
   font-weight: 600;
 }
 
-.right-arrow {
-  align-items: flex-end;
-  font-family: 'KB_C2';
+.button-container {
+  margin-top: auto;
+  margin-bottom: 15px;
+}
+
+.btn-mtip {
+  display: block;
+  font-size: 13pt;
+  color: black;
+  text-align: left;
+  margin-top: 10px;
+  text-decoration: none;
 }
 
 .btn-text {
@@ -106,4 +116,80 @@ export default {
   text-align: start;
   width: 75%; 
 }
+
+
+.right-arrow {
+  float: right;
+  font-family: 'KB_C2';
+}
+
+@media (max-width: 768px) {
+  .profile-card {
+    margin-top:20px;
+    padding: 20px;
+  }
+  
+  .profile-remark {
+    font-size: 12pt;
+  }
+  
+  .btn-mtip {
+    font-size: 11pt;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 15px;
+  }
+  
+  .profile-remark {
+    font-size: 10pt;
+  }
+  
+  .btn-mtip {
+    font-size: 10pt;
+  }
+  
+  .btn-text {
+    width: 70%;
+  }
+}.right-arrow {
+  float: right;
+  font-family: 'KB_C2';
+}
+
+@media (max-width: 768px) {
+  .profile-card {
+    min-height: auto;
+    padding: 20px;
+  }
+  
+  .profile-remark {
+    font-size: 12pt;
+  }
+  
+  .btn-mtip {
+    font-size: 11pt;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-card {
+    padding: 15px;
+  }
+  
+  .profile-remark {
+    font-size: 10pt;
+  }
+  
+  .btn-mtip {
+    font-size: 10pt;
+  }
+  
+  .btn-text {
+    width: 70%;
+  }
+}
+
 </style>

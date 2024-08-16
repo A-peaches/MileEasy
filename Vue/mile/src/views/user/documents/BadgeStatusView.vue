@@ -8,79 +8,44 @@
         <span class="arrow">❮</span> 이전
       </button>
     </div>
-    <h2 style="margin-bottom: 60px">배지 취득 현황</h2>
-    <div class="d-flex mx-auto w-100 justify-content-center my-5">
-      <div
-        class="cards d-flex cards-color"
-        style=" width: 35%; margin-right: 50px; "
-        :class="{ 'cards-active': badgeData[0]?.current_month && badgeData[0]?.mile_is_king }"
-      >
-        <div class="align-center justify-content-center" style="width: 35%; height:100%; display: flex;">
-          <img
-            :src="kingImage"
-            style="width: 100%; margin: 0 auto"
-            :class="{ 'darken-image':!badgeData[0]?.current_month || !badgeData[0]?.mile_is_king }"
-            @error="handleImageError"
-          />
-
+    <h2 class="mt-3 main-title">배지 취득 현황</h2>
+    <div class="badge-container">
+      <div class="badge-card" :class="{ 'cards-active': badgeData[0]?.current_month && badgeData[0]?.mile_is_king }">
+        <div class="badge-image-container">
+          <img :src="kingImage" :class="{ 'darken-image': !badgeData[0]?.current_month || !badgeData[0]?.mile_is_king }" @error="handleImageError" alt="마왕 배지" />
         </div>
-        <div style="width: 63%">
+        <div class="badge-info">
           <span class="badge-title">마왕 배지</span>
-          <p class="mt-4">
-            전월 기준 마일리지 취득 점수가 <br />
-            높은 상위 3명이 채택됩니다.
-          </p>
-          <div v-if="badgeData[0]?.mile_is_king">
-          <p class="brown mt-4">취득일 : {{badgeData[0]?.start_date}}</p>
-          </div>
-          <div v-else>
-            <p class="brown mt-4">기준 미달성
-            </p>
-          </div>
+          <p class="badge-description">전월 기준 마일리지 취득 점수가 높은 상위 3명이 채택됩니다.</p>
+          <p class="badge-date" v-if="badgeData[0]?.mile_is_king">취득일 : {{badgeData[0]?.start_date}}</p>
+          <p class="badge-date" v-else>기준 미달성</p>
         </div>
       </div>
-      <div class="cards d-flex cards-color" style=" width: 35%; "
-      :class="{ 'cards-active': badgeData[0]?.current_month && badgeData[0]?.mile_is_jump }"
-    >
-    
-        <div class="align-center justify-content-center" style="width: 35%; height:100%; display: flex;">
-          <img
-            :src="jumpImage"
-            style="width: 100%; margin: 0 auto"
-            :class="{  'darken-image': !badgeData[0]?.current_month || !badgeData[0]?.mile_is_jump  }"
-            @error="handleImageError"
-          />
+      <div class="badge-card" :class="{ 'cards-active': badgeData[0]?.current_month && badgeData[0]?.mile_is_jump }">
+        <div class="badge-image-container">
+          <img :src="jumpImage" :class="{ 'darken-image': !badgeData[0]?.current_month || !badgeData[0]?.mile_is_jump }" @error="handleImageError" alt="Jump UP 배지" />
         </div>
-        <div style="width: 63%">
+        <div class="badge-info">
           <span class="badge-title">Jump UP 배지</span>
-          <p class="mt-4">
-            최근 2개월간 마일리지 증가 폭이 <br />
-            큰 상위 3명이 채택됩니다.
-          </p>
-          <div v-if="badgeData[0]?.mile_is_jump">
-          <p class="brown mt-4">취득일 : {{badgeData[0]?.start_date}}</p>
-          </div>
-          <div v-else>
-            <p class="brown mt-4">기준 미달성
-            </p>
-          </div>
+          <p class="badge-description">최근 2개월간 마일리지 증가 폭이 큰 상위 3명이 채택됩니다.</p>
+          <p class="badge-date" v-if="badgeData[0]?.mile_is_jump">취득일 : {{badgeData[0]?.start_date}}</p>
+          <p class="badge-date" v-else>기준 미달성</p>
         </div>
       </div>
     </div>
 
-    <div class="w-75 mx-auto" style="margin-top: 90px">
-      <h3 class="sub-title">&nbsp;취득 이력</h3> 
+    <div class="history-container">
+      <h3 class="sub-title">취득 이력</h3> 
       <hr />
-      <div v-for="(item, index) in badgeData" :key="index">
-    <div class="row text-start KB_C3 align-items-center">
-      <div class="col-md-4 mb-1 brown">{{ item.start_date }} ~ {{ item.end_date }}</div>
-      <div class="col-md-4 mb-1">{{ item.mile_is_king ? '마왕 배지' : 'Jump-Up 배지' }}</div>
-      <div class="col-md-4 mb-1">{{ item.current_month ? '유효' : '기간경과'}}</div>
+      <div v-for="(item, index) in badgeData" :key="index" class="history-item">
+        <div class="history-date">{{ item.start_date }} ~ {{ item.end_date }}</div>
+        <div class="history-badge">{{ item.mile_is_king ? '마왕 배지' : 'Jump-Up 배지' }}</div>
+        <div class="history-status">{{ item.current_month ? '유효' : '기간경과'}}</div>
+      </div>
     </div>
-  </div>
-</div>
   </div>
 </template>
+
      
      <script>
 import { mapGetters, mapActions } from "vuex";
@@ -201,12 +166,92 @@ export default {
 };
 </script>
      
-     <style scoped>
-.button-container {
+<style scoped>
+
+.main-title {
+  margin-bottom: 50px;
+  text-align: center;
+  font-family: "KB_S3", sans-serif;
+}
+
+.badge-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 70px;
+  margin-bottom: 90px;
+}
+
+.badge-card {
+  display: flex;
+  width: 100%;
+  max-width: 450px;
+  height: 203px;
+  background-color: #fafafa;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding : 20px;
+}
+
+.badge-image-container {
+  width: 45%;
   display: flex;
   align-items: center;
-  padding-left: 15px;
+  justify-content: center;
+
 }
+.badge-image-container img {
+  width: 90%;
+  height: auto;
+  object-fit: contain;
+}
+
+.badge-info {
+  width: 55%;
+  padding : 0px 6px 15px 6px;
+}
+
+.badge-date {
+  font-size: 10pt;
+  color:brown;
+}
+
+.badge-title {
+  font-family: "KB_C2";
+  display: block;
+  font-size: 16pt;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.badge-description {
+  margin-top :20px ;
+  margin-bottom : 20px ;
+  font-size:16px;
+}
+
+
+
+.history-container {
+  width: 78%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.history-date, .history-badge, .history-status {
+  flex: 1;
+  font-size: 14px;
+}
+
 
 h2 {
   margin-bottom: 50px;
@@ -214,35 +259,113 @@ h2 {
   font-family: "KB_S3", sans-serif;
 }
 
-.badge-title {
-  font-family: "KB_C2";
-  font-size: 16pt;
-  margin-top: 6px;
-  text-align: center;
-}
-
-.brown {
-  font-size: 10pt;
-}
 
 .sub-title {
-  font-size: 22pt;
   font-family: "KB_S3", sans-serif;
+  margin-bottom: 20px;
 }
+
+.cards-active {
+  background-color: #FAFFD9;
+}
+
 
 .darken-image {
-    display: block;
-  width: 100%;
-  height: auto;
-  filter: grayscale(100%) !important; /* 이미지 흑백으로 만들기 */
+  filter: grayscale(100%) !important;
 }
 
-.cards-color {
-    background-color: #fafafa;
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+
+  .badge-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .badge-card {
+    max-width: 100%;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .badge-image-container {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .badge-info {
+    width: 100%;
+    text-align: center;
+  }
+
+  .badge-title {
+    font-size: 14pt;
+  }
+
+  .badge-description {
+    font-size: 14px;
+  }
+
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-date, .history-badge, .history-status {
+    margin-bottom: 5px;
+  }
+
+  .sub-title {
+    font-size: 20px;
+  }
+
+  .badge-image-container img {
+  width: 50%;
+}
 }
 
-.cards-active{
-    background-color: #FAFFD9;
+@media (max-width: 480px) {
+  .main-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .badge-card {
+    padding: 15px;
+  }
+
+  .badge-title {
+    font-size: 12pt;
+  }
+
+  .badge-description {
+    font-size: 12px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .badge-date {
+    font-size: 9pt;
+  }
+
+  .history-container {
+    width: 95%;
+  }
+
+  .history-date, .history-badge, .history-status {
+    font-size: 12px;
+  }
+
+  .sub-title {
+    font-size: 18px;
+  }
 }
+
 </style>
      

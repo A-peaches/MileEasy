@@ -725,6 +725,7 @@ h2::after {
   justify-content: center;
   margin-top: 100px;
   gap: 5px;
+  object-fit: contain;
 }
 
 .pagination button {

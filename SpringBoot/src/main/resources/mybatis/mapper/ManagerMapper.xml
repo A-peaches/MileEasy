@@ -106,6 +106,14 @@
         delete from mile_introduce where mile_introduce_no=#{mile_introduce_no};
     </delete>
 
+    <delete id="deleteTarget">
+        delete from target where target_no = #{target_no};
+    </delete>
+
+    <delete id="deleteUserTarget">
+        delete from user_target where target_no = #{target_no};
+    </delete>
+
     <delete id="deleteMileDetail">
         DELETE md FROM mileage_detail md
         JOIN mile_introduce mi ON md.mile_score_name = mi.mile_title

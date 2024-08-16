@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-for="(list, index) in contactsMileEasy" :key="list.user_no" style="padding:0 5%;">
+    <div v-for="(list, index) in contactsMileEasy" :key="list.user_no" class="contact-container">
       <div class="border-bottom p-2">
         <div class="d-flex align-items-center justify-content-between">
-          <span class="p-3" style="text-align: left; font-family: KB_C2; font-size: 18pt;">{{ roleList[index % roleList.length] }}</span>
+          <span class="p-3 contact-title" >{{ roleList[index % roleList.length] }}</span>
           <div class="d-flex justify-content-end align-items-center">
-            <span class="p-3 mr-3" style="text-align: left; font-family: KB_C3; font-size: 15pt;">{{ list.user_name }}</span>
+            <span class="p-3 mr-3 contact-name" >{{ list.user_name }}</span>
             <span class="highlight" @click="connecting(list.user_phone)" style="text-align: left; font-family: KB_C3; font-size: 15pt;">
               <i class="bi bi-telephone"></i>
               {{ list.user_phone }}
@@ -84,13 +84,54 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 768px) {
+  .contact-title{
+    font-size: 12pt !important;
+    padding: 0 !important;
+  }
+  .contact-container {
+    padding:0 2% !important;
+  }
+  .contact-name{
+    font-size: 10pt !important;
+    padding: 0 !important;
+  }
+  .highlight {
+    border-radius: 30px; /* 둥근 모서리 */
+    padding: 4px 8px; /* 내부 여백을 추가하여 크기 조절 */
+    display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
+    text-align: left; 
+    font-size: 10pt !important;
+  }
+}
+
+.contact-container {
+  padding:0 5%;
+}
+
+.contact-title{
+  text-align: left; 
+  font-family: KB_C2; 
+  font-size: 18pt;
+}
+
 .highlight {
   background-color: #CFD4E7;
   border-radius: 30px; /* 둥근 모서리 */
   padding: 4px 8px; /* 내부 여백을 추가하여 크기 조절 */
   display: inline-block; /* 인라인 블록 요소로 설정하여 크기 조절 */
+  text-align: left; 
+  font-family: KB_C3; 
+  font-size: 15pt;
 }
+
 .highlight:hover {
   cursor: pointer;
+}
+
+.contact-name{
+  text-align: left; 
+  font-family: KB_C3; 
+  font-size: 15pt;
 }
 </style>

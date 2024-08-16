@@ -5,7 +5,7 @@
         <span class="arrow">❮</span> 이전
       </button>
     </div>
-    <h2>비밀번호 변경</h2>
+    <h2 class="mt-3">비밀번호 변경</h2>
     <form @submit.prevent="changePassword" class="reset-form">
       <div class="password-reset">
         <div class="form-group mb-3">
@@ -29,7 +29,7 @@
           />
         </div>
       </div>
-      <div class="my-2">
+      <div class="my-2 md">
         <i class="bi bi-info-circle"></i> 유의사항 : 길이 : 8자리 이상 / 구성 :
         영문자, 숫자, 특수문자를 최소 1자리 이상 혼합 구성 / 사용금지 : 연속,
         반복문자(4자리), 대표단어(kbstar, kbfng, kbfg, kbcard)
@@ -148,6 +148,9 @@ export default {
         this.msg = "서버 오류가 발생했습니다.";
         this.errorAlert();
       }
+
+      this.password = '';
+      this.confirm_password ='';
     },
     goBack() {
       this.$router.back(-1);
@@ -188,66 +191,32 @@ export default {
   text-align: center;
 }
 
-.button-container {
-  display: flex;
-  align-items: center;
-  padding-left: 15px;
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5b5b5b; /* 검은색 텍스트 */
-  font-size: 15px;
-  cursor: pointer;
-  /* margin-left: auto; 요소를 오른쪽으로 이동 */
-  margin-top: 60px;
-  font-family: "KB_S5", sans-serif;
-}
-
-.back-button .arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-  border: 1px solid #ccc; /* 둥근 직사각형 */
-  border-radius: 5px; /* 둥근 모서리 */
-  margin-right: 8px;
-  font-size: 15px;
-  font-family: "KB_S5", sans-serif;
-}
-
 h2 {
   margin-bottom: 50px;
   text-align: center;
   font-family: "KB_S3", sans-serif;
 }
-
 .form-group {
   width: 100%;
   display: flex;
   align-items: center;
-  background-color: #f5f5f5; /* 입력란 배경색 */
-  border: 1px solid #f5f5f5;
+  background-color: #F5F5F5;
+  border: 1px solid #F5F5F5;
   border-radius: 8px;
   padding: 10px;
   justify-content: space-between;
-  margin-bottom: 1px;
+  margin-bottom: 15px;
 }
 
 .input-label {
-  width: 12%;
+  width: 150px;
   text-align: left;
   font-weight: bold;
-  color: #5b5b5b;
-  margin-right: 1px; /* 오른쪽 여백을 줄여 텍스트를 가깝게 */
-  margin-left: 30px; /* 오른쪽으로 약간 이동 */
+  color: #5B5B5B;
+  margin-right: 10px;
+  margin-left: 30px;
   font-size: 18px;
-  font-family: "KB_S3", sans-serif;
+  font-family: 'KB_S3', sans-serif;
 }
 
 input {
@@ -258,43 +227,110 @@ input {
   box-sizing: border-box;
   outline: none; /* 포커스 시 외곽선 제거 */
   justify-content: flex-start;
-  font-size: 18px;
+  font-size : 18px;
   text-align: left;
-  font-family: "KB_S5", sans-serif;
+  font-family: 'KB_S5', sans-serif;
   margin-bottom: 5px;
 }
 /* 초록색 버튼 */
+input {
+  flex-grow: 1;
+  padding: 10px 5px 10px 15px;
+  border: none;
+  background-color: transparent;
+  box-sizing: border-box;
+  outline: none;
+  justify-content: flex-start;
+  font-size: 18px;
+  text-align: left;
+  font-family: 'KB_S5', sans-serif;
+  margin-bottom: 5px;
+}
+
 .btn-green {
-  width: 10%;
+  width: 200px;
   padding: 16px;
-  background-color: #19c99b;
-  color: #ffffff;
+  background-color: #19C99B;
+  color: #FFFFFF;
   border: none;
   font-size: 20px;
   cursor: pointer;
   border-radius: 50px;
   transition: background-color 0.3s;
-  font-family: "KB_S5", sans-serif;
-  /* 중앙 정렬을 위해 margin 제거 */
+  font-family: 'KB_S5', sans-serif;
 }
 
 .btn-green:hover {
-  width: 10%;
-  padding: 16px;
-  background-color: #32ab8b;
-  color: #ffffff;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  border-radius: 50px;
-  transition: background-color 0.3s;
-  font-family: "KB_S5", sans-serif;
-  /* 중앙 정렬을 위해 margin 제거 */
+  background-color: #32AB8B;
 }
 
 .submit-button:hover {
-  background-color: #19c99b;
+  background-color: #19C99B;
 }
 
+/* 반응형 스타일 */
+@media (max-width: 1024px) {
+  .password-reset {
+    max-width: 90%;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  .input-label {
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  .btn-green {
+    width: 180px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .input-label {
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .btn-green {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 20px;
+  }
+
+  .input-label {
+    font-size: 14px;
+  }
+
+  input {
+    font-size: 14px;
+  }
+
+  .btn-green {
+    font-size: 16px;
+    padding: 12px;
+  }
+}
 </style>
    

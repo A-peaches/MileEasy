@@ -1,12 +1,13 @@
 <template>
   <div class="cards page-back mx-auto" :style="{ height: computedHeight }">
-    <div class="button-container">
+    <div class="back-container">
       <button class="back-button" @click="goBack">
         <span class="arrow">❮</span> 이전
       </button>
     </div>
+
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 요청</h2>
-    <div style="padding: 0 5%">
+    <div class="button_user">
       <!-- mile_no가 있을 때만 라디오 버튼 그룹을 표시 -->
       <div
         v-if="hasMileageNumber"
@@ -111,7 +112,6 @@ export default {
 </script>
 
 <style scoped>
-
 .checkbox-container {
   display: flex;
   align-items: center;
@@ -189,5 +189,38 @@ export default {
   margin-right: 8px;
   font-size: 17px;
   font-family: 'KB_S5', sans-serif;
+}
+.button_user {
+  padding: 0 5%;
+}
+
+@media (max-width: 768px) {
+  .p-2 {
+    padding: 0px 0px 0px 0px !important;
+    width: 360px;
+    margin-left: 0px;
+  }
+  .p-4 {
+    padding: 0rem !important;
+  }
+  .button_user {
+    padding: 0%;
+    margin-left: 10px;
+  }
+  .back-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  .back-button .arrow {
+    width: 35px;
+    height: 25px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .back-container {
+    padding: 0.5rem;
+  }
 }
 </style>

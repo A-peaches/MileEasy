@@ -210,4 +210,14 @@ public class MtipBoardService {
     public void complainBack(Long noticeId) {
         mtipDao.complainBack(noticeId);
     }
+
+    public List<MtipBoard> MtiplistComplain() throws Exception {
+        try {
+            List<MtipBoard> notices = mtipDao.MtiplistComplain();
+            return notices;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error fetching notices from database", e);
+        }
+    }
 }
