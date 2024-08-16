@@ -214,6 +214,17 @@ export default {
   width: 400px; 
   color: white;
 }
+
+/* @supports (-webkit-touch-callout: none) {
+  .background-video-wrapper {
+    background: url('../../../assets/fallback-image.jpg') center center / cover no-repeat fixed;
+  }
+  
+  .background-video {
+    display: none;
+  }
+} */
+
 </style>
 
 

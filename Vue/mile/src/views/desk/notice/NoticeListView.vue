@@ -102,6 +102,7 @@
         </div>
       </div>
 
+      <div class="pagination-container">
       <div class="pagination">
         <button @click="prevPage" :disabled="currentPage === 1">〈</button>
         <button
@@ -116,6 +117,7 @@
           〉
         </button>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -736,6 +738,7 @@ body {
   width: auto; /* 너비를 자동으로 설정 */
 }
 
+
 /* 페이지 네이션 및 글쓰기 버튼 스타일 */
 .pagination-container {
   display: flex;
@@ -758,7 +761,7 @@ body {
   margin: 0 5px;
   border-radius: 5px;
   font-size: 18px; /* 숫자의 폰트 크기 */
-  font-family: "KB_C3", sans-serif; /* 숫자의 폰트 */
+  font-family: 'KB_s4', sans-serif; /* 숫자의 폰트 */
 }
 
 .pagination button:disabled {
@@ -775,6 +778,7 @@ body {
 .pagination button.arrow-button {
   font-size: 18px; /* 화살표의 폰트 크기 */
 }
+
 
 .write-button {
   display: flex;

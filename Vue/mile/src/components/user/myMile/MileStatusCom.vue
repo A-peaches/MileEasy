@@ -252,4 +252,12 @@ export default {
     font-size: 9pt;
   }
 }
+
+@media screen and (max-width: 370px) {
+  .text-star {
+    font-size: 8pt;
+    margin-top:5px !important;
+
+  }
+}
 </style>
