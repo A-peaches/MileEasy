@@ -151,7 +151,7 @@ export default {
   },
   computed:{
     ...mapGetters('mile', ['getMileInfo']),
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mileExcel', ['getArrayMileExcel']),
     loginInfo(){
       return this.getLoginInfo;
@@ -189,6 +189,9 @@ export default {
       const condition3 = this.filteredScores.length !== this.countList;
       
       return condition1 && condition2 && condition3;
+    },
+    isChecked() {
+      return this.getIsChecked;
     }
   },
   methods:{
@@ -311,8 +314,15 @@ export default {
         this.countList = countList.data;
       } 
     },
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo.user_is_manager == 1 && this.getIsChecked == false)) {
+          window.location.href="/noAccess"
+        } 
+    },
   },
   created(){
+    // 마일리지 담당자 로그인 여부 확인
+    this.checkLoginInfo();
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
     if(user_no){
       this.mileInfo = this.fetchMileInfo(user_no);
