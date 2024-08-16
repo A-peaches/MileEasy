@@ -30,6 +30,11 @@ const routes = [
     component: () => import('../views/user/login/LoginView.vue'),
     meta: { hideHeader: true },
   },
+  {
+    path: '/noAccess',
+    name: 'AlertView',
+    component:  () => import('../views/common/AlretView.vue'),
+  },
 ];
 
 // 반응형 웹앱 설정을 위함.
