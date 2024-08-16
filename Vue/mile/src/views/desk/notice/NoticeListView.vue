@@ -102,7 +102,7 @@
         </div>
       </div>
 
-      <div class="pagination-container">
+    <div class="pagination-container">
       <div class="pagination">
         <button @click="prevPage" :disabled="currentPage === 1">〈</button>
         <button
@@ -116,8 +116,8 @@
         <button @click="nextPage" :disabled="currentPage === totalPages">
           〉
         </button>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -745,6 +745,7 @@ body {
   justify-content: center;
   align-items: center;
   margin-top: 10px;
+  object-fit:contain;
 }
 
 .pagination {

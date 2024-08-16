@@ -790,6 +790,7 @@ h2::after {
   justify-content: center;
   align-items: center;
   margin-top: 10px;
+  object-fit: contain;
 }
 
 .pagination {
