@@ -612,7 +612,7 @@ export default {
 .notification-mobile-dropdown {
   position: absolute;
   top: 110%;
-  right: 0;
+  right: -10px;
   min-width: 250px;
   max-height: 250px;
   overflow-y: auto;
