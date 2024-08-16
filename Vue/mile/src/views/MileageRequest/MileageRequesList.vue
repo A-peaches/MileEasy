@@ -75,7 +75,7 @@
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="제목 및 내용을 검색하세요"
+          placeholder="검색어를 입력하세요"
           class="input-search"
         />
         <button class="search-button" @click="applyFilters">
@@ -88,7 +88,11 @@
         </div>
         <div v-else>
           <div class="notice-list" style="text-align: center">
-            <div v-for="(notice, index) in paginatedNotices" :key="index">
+            <div
+              v-for="(notice, index) in paginatedNotices"
+              :key="index"
+              class="con"
+            >
               <div
                 v-if="notice"
                 class="input-base list-wrapper"
@@ -154,6 +158,8 @@
         </div>
       </div>
       <div class="pagination">
+        <button @click="prevPage" :disabled="!canGoPrev">&lt;</button>
+
         <button
           v-for="page in totalPages"
           :key="page"
@@ -162,6 +168,8 @@
         >
           {{ page }}
         </button>
+
+        <button @click="nextPage" :disabled="!canGoNext">&gt;</button>
       </div>
     </div>
   </div>
@@ -228,9 +236,25 @@ export default {
     totalPages() {
       return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
     },
+    canGoNext() {
+      return this.currentPage < this.totalPages;
+    },
+    canGoPrev() {
+      return this.currentPage > 1;
+    },
   },
 
   methods: {
+    nextPage() {
+      if (this.canGoNext) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.canGoPrev) {
+        this.currentPage--;
+      }
+    },
     goToWritePage() {
       this.$router.push('/mileageRequestWrite');
     },
@@ -616,6 +640,7 @@ h2::after {
   justify-content: center;
   margin-top: 100px;
   gap: 5px;
+  margin-bottom: 40px;
 }
 
 .pagination button {
@@ -742,7 +767,6 @@ h2::after {
   margin-top: 80px;
 }
 /* 모바일 화면에서의 스타일 */
-/* 모바일 화면에서의 스타일 */
 @media (max-width: 768px) {
   .notice-count {
     font-size: 11pt; /* 총 0건 텍스트의 폰트 크기 조정 */
@@ -801,6 +825,43 @@ h2::after {
   }
   .no-results {
     margin-top: 100px;
+  }
+  .input-base {
+    width: 370px;
+    height: 48px;
+    justify-content: center;
+    line-height: 50px;
+  }
+  .notice-list {
+    margin-left: 5px;
+    width: 370px;
+  }
+  .notice-num-expanded i.bi-trash-fill {
+    display: none;
+  }
+
+  .notice-num-expanded span {
+    display: none;
+  }
+
+  /* 모바일에서 날짜 숨기기 */
+  .notice-date {
+    display: none;
+  }
+  .notice-num {
+    display: none;
+  }
+  .notice-details {
+    height: 48px;
+  }
+  .notice-num.notice-title.notice-mile.notice-date {
+    height: 48px;
+  }
+  .notice-details-expanded {
+    width: 370px;
+  }
+  .con {
+    width: 370px;
   }
 }
 </style>

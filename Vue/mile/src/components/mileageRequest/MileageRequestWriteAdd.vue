@@ -2,15 +2,8 @@
   <h3 class="lg p-3" style="text-align: left; font-family: KB_C2">
     마일리지 요청
   </h3>
-  <div
-    class="p-2"
-    style="
-      text-align: left;
-      background-color: #f6f6f6;
-      padding: 10px 140px 60px 140px !important;
-    "
-  >
-    <div class="mt-5" style="text-align: left">
+  <div class="p-2">
+    <div class="yn" style="text-align: left">
       마일리지 공통여부
       <span v-if="!isCommonMileageValid" class="error-text">
         필수 선택 항목입니다.
@@ -50,7 +43,7 @@
       v-model="mileageName"
       type="text"
       class="input-base input-white"
-      style="width: 800px; text-align: left"
+      style="text-align: left"
       placeholder="추가 마일리지 이름을 입력하세요."
     /><br />
 
@@ -64,7 +57,7 @@
       v-model="annualLimit"
       type="text"
       class="input-base input-white"
-      style="width: 800px; text-align: left"
+      style="text-align: left"
       placeholder="마일리지 연간 최고 한도를 입력하세요."
     />
 
@@ -79,7 +72,7 @@
 
     <table
       class="table table-bordered input-base"
-      style="width: 800px; border-radius: 10px; background-color: white"
+      style="border-radius: 10px; background-color: white"
     >
       <tr>
         <td>번호</td>
@@ -114,7 +107,7 @@
     <textarea
       v-model="additionalNotes"
       class="input-base input-white"
-      style="width: 800px; height: 200px; text-align: left"
+      style="text-align: left"
       placeholder="기타 요청사항을 입력하세요."
     ></textarea>
 
@@ -338,12 +331,13 @@ export default {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  width: 800px;
 }
 .input-white {
   background-color: white;
 }
 .table {
-  width: 100%;
+  width: 800px;
   border-collapse: collapse;
 }
 .table-bordered td {
@@ -361,5 +355,44 @@ export default {
 .form-check-input:checked {
   background-color: #ffc107;
   border-color: #ffc107;
+}
+.p-2 {
+  text-align: left;
+  background-color: #f6f6f6;
+  padding: 10px 140px 60px 140px !important;
+}
+.yn {
+  margin-top: 2em;
+}
+textarea {
+  width: 800px;
+  height: 200px;
+}
+
+@media (max-width: 768px) {
+  .p-2 {
+    padding: 30px 15px 5px 15px !important;
+    width: 360px;
+    margin-left: 0px;
+  }
+  .p-4 {
+    padding: 0rem !important;
+  }
+  .p-3 {
+    display: none;
+  }
+  .yn {
+    margin-top: 0px;
+  }
+  .input-base {
+    width: 330px;
+    height: 40px;
+  }
+  .table {
+    width: 330px;
+  }
+  textarea {
+    width: 330px;
+  }
 }
 </style>
