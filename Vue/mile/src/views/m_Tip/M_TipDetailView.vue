@@ -29,15 +29,15 @@
         </div>
       </div>
       <div class="content">
-        <span v-if="isNew(notice.mtip_board_date)" class="new-label">NEW</span>
+        <span v-if="isNew(notice?.mtip_board_date)" class="new-label">NEW</span>
         <h1 class="title">{{ notice?.mtip_board_title }}</h1>
         <div class="meta">
-          <span class="author">{{ notice.user_name }}</span>
+          <span class="author">{{ notice?.user_name }}</span>
           <span class="date">{{ formatDate(notice?.mtip_board_date) }}</span>
         </div>
         <div class="main-content">
           <div class="body">
-            <pre><p>{{ notice.mtip_board_content }}</p></pre>
+            <pre><p>{{ notice?.mtip_board_content }}</p></pre>
             <!-- 줄 바꿈 -->
           </div>
           <div class="file cards">
@@ -60,7 +60,7 @@
                 href="#"
                 class="file-download-link"
               >
-                {{ getDisplayFileName(notice.mtip_board_file) }}
+                {{ getDisplayFileName(notice?.mtip_board_file) }}
               </a>
             </div>
           </div>
@@ -70,7 +70,7 @@
             <div class="views-icon">
               <i class="bi bi-eye"></i>
             </div>
-            <div class="views-text">{{ notice.mtip_board_hit }}</div>
+            <div class="views-text">{{ notice?.mtip_board_hit }}</div>
           </div>
           <div class="icon-container" @click="toggleLike">
             <div class="heart-icon">
@@ -79,7 +79,7 @@
                 :style="{ color: isLiked ? '#dc3545' : 'inherit' }"
               ></i>
             </div>
-            <div class="views-text">{{ notice.mtip_board_like }}</div>
+            <div class="views-text">{{ notice?.mtip_board_like }}</div>
           </div>
         </div>
       </div>

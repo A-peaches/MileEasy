@@ -29,8 +29,9 @@
       </label>
     </div>
   </div>
-    <div v-if="!isLoading" class="row">
-      <div v-for="(target, index) in displayedTargets" :key="target.target_no" class="col-md-4 mb-3">
+    <div v-if="!isLoading"  class="row">
+
+      <div v-for="(target, index) in displayedTargets" :key="target.target_no" class="col-md-4 mb-3 fade-up-item" :style="{ animationDelay: `${index * 0.1}s` }">
         <div class="p-3">
           <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 370px; height:320px; transition: transform 0.3s ease; border-radius: 1px; " class="mx-auto rounded-4 target-box">
           <!-- <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 410px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box"> -->
@@ -84,16 +85,6 @@
                   <span class="highlight-score">{{ target.totalMileScoreByMileNo }}</span>  / {{target.target_mileage }}</span>
               </div>
             </div>
-          <!-- </div> -->
-            <!-- 목표 미설정된 마일리지의 경우 -->
-            <!-- <div v-else style="background-color: #aeaeb2; height: 100%;" class="rounded-4">
-              <div style="padding-top: 30%;">
-                <span class="bold-x-lg">🎯</span><br><br>
-                <span class="md" style="font-family: 'KB_C2'; color: #fff;">설정된 목표가 없습니다</span>
-                <button class="btn-green mt-3" @click="goTogether">참여하기</button>
-              </div>
-            </div> -->
-         
         </div>
       </div>
     </div>
@@ -327,6 +318,23 @@ async loadUserParticipatedTargets() {
     isParticipating(target) {
     return target.participants && target.participants.length > 0;
    },
+   applyFadeUpEffect() {
+      console.log("Applying fade-up effect");
+      const items = this.$el.querySelectorAll(".fade-up-item");
+      console.log(`Found ${items.length} items to animate`);
+
+      items.forEach((item, index) => {
+        item.style.setProperty("--index", index);
+        item.style.setProperty("z-index", items.length - index);
+
+        const baseDelay = 50;
+        const delay = baseDelay + 50 * index;
+
+        setTimeout(() => {
+          item.classList.add("fade-up-active");
+        }, delay);
+      });
+    },
 
   },
 
@@ -371,6 +379,30 @@ mounted() {
     return this.adminTargets.length;
   },
   
+  },
+  watch: {
+    getLoginInfo: {
+      immediate: true,
+      handler(newLoginInfo) {
+        if (newLoginInfo && newLoginInfo.user_no) {
+          console.log('Calling getAdminTargets with user_no:', newLoginInfo.user_no); // 로그 추가
+          this.fetchAdminTargets(newLoginInfo.user_no).then(() => {
+            this.isLoading = false;
+            this.$nextTick(() => {
+              this.applyFadeUpEffect();
+            });
+          });
+        } else {
+          this.dataLoaded = false;
+        }
+      },
+    },
+    sortBy() {
+    // sortBy가 변경될 때 애니메이션 적용
+    this.$nextTick(() => {
+      this.applyFadeUpEffect();
+    });
+  },
   },
 };
 </script>
@@ -551,4 +583,19 @@ mounted() {
 .dropdown-menu p:last-child {
   border-bottom: none;
 }
+
+/**/
+.fade-up-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+  transition-delay: calc(var(--index) * 100ms);
+  position: relative;
+}
+
+.fade-up-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 </style>

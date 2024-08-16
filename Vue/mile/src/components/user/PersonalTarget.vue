@@ -28,7 +28,7 @@
     </div>
 
     <div class="row">
-      <div v-for="(targets, index) in filteredMileages" :key="targets.target_no" class="col-md-4 mb-3">
+      <div v-for="(targets, index) in filteredMileages" :key="targets.target_no" class="col-md-4 mb-3 fade-up-item">
         <div class="p-3">
           <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 370px; height:320px; transition: transform 0.3s ease; border-radius: 1px; " class="mx-auto rounded-4 target-box">
             <div class="py-1" style="display: flex; align-items: center; margin-bottom: -10px; position: relative;">
@@ -381,7 +381,23 @@ export default {
         }
       });
     },
- 
+    applyFadeUpEffect() {
+      console.log("Applying fade-up effect");
+      const items = this.$el.querySelectorAll(".fade-up-item");
+      console.log(`Found ${items.length} items to animate`);
+
+      items.forEach((item, index) => {
+        item.style.setProperty("--index", index);
+        item.style.setProperty("z-index", items.length - index);
+
+        const baseDelay = 50;
+        const delay = baseDelay + 50 * index;
+
+        setTimeout(() => {
+          item.classList.add("fade-up-active");
+        }, delay);
+      });
+    },
   },
 
  async created() {
@@ -458,6 +474,30 @@ export default {
       } else {
         return true;
       }
+    });
+  },
+  },
+  watch: {
+    getLoginInfo: {
+      immediate: true,
+      handler(newLoginInfo) {
+        if (newLoginInfo && newLoginInfo.user_no) {
+          console.log('Calling getAdminTargets with user_no:', newLoginInfo.user_no); // 로그 추가
+          this.fetchPersonalTargets(newLoginInfo.user_no).then(() => {
+            this.isLoading = false;
+            this.$nextTick(() => {
+              this.applyFadeUpEffect();
+            });
+          });
+        } else {
+          this.dataLoaded = false;
+        }
+      },
+    },
+    sortBy() {
+    // sortBy가 변경될 때 애니메이션 적용
+    this.$nextTick(() => {
+      this.applyFadeUpEffect();
     });
   },
   },
@@ -705,6 +745,19 @@ export default {
 
 .delete-button:hover {
   text-decoration: underline;
+}
+/**/
+.fade-up-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+  transition-delay: calc(var(--index) * 100ms);
+  position: relative;
+}
+
+.fade-up-active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 </style>
