@@ -242,6 +242,11 @@ export default {
     },
 
     checkValidDates() {
+      if (this.isFirstBusinessDayOfCurrentMonth) {
+        Swal.fire('오류', '해당일은 채택일이 아닙니다.', 'error');
+        return;
+      }
+
       // 유효하지 않은 날짜가 있는지 검사
       const invalidDates = this.dates
         .map((date, index) => ({ date, index }))
@@ -293,6 +298,33 @@ export default {
         this.pickBadge();
       }
     },
+
+    //첫영업일 확인 함수
+    isFirstBusinessDayOfCurrentMonth() {
+      // 현재 날짜와 월을 가져옵니다.
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+
+      // 이번 달의 첫 날을 가져옵니다.
+      const firstDayOfMonth = new Date(year, month, 1);
+
+      // 첫 영업일을 찾기 위해 첫 날부터 시작하여 토요일이나 일요일이 아닌 날을 찾습니다.
+      let firstBusinessDay = firstDayOfMonth;
+      while (
+        firstBusinessDay.getDay() === 0 ||
+        firstBusinessDay.getDay() === 6
+      ) {
+        firstBusinessDay.setDate(firstBusinessDay.getDate() + 1);
+      }
+
+      // 오늘 날짜가 첫 영업일과 일치하는지 확인합니다.
+      return (
+        today.getFullYear() === firstBusinessDay.getFullYear() &&
+        today.getMonth() === firstBusinessDay.getMonth() &&
+        today.getDate() === firstBusinessDay.getDate()
+      );
+    },
     async pickBadge() {
       try {
         const params = new URLSearchParams();
@@ -321,7 +353,6 @@ export default {
 </script>
 
 <style scoped>
-
 .btn-yellow {
   width: 120px;
   height: 40px;

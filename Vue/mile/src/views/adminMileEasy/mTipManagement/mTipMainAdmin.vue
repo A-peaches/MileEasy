@@ -71,16 +71,6 @@ export default {
 </script>
 
 <style scoped>
-<<<<<<< HEAD
-.page-back {
-  width: 70%;
-  margin-top: 5%;
-  min-height: 800px;
-  padding-bottom: 5%;
-}
-=======
->>>>>>> 4e87a01691fb427b17ad063bea30a8c52a34f396
-
 .tab-container:hover {
   padding: 10px 10px;
   cursor: pointer;

@@ -64,8 +64,9 @@
           <div class="card shadow-sm fade-in">
             <div v-if="successYN" class="text-center">
               <div class="card-body">
-                <canvas id="myChart1"></canvas>
+                <canvas id="myChart1" style="height: 35vh"></canvas>
               </div>
+              <!-- <canvas ref="makeChart1" style="height: 30vh"></canvas> -->
             </div>
           </div>
         </div>
@@ -88,7 +89,7 @@
       <div class="row d-flex">
         <div class="col-md mb-4">
           <div class="card shadow-sm fade-in">
-            <div class="card-body card-ml mileReport">
+            <div class="card-body card-ml">
               <h5 class="text-gray text-start">마일리지별 분석</h5>
               <p class="text-start addInfo">
                 * 마일이지가 사용자의 포지션에 따라 분석한 결과로, 마일리지
@@ -802,10 +803,5 @@ span {
 #myChart2 {
   height: 100% !important;
   width: 100% !important;
-}
-
-canvas#myChart1 {
-  width: 100% !important;
-  height: 100% !important;
 }
 </style>

@@ -24,7 +24,10 @@
             <button class="revoke-button" @click="mtip_complainBack">
               신고취하
             </button>
-            <button class="delete-button" @click="deleteNotice">삭제</button>
+            &nbsp;&nbsp;
+            <button class="delete-button" @click="deleteNoticeAdmin">
+              삭제
+            </button>
           </div>
         </div>
       </div>
@@ -85,8 +88,19 @@
       </div>
       <div class="content-container">
         <div class="actions">
-          <span class="alert-icon">🚨</span>
-          <button class="report-button" @click="mtip_complain">신고하기</button>
+          <div
+            v-if="
+              isLoggedIn &&
+              loginInfo.user_is_admin &&
+              !loginInfo.user_is_manager &&
+              !isChecked
+            "
+          >
+            <span class="alert-icon">🚨</span>
+            <button class="report-button" @click="mtip_complain">
+              신고하기
+            </button>
+          </div>
         </div>
         <hr class="divider" />
 
@@ -211,6 +225,36 @@ export default {
       });
     },
 
+    async deleteNoticeAdmin() {
+      Swal.fire({
+        title: '경고',
+        text: '정말로 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+        reverseButtons: false,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
+            Swal.fire(
+              '게시글 삭제 완료',
+              '게시글이 삭제 되었습니다.',
+              'success'
+            ).then(() => {
+              this.$router.push('/mTipMainAdminView');
+            });
+          } catch (error) {
+            console.error('게시글 삭제 중 오류가 발생했습니다.', error);
+            Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
+          }
+        }
+      });
+    },
+
     mtip_complain() {
       if (
         this.notice.mtip_complain === 1 ||
@@ -279,7 +323,7 @@ export default {
               '정상적으로 게시글 신고취하가 완료되었습니다.',
               'success'
             ).then(() => {
-              this.$router.push('/M_TipListView'); //여기 변경해야댐
+              this.$router.push('/mTipMainAdminView'); //여기 변경해야댐
             });
           } catch (error) {
             console.error('신고취하 중 오류가 발생했습니다.', error);
@@ -512,7 +556,6 @@ export default {
   font-size: 20px;
   font-family: 'KB_C2', sans-serif;
   color: #714319;
-  padding: 5px 40px;
 }
 /* 신고취하 버튼*/
 .revoke-button {
@@ -522,7 +565,6 @@ export default {
   font-size: 20px;
   font-family: 'KB_C2', sans-serif;
   color: #714319;
-  padding: 5px 40px;
 }
 
 .content {
@@ -687,7 +729,7 @@ export default {
 .report-button {
   font-size: 18px;
   font-family: 'KB_C2', sans-serif;
-  color: #4b4a4a ;
+  color: #4b4a4a;
   margin-right: 5px; /* 버튼과 아이콘 사이의 간격 조정 */
 }
 

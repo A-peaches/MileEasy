@@ -462,4 +462,17 @@ public class MtipController {
     public void complainBack(@PathVariable Long noticeId) {
         mtipBoardService.complainBack(noticeId);
     }
+
+
+    @GetMapping("/MtiplistComplain")
+    public ResponseEntity<?> MtiplistComplain() {
+        try {
+            List<MtipBoard> notices = mtipBoardService.MtiplistComplain();
+            return ResponseEntity.ok(notices);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving notices: " + e.getMessage());
+        }
+    }
 }
