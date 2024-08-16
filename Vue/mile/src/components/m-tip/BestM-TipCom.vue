@@ -1,17 +1,19 @@
 <template>
-  <div class="cards" style="margin-top:20px; padding: 20px;">
+  <div class="cards m-tip-container">
     <div class="m-tip-header">
       <h2 class="m-tip-title fw-bold">Best M-Tip</h2>
       <a href="/M_TipBestView" class="view-all">전체보기</a>
     </div>
-    <div class="notice-list">
+    <div class="notice-list" :class="{ 'mobile-scroll': isMobile }">
       <div v-for="notice in bestNotices" :key="notice.mtip_board_no" class="notice-item">
         <span class="notice-mile">{{ notice.mile_name || '기타' }}</span>
-        <span class="notice-title">
-          {{ truncateTitle(notice.mtip_board_title) }}
-          <i class="bi bi-heart-fill title-icon"></i>
-        </span>
-        <span class="notice-date">{{ formatDate(notice.mtip_board_date) }}</span>
+        <div class="notice-content">
+          <span class="notice-title">
+            {{ truncateTitle(notice.mtip_board_title) }}
+            <i class="bi bi-heart-fill title-icon"></i>
+          </span>
+          <span class="notice-date">{{ formatDate(notice.mtip_board_date) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -21,10 +23,11 @@
 import api from '@/api/axios';
 
 export default {
-  name: 'M-TipCom',
+  name: 'BestM-TipCom',
   data() {
     return {
-      bestNotices: [], // 좋아요가 가장 많은 게시글 목록
+      bestNotices: [],
+      isMobile: false
     };
   },
   methods: {
@@ -39,7 +42,7 @@ export default {
       return date.toLocaleDateString();
     },
     async fetchBestNotices() {
-      console.log('Mtiplist DB 메소드로 이동 ~ ');
+      console.log('Best Mtiplist DB 메소드로 이동 ~ ');
       try {
         const response = await api.get('/mtip/bestMtiplist');
         this.bestNotices = response.data.slice(0, 9); // 좋아요가 많은 상위 9개의 게시글
@@ -48,35 +51,44 @@ export default {
         console.error('Error fetching best notices:', error.response ? error.response.data : error.message);
       }
     },
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 480;
+      console.log('Is Mobile:', this.isMobile); // 디버깅용
+    }
   },
   mounted() {
     this.fetchBestNotices();
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.checkMobile);
   }
 };
 </script>
 
 <style scoped>
-.title-icon {
-  color: #d23e3e;
-  margin-left: 10px; /* 왼쪽으로 여백 추가 */
-  font-size: 20px; /* 아이콘 크기 조절 */
-}
-.cards {
+.m-tip-container {
+  margin-top: 20px;
+  padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
 .m-tip-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
+
 .m-tip-title {
   font-size: 24px;
   font-family: 'KB_C2', sans-serif;
   margin: 0;
 }
+
 .view-all {
   font-size: 18px;
   font-family: 'KB_C2', sans-serif;
@@ -84,15 +96,24 @@ export default {
   text-decoration: underline;
   cursor: pointer;
 }
+
 .notice-list {
   display: flex;
   flex-direction: column;
 }
+
+.mobile-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px; /* 스크롤바 공간 확보 */
+}
+
 .notice-item {
   display: flex;
   align-items: center;
   padding: 3px 0;
 }
+
 .notice-mile {
   width: 120px;
   font-weight: bold;
@@ -102,28 +123,124 @@ export default {
   font-family: 'KB_C2', sans-serif;
   margin: 0;
 }
+
+.notice-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
 .notice-title {
   flex-grow: 1;
-  margin-left: 18PX;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: left;
   font-size: 20px;
-  display: flex;
-  align-items: center;
   font-family: 'KB_C2', sans-serif;
+  text-align: start;
 }
+
+.title-icon {
+  color: #d23e3e;
+  margin-left: 10px;
+  font-size: 20px;
+}
+
 .notice-date {
-  margin-left: 50px;
+  margin-left: 20px;
   font-size: 14px;
   font-family: 'KB_C2', sans-serif;
-  margin-left: auto; /* 오른쪽으로 밀어냄 */
-  margin-right: 0; /* 오른쪽 여백 제거 */
+  white-space: nowrap;
 }
-.no-notice {
-  color: #888;
-  font-style: italic;
-  margin-left: 20px;
+
+@media (max-width: 768px) {
+  .m-tip-container {
+    padding: 15px;
+  }
+
+  .m-tip-title {
+    font-size: 20px;
+  }
+
+  .view-all {
+    font-size: 16px;
+  }
+
+  .notice-mile {
+    width: 100px;
+    font-size: 14px;
+  }
+
+  .notice-title {
+    font-size: 16px;
+  }
+
+  .title-icon {
+    font-size: 16px;
+  }
+
+  .notice-date {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .m-tip-container {
+    padding: 10px;
+  }
+
+  .notice-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .m-tip-title {
+    font-size: 18px;
+  }
+
+  .view-all {
+    font-size: 14px;
+  }
+
+  .notice-item {
+    flex-wrap: nowrap;
+    padding: 5px 0;
+  }
+
+  .notice-mile {
+    width: 80px;
+    font-size: 12px;
+    margin-right: 1px;
+  }
+
+  .notice-title {
+    font-size: 14px;
+  }
+
+  .notice-date {
+    font-size: 10px;
+  }
+
+  .title-icon {
+    font-size: 14px;
+  }
+
+  /* 스크롤바 스타일링 */
+  .mobile-scroll::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .mobile-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .mobile-scroll::-webkit-scrollbar-thumb {
+    background: #bababa;
+  }
+
+  .mobile-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 </style>

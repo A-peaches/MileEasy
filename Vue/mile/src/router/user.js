@@ -39,7 +39,7 @@ export default [
     path: '/password',
     name: 'password',
     component: () => import('../views/user/login/PasswordReissueView.vue'),
-    meta: { hideHeader: true },
+     meta: { hideFooter: true },
   },
   //비밀번호 변경
   {
