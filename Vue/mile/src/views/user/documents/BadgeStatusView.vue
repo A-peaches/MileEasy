@@ -233,12 +233,6 @@ export default {
 }
 
 
-.button-container {
-  display: flex;
-  align-items: center;
-  padding-left: 15px;
-}
-
 
 .history-container {
   width: 78%;
