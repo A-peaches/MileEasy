@@ -221,6 +221,15 @@ export default {
       'fetchLikedPosts',
     ]),
     ...mapActions('mileage', ['fetchMileages']),
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
 
     goBack() {
       this.$router.go(-1);
@@ -425,6 +434,9 @@ export default {
 
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

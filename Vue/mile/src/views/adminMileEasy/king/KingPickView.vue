@@ -111,6 +111,7 @@
 <script>
 import api from '@/api/axios';
 import Swal from 'sweetalert2';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'KingPickView',
@@ -135,6 +136,16 @@ export default {
   },
 
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     async kingData() {
       try {
         const response = await api.get('/mileage/kingDataSelect');
@@ -348,6 +359,13 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+  },
+
+  created() {
+    this.checkLoginInfo();
+  },
+  computed: {
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
   },
 };
 </script>

@@ -1,17 +1,5 @@
 export default [
   //🚨USER 관련 라우터
-  {
-    path: '/allUser',
-    name: 'AllUser',
-    component: () => import('../views/test/AllUserView.vue'),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
-  {
-    path: '/selectUser',
-    name: 'SelectUser',
-    component: () => import('../views/test/SelectUserView.vue'),
-    meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  },
 
   // 여기서 부터 위에는 실험
 
@@ -39,7 +27,7 @@ export default [
     path: '/password',
     name: 'password',
     component: () => import('../views/user/login/PasswordReissueView.vue'),
-     meta: { hideFooter: true },
+    meta: { hideFooter: true },
   },
   //비밀번호 변경
   {
@@ -59,5 +47,5 @@ export default [
     name: 'groupManagement',
     component: () => import('../views/user/group/GroupManagement.vue'),
     meta: { requiresAuth: true }, // 인증이 필요한 라우트에 메타 필드 추가
-  }
+  },
 ];

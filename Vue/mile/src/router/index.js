@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router';
 import userRoutes from './user';
 import MileageRoutes from './mileage';
 import DocumentsRoutes from './documents';
-import Test from './test';
 import store from '@/store'; // store import 추가
 import M_TipRoutes from './m_Tip';
 import NoticeRoutes from './notice';
@@ -16,7 +15,6 @@ const routes = [
   ...userRoutes,
   ...MileageRoutes,
   ...DocumentsRoutes,
-  ...Test,
   ...M_TipRoutes,
   ...NoticeRoutes,
   ...ContactRoutes,
@@ -33,7 +31,7 @@ const routes = [
   {
     path: '/noAccess',
     name: 'AlertView',
-    component:  () => import('../views/common/AlretView.vue'),
+    component: () => import('../views/common/AlretView.vue'),
   },
 ];
 

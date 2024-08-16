@@ -113,6 +113,7 @@ export default {
 
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     profileImageUrl() {
       if (this.loginInfo && this.loginInfo.user_no) {
         if (process.env.NODE_ENV === 'development') {
@@ -142,6 +143,16 @@ export default {
     });
   },
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
@@ -179,6 +190,9 @@ export default {
         currentDay.add(1, 'day');
       }
     },
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

@@ -174,7 +174,7 @@ export default {
   computed: {
     ...mapGetters('badge', ['getKingBadge']),
     ...mapGetters('badge', ['getJumpBadge']),
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     kingImage() {
       return this.getKingBadge;
     },
@@ -216,6 +216,19 @@ export default {
     handleImageError() {
       console.error('이미지 로드 실패');
     },
+
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+  },
+  created() {
+    this.checkLoginInfo();
   },
 
   mounted() {

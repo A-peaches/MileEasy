@@ -90,6 +90,7 @@ export default {
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getIsChecked']),
 
     decodedFileName() {
       if (this.uploadedFileName) {
@@ -113,6 +114,16 @@ export default {
   },
 
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     async handleFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -250,6 +261,9 @@ export default {
         confirmButtonColor: '#4b4a4a',
       });
     },
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>
