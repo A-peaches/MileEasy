@@ -166,30 +166,19 @@ public class UserController {
     }
 
     @PostMapping("/requestAdd")
-    public void requestAdd(@RequestBody Map<String, String> requestBody) {
-        boolean is_branch = Boolean.parseBoolean(requestBody.get("request_is_branch"));
-        String mile_name = requestBody.get("request_mile_name");
-        String mil_max = requestBody.get("request_mil_max");
-        String admin = requestBody.get("request_admin");
-        String etc =  requestBody.get("request_etc");
-        int request_no = Integer.parseInt(requestBody.get("request_no"));
-        String user_no =  requestBody.get("user_no");
-        int mile_no = Integer.parseInt(requestBody.get("mile_no"));
+    public void requestAdd(@RequestBody Map<String, Object> requestBody) {
 
-        System.out.println(is_branch);
-        System.out.println(mile_name);
+        String is_branch = (String) requestBody.get("request_is_branch");
+        String mile_name = (String) requestBody.get("request_mile_name");
+        String mil_max = (String) requestBody.get("request_mil_max");
+        String admin = (String) requestBody.get("request_admin");
+        String etc = (String) requestBody.get("request_etc");
 
+        // String을 int로 변환
+        int request_no = Integer.parseInt((String) requestBody.get("request_no"));
+        int mile_no = Integer.parseInt((String) requestBody.get("mile_no"));
 
-        System.out.println(mil_max);
-        System.out.println(admin);
-
-
-        System.out.println(etc);
-
-        System.out.println(request_no);
-        System.out.println(user_no);
-        System.out.println(mile_no);
-
+        String user_no = (String) requestBody.get("user_no");
 
         admin = admin.replace("[", "");
         admin = admin.replace("]", "");

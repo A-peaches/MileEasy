@@ -1,127 +1,280 @@
 <template>
   <div>
-    <div class="d-flex justify-content-start align-items-center mb-5" style="margin-left: 5%;">
-    <div class="radio-container p-3 lg2 mr-3">
+    <div
+      class="d-flex justify-content-start align-items-center mb-5"
+      style="margin-left: 5%"
+    >
       <!-- 총 건수 -->
-      <div style="display: flex; align-items: center;">
-        <span style="font-family: 'KB_C2'; font-size: 18px; margin-left: -40px; margin-right: 25px; margin-bottom: 2px; color: #333;">
-          총 {{ totalTargetsCount }}건
-        </span>
+      <div style="display: flex; align-items: center">
+        <span class="count"> 총 {{ totalTargetsCount }}건 </span>
       </div>
-      <input class="radio-input" type="radio" name="targetList" id="finished" value="finished" v-model="sortBy" />
-      <label class="radio-label" for="finished">
-        <span class="custom-radio"></span>
-        종료
-      </label>
+
+      <div class="radio-container p-3 lg2">
+        <input
+          class="radio-input"
+          type="radio"
+          name="targetList"
+          id="finished"
+          value="finished"
+          v-model="sortBy"
+        />
+        <label class="radio-label" for="finished">
+          <span class="custom-radio"></span>
+          종료
+        </label>
+      </div>
+
+      <div class="radio-container p-3 lg2">
+        <input
+          class="radio-input"
+          type="radio"
+          name="targetList"
+          id="notFinished"
+          value="not-finished"
+          v-model="sortBy"
+        />
+        <label class="radio-label" for="notFinished">
+          <span class="custom-radio"></span>
+          참여
+        </label>
+      </div>
+
+      <div class="radio-container p-3 lg2">
+        <input
+          class="radio-input"
+          type="radio"
+          name="targetList"
+          id="notjoin"
+          value="notjoin"
+          v-model="sortBy"
+        />
+        <label class="radio-label" for="notjoin">
+          <span class="custom-radio"></span>
+          미참여
+        </label>
+      </div>
     </div>
-  <div class="radio-container p-3 lg2">
-      <input class="radio-input" type="radio" name="targetList" id="notFinished" value="not-finished" v-model="sortBy" />
-      <label class="radio-label" for="notFinished">
-        <span class="custom-radio"></span>
-        참여
-      </label>
-    </div>
-    <div class="radio-container p-3 lg2">
-      <input class="radio-input" type="radio" name="targetList" id="notjoin" value="notjoin" v-model="sortBy" />
-      <label class="radio-label" for="notjoin">
-        <span class="custom-radio"></span>
-        미참여
-      </label>
-    </div>
-  </div>
+
     <div v-if="!isLoading" class="row">
-      <div v-for="(target, index) in displayedTargets" :key="target.target_no" class="col-md-4 mb-3">
+      <div
+        v-for="(target, index) in displayedTargets"
+        :key="target.target_no"
+        class="col-md-4 mb-3"
+      >
         <div class="p-3">
-          <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 370px; height:320px; transition: transform 0.3s ease; border-radius: 1px; " class="mx-auto rounded-4 target-box">
-          <!-- <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 410px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box"> -->
+          <div
+            :style="{
+              backgroundColor:
+                backgroundColors[index % backgroundColors.length],
+            }"
+            class="mx-auto rounded-4 target-box"
+          >
+            <!-- <div :style="{backgroundColor : backgroundColors[index % backgroundColors.length]}" style="width: 410px; height:300px; transition: transform 0.3s ease;" class="mx-auto rounded-4 target-box"> -->
             <!-- 여기 하드코딩 한 부분 데이터 불러오기!! -->
-             <!-- 목표 설정된 마일리지의 경우 -->
+            <!-- 목표 설정된 마일리지의 경우 -->
             <!-- <div v-if="index%2==0"> -->
-              <div class="py-3" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: -10px;">
-                <div style="display: flex; align-items: center; flex: 1;">
-                   <span :class="getStatusClass(target)" class="status-label" style="margin-left: 20px;">{{ getStatusText(target) }}</span>
-                   <div style="text-align: left; margin-left: 10px; margin-top: 10px; font-weight: bold; font-family: KB_C2; font-size: 13pt;" class="mb-2">
-                     {{ target.mile_name }} 마일리지 
-                   </div>
-               </div>
-              
-                <div style="display: flex; align-items: center; justify-content: flex-end; width: 100px; position: relative; overflow: hidden;">
-                  <div v-if="isUserParticipating(target.target_no)" class="participation-info">
-                    <div @click="handleClick(target.target_no)" class="participant-count">
-                       <i class="bi bi-person-vcard" style="margin-right: 12px; margin-bottom: 2px; font-size:25px; color:#8c8c8c;"></i>
-                       <span style="margin-right: 25px;">{{ target.participantCount }}</span>
-                    </div>
-                     <!-- 드롭다운 메뉴 -->
-                      <div v-if="isDropdownVisible(target.target_no)" class="dropdown-menu"  @click.stop>
-                        <p v-for="participant in target.participants" :key="participant.user_no" style="margin: 0; padding: 5px 0;">
-                          {{ participant.user_name }}
-                        </p>
-                      </div>
-                  </div>
-                  <button 
-                    v-else
-                    @click="joinTarget(target.target_no)" 
-                    class="join-button"
-                    :disabled="getStatusText(target) !== '진행중'"
+            <div
+              class="py-3"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: -10px;
+              "
+            >
+              <div style="display: flex; align-items: center; flex: 1">
+                <span
+                  :class="getStatusClass(target)"
+                  class="status-label"
+                  style="margin-left: 20px"
+                  >{{ getStatusText(target) }}</span
+                >
+                <div
+                  style="
+                    text-align: left;
+                    margin-left: 10px;
+                    margin-top: 10px;
+                    font-weight: bold;
+                    font-family: KB_C2;
+                    font-size: 13pt;
+                  "
+                  class="mb-2"
+                >
+                  {{ target.mile_name }} 마일리지
+                </div>
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-end;
+                  width: 100px;
+                  position: relative;
+                  overflow: hidden;
+                "
+              >
+                <div
+                  v-if="isUserParticipating(target.target_no)"
+                  class="participation-info"
+                >
+                  <div
+                    @click="handleClick(target.target_no)"
+                    class="participant-count"
                   >
-                    참여하기 >
-                  </button>
+                    <i
+                      class="bi bi-person-vcard"
+                      style="
+                        margin-right: 12px;
+                        margin-bottom: 2px;
+                        font-size: 25px;
+                        color: #8c8c8c;
+                      "
+                    ></i>
+                    <span style="margin-right: 25px">{{
+                      target.participantCount
+                    }}</span>
+                  </div>
+                  <!-- 드롭다운 메뉴 -->
+                  <div
+                    v-if="isDropdownVisible(target.target_no)"
+                    class="dropdown-menu"
+                    @click.stop
+                  >
+                    <p
+                      v-for="participant in target.participants"
+                      :key="participant.user_no"
+                      style="margin: 0; padding: 5px 0"
+                    >
+                      {{ participant.user_name }}
+                    </p>
+                  </div>
                 </div>
-             </div>
-             <div class="py-3" style="display: flex; flex-direction: column; align-items: flex-start; margin-left: 20px;">
-              <span class="lg2" style="font-family: 'KB_C1'; font-size: 20px; margin-bottom: -25px;">그룹 달성률</span><br>
-              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-right: 10px;">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated" :style="{width: Math.min(target.achievementRate, 100) + '%', backgroundColor: '#FB773C '}"></div>
+                <button
+                  v-else
+                  @click="joinTarget(target.target_no)"
+                  class="join-button"
+                  :disabled="getStatusText(target) !== '진행중'"
+                >
+                  참여하기 >
+                </button>
+              </div>
+            </div>
+            <div
+              class="py-3"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                margin-left: 20px;
+              "
+            >
+              <span
+                class="lg2"
+                style="
+                  font-family: 'KB_C1';
+                  font-size: 20px;
+                  margin-bottom: -25px;
+                "
+                >그룹 달성률</span
+              ><br />
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  width: 100%;
+                "
+              >
+                <div
+                  class="progress"
+                  role="progressbar"
+                  aria-label="Animated striped example"
+                  aria-valuenow="60"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="width: 80%; margin-right: 10px"
+                >
+                  <div
+                    class="progress-bar progress-bar-striped progress-bar-animated"
+                    :style="{
+                      width: Math.min(target.achievementRate, 100) + '%',
+                      backgroundColor: '#FB773C ',
+                    }"
+                  ></div>
                 </div>
-                <span style="font-weight: bold; white-space: nowrap; font-family: 'KB_C2'; font-size: 25px; margin-right: 10px;">{{ Math.min(target.achievementRate, 100) }}%</span>
+                <span
+                  style="
+                    font-weight: bold;
+                    white-space: nowrap;
+                    font-family: 'KB_C2';
+                    font-size: 25px;
+                    margin-right: 10px;
+                  "
+                  >{{ Math.min(target.achievementRate, 100) }}%</span
+                >
               </div>
-              <span class="md" style="margin-top: 5px; font-size: 13px; font-family: 'KB_C2';">{{ target.start_date }} - {{ target.end_date }}</span>
+              <span
+                class="md"
+                style="margin-top: 5px; font-size: 13px; font-family: 'KB_C2'"
+                >{{ target.start_date }} - {{ target.end_date }}</span
+              >
             </div>
-            <span class="lg2" style="font-family: 'KB_C1'; font-size: 17px; "> 🎯 나의 마일리지 / 목표 마일리지 </span>
-              <div class="py-3">
-                <span class="bold-x-lg" style="font-family: 'KB_C1';">
-                  <span class="highlight-score">{{ target.totalMileScoreByMileNo }}</span>  / {{target.target_mileage }}</span>
-              </div>
+            <span class="lg2" style="font-family: 'KB_C1'; font-size: 17px">
+              🎯 나의 마일리지 / 목표 마일리지
+            </span>
+            <div class="py-3">
+              <span class="bold-x-lg" style="font-family: 'KB_C1'">
+                <span class="highlight-score">{{
+                  target.totalMileScoreByMileNo
+                }}</span>
+                / {{ target.target_mileage }}</span
+              >
             </div>
+          </div>
           <!-- </div> -->
-            <!-- 목표 미설정된 마일리지의 경우 -->
-            <!-- <div v-else style="background-color: #aeaeb2; height: 100%;" class="rounded-4">
+          <!-- 목표 미설정된 마일리지의 경우 -->
+          <!-- <div v-else style="background-color: #aeaeb2; height: 100%;" class="rounded-4">
               <div style="padding-top: 30%;">
                 <span class="bold-x-lg">🎯</span><br><br>
                 <span class="md" style="font-family: 'KB_C2'; color: #fff;">설정된 목표가 없습니다</span>
                 <button class="btn-green mt-3" @click="goTogether">참여하기</button>
               </div>
             </div> -->
-         
         </div>
       </div>
     </div>
-    <div v-else style="font-size: 20px;">
+    <div v-else style="font-size: 20px">
       <i class="bi bi-arrow-clockwise"></i> 로딩 중...
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from 'vuex';
 import api from '@/api/axios';
 export default {
-  name: "TogetherTarget",
+  name: 'TogetherTarget',
   data() {
     return {
       mileages: [],
       // backgroundColors: ["#FDF5F5", "#FBF4EE", "#FCFBF1", "#F4FBF2", "#F3FBFE", "#F5F5FF", "#FFF2FD", "#F4F4F4"],
-      backgroundColors: ["#F5F5F5"],
+      backgroundColors: ['#F5F5F5'],
       sortBy: 'notjoin',
       isUserParticipated: {}, // 참여 여부를 저장하는 객체 추가
-      userParticipatedTargets: JSON.parse(localStorage.getItem('userParticipatedTargets') || '[]'),
+      userParticipatedTargets: JSON.parse(
+        localStorage.getItem('userParticipatedTargets') || '[]'
+      ),
       isLoading: true,
-       dropDownVisible: {},
+      dropDownVisible: {},
     };
   },
   methods: {
-    ...mapActions('target', ['fetchAdminTargets','joinTarget','checkParticipation']),
+    ...mapActions('target', [
+      'fetchAdminTargets',
+      'joinTarget',
+      'checkParticipation',
+    ]),
 
     loginInfo() {
       return this.getLoginInfo;
@@ -132,24 +285,21 @@ export default {
     isLoggedIn() {
       return !!this.loginInfo;
     },
-  
 
     async fetchMileages() {
-          // 마일리지 카테고리 가져오기
-          try {
-              const response = await api.get(
-              '/notice/mileage'
-              );
-              this.mileages = response.data;
-          } catch (error) {
-              console.error(
-              'Error fetching mileages:',
-              error.response ? error.response.data : error.message
-              );
-          }
-      },
-      
-      getStatusClass(target) {
+      // 마일리지 카테고리 가져오기
+      try {
+        const response = await api.get('/notice/mileage');
+        this.mileages = response.data;
+      } catch (error) {
+        console.error(
+          'Error fetching mileages:',
+          error.response ? error.response.data : error.message
+        );
+      }
+    },
+
+    getStatusClass(target) {
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
@@ -162,7 +312,7 @@ export default {
         return 'ongoing';
       }
     },
-      getStatusText(target) {
+    getStatusText(target) {
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
@@ -177,130 +327,139 @@ export default {
     },
     sortTargets(targets) {
       return targets.sort((a, b) => {
-    // 먼저 mile_no로 정렬
-    if (a.mile_no !== b.mile_no) {
-      return a.mile_no - b.mile_no;
-    }
+        // 먼저 mile_no로 정렬
+        if (a.mile_no !== b.mile_no) {
+          return a.mile_no - b.mile_no;
+        }
 
+        const statusA = this.getStatusText(a);
+        const statusB = this.getStatusText(b);
+        const isParticipatingA = this.isUserParticipating(a.target_no);
+        const isParticipatingB = this.isUserParticipating(b.target_no);
 
-    const statusA = this.getStatusText(a);
-    const statusB = this.getStatusText(b);
-    const isParticipatingA = this.isUserParticipating(a.target_no);
-    const isParticipatingB = this.isUserParticipating(b.target_no);
+        // 참여 중인 항목을 먼저 정렬
+        if (isParticipatingA && !isParticipatingB) return -1;
+        if (!isParticipatingA && isParticipatingB) return 1;
 
-    // 참여 중인 항목을 먼저 정렬
-    if (isParticipatingA && !isParticipatingB) return -1;
-    if (!isParticipatingA && isParticipatingB) return 1;
+        // 참여 상태가 같다면 상태에 따라 정렬
+        if (statusA === '진행중' && statusB !== '진행중') return -1;
+        if (statusA !== '진행중' && statusB === '진행중') return 1;
+        if (statusA === '예정' && statusB !== '예정') return -1;
+        if (statusA !== '예정' && statusB === '예정') return 1;
+        if (statusA === '종료' && statusB !== '종료') return 1; // 종료 상태를 마지막으로
+        if (statusA !== '종료' && statusB === '종료') return -1;
 
-    // 참여 상태가 같다면 상태에 따라 정렬
-    if (statusA === '진행중' && statusB !== '진행중') return -1;
-    if (statusA !== '진행중' && statusB === '진행중') return 1;
-    if (statusA === '예정' && statusB !== '예정') return -1;
-    if (statusA !== '예정' && statusB === '예정') return 1;
-    if (statusA === '종료' && statusB !== '종료') return 1;  // 종료 상태를 마지막으로
-    if (statusA !== '종료' && statusB === '종료') return -1;
-
-    return 0;
-  });
-},
+        return 0;
+      });
+    },
     filteredTargets(filter) {
-  return this.adminTargets.filter(target => {
-    const status = this.getStatusText(target);
-    const isParticipating = this.isUserParticipating(target.target_no);
+      return this.adminTargets.filter((target) => {
+        const status = this.getStatusText(target);
+        const isParticipating = this.isUserParticipating(target.target_no);
 
-    if (filter === 'finished') {
-      return status === '종료';
-    } else if (filter === 'not-finished') {
-      return isParticipating && status !== '종료';
-    } else if (filter === 'notjoin') {
-      return (!isParticipating && status === '진행중') || status === '예정';
-    } else {
-      return true;
-    }
-  });
-},
+        if (filter === 'finished') {
+          return status === '종료';
+        } else if (filter === 'not-finished') {
+          return isParticipating && status !== '종료';
+        } else if (filter === 'notjoin') {
+          return (!isParticipating && status === '진행중') || status === '예정';
+        } else {
+          return true;
+        }
+      });
+    },
     sortedAdminTargets(targets) {
-    return targets.sort((a, b) => a.mile_no - b.mile_no);
-  },
-  async checkParticipation(targetNo) {
-    try {
-        const response = await this.$store.dispatch('target/checkParticipation', {
+      return targets.sort((a, b) => a.mile_no - b.mile_no);
+    },
+    async checkParticipation(targetNo) {
+      try {
+        const response = await this.$store.dispatch(
+          'target/checkParticipation',
+          {
             targetNo,
             userNo: this.loginInfo.user_no,
-        });
+          }
+        );
 
         if (typeof response === 'boolean') {
-            console.log(`8. Checking participation for target ${targetNo}:`, response);
+          console.log(
+            `8. Checking participation for target ${targetNo}:`,
+            response
+          );
 
-            // 타겟 번호별 참여 여부를 직접 할당
-            this.isUserParticipated[targetNo] = response;
+          // 타겟 번호별 참여 여부를 직접 할당
+          this.isUserParticipated[targetNo] = response;
 
-            return response;
+          return response;
         } else {
-            throw new Error("Invalid response format");
+          throw new Error('Invalid response format');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Failed to check user participation:', error);
         return false;
-    }
-},
+      }
+    },
 
-
-async loadUserParticipatedTargets() {
-    try {
-        const targetNos = this.adminTargets.map(target => target.target_no);
+    async loadUserParticipatedTargets() {
+      try {
+        const targetNos = this.adminTargets.map((target) => target.target_no);
         console.log('5. Target numbers:', targetNos);
 
         // 참여 여부 확인을 병렬로 처리
-        const participationPromises = targetNos.map(targetNo => 
-            this.checkParticipation(targetNo)
-                .then(isParticipating => {
-                    if (isParticipating) {
-                        this.userParticipatedTargets.push(targetNo);
-                    }
-                })
+        const participationPromises = targetNos.map((targetNo) =>
+          this.checkParticipation(targetNo).then((isParticipating) => {
+            if (isParticipating) {
+              this.userParticipatedTargets.push(targetNo);
+            }
+          })
         );
 
         // 모든 요청이 완료될 때까지 대기
         await Promise.all(participationPromises);
 
-        console.log('7. Updated userParticipatedTargets:', this.userParticipatedTargets);
-    } catch (error) {
+        console.log(
+          '7. Updated userParticipatedTargets:',
+          this.userParticipatedTargets
+        );
+      } catch (error) {
         console.error('Failed to load user participated targets:', error);
-    } finally {
+      } finally {
         this.isLoading = false; // 로딩 상태 해제
-    }
-},
-
-  
-  async joinTarget(targetNo) {
-    try {
-      const response = await this.$store.dispatch('target/joinTarget', {
-        targetNo,
-        userNo: this.loginInfo.user_no,
-      });
-      if (response.success) {
-        this.userParticipatedTargets.push(targetNo);
-        localStorage.setItem('userParticipatedTargets', JSON.stringify(this.userParticipatedTargets));
-        const target = this.adminTargets.find(t => t.target_no === targetNo);
-        if (target) {
-          target.participantCount = (target.participantCount || 0) + 1;
-        }
       }
-    } catch (error) {
-      console.error('Failed to join target:', error);
-    }
-  },
+    },
 
+    async joinTarget(targetNo) {
+      try {
+        const response = await this.$store.dispatch('target/joinTarget', {
+          targetNo,
+          userNo: this.loginInfo.user_no,
+        });
+        if (response.success) {
+          this.userParticipatedTargets.push(targetNo);
+          localStorage.setItem(
+            'userParticipatedTargets',
+            JSON.stringify(this.userParticipatedTargets)
+          );
+          const target = this.adminTargets.find(
+            (t) => t.target_no === targetNo
+          );
+          if (target) {
+            target.participantCount = (target.participantCount || 0) + 1;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to join target:', error);
+      }
+    },
 
+    initializeUserParticipation() {
+      this.adminTargets.forEach((target) => {
+        this.isUserParticipated[target.target_no] =
+          this.userParticipatedTargets.includes(target.target_no);
+      });
+    },
 
-  initializeUserParticipation() {
-    this.adminTargets.forEach(target => {
-      this.isUserParticipated[target.target_no] = this.userParticipatedTargets.includes(target.target_no);
-    });
-  },
-
-  handleClick(targetNo) {
+    handleClick(targetNo) {
       console.log('Clicked:', targetNo);
       this.toggleDropdown(targetNo);
     },
@@ -325,26 +484,24 @@ async loadUserParticipatedTargets() {
     },
 
     isParticipating(target) {
-    return target.participants && target.participants.length > 0;
-   },
-
+      return target.participants && target.participants.length > 0;
+    },
   },
 
-  
- async created() {
-  console.log('1. Component created');
-  this.isLoading = true;
-  try {
-    await this.fetchMileages();
-    await this.fetchAdminTargets(this.loginInfo.user_no);
-    await this.loadUserParticipatedTargets();
-  } catch (error) {
-    console.error('Error initializing component:', error);
-  } finally {
-    this.isLoading = false;
-  }
-},
-mounted() {
+  async created() {
+    console.log('1. Component created');
+    this.isLoading = true;
+    try {
+      await this.fetchMileages();
+      await this.fetchAdminTargets(this.loginInfo.user_no);
+      await this.loadUserParticipatedTargets();
+    } catch (error) {
+      console.error('Error initializing component:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  },
+  mounted() {
     document.addEventListener('click', this.closeAllDropdowns);
   },
 
@@ -356,21 +513,20 @@ mounted() {
     ...mapState('login', ['loginInfo']),
     ...mapGetters('target', ['getAdminTargets']),
     adminTargets() {
-    return this.getAdminTargets;
+      return this.getAdminTargets;
     },
     displayedTargets() {
-    const filtered = this.filteredTargets(this.sortBy);
-    return this.sortTargets(filtered);
-  },
-  //   displayedTargets() {
-  //   const filtered = this.filteredTargets(this.sortBy);
-  //   const sorted = this.sortedAdminTargets(filtered);
-  //   return this.sortBy === 'not-finished' ? this.sortTargets(sorted) : sorted;
-  // },
-  totalTargetsCount() {
-    return this.adminTargets.length;
-  },
-  
+      const filtered = this.filteredTargets(this.sortBy);
+      return this.sortTargets(filtered);
+    },
+    //   displayedTargets() {
+    //   const filtered = this.filteredTargets(this.sortBy);
+    //   const sorted = this.sortedAdminTargets(filtered);
+    //   return this.sortBy === 'not-finished' ? this.sortTargets(sorted) : sorted;
+    // },
+    totalTargetsCount() {
+      return this.adminTargets.length;
+    },
   },
 };
 </script>
@@ -381,6 +537,10 @@ mounted() {
 }
 .target-box {
   transition: transform 0.3s ease;
+  width: 370px;
+  height: 320px;
+  transition: transform 0.3s ease;
+  border-radius: 1px;
 }
 
 .target-box:hover {
@@ -434,12 +594,12 @@ mounted() {
 }
 
 .radio-input:checked + .radio-label .custom-radio {
-  background-color: #FC8A58; /* 체크된 상태일 때 배경색 */
+  background-color: #fc8a58; /* 체크된 상태일 때 배경색 */
   border: none; /* 체크된 상태일 때 테두리 제거 */
 }
 
 .radio-input:checked + .radio-label .custom-radio::after {
-  content: "✓";
+  content: '✓';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -472,7 +632,7 @@ mounted() {
 }
 
 .highlight-score {
-  background-color: #FFE2B5;
+  background-color: #ffe2b5;
   padding: 2px 4px;
   border-radius: 20px;
 }
@@ -506,13 +666,14 @@ mounted() {
 }
 
 /* 트랜지션을 위한 추가 클래스 */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
-
 
 /*--------------------------------*/
 .participation-info {
@@ -550,5 +711,56 @@ mounted() {
 
 .dropdown-menu p:last-child {
   border-bottom: none;
+}
+.count {
+  font-family: 'KB_C2';
+  font-size: 18px;
+  margin-left: -40px;
+  margin-right: 25px;
+  margin-bottom: 2px;
+  color: #333;
+}
+@media (max-width: 768px) {
+  .count {
+    font-family: 'KB_C2';
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    margin-left: 5px;
+    margin-right: 0px;
+  }
+  .radio-container {
+    margin-bottom: 10px; /* Add some spacing between each radio container */
+    display: flex;
+    justify-content: space-between; /* Evenly space label and input */
+    align-items: center;
+  }
+
+  .radio-label {
+    font-size: 16px; /* Slightly smaller font size for mobile */
+    padding-left: 3px; /* Adjust label padding for better spacing */
+  }
+
+  .custom-radio {
+    margin-left: 10px;
+    width: 16px;
+    height: 16px;
+    margin-right: 0px;
+  }
+  .p-3 {
+    padding: 0rem !important;
+  }
+  .target-box {
+    transition: transform 0.3s ease;
+    width: 370px;
+    height: 220px;
+    transition: transform 0.3s ease;
+    border-radius: 1px;
+  }
+  .py-3 {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    margin-top: 5px;
+  }
 }
 </style>

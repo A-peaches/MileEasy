@@ -64,12 +64,12 @@ export default {
     const submitForm = async () => {
       const formData = {
         request_mile_name: mileageName.value,
-        request_mil_max: 0,
+        request_mil_max: '0',
         request_admin: ' ',
         request_etc: additionalNotes.value,
-        request_no: request.value,
+        request_no: request.value.toString(),
         user_no: loginInfo.value.user_no,
-        mile_no: loginInfo.value.mile_no,
+        mile_no: (loginInfo.value.mile_no || 0).toString(),
       };
 
       try {
