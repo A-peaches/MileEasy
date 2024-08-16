@@ -112,6 +112,18 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 370px) {
+  .tab-container {
+    height : 45px !important;
+  }
 
+ 
+   .input-search {
+    height : 50px !important;
+  }
+  .input-base {
+    height : 50px !important;
+  }
+}
 
 </style>

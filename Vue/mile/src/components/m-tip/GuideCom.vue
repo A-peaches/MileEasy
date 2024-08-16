@@ -1,18 +1,28 @@
 <template>
-  <div key="profile" class="cards" style="height: 105%; padding-left:30px; margin-top:20px;">
+  <div key="profile" class="cards guide-card">
     <div class="guide-container">
-      <div class="fw-bold" style="font-size: 24px; font-family: 'KB_C2', sans-serif; margin-right: 10px; text-align: left;">M-Tip 가이드</div> 
-      <div v-if="notices.length === 0" style="font-family: 'KB_C2', sans-serif; color: #4b4a4a; margin-top: 20px;">
+      <div class="guide-header">
+        <div class="guide-title">M-Tip 가이드</div> 
+        <div v-if="notices.length > 0" class="file-download-wrapper-mobile">
+          <a @click.prevent="downloadFile(notices[0])"
+             href="#"
+             class="file-download-link"
+          >
+            상세보기
+          </a>
+        </div>
+      </div>
+      <div v-if="notices.length === 0" class="no-notices">
         등재된 게시글이 없습니다.
       </div>
       <div v-else class="notice-item" v-for="notice in notices" :key="notice?.mtip_guide_no">
         <div class="notice-details">
           <div class="notice-content-wrapper">
             <div class="notice-content">{{ notice?.mtip_guide_content }}</div>
-            <div v-if="notice.mtip_guide_file" class="file-download-wrapper">
+            <div v-if="notice.mtip_guide_file" class="file-download-wrapper-desktop">
               <a @click.prevent="downloadFile(notice)"
                  href="#"
-                 class="file-download-link" style="color: #ffca05; margin-right: 2px;font-family: 'KB_C2', sans-serif; font-size: 17px;"
+                 class="file-download-link"
               >
                 상세보기
               </a>
@@ -23,7 +33,7 @@
     </div>
   </div>
 </template>
-  
+
   <script>
   import { mapGetters } from "vuex";
   import api from '@/api/axios';
@@ -112,22 +122,109 @@
   
   <style scoped>
 
-  .guide-container {
+.guide-card {
+  height: auto;
+  margin-top: 40px;
+  padding: 20px;
+}
+
+.guide-container {
   text-align: left;
 }
+
+.guide-title {
+  font-size: 24px;
+  font-family: 'KB_C2', sans-serif;
+  font-weight: bold;
+}
+
+
+.guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+.no-notices {
+  font-family: 'KB_C2', sans-serif;
+  color: #4b4a4a;
+  margin-top: 20px;
+}
+
 .notice-item {
   margin: 10px 0;
 }
+
 .notice-content-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .notice-content {
   flex-grow: 1;
   font-size: 20px;
   font-family: 'KB_C2', sans-serif;
 }
 
+.file-download-link {
+  color: #ffca05;
+  margin-right: 2px;
+  font-family: 'KB_C2', sans-serif;
+  font-size: 17px;
+  text-decoration: none;
+}
 
+.file-download-wrapper-mobile {
+  display: none;
+}
+
+
+@media (max-width: 768px) {
+  .guide-title {
+    font-size: 20px;
+  }
+  
+  .notice-content {
+    font-size: 16px;
+  }
+  
+  .file-download-link {
+    font-size: 14px;
+  }
+
+  
+  .file-download-wrapper-desktop {
+    display: none;
+  }
+
+
+  .file-download-wrapper-mobile {
+    display: block;
+  }
+}
+
+.guide-card{
+  margin-top:40px !important;
+}
+@media (max-width: 480px) {
+  .guide-card {
+    margin-top:20px;
+    padding: 15px;
+  }
+  
+  .guide-title {
+    font-size: 18px;
+  }
+  
+  .notice-content {
+    font-size: 14px;
+  }
+  
+  .file-download-link {
+    font-size: 12px;
+  }
+}
   </style>

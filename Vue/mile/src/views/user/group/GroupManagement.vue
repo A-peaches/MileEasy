@@ -266,7 +266,7 @@ table caption {
 }
 
 .custom-datepicker {
-  width: 200px;
+  width: 240px;
   
   min-width: 200px;  /* 추가: 최소 너비 설정 */
   flex-shrink: 1;  /* 추가: 필요시 축소 허용 */
@@ -589,8 +589,24 @@ table caption {
     top: 23% !important;
   }
 
+  .help-icon {
+    font-size : 24px !important;
+  }
+
   .pagination-container{
     padding-bottom: 20px;
+  }
+
+  .bold-x-lg{
+    font-size : 24px;
+  }
+}
+
+@media (max-width : 370px) {
+  .help-popover {
+    right: 5%;
+    width: 90%;
+    top: 25% !important;
   }
 }
 </style>

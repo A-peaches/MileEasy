@@ -1,8 +1,8 @@
 <template>
-  <div class="app-container">
-    <div class="content cards" @click="handleClick">
+  <div class="d-flex justify-content-center">
+    <div class="cards page-back" @click="handleClick">
       <div>
-        <h2>공지사항</h2>
+        <h2 class="bold-x-lg mt-5" style="font-family: KB_C3;">공지사항</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
@@ -100,6 +100,7 @@
         </div>
       </div>
 
+      <div class="pagination-container">
       <div class="pagination">
         <button @click="prevPage" :disabled="currentPage === 1">〈</button>
         <button
@@ -114,6 +115,7 @@
           〉
         </button>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -379,7 +381,6 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: "Arial, sans-serif";
   overflow-x: hidden; /* 수평 스크롤바 제거 */
   height: 100%; /* 페이지 높이를 100%로 설정 */
 }
@@ -407,35 +408,12 @@ h2::after {
   left: -10%; /* 중앙 정렬을 위해 조정 */
 }
 
-.app-container {
-  width: 100%;
-  padding: 0;
-  min-height: 100vh; /* 최소 높이를 설정하여 페이지 전체를 채움 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4%;
+
+.page-back {
+  padding-left: 3%;
+  padding-right: 3%;
 }
 
-.content {
-  text-align: center;
-  padding: 20px;
-  width: 95%;
-  max-width: 1300px;
-  box-sizing: border-box;
-  min-height: 100vh;
-  margin: auto;
-}
-
-.content.cards {
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 60px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  max-width: 1300px;
-  margin: 0 auto;
-}
 
 .category-button {
   background-color: #f9f9f9;
@@ -688,6 +666,7 @@ h2::after {
   width: auto; /* 너비를 자동으로 설정 */
 }
 
+
 /* 페이지 네이션 및 글쓰기 버튼 스타일 */
 .pagination-container {
   display: flex;
@@ -710,7 +689,7 @@ h2::after {
   margin: 0 5px;
   border-radius: 5px;
   font-size: 18px; /* 숫자의 폰트 크기 */
-  font-family: "KB_C3", sans-serif; /* 숫자의 폰트 */
+  font-family: 'KB_s4', sans-serif; /* 숫자의 폰트 */
 }
 
 .pagination button:disabled {
@@ -727,6 +706,7 @@ h2::after {
 .pagination button.arrow-button {
   font-size: 18px; /* 화살표의 폰트 크기 */
 }
+
 
 .write-button {
   display: flex;
