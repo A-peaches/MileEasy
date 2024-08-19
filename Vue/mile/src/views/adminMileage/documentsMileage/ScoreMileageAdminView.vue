@@ -140,7 +140,7 @@ export default {
       file: null,
       selectedDate: null,
       deleteArray: [],
-      baseHeight: 80,
+      baseHeight: 90,
       increment: 10,
       buttonHeight: 10,
       currentPage: 1, // 현재 페이지
