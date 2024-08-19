@@ -88,7 +88,7 @@
               ></span
             >
             <span class="menu"
-              ><a href="/m_TipListView" class="link-menu">M-Tip 관리</a></span
+              ><a href="/mTipMainAdminView" class="link-menu">M-Tip 관리</a></span
             >
           </template>
           <template v-else-if="getLoginInfo?.user_is_manager">
@@ -122,7 +122,7 @@
               ><a href="/documentsView" class="link-menu">문서모아</a></span
             >
             <span class="menu"
-              ><a href="/m_TipMainView" class="link-menu">M-Tip</a></span
+              ><a href="/M-Tip" class="link-menu">M-Tip</a></span
             >
           </template>
           <span class="menu"
