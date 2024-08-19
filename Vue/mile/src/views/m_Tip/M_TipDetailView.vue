@@ -88,14 +88,8 @@
       </div>
       <div class="content-container mx-auto">
         <div class="actions">
-          <div
-            v-if="
-              isLoggedIn &&
-              loginInfo.user_is_admin &&
-              !loginInfo.user_is_manager &&
-              !isChecked
-            "
-          >
+          <div v-if="isLoggedIn && loginInfo.user_is_admin && isChecked"></div>
+          <div v-else>
             <span class="alert-icon">🚨</span>
             <button class="report-button" @click="mtip_complain">
               신고하기

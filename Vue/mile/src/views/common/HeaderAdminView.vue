@@ -30,6 +30,9 @@
             <a class="nav-link hover" href="/mTipMainAdminView">M-Tip관리</a>
           </div>
           <div class="nav-item">
+            <a class="nav-link hover" href="/adminPromotion">프로모션</a>
+          </div>
+          <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
           </div>
           <!-- <div class="nav-item">
