@@ -220,7 +220,7 @@ public class CustomBotController {
     }
 
 
-    
+
     @PostMapping("/getAiReport")
     public ResponseEntity<?> getAiReport(@RequestParam(name = "user_no") int user_no) throws JsonProcessingException {
 
