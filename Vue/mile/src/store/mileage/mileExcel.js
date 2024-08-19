@@ -107,6 +107,7 @@ const actions = {
     try{
       const response = await api.get(`/mileage/totalMileDocument/${mile_no}?page=${page}&itemsPerPage=${itemsPerPage}`);
       commit('setArrayMileDocument', response.data);
+      return response;
     }catch(error){
       console.error('Error get mile document lists:', error);
     }

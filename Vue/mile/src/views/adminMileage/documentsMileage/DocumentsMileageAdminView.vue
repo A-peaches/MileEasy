@@ -259,7 +259,7 @@ export default {
       
       const mile_no = this.loginInfo.mile_no;
       const countList = await api.get(`/mileage/countListDocuments/${mile_no}`);
-      this.countList = countList.data;
+      this.listSum = countList.data;
     },
     onSearch(){
       const currentTime = Date.now();
