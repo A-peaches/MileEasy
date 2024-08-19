@@ -211,7 +211,7 @@ export default {
       const formData = {
         request_is_branch: commonMileage.value === '1' ? '1' : '0',
         request_mile_name: mileageName.value,
-        request_mil_max: parseInt(mileMax.value, 10).toString(), // Updated to use mileMax
+
         request_admin: JSON.stringify(
           rows.value.map((row) => row.id) // Extract only user_no
         ),
@@ -220,6 +220,12 @@ export default {
 
         user_no: loginInfo.value.user_no, // Adding user_no from loginInfo
         mile_no: (loginInfo.value.mile_no || 0).toString(), // 문자열로 변환
+
+        request_mil_max:
+          mileMax.value &&
+          !isNaN(parseInt(mileMax.value, 10) || mileMax.value === null)
+            ? parseInt(mileMax.value, 10).toString()
+            : '0',
       };
 
       try {
