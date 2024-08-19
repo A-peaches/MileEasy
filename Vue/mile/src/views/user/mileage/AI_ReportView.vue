@@ -159,15 +159,18 @@ export default {
   },
   methods: {
     checkLoginInfo() {
-      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
-          window.location.href="/noAccess"
-        } 
+      if (
+        !this.getLoginInfo ||
+        (this.getLoginInfo && this.getIsChecked == true)
+      ) {
+        window.location.href = '/noAccess';
+      }
     },
     async aitest() {
       try {
         const response = await api.post('bot/chat', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님을`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
@@ -182,7 +185,7 @@ export default {
       try {
         const response = await api.post('bot/chatRank', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
@@ -197,7 +200,7 @@ export default {
       try {
         const response = await api.post('bot/chatCatchup', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
@@ -617,7 +620,7 @@ export default {
     this.getReport();
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
     ...mapGetters('aireport', [
       'getAll',

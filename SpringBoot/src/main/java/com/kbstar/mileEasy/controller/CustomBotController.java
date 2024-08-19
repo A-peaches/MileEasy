@@ -218,6 +218,9 @@ public class CustomBotController {
         aiReportService.saveMile(no, chatGPTResponse.getChoices().get(0).getMessage().getContent());
         return chatGPTResponse.getChoices().get(0).getMessage().getContent();
     }
+
+
+    
     @PostMapping("/getAiReport")
     public ResponseEntity<?> getAiReport(@RequestParam(name = "user_no") int user_no) throws JsonProcessingException {
 
