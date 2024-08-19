@@ -185,8 +185,12 @@ export default {
       let minIndex = 0;
       let maxValue = hitCounts[0];
       let minValue = hitCounts[0];
-
-      for (let i = 1; i < hitCounts.length; i++) {
+      let count = 0;
+      for (let i = 0; i < hitCounts.length; i++) {
+        console.log(hitCounts[i], hitCounts[i]);
+        if (hitCounts[i] === 0) {
+          count = count + 1;
+        }
         if (hitCounts[i] > maxValue) {
           maxValue = hitCounts[i];
           maxIndex = i;
@@ -202,6 +206,11 @@ export default {
 
       this.best = mileageLabel[maxIndex];
       this.worst = mileageLabel[minIndex];
+
+      if (count === hitCounts.length) {
+        this.best = '-';
+        this.worst = '-';
+      }
 
       console.log(
         'Best:',
