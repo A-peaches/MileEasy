@@ -37,6 +37,7 @@
             u.user_is_manager,
             u.user_is_admin,
             u.mile_no,
+            m.mile_name,
             u.group_no,
             sg.group_name,
             u.is_hr
@@ -47,8 +48,11 @@
                 JOIN job j ON u.job_no = j.job_no
                 JOIN position p ON u.position_no = p.position_no
                 JOIN sales_group sg ON u.group_no = sg.group_no
+                LEFT JOIN mileage m ON u.mile_no = m.mile_no  -- Changed to LEFT JOIN
         WHERE
-            u.user_no = #{user_no}
+            u.user_no = #{user_no};
+
+
 
     </select>
 
