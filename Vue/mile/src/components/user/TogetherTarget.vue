@@ -752,7 +752,7 @@ export default {
   }
   .target-box {
     transition: transform 0.3s ease;
-    width: 370px;
+    width: 100%;
     height: 220px;
     transition: transform 0.3s ease;
     border-radius: 1px;
