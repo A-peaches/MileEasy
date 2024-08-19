@@ -1,62 +1,60 @@
-<!--🚨마일리지 관리자 :  마일리지 목표설정 화면-->
 <template>
   <div class="cards page-back mx-auto">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">목표 설정</h2>
-    <div class="d-flex justify-content-end mr-5">
-      <button class="btn-green target-btn" @click="openModal">목표 등록하기</button>
-    </div>
-    <!-- 현재 진행중인 마일리지 목표 -->
-    <div class="mileage-goals-container">
-      <h3 class="mileage-goals-title">현재 진행중인 마일리지 목표</h3>
-      
-      <div v-if="currentTargets.length > 0" class="goals-list">
-        <div v-for="(target, index) in currentTargets" :key="index" class="goal-card">
-          <div class="goal-info">
-            <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
-            <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
-            <span class="goal-rate">✨ {{ target.targetRate }}% 달성</span>
-          </div>
-          <div class="progress-container">
-            <div class="progress-bar" :style="{ width: target.targetRate + '%' }"></div>
-          </div>
-        </div>
-      </div>
-      
-      <div v-else class="no-goals">
-        <p class="lg2">현재 진행중인 목표가 없습니다.</p>
-      </div>
-    </div>
+    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">목표 관리</h2>
     
-    <!-- 예정된 마일리지 목표 내역 -->
-    <div style="width:90%;" class="mx-auto mt-5">
-      <h3 class="lg p-3 ml-5" style="text-align: left; font-family: 'KB_S4'; font-size: 18pt;">예정된 마일리지 목표 내역</h3>
-      <div v-for="detail in futureTargets" :key="detail.target_no" class="cards card-red mx-auto m-3 pointer" style="width: 90%; height: 6vh;">
-        <div class="d-flex justify-content-between">
-          <div class="d-flex justify-content-evenly pr-3 pl-3 future-wrapper">
-            <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>
-            <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>
-          </div>
-          <div class="delete-wrapper">
-            <button class="delete-btn" @click="deleteTarget(detail.target_no)">삭제</button>
-          </div>
-        </div>
+    <div class="menu-and-filters">
+      <!-- 탭 메뉴 -->
+      <div class="tab-menu">
+        <button @click="currentTab = 'all'" :class="{ active: currentTab === 'all' }">전체</button>
+        <button @click="currentTab = 'ongoing'" :class="{ active: currentTab === 'ongoing' }">진행 중</button>
+        <button @click="currentTab = 'completed'" :class="{ active: currentTab === 'completed' }">종료</button>
+      </div>
+
+      <!-- 검색 필터 -->
+      <div class="search-filters">
+        <input type="date" v-model="searchStartDate" @change="filterTargets" placeholder="시작 날짜">
+        <input type="date" v-model="searchEndDate" @change="filterTargets" placeholder="종료 날짜">
+        <select v-model="searchStatus" @change="filterTargets">
+          <option value="">모든 상태</option>
+          <option value="ongoing">진행 중</option>
+          <option value="scheduled">예정</option>
+          <option value="completed">종료</option>
+        </select>
       </div>
     </div>
 
-    <!-- 지난 마일리지 목표 내역 -->
-    <div style="width:90%;" class="mx-auto mt-5">
-      <h3 class="lg p-3 ml-5" style="text-align: left; font-family: 'KB_S4'; font-size: 18pt;">지난 마일리지 목표 내역</h3>
-      <div v-for="detail in pastTargets" :key="detail.target_no" class="cards card-gray mx-auto m-3 pointer" style="width: 90%; height: 6vh;">
-        <div class="d-flex justify-content-between pr-3 pl-3">
-          <span class=" target-list">목표기간: {{ detail.start_date }} ~ {{ detail.end_date }}</span>
-          <span class=" target-list">목표 마일리지: {{ detail.target_mileage }}</span>
-          <span class=" target-list">달성률: {{ detail.targetRate }}%</span>
+    <div class="d-flex justify-content-end mr-5">
+      <div class="target" @click="openModal">+ 새로운 목표 📝</div>
+    </div>
+
+    <div v-if="filteredTargets.length > 0" class="goals-list">
+      <div v-for="(target, index) in filteredTargets" :key="index" class="goal-card">
+        <div class="goal-info" @click="toggleExpand(index)">
+          <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
+          <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
+          <span class="goal-status">{{ getStatusText(target) }}</span>
+          <span class="goal-rate">✨ {{ target.targetRate }}% 달성</span>
+          <span class="dropdown" :class="{ expanded: expandedTargets.includes(target.target_no) }"></span>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" :style="{ width: target.targetRate + '%' }"></div>
+        </div>
+        <div v-show="expandedTargets.includes(target.target_no)" class="goal-details">
+          <!-- 추가 상세 정보를 여기에 넣을 수 있습니다 -->
+           <div style="margin-top: 40px;">
+          <p style="font-size: 18px; font-family: 'KB_C2', sans-serif; text-align: left; ">직원 목록</p>
+          <p>상세 정보 2</p>
+          <p>상세 정보 3</p>
+          </div>
         </div>
       </div>
+    </div>
+    <div v-else class="no-goals">
+      <p class="lg2">목표가 없습니다.</p>
     </div>
   </div>
 
-  <!-- 모달 -->
+  <!-- 모달 (기존 코드 유지) -->
   <div v-if="isModalOpen" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -101,9 +99,14 @@ export default {
       endDate: null,
       targetScore: 0,
       mile_name: '',
+      currentTab: 'all',
+      searchStartDate: '',
+      searchEndDate: '',
+      searchStatus: '',
+      expandedTargets: [],
     }
   },
-  computed :{ // 데이터를 가공하는 곳. 
+  computed: {
     ...mapGetters('mile', ['getMileInfo', 'getArrayMiles']),
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getTargets']),
@@ -125,41 +128,51 @@ export default {
         const endDate = new Date(target.end_date);
         
         return{
-          ...target, // ...은 복사의 의미 
+          ...target,
           targetRate: target.achievementRate,
           startDate,
-          endDate
+          endDate,
+          expanded: false
         }
+      });
+    },
+    filteredTargets() {
+      let targets = this.formattedTargets;
+      
+      // 탭 필터링
+      if (this.currentTab === 'ongoing') {
+        targets = targets.filter(t => this.isOngoing(t) || this.isScheduled(t));
+      } else if (this.currentTab === 'completed') {
+        targets = targets.filter(t => this.isCompleted(t));
       }
-    );
-    },
-    currentTargets(){
-      const currentDate =new Date();
-      currentDate.setHours(0, 0, 0, 0);
-      return this.formattedTargets.filter(target =>
-        target.startDate.setHours(0,0,0,0) <= currentDate && currentDate <= target.endDate.setHours(0,0,0,0)
-      ).sort((a, b) => new Date(a.startDate)-new Date(b.startDate)); // 날짜 오름차순으로 정렬
-    },
-    pastTargets() {
-      const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0);
 
-      return this.formattedTargets.filter(target =>
-        target.endDate.setHours(0,0,0,0) < currentDate
-      );
-    },
-    futureTargets() {
-      const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0);
+       // 날짜 검색 수정
+       if (this.searchStartDate && this.searchEndDate) {
+        const startDate = new Date(this.searchStartDate);
+        const endDate = new Date(this.searchEndDate);
+        targets = targets.filter(t => {
+          const targetStart = new Date(t.start_date);
+          const targetEnd = new Date(t.end_date);
+          return targetStart >= startDate && targetEnd <= endDate;
+        });
+      }
 
-      return this.formattedTargets.filter(target =>
-        target.startDate.setHours(0,0,0,0) > currentDate
-      ).sort((a, b) => new Date(a.startDate)-new Date(b.startDate)); 
+      // 상태 검색
+      if (this.searchStatus) {
+        targets = targets.filter(t => {
+          if (this.searchStatus === 'ongoing') return this.isOngoing(t);
+          if (this.searchStatus === 'scheduled') return this.isScheduled(t);
+          if (this.searchStatus === 'completed') return this.isCompleted(t);
+          return true;
+        });
+      }
+
+      return targets.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     }
   },
   methods: {
-  ...mapActions('mile', ['fetchMileInfo']),
-  ...mapActions('mileage', ['addTarget', 'fetchMileTarget', 'targetDelete']),
+    ...mapActions('mile', ['fetchMileInfo']),
+    ...mapActions('mileage', ['addTarget', 'fetchMileTarget', 'targetDelete']),
     async addAction() {
       const targetInfo = {
         mile_no: this.loginInfo.mile_no,
@@ -191,7 +204,7 @@ export default {
       }).then((result) => {
         if(result.isConfirmed){
           if(r == '#'){
-            location.reload(); // 현재 페이지 새로고침
+            location.reload();
           }else{
             this.$router.push(r);
           }
@@ -212,6 +225,38 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
+    },
+
+    toggleExpand(index) {
+      const targetId = this.filteredTargets[index].target_no; // 또는 고유한 식별자
+      const expandedIndex = this.expandedTargets.indexOf(targetId);
+      if (expandedIndex === -1) {
+        this.expandedTargets.push(targetId);
+      } else {
+        this.expandedTargets.splice(expandedIndex, 1);
+      }
+    },
+
+    isOngoing(target) {
+      const now = new Date();
+      return target.startDate <= now && now <= target.endDate;
+    },
+    isScheduled(target) {
+      const now = new Date();
+      return target.startDate > now;
+    },
+    isCompleted(target) {
+      const now = new Date();
+      return target.endDate < now;
+    },
+    getStatusText(target) {
+      if (this.isOngoing(target)) return '진행 중';
+      if (this.isScheduled(target)) return '예정';
+      if (this.isCompleted(target)) return '종료';
+      return '알 수 없음';
+    },
+    filterTargets() {
+      // 필터링 로직은 computed 속성에서 처리됩니다.
     },
   },
   async created(){
@@ -239,7 +284,6 @@ export default {
       console.error('mile_no가 유효하지 않습니다.');
     }
   },
- 
 };
 </script>
 
@@ -252,7 +296,6 @@ export default {
   color: #dc3545;
   font-size: 14pt;
   font-family: 'KB_C2';
-
 }
 
 .future-wrapper{
@@ -263,19 +306,22 @@ export default {
   padding-bottom: 5%;
 }
 
-.target-btn {
-  width: 9vw;
-  height: 6vh;
+.target {
+  width: 8vw;
+  height: 5vh;
   font-weight: bold;
   font-size: 15pt;
+  font-family: 'KB_C3', sans-serif;
+  margin-bottom: 10px;
+  margin-right: 40px;
 }
 
 .mb-3 {
-  margin-bottom: 1rem; /* 하단 여백 추가 */
+  margin-bottom: 1rem;
 }
 
 .target-box:hover {
-  transform: scale(1.05); /* 호버 시 크기를 1.05배로 확대 */
+  transform: scale(1.05);
 }
 
 .modal-overlay {
@@ -303,7 +349,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  /* border-bottom: 1px solid #e0e0e0; */
 }
 
 .modal-title {
@@ -356,7 +401,6 @@ export default {
 .modal-footer {
   padding: 20px;
   text-align: center;
-  /* border-top: 1px solid #e0e0e0; */
 }
 
 .submit-button {
@@ -367,7 +411,7 @@ export default {
   font-size: 14pt;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 10px;
   transition: background-color 0.3s;
   margin: 5px 5px 5px 5px;
 }
@@ -384,7 +428,7 @@ export default {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  padding-right: 2rem; /* 아이콘을 위한 여백 */
+  padding-right: 2rem;
 }
 
 .select-icon {
@@ -392,7 +436,7 @@ export default {
   right: 13px;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none; /* 아이콘이 선택을 방해하지 않도록 */
+  pointer-events: none;
 }
 
 .target-list {
@@ -412,80 +456,156 @@ export default {
 .pointer:hover {
   transform: translateY(-3px);
 }
-
 .mileage-goals-container {
   width: 90%;
   max-width: 1100px;
   margin: 2rem auto;
-  padding: 1.5rem;
+  padding: 5rem;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .mileage-goals-title {
-  font-family: 'KB_S4', sans-serif;
-  font-size: 24px;
+  font-family: 'KB_C2', sans-serif;
+  font-size: 20px;
   color: #333;
-  margin-bottom: 2.5rem;
+  /* margin-bottom: 1.5rem; */
+  margin-top: 0px;
   text-align: left;
+  margin-left: 7%;
 }
 
 .goals-list {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .goal-card {
-  background-color: #FFF9EB;
+  background-color: #fff8dd;
   border-radius: 8px;
-  padding: 1rem;
-  transition: transform 0.2s ease-in-out;
+  padding: 1.8rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease-in-out;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .goal-card:hover {
-  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .goal-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1.3rem;
+  align-items: center;
+  cursor: pointer;
 }
 
-.goal-mileage, .goal-rate {
-  background-color: #FFE082;
-  padding: 0.3rem 0.6rem;
-  border-radius: 20px;
-  font-family: 'KB_S4';
-  font-size: 16pt;
+.goal-date, .goal-mileage, .goal-status, .goal-rate {
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+  color: #4b4a4a;
 }
 
-.goal-date {
-  padding: 0.3rem 0.6rem;
-  border-radius: 20px;
-  font-family: 'KB_S5';
-  font-size: 14pt;
+.goal-mileage {
+  font-weight: bold;
+  color: #333;
+}
+
+.goal-rate {
+  font-weight: bold;
+  color: #4285f4;
 }
 
 .progress-container {
-  height: 20px;
-  background-color: #E0E0E0;
-  border-radius: 8px;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
   overflow: hidden;
+  margin-top: 1rem;
+  width: 100%;
 }
 
 .progress-bar {
   height: 100%;
-  background-color: #FFCA05;
+  background-color: #ffca05;
   transition: width 0.5s ease-in-out;
 }
 
-.no-goals {
-  text-align: center;
-  padding: 2rem;
-  background-color: #F5F5F5;
-  border-radius: 8px;
+.goal-details {
+  overflow: hidden;
+  transition: padding 0.3s ease;
+  padding: 0 1rem;
+}
+
+.goal-details.expanded {
+  padding: 1rem;
+}
+
+.expand-icon {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+
+.menu-and-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 100px;
+  margin-top: 100px;
+  width: 85%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.menu-filters {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 85%;
+  margin-left: auto;
+  margin-right: 65px; /* 오른쪽 정렬 */
+}
+
+.tab-menu {
+  display: flex;
+}
+
+.tab-menu button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+  font-family: 'KB_C3', sans-serif; /* 폰트 변경 */
+  font-size: 14pt ;
+}
+
+.tab-menu button.active {
+  background-color: #ffca05;
+  color: d9d9d9;
+}
+
+.search-filters {
+  display: flex;
+}
+
+.search-filters input,
+.search-filters select {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 </style>

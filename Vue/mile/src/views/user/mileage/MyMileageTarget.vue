@@ -123,6 +123,16 @@ export default {
 </script>
 
 <style scoped>
+.cards {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 250px;
+  padding: 20px;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 .page-back {
   padding-left: 2% !important;
   padding-right: 2% !important;
@@ -135,8 +145,8 @@ export default {
 
 .help-icon {
   cursor: pointer;
-  /* position: relative;
-  display: inline-block; */
+  /* position: relative; */
+ /* display: inline-block; */
   margin-left: 20px; /* 아이콘과 텍스트 사이 간격 */
   /* vertical-align: middle; */
 }
@@ -144,14 +154,16 @@ export default {
 .help-popover {
   position: absolute;
   left:  calc(50%);
-  top: calc(100% - 15px); /* 아이콘 바로 아래에 위치 */
-  padding: 10px;
+  top: calc(100% 0px); /* 아이콘 바로 아래에 위치 */
+  padding: 8px;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10000;
   width: 600px; /* 너비를 600px로 설정 */
   background-color: white;
   border: 2px solid #e4e4e4;
+  margin-top: 100px;
+  margin-left: 20px;
 }
 
 @media (max-width: 768px) {
