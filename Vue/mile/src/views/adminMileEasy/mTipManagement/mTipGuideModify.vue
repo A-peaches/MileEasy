@@ -259,6 +259,7 @@ export default {
         icon: icon,
         confirmButtonText: '확인',
         confirmButtonColor: '#4b4a4a',
+        scrollbarPadding: false,
       });
     },
   },
