@@ -266,7 +266,7 @@ export default {
           title: '알림',
           text: '하루에 한 번만 조회가 가능합니다.',
           icon: 'info',
-          confirmButtonText: '확인',
+          scrollbarPadding: false,
         });
         return;
       }
@@ -283,7 +283,7 @@ export default {
           title: '분석 완료',
           text: '마일리지 분석이 완료되었습니다.',
           icon: 'success',
-          confirmButtonText: '확인',
+          scrollbarPadding: false,
         });
         // 분석이 완료되면 데이터를 가져옵니다.
         await this.getReport();
@@ -295,7 +295,7 @@ export default {
           title: '오류',
           text: '분석 중 문제가 발생했습니다. 다시 시도해 주세요.',
           icon: 'error',
-          confirmButtonText: '확인',
+          scrollbarPadding: false,
         });
       }
     },
