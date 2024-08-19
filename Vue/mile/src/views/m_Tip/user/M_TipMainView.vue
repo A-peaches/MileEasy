@@ -31,6 +31,7 @@ import Banner from '@/components/m-tip/BannerCom.vue';
 import Guide from '@/components/m-tip/GuideCom.vue';
 import MTip from '@/components/m-tip/M-TipCom';
 import BestMTip from '@/components/m-tip/BestM-TipCom';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'M_TipMainView',
@@ -41,6 +42,19 @@ export default {
     MTip,
     BestMTip,
   },
+  computed :{
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
+  },
+  methods : {
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
+  },
+  created() {
+    this.checkLoginInfo();
+  }
 };
 </script>
 

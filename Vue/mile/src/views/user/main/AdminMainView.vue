@@ -1,10 +1,8 @@
 <template>
   <div class="flex" style="margin-left: 10%; margin-right: 10%">
     <div class="left-container">
-
       <!-- 여기 프로필 -->
-      <div key="profile" class="cards fade-up-item profile-card"
-      >
+      <div key="profile" class="cards fade-up-item profile-card">
         <img
           v-if="loginInfo && loginInfo.user_no"
           :src="profileImageUrl"
@@ -12,24 +10,30 @@
           alt="Profile Picture"
           @error="setDefaultImage"
         />
-        <h2 class="lg KB_S4 my-3">{{ loginInfo ? loginInfo.user_name : '' }}</h2>
+        <h2 class="lg KB_S4 my-3">
+          {{ loginInfo ? loginInfo.user_name : '' }}
+        </h2>
         <p class="md" style="margin-bottom: 0px">
           {{
             loginInfo
-              ? `${loginInfo.level_no || ''} ${loginInfo.position_no || ''} | ${loginInfo.job_no || ''} 직무`
+              ? `${loginInfo.level_no || ''} ${loginInfo.position_no || ''} | ${
+                  loginInfo.job_no || ''
+                } 직무`
               : ''
           }}
         </p>
         <p class="md mb-2" style="margin-bottom: 0px">
           {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
         </p>
-        <button  @click="goToAdminPromotion" class="btn-yellow KB_C2 my-3">운영 관리자</button>
+        <button @click="goToAdminPromotion" class="btn-yellow KB_C2 my-3">
+          운영 관리자
+        </button>
       </div>
 
       <!-- 여기 메뉴 -->
       <div class="cards fade-up-item menu-card">
         <div style="padding: 3% 0%">
-          <a href="/kingTopAdminView" class="mileage-link">
+          <a href="/kingMain" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">
               마왕관리
               <i
@@ -38,7 +42,7 @@
               ></i>
             </p>
           </a>
-          <a href="/mileageAddAdminView" class="mileage-link">
+          <a href="/mileageManagementView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">
               마일리지 관리
               <i
@@ -47,9 +51,9 @@
               ></i>
             </p>
           </a>
-          <a href="/m_TipMainAdminView" class="mileage-link">
+          <a href="/mTipMainAdminView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">
-              M-TIP
+              M-Tip관리
               <i
                 class="bi bi-chevron-compact-right icon-right"
                 style="margin-left: auto"
@@ -76,7 +80,7 @@
           </a> -->
           <a href="/mileEasyContactView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">
-              업무별 연락처
+              연락처
               <i
                 class="bi bi-chevron-compact-right icon-right"
                 style="margin-left: auto"
@@ -89,16 +93,11 @@
 
     <div class="right-container">
       <PageCount class="fade-up-item" />
-      <MileagePageCount class="fade-up-item" style="margin-top: 5%"/>
-      <PositionChart class="fade-up-item" style="margin-top: 5%"/>
+      <MileagePageCount class="fade-up-item" style="margin-top: 5%" />
+      <PositionChart class="fade-up-item" style="margin-top: 5%" />
     </div>
   </div>
 </template>
-
-
-
-
-
 
 <script>
 import { mapGetters } from 'vuex';
@@ -114,6 +113,7 @@ export default {
 
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     profileImageUrl() {
       if (this.loginInfo && this.loginInfo.user_no) {
         if (process.env.NODE_ENV === 'development') {
@@ -143,6 +143,16 @@ export default {
     });
   },
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     setDefaultImage(event) {
       event.target.src = require('@/assets/img/test.png');
     },
@@ -151,7 +161,7 @@ export default {
     },
 
     goToAdminPromotion() {
-      window.location.href='/adminPromotion';
+      window.location.href = '/adminPromotion';
     },
 
     checkFirstBusinessDay() {
@@ -180,6 +190,9 @@ export default {
         currentDay.add(1, 'day');
       }
     },
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>
@@ -247,5 +260,4 @@ export default {
   opacity: 1;
   transform: translateY(0);
 }
-
 </style>

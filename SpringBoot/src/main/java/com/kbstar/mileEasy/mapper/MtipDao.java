@@ -11,25 +11,25 @@ public interface MtipDao {
     //사용자 좋아요 목록
     @Select("SELECT mtip_board_no FROM mtip_like WHERE user_no = #{userNo}")
     List<Long> findLikedPostsByUserNo(@Param("userNo") String userNo);
+
     // 좋아요 상태 확인
     @Select("SELECT COUNT(*) FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
     int checkLikeStatus(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
     // 좋아요 수 확인
-    @Select("SELECT mtip_board_like FROM mtip_board WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
-    int checkStatus(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
-
+    @Select("SELECT mtip_board_like FROM mtip_board WHERE mtip_board_no = #{mtipBoardNo}")
+    Integer checkStatus(@Param("mtipBoardNo") int mtipBoardNo);
     // 좋아요 추가
     @Insert("INSERT INTO mtip_like (mtip_board_no, user_no) VALUES (#{mtipBoardNo}, #{userNo})")
-    void insertLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
+    int insertLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
     // 좋아요 삭제
     @Delete("DELETE FROM mtip_like WHERE mtip_board_no = #{mtipBoardNo} AND user_no = #{userNo}")
-    void deleteLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
+    int deleteLike(@Param("mtipBoardNo") int mtipBoardNo, @Param("userNo") String userNo);
 
     // 좋아요 수 증가
     @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like + 1 WHERE mtip_board_no = #{mtipBoardNo}")
-    void incrementLikeCount(@Param("mtipBoardNo") int mtipBoardNo);
+    int incrementLikeCount(@Param("mtipBoardNo") int mtipBoardNo);
 
     // 좋아요 수 감소
     @Update("UPDATE mtip_board SET mtip_board_like = mtip_board_like - 1 WHERE mtip_board_no = #{mtipBoardNo}")
@@ -158,5 +158,10 @@ public interface MtipDao {
     void complain(Long noticeId);
 
     void complainBack(Long noticeId);
+
+    List<MtipBoard> MtiplistComplain();
     /*mtip 댓글 삭제*/
+
+
+
 }

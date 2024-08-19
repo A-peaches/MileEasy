@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class Mileage_request {
     private int mileage_request_no;
-    private boolean request_is_branch;
+    private int request_is_branch;
     private String request_mile_name;
     private int request_mil_max;
     private String request_admin;

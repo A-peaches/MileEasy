@@ -216,16 +216,17 @@ export default {
 
       // If all validations pass, proceed with the form submission
       const formData = {
-        request_is_branch: commonMileage.value === '1',
+        request_is_branch: commonMileage.value === '1' ? '1' : '0',
         request_mile_name: mileageName.value,
-        request_mil_max: parseInt(mileMax.value, 10), // Updated to use mileMax
+        request_mil_max: parseInt(mileMax.value, 10).toString(), // Updated to use mileMax
         request_admin: JSON.stringify(
           rows.value.map((row) => row.id) // Extract only user_no
         ),
         request_etc: additionalNotes.value,
-        request_no: request.value, // Accessing request value using request.value
+        request_no: request.value.toString(), // 문자열로 변환
+
         user_no: loginInfo.value.user_no, // Adding user_no from loginInfo
-        mile_no: loginInfo.value.mile_no,
+        mile_no: (loginInfo.value.mile_no || 0).toString(), // 문자열로 변환
       };
 
       try {

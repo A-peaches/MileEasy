@@ -91,6 +91,15 @@ export default {
   },
   methods: {
     ...mapActions('notice', ['MtipGuideDetail', 'guide_incrementViews']),
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
 
     async deleteNotice() {
       Swal.fire({
@@ -227,6 +236,8 @@ export default {
     }
   },
   created() {
+    this.checkLoginInfo();
+
     if (this.mtipGuideNo) {
       this.MtipGuideDetail(this.mtipGuideNo);
     }

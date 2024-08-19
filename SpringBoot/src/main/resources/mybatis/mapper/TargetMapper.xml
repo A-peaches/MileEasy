@@ -14,19 +14,51 @@
 
     <!-- 개인형 목표 불러오기-->
     <select id="getTargetsByUserNo" parameterType="string" resultType="com.kbstar.mileEasy.dto.Target">
-        SELECT t.target_no, t.mile_no, t.user_no, t.start_date, t.end_date,
-               t.target_mileage, t.is_together, t.is_manager_plan,
-               m.mile_name,
-               COALESCE(SUM(ms.mile_score_point), 0) AS achievementRate
+        SELECT
+            t.target_no,
+            t.mile_no,
+            t.user_no,
+            t.start_date,
+            t.end_date,
+            t.target_mileage,
+            t.is_together,
+            t.is_manager_plan,
+            m.mile_name,
+
+            -- 로그인한 사용자의 현재 마일리지에서 initial_mileage를 뺀 값 (달성한 마일리지)
+            (
+                SELECT COALESCE(SUM(ms.mile_score_point), 0) - (
+                    SELECT COALESCE(ut.initial_mileage, 0)
+                    FROM user_target ut
+                    WHERE ut.user_no = #{userNo}
+                      AND ut.target_no = t.target_no
+                           LIMIT 1
+            )
+        FROM mile_score ms
+        WHERE ms.mile_no = t.mile_no
+          AND ms.user_no = #{userNo}  -- 로그인한 사용자의 user_no 기준으로 필터링
+            ) AS totalMileScoreByMileNo
+
         FROM target t
-                 LEFT JOIN mile_score ms ON t.user_no = ms.user_no AND t.mile_no = ms.mile_no
-                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
-        WHERE t.user_no = #{user_no}
+            LEFT JOIN mileage m ON t.mile_no = m.mile_no
+        WHERE
+            t.user_no = #{user_no}
           AND t.is_together = 0
-        GROUP BY t.target_no, t.mile_no, t.user_no, t.start_date, t.end_date,
-                 t.target_mileage, t.is_together, t.is_manager_plan, m.mile_name
-        ORDER BY t.mile_no ASC, t.start_date ASC
+        GROUP BY
+            t.target_no,
+            t.mile_no,
+            t.user_no,
+            t.start_date,
+            t.end_date,
+            t.target_mileage,
+            t.is_together,
+            t.is_manager_plan,
+            m.mile_name
+        ORDER BY
+            t.mile_no ASC,
+            t.start_date ASC;
     </select>
+
 
     <!-- 참여형 목표 불러오기 -->
     <select id="getAdminTargets" parameterType="string" resultType="com.kbstar.mileEasy.dto.Target">
@@ -44,47 +76,58 @@
              FROM user_target ut
              WHERE ut.target_no = t.target_no
             ) AS participantCount,
-            CASE
-                WHEN t.target_mileage > 0 THEN
-                    ROUND(
-                            (
-                                COALESCE(
-                                        (
-                                            SELECT SUM(ms_inner.mile_score_point)
-                                            FROM mile_score ms_inner
-                                                     INNER JOIN user_target ut ON ut.user_no = ms_inner.user_no
-                                            WHERE ut.target_no = t.target_no
-                                              AND ms_inner.mile_no = t.mile_no
-                                        ), 0
-                                ) / t.target_mileage
-                                ) * 100, 2
-                    )
-                ELSE 0
-                END AS achievementRate,
-            -- 로그인한 사용자의 해당 마일리지 점수를 계산하여 반환
-            (SELECT COALESCE(SUM(ms_inner.mile_score_point), 0)
-             FROM mile_score ms_inner
-             WHERE ms_inner.mile_no = t.mile_no
-               AND ms_inner.user_no = #{userNo}  -- 로그인한 사용자의 user_no 기준으로 필터링
-            ) AS totalMileScoreByMileNo
-        FROM
-            target t
-                LEFT JOIN mileage m ON t.mile_no = m.mile_no
-        WHERE
-            t.is_manager_plan = true
-          AND (t.is_together = 1 OR t.is_manager_plan = true)  -- is_together가 1이거나 is_manager_plan이 true인 경우
-        GROUP BY
-            t.target_no,
-            t.mile_no,
-            t.user_no,
-            t.start_date,
-            t.end_date,
-            t.target_mileage,
-            t.is_together,
-            t.is_manager_plan,
-            m.mile_name;
 
+            -- 로그인한 사용자의 현재 마일리지에서 initial_mileage를 뺀 값 (달성한 마일리지)
+            (SELECT COALESCE(SUM(ms.mile_score_point), 0) - (
+                SELECT ut.initial_mileage
+                FROM user_target ut
+                WHERE ut.user_no = #{userNo} AND ut.target_no = t.target_no
+                        LIMIT 1
+            )
+        FROM mile_score ms
+        WHERE ms.mile_no = t.mile_no
+          AND ms.user_no = #{userNo}  -- 로그인한 사용자의 user_no 기준으로 필터링
+            ) AS totalMileScoreByMileNo,
+
+        -- achievementRate를 totalMileScoreByMileNo / target_mileage * 100으로 계산
+        CASE
+            WHEN t.target_mileage > 0 THEN
+                ROUND(
+                    (
+                        (SELECT COALESCE(SUM(ms.mile_score_point), 0) - (
+                            SELECT ut.initial_mileage
+                            FROM user_target ut
+                            WHERE ut.user_no = #{userNo} AND ut.target_no = t.target_no
+            LIMIT 1
+            )
+            FROM mile_score ms
+            WHERE ms.mile_no = t.mile_no
+          AND ms.user_no = #{userNo}
+            ) / t.target_mileage -- target_mileage로 나눔
+            ) * 100, 2
+            )
+            ELSE 0
+        END AS achievementRate
+
+    FROM
+        target t
+    LEFT JOIN mileage m ON t.mile_no = m.mile_no
+    WHERE
+        t.is_manager_plan = true
+      AND (t.is_together = 1 OR t.is_manager_plan = true)  -- is_together가 1이거나 is_manager_plan이 true인 경우
+    GROUP BY
+        t.target_no,
+        t.mile_no,
+        t.user_no,
+        t.start_date,
+        t.end_date,
+        t.target_mileage,
+        t.is_together,
+        t.is_manager_plan,
+        m.mile_name;
     </select>
+
+
 
     <!-- 사용자가 특정 타겟에 참여했는지 확인 -->
     <select id="checkUserParticipation" parameterType="map" resultType="int">
@@ -109,27 +152,47 @@
         WHERE target_no = #{targetNo}
     </select>
 
-    <!-- 사용자 목표 참여 정보 추가하기 -->
-    <insert id="joinUserTarget">
+    <!-- 사용자 목표 참여 정보 삽입 (INSERT) -->
+    <insert id="insertjoinTarget" parameterType="com.kbstar.mileEasy.dto.Usertarget">
         INSERT INTO user_target (
-            target_no,
-            user_no,
-            mile_no,
-            start_date,
-            end_date,
-            target_mileage,
-            is_together
+        target_no,
+        user_no,
+        mile_no,
+        start_date,
+        end_date,
+        target_mileage,
+        is_together,
+        initial_mileage
         )
         VALUES (
-                   #{target_no},
-                   #{user_no},
-                   #{mile_no},
-                   #{start_date},
-                   #{end_date},
-                   #{target_mileage},
-                   1
-               )
+        #{target_no},
+        #{user_no},
+        #{mile_no},
+        #{start_date},
+        #{end_date},
+        #{target_mileage},
+        #{is_together},
+        0  <!-- 초기값을 0으로 설정 -->
+        )
+        ON DUPLICATE KEY UPDATE
+        start_date = VALUES(start_date),
+        end_date = VALUES(end_date),
+        target_mileage = VALUES(target_mileage),
+        is_together = VALUES(is_together);
     </insert>
+
+    <!-- initial_mileage 업데이트 (UPDATE) -->
+    <update id="updateInitialMileage">
+        UPDATE user_target
+        SET initial_mileage = (
+            SELECT COALESCE(SUM(ms.mile_score_point), 0)
+            FROM mile_score ms
+            WHERE ms.user_no = #{user_no}
+              AND ms.mile_no = #{mile_no}
+        )
+        WHERE user_no = #{user_no}
+          AND target_no = #{target_no};
+    </update>
 
     <!-- 참여형 참가한 직원 목록 -->
     <select id="findUsersByTargetNo" resultType="map">
@@ -148,4 +211,11 @@
     <delete id="deleteTarget">
         DELETE FROM target WHERE user_no = #{userNo} AND target_no = #{targetNo}
     </delete>
+
+    <!--마왕 점수 업그레이드-->
+    <update id="updateMawangScore" parameterType="int">
+        UPDATE user_target
+        SET mawang_score = 1
+        WHERE target_no = #{targetNo} AND user_no = #{userNo}
+    </update>
 </mapper>

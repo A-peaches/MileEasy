@@ -46,6 +46,7 @@ export default {
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getArrayMileage']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters(''),
     loginInfo() {
       return this.getLoginInfo;
@@ -97,9 +98,21 @@ export default {
     showCoding() {
       this.isModifyActive = false; // '개발요청' 활성화
     },
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
   },
   mounted() {
     this.getMileage(); // Fetch mileage data on component mount
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

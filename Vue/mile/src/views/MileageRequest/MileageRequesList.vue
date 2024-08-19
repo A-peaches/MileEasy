@@ -2,69 +2,70 @@
   <div class="app-container">
     <div class="content cards">
       <div>
-        <h2>마일리지 요청</h2>
+        <h2 class="lg">마일리지 요청</h2>
       </div>
-      <br /><br /><br /><br /><br />
-      <div class="notice-count-container">
+      <div class="topbuton" style="display: flex">
         <div class="notice-count">총 {{ filteredNotices.length }}건</div>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="all"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">전체</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="processing"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">접수요청</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="completed"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">접수완료</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="rejected"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">승인완료</span>
-        </label>
-        <label class="radio-container">
-          <input
-            type="radio"
-            name="status"
-            value="false"
-            v-model="selectedFilter"
-            @change="applyFilters"
-          />
-          <span class="custom-radio"></span>
-          <span class="radio-label">승인거절</span>
-        </label>
+        <div class="notice-count-container">
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="all"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="lg2 radio-label">전체</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="processing"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">접수요청</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="completed"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">접수완료</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="rejected"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">승인완료</span>
+          </label>
+          <label class="radio-container">
+            <input
+              type="radio"
+              name="status"
+              value="false"
+              v-model="selectedFilter"
+              @change="applyFilters"
+            />
+            <span class="custom-radio"></span>
+            <span class="radio-label">승인거절</span>
+          </label>
+        </div>
       </div>
       <div>
-        <div>
+        <div class="writeBtn">
           <button class="write-button" @click="goToWritePage">
             <i class="bi bi-pencil" style="margin-right: 10px"></i> 글작성
           </button>
@@ -74,7 +75,7 @@
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="제목 및 내용을 검색하세요"
+          placeholder="검색어를 입력하세요"
           class="input-search"
         />
         <button class="search-button" @click="applyFilters">
@@ -87,7 +88,11 @@
         </div>
         <div v-else>
           <div class="notice-list" style="text-align: center">
-            <div v-for="(notice, index) in paginatedNotices" :key="index">
+            <div
+              v-for="(notice, index) in paginatedNotices"
+              :key="index"
+              class="con"
+            >
               <div
                 v-if="notice"
                 class="input-base list-wrapper"
@@ -153,6 +158,8 @@
         </div>
       </div>
       <div class="pagination">
+        <button @click="prevPage" :disabled="!canGoPrev">&lt;</button>
+
         <button
           v-for="page in totalPages"
           :key="page"
@@ -161,6 +168,8 @@
         >
           {{ page }}
         </button>
+
+        <button @click="nextPage" :disabled="!canGoNext">&gt;</button>
       </div>
     </div>
   </div>
@@ -227,9 +236,25 @@ export default {
     totalPages() {
       return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
     },
+    canGoNext() {
+      return this.currentPage < this.totalPages;
+    },
+    canGoPrev() {
+      return this.currentPage > 1;
+    },
   },
 
   methods: {
+    nextPage() {
+      if (this.canGoNext) {
+        this.currentPage++;
+      }
+    },
+    prevPage() {
+      if (this.canGoPrev) {
+        this.currentPage--;
+      }
+    },
     goToWritePage() {
       this.$router.push('/mileageRequestWrite');
     },
@@ -301,13 +326,6 @@ export default {
 </script>
 
 <style scoped>
-.notice-list {
-  display: flex;
-  flex-direction: column;
-  width: 1200px;
-  margin-left: 30px;
-}
-
 .pagination button {
   background-color: #ffffff;
   padding: 10px 20px;
@@ -366,16 +384,6 @@ h2::after {
   justify-content: center;
   align-items: center;
   margin-top: 4%;
-}
-
-.content {
-  text-align: center;
-  padding: 20px;
-  width: 95%;
-  max-width: 1300px;
-  box-sizing: border-box;
-  min-height: 100vh;
-  margin: auto;
 }
 
 .search-container {
@@ -474,13 +482,16 @@ h2::after {
 }
 
 .input-base {
-  width: 100%;
+  width: auto;
   height: 65px;
   background-color: #f9f9f9;
   text-align: center;
   line-height: 65px;
   font-size: 20px;
   margin-bottom: 20px;
+}
+.list-wrapper {
+  width: auto;
 }
 
 .list-wrapper:hover {
@@ -615,6 +626,9 @@ h2::after {
   justify-content: center;
   margin-top: 100px;
   gap: 5px;
+
+  margin-bottom: 40px;
+
   object-fit: contain;
 }
 
@@ -644,6 +658,7 @@ h2::after {
 }
 
 .write-button {
+  width: 100%;
   display: flex;
   align-items: center;
   background-color: #ffffff;
@@ -654,7 +669,7 @@ h2::after {
   font-size: 20px;
   color: #000;
   background-color: transparent;
-  margin-left: 89%; /* 왼쪽으로 이동 */
+  margin-left: 90%; /* 왼쪽으로 이동 */
   margin-bottom: 3vh;
   font-family: 'KB_S5', sans-serif;
 }
@@ -717,5 +732,149 @@ h2::after {
   font-size: 16px;
   cursor: pointer;
 }
-/* @import url('C:\MileEasy\Vue\mile\src\assets\css\css.css'); */
+.notice-count {
+  margin-top: 5pt;
+}
+.notice-count-container {
+  display: flex;
+  flex-direction: row; /* 수평 배치 */
+
+  align-items: center; /* 세로축 가운데 정렬 */
+  gap: 15px; /* 버튼 간 간격 */
+  flex-wrap: wrap; /* 공간 부족 시 줄바꿈 */
+  padding: 10px;
+}
+
+.notice-count-container label {
+  display: flex;
+  align-items: center; /* 라디오 버튼과 텍스트 수직 정렬 */
+}
+
+.notice-count-container input[type='radio'] {
+  margin-right: 8px; /* 라디오 버튼과 텍스트 사이의 간격 */
+}
+.topbuton {
+  margin-top: 80px;
+}
+
+.content {
+  text-align: center;
+  padding: 20px 10px; /* 상하 20px, 좌우 10px 패딩 */
+  width: 1300px; /* 너비를 자동으로 설정 */
+  max-width: 1300px; /* 최대 너비 유지 */
+  box-sizing: border-box; /* 패딩을 너비에 포함 */
+  min-height: 100vh;
+  margin: auto;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  margin-left: 30px;
+}
+
+.writeBtn {
+  width: auto;
+}
+
+/* 모바일 화면에서의 스타일 */
+@media (max-width: 768px) {
+  .notice-count {
+    font-size: 11pt; /* 총 0건 텍스트의 폰트 크기 조정 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    width: 100%; /* 텍스트가 가로 전체를 차지하도록 설정 */
+    box-sizing: border-box; /* 패딩 포함 너비 계산 */
+  }
+
+  .topbuton {
+    display: flex;
+    flex-direction: column; /* 버튼들을 세로로 배치 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    width: 100%; /* 전체 너비 설정 */
+    padding: 0 10px; /* 좌우 여백 추가 */
+    margin-top: 25px;
+  }
+
+  .notice-count-container {
+    display: flex;
+    flex-direction: row; /* 버튼들을 가로로 배치 */
+    flex-wrap: wrap; /* 공간 부족 시 줄바꿈 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    gap: 10px; /* 버튼들 간의 간격 */
+  }
+
+  .notice-count-container label {
+    display: flex;
+    align-items: center; /* 라디오 버튼과 텍스트 수직 정렬 */
+    font-size: 11px; /* 모바일에서 폰트 크기 조정 */
+    margin: 5px; /* 각 버튼과 텍스트 사이의 간격 */
+  }
+
+  .notice-count-container input[type='radio'] {
+    margin-right: 5px; /* 라디오 버튼과 텍스트 사이의 간격 */
+  }
+  .radio-label {
+    font-size: 11pt !important;
+    cursor: pointer;
+  }
+  .lg {
+    font-size: 20pt;
+  }
+  .write-button {
+    margin-left: 67%;
+    margin-top: 10px;
+  }
+  .input-search {
+    width: 67%;
+    padding-right: 29px;
+  }
+  .search-button {
+    right: 15px;
+    width: 30px;
+    height: 30px;
+  }
+  .no-results {
+    margin-top: 100px;
+  }
+  .input-base {
+    height: 48px;
+    justify-content: center;
+    line-height: 50px;
+  }
+  .notice-list {
+    margin-left: 5px;
+  }
+  .notice-num-expanded i.bi-trash-fill {
+    display: none;
+  }
+
+  .notice-num-expanded span {
+    display: none;
+  }
+
+  /* 모바일에서 날짜 숨기기 */
+  .notice-date {
+    display: none;
+  }
+  .notice-num {
+    display: none;
+  }
+  .notice-details {
+    height: 48px;
+  }
+  .notice-num.notice-title.notice-mile.notice-date {
+    height: 48px;
+  }
+  .notice-details-expanded {
+    width: auto;
+  }
+  .con {
+    width: auto;
+  }
+  .content {
+    padding: 10px 0px 0px 10px;
+  }
+}
 </style>

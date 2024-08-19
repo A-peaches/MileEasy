@@ -44,7 +44,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('mileage', ['getArrayMileage']),
     ...mapGetters(''),
     loginInfo() {
@@ -63,24 +63,26 @@ export default {
     showCoding() {
       this.isModifyActive = false; // '개발요청' 활성화
     },
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
   },
   mounted() {
     this.getMileage(); // Fetch mileage data on component mount
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>
 
 <style scoped>
-<<<<<<< HEAD
-.page-back {
-  width: 70%;
-  margin-top: 5%;
-  min-height: 800px;
-  padding-bottom: 5%;
-}
-=======
->>>>>>> 4e87a01691fb427b17ad063bea30a8c52a34f396
-
 .tab-container:hover {
   padding: 10px 10px;
   cursor: pointer;

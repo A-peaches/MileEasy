@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isMobile">
-    <div key="profile" class="cards fade-up-item profile-cards mx-auto" >
+    <div key="profile" class="cards fade-up-item profile-cards mx-auto">
       <div class="profile-container">
         <img
           v-if="loginInfo && loginInfo.user_no"
@@ -27,14 +27,24 @@
       <p class="md mb-2" style="margin-bottom: 0px">
         {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
       </p>
-      <button class="btn-yellow KB_C2 my-3" @click="goToAIView">
+
+      <button
+        v-if="loginInfo && loginInfo.job_no === '기획'"
+        class="btn-yellow KB_C2 my-3"
+        @click="goToMile"
+      >
+        나의 마일리지
+      </button>
+      <button v-else class="btn-yellow KB_C2 my-3" @click="goToAIView">
         나의 AI 리포트
       </button>
     </div>
   </div>
   <div v-else>
-    <div key="profile" class="cards fade-up-item profile-cards mx-auto" >
-      <div class="profile-container d-flex justify-content-between align-items-center">
+    <div key="profile" class="cards fade-up-item profile-cards mx-auto">
+      <div
+        class="profile-container d-flex justify-content-between align-items-center"
+      >
         <img
           v-if="loginInfo && loginInfo.user_no"
           :src="profileImageUrl"
@@ -51,16 +61,23 @@
           <p class="md" style="margin-bottom: 0px">
             {{
               loginInfo
-                ? `${loginInfo.level_no || ''} ${loginInfo.position_no || ''} | ${
-                    loginInfo.job_no || ''
-                  } 직무`
+                ? `${loginInfo.level_no || ''} ${
+                    loginInfo.position_no || ''
+                  } | ${loginInfo.job_no || ''} 직무`
                 : ''
             }}
           </p>
           <p class="md mb-2" style="margin-bottom: 0px">
             {{ loginInfo ? `${loginInfo.dp_no}` : '' }}
           </p>
-          <button class="btn-yellow KB_C2 my-3" @click="goToAIView">
+          <button
+            v-if="loginInfo && loginInfo.job_no === '기획'"
+            class="btn-yellow KB_C2 my-3"
+            @click="goToMile"
+          >
+            나의 마일리지
+          </button>
+          <button v-else class="btn-yellow KB_C2 my-3" @click="goToAIView">
             나의 AI 리포트
           </button>
         </div>
@@ -69,11 +86,10 @@
   </div>
 </template>
 
-
 <script>
 import { mapGetters } from 'vuex';
 import api from '@/api/axios';
-import MobileDetect from "mobile-detect";
+import MobileDetect from 'mobile-detect';
 
 export default {
   name: 'ProfileCom',
@@ -125,6 +141,9 @@ export default {
     },
     goToAIView() {
       window.location.href = '/AI_Report';
+    },
+    goToMile() {
+      window.location.href = '/myMileageView';
     },
     async badgeData() {
       try {
@@ -179,7 +198,6 @@ export default {
   width: 100%;
   position: relative;
 }
-
 
 .profile-large {
   width: 150px;
