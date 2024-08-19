@@ -167,9 +167,9 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .help-popover[data-v-467de520][data-v-467de520] {
+  .help-popover {
     width: 100%;
-    left: calc(0%);
+    left: 0;
     margin-left: 0px;
   }
 }
