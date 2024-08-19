@@ -88,7 +88,9 @@
               ></span
             >
             <span class="menu"
-              ><a href="/mTipMainAdminView" class="link-menu">M-Tip 관리</a></span
+              ><a href="/mTipMainAdminView" class="link-menu"
+                >M-Tip 관리</a
+              ></span
             >
           </template>
           <template v-else-if="getLoginInfo?.user_is_manager">
@@ -144,7 +146,7 @@
 
       <div class="text-start" style="padding-left: 190px; margin-top: 50px">
         <span class="text-end" style="float: right; padding-right: 190px">
-          <template v-if="getLoginInfo?.user_is_admin && isChecked">
+          <template v-if="getLoginInfo?.user_is_admin">
             <p class="contact-info" @click="sendEmail" style="cursor: pointer">
               <i class="bi bi-envelope-at icon"></i> mileage@kbfg.com
             </p>
@@ -226,11 +228,11 @@
       </div>
 
       <div class="mobile-contact-info">
-        <template v-if="getLoginInfo?.user_is_admin && isChecked">
+        <div v-if="getLoginInfo?.user_is_admin">
           <p class="mobile-contact-item" @click="sendEmail">
             <i class="bi bi-envelope-at icon"></i> mileage@kbfg.com
           </p>
-        </template>
+        </div>
         <p class="mobile-contact-item">
           <i class="bi bi-send-plus icon"></i>
           <a

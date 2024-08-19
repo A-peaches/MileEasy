@@ -231,5 +231,8 @@ export default {
   .back-container {
     padding: 0.5rem;
   }
+  .checkbox-label {
+    font-size: 12pt;
+  }
 }
 </style>
