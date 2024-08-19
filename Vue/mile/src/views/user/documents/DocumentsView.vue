@@ -1,5 +1,5 @@
 <template>
-  <div class="cards page-back mx-auto" :style="{ height: computedHeight }">
+  <div class="cards page-back mx-auto">
     <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">
       문서모아
       <hr
@@ -150,9 +150,9 @@ export default {
   data() {
     return {
       mileages: [],
-      baseHeight: 90,
-      increment: 10,
-      buttonHeight: 10,
+      baseHeight: 900,
+      increment: 90,
+      buttonHeight: 150,
       searchQuery: '', // 검색어 추가
       currentPage: 1, // 현재 페이지
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
@@ -173,7 +173,7 @@ export default {
 
     computedHeight() {
       if(this.isMobile){
-        return "110vh";
+        return "1100px";
       }else{
         let height =
           this.baseHeight + this.paginatedDocuments.length * this.increment;
@@ -185,7 +185,7 @@ export default {
         } else {
           height += this.buttonHeight / 2;
         }
-        return `${height}vh`;
+        return `${height}px`;
       }
     },
     documentSum() {
@@ -370,9 +370,6 @@ export default {
 
 <style scoped>
 @media (max-width: 768px) {
-  .page-back{
-    height: 120vh !important;
-  }
   .title-line {
     width: 30% !important;
   }

@@ -113,7 +113,7 @@
   
   @media (max-width: 768px) {
     .error-title {
-      font-size: 24pt;
+      font-size: 22pt;
     }
 
     .error-code {

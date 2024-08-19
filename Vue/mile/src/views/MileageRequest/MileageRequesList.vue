@@ -275,10 +275,7 @@ export default {
         text: '정말로 요청을 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: '삭제',
-        cancelButtonText: '취소',
+        scrollbarPadding: false,
       });
 
       if (result.isConfirmed) {

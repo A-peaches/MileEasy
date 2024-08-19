@@ -331,7 +331,28 @@ export default {
         scrollbarPadding: false,
       });
     },
+
+    warningAlert(alret) {
+      this.$swal({
+        title: '경고',
+        text: alret,
+        icon: 'warning',
+        scrollbarPadding: false,
+      });
+    },
     async sendSms() {
+
+      if (this.message.trim().length === 0) {
+        this.warningAlert('메시지를 입력해주세요.');
+        return;
+      }
+
+      if (this.receivers.length === 0) {
+        this.warningAlert('수신자를 입력해주세요.');
+        return;
+      }
+
+
       try {
         let receiversPhone = this.receivers.map((r) => r.user_tel);
         const response = await api.post('/user/sendSms', {

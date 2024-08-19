@@ -1,6 +1,6 @@
 <!--🚨마일리지 관리자 :  마일리지 멘트화면-->
 <template>
-  <div class="cards page-back mx-auto" :style="{height:computedHeight}">
+  <div class="cards page-back mx-auto" >
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">마일리지 멘트</h2>
     <div style="padding:0 5%;">
       <div class="p-4 mt-5">

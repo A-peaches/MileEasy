@@ -211,7 +211,8 @@
                     font-size: 25px;
                     margin-right: 10px;
                   "
-                  > {{getDisplayableAchievementRate(target)}}</span
+                >
+                  {{ getDisplayableAchievementRate(target) }}</span
                 >
               </div>
               <span
@@ -312,17 +313,17 @@ export default {
         return 'ongoing';
       }
     },
-      // 달성률 계산을 종료 상태에 따라 처리
+    // 달성률 계산을 종료 상태에 따라 처리
     getDisplayableAchievementRate(target) {
       const status = this.getStatusText(target);
       // 종료된 목표는 달성률을 그대로 반환
       if (status === '종료') {
-        return `${Math.min(target.achievementRate, 100)}%`;  // 종료 상태에서 달성률 고정
+        return `${Math.min(target.achievementRate, 100)}%`; // 종료 상태에서 달성률 고정
       }
       // 진행 중인 경우도 달성률 반환 (이미 서버에서 계산된 값)
       return `${Math.min(target.achievementRate, 100)}%`;
     },
-      getStatusText(target) {
+    getStatusText(target) {
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
@@ -494,26 +495,25 @@ export default {
     },
 
     isParticipating(target) {
-    return target.participants && target.participants.length > 0;
-   },
-   applyFadeUpEffect() {
-      console.log("Applying fade-up effect");
-      const items = this.$el.querySelectorAll(".fade-up-item");
+      return target.participants && target.participants.length > 0;
+    },
+    applyFadeUpEffect() {
+      console.log('Applying fade-up effect');
+      const items = this.$el.querySelectorAll('.fade-up-item');
       console.log(`Found ${items.length} items to animate`);
 
       items.forEach((item, index) => {
-        item.style.setProperty("--index", index);
-        item.style.setProperty("z-index", items.length - index);
+        item.style.setProperty('--index', index);
+        item.style.setProperty('z-index', items.length - index);
 
         const baseDelay = 50;
         const delay = baseDelay + 50 * index;
 
         setTimeout(() => {
-          item.classList.add("fade-up-active");
+          item.classList.add('fade-up-active');
         }, delay);
       });
     },
-
   },
 
   async created() {
@@ -561,7 +561,10 @@ export default {
       immediate: true,
       handler(newLoginInfo) {
         if (newLoginInfo && newLoginInfo.user_no) {
-          console.log('Calling getAdminTargets with user_no:', newLoginInfo.user_no); // 로그 추가
+          console.log(
+            'Calling getAdminTargets with user_no:',
+            newLoginInfo.user_no
+          ); // 로그 추가
           this.fetchAdminTargets(newLoginInfo.user_no).then(() => {
             this.isLoading = false;
             this.$nextTick(() => {
@@ -574,19 +577,19 @@ export default {
       },
     },
     sortBy() {
-    // sortBy가 변경될 때 애니메이션 적용
-    this.$nextTick(() => {
-      this.applyFadeUpEffect();
-    });
-  },
-  displayedTargets: {
+      // sortBy가 변경될 때 애니메이션 적용
+      this.$nextTick(() => {
+        this.applyFadeUpEffect();
+      });
+    },
+    displayedTargets: {
       handler(newTargets) {
-        newTargets.forEach(target => {
+        newTargets.forEach((target) => {
           if (Math.min(target.achievementRate, 100) === 100) {
             console.log('마왕 서버로 갑니다.:', target.target_no); // 로그 추가
             this.$store.dispatch('target/increaseMawangScore', {
-            targetNo: target.target_no,
-            userNo: this.loginInfo.user_no
+              targetNo: target.target_no,
+              userNo: this.loginInfo.user_no,
             });
           }
         });
@@ -802,6 +805,50 @@ export default {
   color: #333;
 }
 @media (max-width: 768px) {
+  .count {
+    font-family: 'KB_C2';
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    margin-left: 5px;
+    margin-right: 0px;
+  }
+  .radio-container {
+    margin-bottom: 10px; /* Add some spacing between each radio container */
+    display: flex;
+    justify-content: space-between; /* Evenly space label and input */
+    align-items: center;
+  }
+
+  .radio-label {
+    font-size: 16px; /* Slightly smaller font size for mobile */
+    padding-left: 3px; /* Adjust label padding for better spacing */
+  }
+
+  .custom-radio {
+    margin-left: 10px;
+    width: 16px;
+    height: 16px;
+    margin-right: 0px;
+  }
+  .p-3 {
+    padding: 0rem !important;
+  }
+  .target-box {
+    transition: transform 0.3s ease;
+    width: 100%;
+    height: 220px;
+    transition: transform 0.3s ease;
+    border-radius: 1px;
+  }
+  .py-3 {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 800px) {
   .count {
     font-family: 'KB_C2';
     font-size: 18px;

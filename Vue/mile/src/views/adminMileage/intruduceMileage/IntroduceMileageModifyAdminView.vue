@@ -39,7 +39,10 @@
       <div class="p-4">
         <div class="d-flex input-gray p-4">
           <input type="file" @change="handlerFileUpload" class="md" style="width: 80%; text-align: right;"/>
-          <span v-if="before_mile_route" class="md" style="text-align:left;">기존 파일: {{ before_mile_route}}</span>
+          <span v-if="before_mile_route" class="md" style="text-align:left;">
+            <button @click="deleteFile(this.mile_introduce_no)"><i class="bi bi-x-square"></i></button>
+            기존 파일: {{ before_mile_route}}
+          </span>
         </div>       
       </div>
     </div>
@@ -80,6 +83,10 @@ export default {
   },
   methods: {
     ...mapActions('mile', ['getMileModify', 'updateMile']),
+    deleteFile(mile_introduce_no) {
+      console.log(mile_introduce_no);
+      this.before_mile_route = '없음';
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -93,21 +100,29 @@ export default {
       mileInfo.append('mile_title', this.mile_title);
       mileInfo.append('job_name', this.selectedJob);
       mileInfo.append('mile_content', this.mile_content);
+
       if(this.file){
         mileInfo.append('file', this.file);
       } else {
-        const response = await fetch(this.before_mile_route);
-        const blob = await response.blob();
-        const fileName = this.before_mile_route.split('/').pop();
-        const file = new File([blob], fileName, {type: blob.type});
-        mileInfo.append('file', file);
+          if(this.before_mile_route === '없음'){
+            this.before_mile_route = '';
+          }else{
+            const response = await fetch(this.before_mile_route);
+            const blob = await response.blob();
+            const fileName = this.before_mile_route.split('/').pop();
+            const file = new File([blob], fileName, {type: blob.type});
+            mileInfo.append('file', file);
+          }
       }
-
-      const response = await this.updateMile(mileInfo);
-      if(response && response.data.success){
-        this.showAlert('마일리지가 수정되었습니다', 'success', '/IntroduceMileageAdminView');
-      }else{
-        this.showAlert('마일리지 수정에 실패했습니다', 'error', '#');
+      try{
+        const response = await this.updateMile(mileInfo);
+        if(response && response.data.success){
+          this.showAlert('마일리지가 수정되었습니다', 'success', '/IntroduceMileageAdminView');
+        }else{
+          this.showAlert('마일리지 수정에 실패했습니다', 'error', '#');
+        }
+      }catch(error){
+        console.error('mileage introduce modify fail');
       }
     },
     showAlert(t, i, r) {

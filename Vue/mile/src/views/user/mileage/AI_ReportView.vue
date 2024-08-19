@@ -159,15 +159,18 @@ export default {
   },
   methods: {
     checkLoginInfo() {
-      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
-          window.location.href="/noAccess"
-        } 
+      if (
+        !this.getLoginInfo ||
+        (this.getLoginInfo && this.getIsChecked == true)
+      ) {
+        window.location.href = '/noAccess';
+      }
     },
     async aitest() {
       try {
         const response = await api.post('bot/chat', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님을`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
@@ -182,7 +185,7 @@ export default {
       try {
         const response = await api.post('bot/chatRank', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
@@ -197,7 +200,7 @@ export default {
       try {
         const response = await api.post('bot/chatCatchup', null, {
           params: {
-            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}님`,
+            prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
@@ -263,7 +266,7 @@ export default {
           title: '알림',
           text: '하루에 한 번만 조회가 가능합니다.',
           icon: 'info',
-          confirmButtonText: '확인',
+          scrollbarPadding: false,
         });
         return;
       }
@@ -280,7 +283,7 @@ export default {
           title: '분석 완료',
           text: '마일리지 분석이 완료되었습니다.',
           icon: 'success',
-          confirmButtonText: '확인',
+          scrollbarPadding: false,
         });
         // 분석이 완료되면 데이터를 가져옵니다.
         await this.getReport();
@@ -292,7 +295,7 @@ export default {
           title: '오류',
           text: '분석 중 문제가 발생했습니다. 다시 시도해 주세요.',
           icon: 'error',
-          confirmButtonText: '확인',
+          scrollbarPadding: false,
         });
       }
     },
@@ -617,7 +620,7 @@ export default {
     this.getReport();
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
     ...mapGetters('aireport', [
       'getAll',

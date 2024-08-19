@@ -1,10 +1,11 @@
 <template>
-  <div class="cards" style="background-color: #f9f9f9; height: 430px;">
+  <div class="cards" style="background-color: #f9f9f9; height: 430px">
     <div>
-      <p class="text-left lg2 KB_C2">마일리지 방문자 수 &nbsp;
+      <p class="text-left lg2 KB_C2">
+        마일리지 방문자 수 &nbsp;
         <i class="bi bi-download" @click="downloadChart"></i>
       </p>
-      <div class="cards favorite-card" style="height: 335px;">
+      <div class="cards favorite-card" style="height: 335px">
         <div class="text-right">
           <input
             type="date"
@@ -27,32 +28,42 @@
             /> -->
             <div class="best-info">
               <div class="lg2 best-title">
-                <i class="bi bi-hand-thumbs-up-fill" style="font-size : 22pt"></i>           
-                <p class="lg best-name" style="font-size : 17pt">
-                   {{ best }}
-               </p>
-              <br>
-                <i class="bi bi-hand-thumbs-down-fill" style="font-size : 22pt"></i>           
-                <p class="lg best-name" style="font-size : 17pt">
-                   {{ worst }}
-               </p>
-                
+                <i
+                  class="bi bi-hand-thumbs-up-fill"
+                  style="font-size: 22pt"
+                ></i>
+                <p class="lg best-name" style="font-size: 17pt">
+                  {{ best }}
+                </p>
+                <br />
+                <i
+                  class="bi bi-hand-thumbs-down-fill"
+                  style="font-size: 22pt"
+                ></i>
+                <p class="lg best-name" style="font-size: 17pt">
+                  {{ worst }}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div  class="text-end w-100 mt-5">
-         <span  style="
-                    position: absolute;
-                    top: 87%;
-                    right : -50px;
-                    transform: translateX(-50%);
-                    z-index: 0;
-                    
-                  font-size:10pt; color:gray;">( 최대 조회 가능일 : 전영업일 )</span>
-        </div>
+    <div class="text-end w-100 mt-5">
+      <span
+        style="
+          position: absolute;
+          top: 87%;
+          right: -50px;
+          transform: translateX(-50%);
+          z-index: 0;
+
+          font-size: 10pt;
+          color: gray;
+        "
+        >( 최대 조회 가능일 : 전영업일 )</span
+      >
+    </div>
   </div>
 </template>
 
@@ -92,32 +103,29 @@ export default {
 
   methods: {
     async downloadChart() {
-      try{
-        const { hitCounts} = await this.realChartData();
-        const mileageLabels = await this.label(); 
+      try {
+        const { hitCounts } = await this.realChartData();
+        const mileageLabels = await this.label();
         const date = this.date;
 
         const wsData = [['기준일자', '마일리지', '방문자 수']]; // 엑셀 파일의 첫번째 행에 컬럼명을 추가
         wsData.push([date]);
         mileageLabels.forEach((mileage, index) => {
-          wsData.push([
-            '',
-            mileage,
-            hitCounts[index] || 0,
-          ]);
+          wsData.push(['', mileage, hitCounts[index] || 0]);
         });
 
         const worksheet = XLSX.utils.aoa_to_sheet(wsData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
 
-        XLSX.writeFile(workbook, `mileage_visitors_data_${date}.xlsx`); // 엑셀 파일 다운로드 
-      }catch (error) {
+        XLSX.writeFile(workbook, `mileage_visitors_data_${date}.xlsx`); // 엑셀 파일 다운로드
+      } catch (error) {
         console.error('Error downloading mileage_visitors data:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: '차트 데이터 다운로드 중 오류가 발생했습니다.',
+          scrollbarPadding: false,
         });
       }
     },
@@ -126,7 +134,6 @@ export default {
         const { hitCounts } = await this.realChartData();
         const mileageLabel = await this.label(); // 라벨 데이터 비동기 호출
 
-      
         this.findMaxAndMinAndSet(hitCounts, mileageLabel);
 
         // 차트 렌더링
@@ -149,7 +156,9 @@ export default {
 
     async realChartData() {
       try {
-        const response = await api.post('/mileage/hit_mileChartDATE', { date: this.date }); // POST 본문에 데이터 포함
+        const response = await api.post('/mileage/hit_mileChartDATE', {
+          date: this.date,
+        }); // POST 본문에 데이터 포함
 
         // Check if response.data is valid and an array
         if (!response.data || !Array.isArray(response.data)) {
@@ -167,33 +176,54 @@ export default {
     },
 
     findMaxAndMinAndSet(hitCounts, mileageLabel) {
-  if (hitCounts.length === 0 || mileageLabel.length === 0) {
-    this.best = '-';
-    this.worst = '-';
-    return;
-  }
+      if (hitCounts.length === 0 || mileageLabel.length === 0) {
+        this.best = '-';
+        this.worst = '-';
+        return;
+      }
 
-  let maxIndex = 0;
-  let minIndex = 0;
-  let maxValue = hitCounts[0];
-  let minValue = hitCounts[0];
+      let maxIndex = 0;
+      let minIndex = 0;
+      let maxValue = hitCounts[0];
+      let minValue = hitCounts[0];
+      let count = 0;
+      for (let i = 0; i < hitCounts.length; i++) {
+        console.log(hitCounts[i], hitCounts[i]);
+        if (hitCounts[i] === 0) {
+          count = count + 1;
+        }
+        if (hitCounts[i] > maxValue) {
+          maxValue = hitCounts[i];
+          maxIndex = i;
+        }
+        if (
+          hitCounts[i] < minValue ||
+          (hitCounts[i] === minValue && hitCounts[i] !== 0)
+        ) {
+          minValue = hitCounts[i];
+          minIndex = i;
+        }
+      }
 
-  for (let i = 1; i < hitCounts.length; i++) {
-    if (hitCounts[i] > maxValue) {
-      maxValue = hitCounts[i];
-      maxIndex = i;
-    }
-    if (hitCounts[i] < minValue || (hitCounts[i] === minValue && hitCounts[i] !== 0)) {
-      minValue = hitCounts[i];
-      minIndex = i;
-    }
-  }
+      this.best = mileageLabel[maxIndex];
+      this.worst = mileageLabel[minIndex];
 
-  this.best = mileageLabel[maxIndex];
-  this.worst = mileageLabel[minIndex];
+      if (count === hitCounts.length) {
+        this.best = '-';
+        this.worst = '-';
+      }
 
-  console.log('Best:', this.best, 'Worst:', this.worst, 'Max Value:', maxValue, 'Min Value:', minValue); // 디버깅용 로그
-},
+      console.log(
+        'Best:',
+        this.best,
+        'Worst:',
+        this.worst,
+        'Max Value:',
+        maxValue,
+        'Min Value:',
+        minValue
+      ); // 디버깅용 로그
+    },
 
     renderChart2(counts, mileageLabel) {
       const chartId = this.mileChartId[0]; // chartIds 배열에서 첫 번째 chartId를 가져옴
@@ -220,12 +250,12 @@ export default {
                 data: counts,
                 backgroundColor: [
                   'rgba(155, 241, 218,0.8)', // 연한 녹색
-                  'rgba(255, 235, 163,0.8)',  // 연한 노란색
+                  'rgba(255, 235, 163,0.8)', // 연한 노란색
                   'rgba(216,216,216,0.8)', // 연한 회색
                 ],
                 borderColor: [
-                'rgba(155, 241, 218,1)', // 연한 녹색
-                  'rgba(255, 235, 163,1)',  // 연한 노란색
+                  'rgba(155, 241, 218,1)', // 연한 녹색
+                  'rgba(255, 235, 163,1)', // 연한 노란색
                   'rgba(216,216,216,1)', // 연한 회색
                 ],
                 borderWidth: 1,
@@ -291,7 +321,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .favorite-card {
   width: 100%;
@@ -345,7 +374,7 @@ export default {
 }
 
 .bi-hand-thumbs-up-fill {
-  color: #FFD700;
+  color: #ffd700;
 }
 
 .bi-hand-thumbs-down-fill {

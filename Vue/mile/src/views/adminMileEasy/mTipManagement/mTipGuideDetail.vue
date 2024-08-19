@@ -91,20 +91,11 @@ export default {
   },
   methods: {
     ...mapActions('notice', ['MtipGuideDetail', 'guide_incrementViews']),
-    checkLoginInfo() {
-      if (
-        !this.getLoginInfo ||
-        this.getIsChecked === false ||
-        this.getLoginInfo.user_is_admin === false
-      ) {
-        window.location.href = '/noAccess';
-      }
-    },
 
     async deleteNotice() {
       Swal.fire({
-        title: '정말로 삭제하시겠습니까?',
-        text: '다시 되돌릴 수 없습니다.',
+        title: '경고',
+        text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#4b4a4a',
@@ -112,6 +103,7 @@ export default {
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
+        scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -236,8 +228,6 @@ export default {
     }
   },
   created() {
-    this.checkLoginInfo();
-
     if (this.mtipGuideNo) {
       this.MtipGuideDetail(this.mtipGuideNo);
     }

@@ -17,12 +17,11 @@ const mutations = {
 const actions = {
   async badgeKingImage({ commit }) {
     try {
-      const response = await api.get(
-        `/admin/badgeKingImage`,
-        { responseType: 'blob' }
-      );
+      const response = await api.get(`/admin/badgeKingImage`, {
+        responseType: 'blob',
+      });
       const imageUrl = URL.createObjectURL(response.data);
-      console.log(imageUrl);
+
       commit('setKingBadge', imageUrl);
     } catch (error) {
       console.error(`Error fetching badge:`, error);
@@ -31,10 +30,9 @@ const actions = {
 
   async badgeJumpImage({ commit }) {
     try {
-      const response = await api.get(
-        `/admin/badgeJumpImage`,
-        { responseType: 'blob' }
-      );
+      const response = await api.get(`/admin/badgeJumpImage`, {
+        responseType: 'blob',
+      });
       const imageUrl = URL.createObjectURL(response.data);
       commit('setJumpBadge', imageUrl);
     } catch (error) {

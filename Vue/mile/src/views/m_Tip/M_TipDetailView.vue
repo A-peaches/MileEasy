@@ -10,7 +10,9 @@
         <div class="actions">
           <!-- 로그인한 사용자가 글 작성자인 경우 -->
           <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no">
-            <button class="edit-button" @click="goToModifyView">수정</button>
+            <button class="edit-button mr-3" @click="goToModifyView">
+              수정
+            </button>
             <button class="delete-button" @click="deleteNotice">삭제</button>
           </div>
           <div
@@ -88,14 +90,8 @@
       </div>
       <div class="content-container mx-auto">
         <div class="actions">
-          <div
-            v-if="
-              isLoggedIn &&
-              loginInfo.user_is_admin &&
-              !loginInfo.user_is_manager &&
-              !isChecked
-            "
-          >
+          <div v-if="isLoggedIn && loginInfo.user_is_admin && isChecked"></div>
+          <div v-else>
             <span class="alert-icon">🚨</span>
             <button class="report-button" @click="mtip_complain">
               신고하기
@@ -162,25 +158,24 @@ export default {
     ]),
 
     async toggleLike() {
-
-      console.log('여기까지오긴옴')
-  if (!this.loginInfo) {
-    alert('로그인이 필요합니다.');
-    return;
-  }
-  console.log('로그인확인완룡')
-  if (!this.notice) {
-    console.error('Notice data is not available');
-    return;
-  }
-  console.log('노티스확인완룡!')
-  try {
-    const action = this.isLiked ? 'unlikePost' : 'likePost';
-    console.log('이제 엑시오스 갈거임.')
-    const result = await this.$store.dispatch(`mtipBoard/${action}`, {
-      mtip_board_no: this.notice.mtip_board_no,
-      user_no: this.loginInfo.user_no,
-    });
+      console.log('여기까지오긴옴');
+      if (!this.loginInfo) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+      console.log('로그인확인완룡');
+      if (!this.notice) {
+        console.error('Notice data is not available');
+        return;
+      }
+      console.log('노티스확인완룡!');
+      try {
+        const action = this.isLiked ? 'unlikePost' : 'likePost';
+        console.log('이제 엑시오스 갈거임.');
+        const result = await this.$store.dispatch(`mtipBoard/${action}`, {
+          mtip_board_no: this.notice.mtip_board_no,
+          user_no: this.loginInfo.user_no,
+        });
 
         console.log('서버에서 받은 좋아요 상태:', result);
 
@@ -204,11 +199,10 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
+        scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -234,11 +228,8 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
         reverseButtons: false,
+        scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -268,10 +259,7 @@ export default {
           text: '이미 신고된 게시글 입니다.',
           icon: 'error',
           showCancelButton: true,
-          confirmButtonColor: '#4b4a4a',
-          cancelButtonColor: '#bd2c3a',
-          confirmButtonText: '확인',
-          cancelButtonText: '취소',
+          scrollbarPadding: false,
           reverseButtons: false,
         });
         return;
@@ -282,10 +270,7 @@ export default {
         text: '정말로 이 게시글을 신고하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
+        scrollbarPadding: false,
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -309,13 +294,10 @@ export default {
     mtip_complainBack() {
       Swal.fire({
         title: '신고취하',
-        text: '정말로 이 게시글의 신고취하 하시겠습니까?',
+        text: '정말로 이 게시글을 신고취하 하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
+        scrollbarPadding: false,
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -340,8 +322,6 @@ export default {
       this.$swal({
         title: message,
         icon: icon,
-        confirmButtonText: '확인',
-        confirmButtonColor: '#4b4a4a',
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,
@@ -695,7 +675,7 @@ export default {
 .heart-icon i {
   font-size: 1.3vw;
   color: #dc3545;
-  cursor : pointer
+  cursor: pointer;
 }
 .views-text {
   flex: 0 0 auto;
