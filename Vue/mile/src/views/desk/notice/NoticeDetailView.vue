@@ -70,6 +70,7 @@ export default {
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
+        scrollbarPadding: false,
       }).then(async result => {
         if (result.isConfirmed) {
           try {

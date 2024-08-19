@@ -199,11 +199,10 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
+        scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -229,11 +228,8 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
         reverseButtons: false,
+        scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -263,10 +259,7 @@ export default {
           text: '이미 신고된 게시글 입니다.',
           icon: 'error',
           showCancelButton: true,
-          confirmButtonColor: '#4b4a4a',
-          cancelButtonColor: '#bd2c3a',
-          confirmButtonText: '확인',
-          cancelButtonText: '취소',
+          scrollbarPadding: false,
           reverseButtons: false,
         });
         return;
@@ -277,10 +270,7 @@ export default {
         text: '정말로 이 게시글을 신고하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
+        scrollbarPadding: false,
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -307,10 +297,7 @@ export default {
         text: '정말로 이 게시글을 신고취하 하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
+        scrollbarPadding: false,
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -335,8 +322,6 @@ export default {
       this.$swal({
         title: message,
         icon: icon,
-        confirmButtonText: '확인',
-        confirmButtonColor: '#4b4a4a',
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,

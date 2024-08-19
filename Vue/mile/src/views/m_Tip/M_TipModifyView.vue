@@ -295,8 +295,7 @@ export default {
       this.$swal({
         title: message,
         icon: icon,
-        confirmButtonText: '확인',
-        confirmButtonColor: '#4b4a4a',
+        scrollbarPadding: false,
       });
     },
   },

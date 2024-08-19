@@ -99,6 +99,7 @@ export default {
         cancelButtonColor: '#d33',
         confirmButtonText: '삭제',
         cancelButtonText: '취소',
+        scrollbarPadding: false,
       });
 
       if (confirmed) {
@@ -120,7 +121,8 @@ export default {
           Swal.fire(
             '삭제 오류!',
             '마일리지 삭제 중 오류가 발생했습니다.',
-            'error'
+            'error',
+            
           );
           console.error('삭제 오류:', error);
         }

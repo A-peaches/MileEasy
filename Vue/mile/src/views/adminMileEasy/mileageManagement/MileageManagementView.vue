@@ -67,6 +67,7 @@ export default {
         cancelButtonColor: '#d33',
         confirmButtonText: '삭제',
         cancelButtonText: '취소',
+        scrollbarPadding: false,
       });
 
       if (confirmed) {

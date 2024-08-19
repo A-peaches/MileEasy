@@ -241,6 +241,7 @@ export default {
           icon: 'success',
           title: '수정완료',
           text: '정상적으로 수정되었습니다.',
+          scrollbarPadding: false,
         });
         this.$emit('close');
         this.admins = response.data; // 기존 담당자 목록 업데이트
