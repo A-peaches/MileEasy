@@ -2,47 +2,22 @@
     <div class="error-page">
       <div class="error-container">
         <div>
-            <img src="@/assets/imoji/lamu/라무얼굴슬픔.png" alt="오류" class="img mb-4"/>
+            <img src="@/assets/imoji/bb/비비얼굴놀람.png" alt="오류" class="img mb-4"/>
         </div>
-        <h1 class="error-title">오류가 발생했습니다</h1>
-        <p class="error-code fw-bold">에러 코드: {{ errorCode }}</p>
-        <p class="error-message">죄송합니다.</p>
-        <button class="btn-home" @click="goHome">홈으로 돌아가기</button>
+        <h3 class="error-title">페이지를 찾을 수 없습니다.</h3>
+        <p class="error-code fw-bold">에러 코드: Page Not Pound</p>
+        <button class="btn-home mt-3" @click="goHome">홈으로 돌아가기</button>
       </div>
     </div>
   </template>
   
   <script>
   export default {
-    name: 'ErrorPage',
-    props: {
-        errorCode: {
-        type: String,
-        default: '404'
-        }
-    },
-    computed: {
-        errorMessage() {
-            const messages = {
-                '400': '잘못된 요청입니다.',
-                '401': '인증이 필요합니다.',
-                '403': '접근 권한이 없습니다.',
-                '404': '요청하신 페이지를 찾을 수 없습니다.',
-                '405': '허용되지 않은 요청 방식입니다.',
-                '408': '요청 시간이 초과되었습니다.',
-                '429': '너무 많은 요청이 발생했습니다.',
-                '500': '서버 내부 오류가 발생했습니다.',
-                '501': '요청을 수행할 수 없습니다.',
-                '502': '게이트웨이 오류가 발생했습니다.',
-                '503': '서비스를 일시적으로 사용할 수 없습니다.',
-                '504': '게이트웨이 시간 초과가 발생했습니다.'
-            };
-            return messages[this.errorCode] || '알 수 없는 오류가 발생했습니다.';
-        }
-    },
+    name: 'NotFoundPage',
+  
     methods: {
       goHome() {
-        this.$router.push('/'); // Vue Router를 사용한다고 가정
+        this.$router.push('/'); 
       }
     }
   }
@@ -50,7 +25,7 @@
   
   <style scoped>
   .img {
-    width: 70px;
+    width: 80px;
   }
 
   .error-page {
@@ -77,7 +52,7 @@
   
   .error-title {
     font-family: 'KB_C1', sans-serif;
-    font-size: 28pt;
+    font-size: 26pt;
     font-weight: bold;
     color: #4b4a4a;
     margin-bottom: 20px;
@@ -113,7 +88,7 @@
   
   @media (max-width: 768px) {
     .error-title {
-      font-size: 22pt;
+      font-size: 20pt;
     }
 
     .error-code {

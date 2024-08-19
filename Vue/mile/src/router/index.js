@@ -39,6 +39,12 @@ const routes = [
     name: 'AlertView',
     component: () => import('../views/common/AlretView.vue'),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('../views/common/NotFound.vue'),
+    meta: { hideHeader: true },
+  }
+
 ];
 
 // 반응형 웹앱 설정을 위함.
