@@ -150,6 +150,16 @@ export default {
   },
 
   methods: {
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     goToWritePage() {
       this.$router.push('/mTipWrite');
     },
@@ -187,6 +197,9 @@ export default {
 
   mounted() {
     this.fetchRequestList();
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

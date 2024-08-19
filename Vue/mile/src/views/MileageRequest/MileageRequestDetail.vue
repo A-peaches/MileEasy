@@ -137,7 +137,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('request', ['getRequestList']),
 
     loginInfo() {
@@ -471,11 +471,23 @@ export default {
         });
       }
     },
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
   },
 
   async mounted() {
     await this.requestList();
     this.setFormData();
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

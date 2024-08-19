@@ -60,7 +60,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters("login", ["getLoginInfo","getIsChecked"]),
     ...mapGetters("badge", ["getKingBadge", "getJumpBadge"]),
 
     kingImage() {
@@ -79,6 +79,11 @@ export default {
       console.error("이미지 로드 실패");
     },
 
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
     async kingData() {
       try {
         const response = await api.get(
@@ -162,6 +167,9 @@ export default {
     if (this.getLoginInfo && this.getLoginInfo.user_no) {
       this.loadBadgeData();
     }
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

@@ -152,10 +152,15 @@ export default {
         document.removeEventListener("click", this.handleClickOutside);
       }
     },
+    checkLoginInfo() {
+      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
+          window.location.href="/noAccess"
+        } 
+    },
   },
   mounted() {},
   computed: {
-    ...mapGetters("login", ["getLoginInfo"]),
+    ...mapGetters('login', ['getLoginInfo','getIsChecked']),
     ...mapGetters("mileScore", ["getMyMile"]),
 
     filteredMyMile() {
@@ -190,6 +195,9 @@ export default {
         }
       },
     },
+  },
+  created() {
+    this.checkLoginInfo();
   },
 };
 </script>

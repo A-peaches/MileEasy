@@ -48,7 +48,7 @@
               flex-direction: column;
               justify-content: center;
               align-items: center;
-              margin-top:10px;
+              margin-top: 10px;
             "
           >
             <img
@@ -166,13 +166,17 @@
             </div>
           </div>
           <div
-            style="display: flex; justify-content: flex-end; margin-top: 10px;
-            margin-right: 90px; margin-bottom : 20px;"
+            style="
+              display: flex;
+              justify-content: flex-end;
+              margin-top: 10px;
+              margin-right: 90px;
+              margin-bottom: 20px;
+            "
           >
             <button
               class="btn-yellow KB_S4"
               onclick="location.href='/KingPickView'"
-            
             >
               채택하기
             </button>
@@ -204,7 +208,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('login', ['getLoginInfo']),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('badge', ['getKingBadge']),
     ...mapGetters('badge', ['getJumpBadge']),
 
@@ -240,11 +244,19 @@ export default {
       console.error('이미지 로드 실패');
     },
 
+    checkLoginInfo() {
+      if (
+        !this.getLoginInfo ||
+        this.getIsChecked === false ||
+        this.getLoginInfo.user_is_admin === false
+      ) {
+        window.location.href = '/noAccess';
+      }
+    },
+
     async kingData() {
       try {
-        const response = await api.get(
-          '/mileage/kingData'
-        );
+        const response = await api.get('/mileage/kingData');
         console.log('마왕 top3:', response.data);
         this.kingTop3 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 3만 가져오기
       } catch (error) {
@@ -254,9 +266,7 @@ export default {
     },
     async jumpData() {
       try {
-        const response = await api.get(
-          '/mileage/jumpData'
-        );
+        const response = await api.get('/mileage/jumpData');
         console.log('점프업 top3:', response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : ''; // 첫 번째 데이터의 기준일자 설정
         this.jumpTop3 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 3만 가져오기
@@ -277,11 +287,13 @@ export default {
     this.kingData(); // 컴포넌트가 마운트되면 데이터 요청
     this.jumpData();
   },
+  created() {
+    this.checkLoginInfo();
+  },
 };
 </script>
 
 <style scoped>
-
 .btn-yellow {
   width: 120px;
   height: 40px;

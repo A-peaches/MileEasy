@@ -53,6 +53,8 @@
 // import api from '@/api/axios';
 import TogetherTarget from '@/components/user/TogetherTarget.vue';
 import PersonalTarget from '@/components/user/PersonalTarget.vue';
+// import { mapGetters } from "vuex";
+
 export default {
   name: 'MyMileageTarget',
   components: {
