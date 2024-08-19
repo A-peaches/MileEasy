@@ -94,4 +94,20 @@ public class TargetController {
         }
     }
 
+    // 마왕 점수 업그레이드
+    @GetMapping("/increaseMawangScore/{targetNo}")
+    public ResponseEntity<String> increaseMawangScore(@RequestParam("user_no") String userNo, @RequestParam("target_no") int targetNo) {
+        try {
+            System.out.println("targetService 로 이동합니다.");
+            int updatedRows = targetService.increaseMawangScore(userNo, targetNo);
+            if (updatedRows > 0) {
+                return ResponseEntity.ok("Mawang score updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No records updated");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating mawang score");
+        }
+    }
+
 }

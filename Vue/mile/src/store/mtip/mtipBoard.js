@@ -115,8 +115,11 @@ const actions = {
       console.error('Error getting footer Notice data:', error);
     }
   },
+
+
   async likePost({ commit }, { mtip_board_no, user_no }) {
     try {
+      console.log('좋아요 증가 게시글 번호랑 user_no :', mtip_board_no, user_no );
       const response = await api.post('/mtip/like', { mtip_board_no, user_no });
       console.log('좋아요 증가 :', response.data); // 서버 응답 로그 출력
   

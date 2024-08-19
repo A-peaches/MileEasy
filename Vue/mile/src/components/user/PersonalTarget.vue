@@ -48,11 +48,7 @@
     </div>
 
     <div class="row">
-      <div
-        v-for="(targets, index) in filteredMileages"
-        :key="targets.target_no"
-        class="col-md-4 mb-3"
-      >
+      <div v-for="(targets, index) in filteredMileages" :key="targets.target_no" class="col-md-4 mb-3 fade-up-item">
         <div class="p-3">
           <div
             :style="{
@@ -98,6 +94,7 @@
                 </button>
               </div>
             </div>
+              <div class="py-3"> <!--여기-->
             <div
               class="py-3"
               style="
@@ -166,7 +163,7 @@
             <div class="py-3">
               <span class="bold-x-lg" style="font-family: 'KB_C1'">
                 <span class="highlight-score">{{
-                  targets.achievementRate
+                  targets.totalMileScoreByMileNo
                 }}</span>
                 / {{ targets.target_mileage }}</span
               >
@@ -227,6 +224,7 @@
           <button class="submit-button" @click="addAction">등록</button>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -333,11 +331,25 @@ export default {
       }
     },
     calculateProgress(target) {
-      if (!target.target_mileage || target.target_mileage === 0) return '0%'; // 목표 마일리지가 0이면 진행률은 0
-      if (this.getStatusText(target) === '예정') return '0%'; // 예정 상태이면 진행률은 0%
-      const progress = (target.achievementRate / target.target_mileage) * 100;
-      return progress > 100 ? '100%' : Math.round(progress) + '%'; // 최대 진행률은 100%
-    },
+    // 종료된 목표는 고정된 진행률 반환 (목표 종료 시 프론트엔드 또는 서버에서 저장된 값)
+    if (this.getStatusText(target) === '종료') {
+        return target.achievementRate + '%';  // 종료 상태에서는 계산된 진행률 고정
+    }
+
+    // 목표 마일리지가 0이거나 없으면 진행률은 0%
+    if (!target.target_mileage || target.target_mileage === 0) {
+        return '0%';
+    }
+
+    // 달성한 마일리지 비율을 계산
+    const progress = (target.totalMileScoreByMileNo / target.target_mileage) * 100;
+
+    // 목표 진행률을 업데이트
+    target.achievementRate = progress > 100 ? 100 : Math.round(progress);
+
+    return target.achievementRate + '%';
+},
+
 
     getStatusClass(target) {
       const currentDate = new Date();
@@ -357,14 +369,15 @@ export default {
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
 
-      if (currentDate < startDate) {
-        return '예정';
-      } else if (currentDate > endDate) {
-        return '종료';
-      } else {
-        return '진행중';
-      }
-    },
+      if (currentDate > endDate) {
+     // 종료된 상태이므로 진행률 고정
+     return '종료';
+   } else if (currentDate < startDate) {
+     return '예정';
+   } else {
+     return '진행중';
+   }
+ },
     sortTargets(targets) {
       return targets.sort((a, b) => {
         const statusA = this.getStatusText(a);
@@ -515,6 +528,23 @@ export default {
         },
       });
     },
+    applyFadeUpEffect() {
+      console.log("Applying fade-up effect");
+      const items = this.$el.querySelectorAll(".fade-up-item");
+      console.log(`Found ${items.length} items to animate`);
+
+      items.forEach((item, index) => {
+        item.style.setProperty("--index", index);
+        item.style.setProperty("z-index", items.length - index);
+
+        const baseDelay = 50;
+        const delay = baseDelay + 50 * index;
+
+        setTimeout(() => {
+          item.classList.add("fade-up-active");
+        }, delay);
+      });
+    },
   },
 
   async created() {
@@ -593,6 +623,30 @@ export default {
         }
       });
     },
+  },
+  watch: {
+    getLoginInfo: {
+      immediate: true,
+      handler(newLoginInfo) {
+        if (newLoginInfo && newLoginInfo.user_no) {
+          console.log('Calling getAdminTargets with user_no:', newLoginInfo.user_no); // 로그 추가
+          this.fetchPersonalTargets(newLoginInfo.user_no).then(() => {
+            this.isLoading = false;
+            this.$nextTick(() => {
+              this.applyFadeUpEffect();
+            });
+          });
+        } else {
+          this.dataLoaded = false;
+        }
+      },
+    },
+    sortBy() {
+    // sortBy가 변경될 때 애니메이션 적용
+    this.$nextTick(() => {
+      this.applyFadeUpEffect();
+    });
+  },
   },
 };
 </script>
@@ -840,6 +894,19 @@ export default {
 
 .delete-button:hover {
   text-decoration: underline;
+}
+/**/
+.fade-up-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+  transition-delay: calc(var(--index) * 100ms);
+  position: relative;
+}
+
+.fade-up-active {
+  opacity: 1;
+  transform: translateY(0);
 }
 .count {
   font-family: 'KB_C2';
