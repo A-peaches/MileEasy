@@ -8,7 +8,7 @@
       <div v-for="category in mileageCategories" :key="category" class="notice-item">
         <span class="notice-mile">{{ category }}</span>
         <template v-if="latestNotices[category]">
-          <div class="notice-content">
+          <div class="notice-content" @click="handleNoticeClick(latestNotices[category])">
             <span class="notice-title">
               {{ truncateTitle(latestNotices[category].mtip_board_title) }}
               <span class="title-icon">new</span>
@@ -87,49 +87,45 @@ export default {
       }
     },
     async handleNoticeClick(notice) {
-  console.log("notice:", notice);
-  if (this.isProcessing) return;
-  this.isProcessing = true;
-  try {
-    console.log("게시글 상세보기+조회수 메소드 도달", notice);
-    // 조회수 증가 요청
-    await api.post(`/notice/increment-views/${notice.notice_board_no}`);
-    
-    // 게시글 상세 정보 요청
-    const response = await api.get(`/notice/details/${notice.notice_board_no}`);
-    console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
-    const noticeDetails = response.data;
-    console.log('Fetched notice details:', noticeDetails);
+      console.log("notice:", notice);
+      if (this.isProcessing) return;
+      this.isProcessing = true;
+      try {
+        console.log("게시글 상세보기+조회수 메소드 도달", notice);
+        
+        // 조회수 증가 요청
+        await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
 
-    // 조회수 업데이트
-    notice.notice_board_hit += 1;
+        // 게시글 상세 정보 요청
+        const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
+        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response);
+        const noticeDetails = response.data;
+        
+        // 조회수 업데이트
+        notice.mtip_board_hit += 1;
 
-    const noticeToPass = {
-      ...noticeDetails,
-      mile_no: noticeDetails.mile_no,
-      mile_name: noticeDetails.mile_name,
-      file: noticeDetails.file || null,
-      notice_board_hit: notice.notice_board_hit // 업데이트된 조회수 사용
-    };
+        const noticeToPass = {
+          ...noticeDetails,
+          mile_no: noticeDetails.mile_no,
+          mile_name: noticeDetails.mile_name,
+          file: noticeDetails.mtip_board_file || null,
+          mtip_board_hit: notice.mtip_board_hit, // 업데이트된 조회수 사용
+        };
 
-    console.log('Navigating to noticeDetailView with notice:', {
-      id: notice.notice_board_no,
-      notice: noticeToPass
-    });
-
-    this.$router.push({
-      name: 'noticeDetailView',
-      params: { 
-        id: notice.notice_board_no, 
-        notice: noticeToPass
+        console.log('Navigating to noticeDetailView with notice:', {
+          id: notice.mtip_board_no,
+          notice: noticeToPass,
+        });
+        this.$router.push({
+          name: 'm_TipDetailView',
+          params: { mtip_board_no: notice.mtip_board_no },
+        });
+      } catch (error) {
+        console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+      } finally {
+        this.isProcessing = false;
       }
-    });
-  } catch (error) {
-    console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
-  } finally {
-    this.isProcessing = false;
-  }
-},
+    },
   },
   mounted() {
     this.fetchNotices();
@@ -221,6 +217,7 @@ export default {
   align-items: center;
   flex-grow: 1;
   overflow: hidden;
+  cursor: pointer;
 }
 
 

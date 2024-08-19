@@ -7,7 +7,7 @@
     <div class="notice-list" :class="{ 'mobile-scroll': isMobile }">
       <div v-for="notice in bestNotices" :key="notice.mtip_board_no" class="notice-item">
         <span class="notice-mile">{{ notice.mile_name || '기타' }}</span>
-        <div class="notice-content">
+        <div class="notice-content" @click ="handleNoticeClick(notice)">
           <span class="notice-title">
             {{ truncateTitle(notice.mtip_board_title) }}
             <i class="bi bi-heart-fill title-icon"></i>
@@ -54,7 +54,48 @@ export default {
     checkMobile() {
       this.isMobile = window.innerWidth <= 480;
       console.log('Is Mobile:', this.isMobile); // 디버깅용
-    }
+    },
+    async handleNoticeClick(notice) {
+      console.log("notice:", notice);
+      if (this.isProcessing) return;
+      this.isProcessing = true;
+      try {
+        console.log("게시글 상세보기+조회수 메소드 도달", notice);
+        
+        // 조회수 증가 요청
+        await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
+
+        // 게시글 상세 정보 요청
+        const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
+        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response);
+        const noticeDetails = response.data;
+
+
+        // 조회수 업데이트
+        notice.mtip_board_hit += 1;
+
+        const noticeToPass = {
+          ...noticeDetails,
+          mile_no: noticeDetails.mile_no,
+          mile_name: noticeDetails.mile_name,
+          file: noticeDetails.mtip_board_file || null,
+          mtip_board_hit: notice.mtip_board_hit, // 업데이트된 조회수 사용
+        };
+
+        console.log('Navigating to noticeDetailView with notice:', {
+          id: notice.mtip_board_no,
+          notice: noticeToPass,
+        });
+        this.$router.push({
+          name: 'm_TipDetailView',
+          params: { mtip_board_no: notice.mtip_board_no },
+        });
+      } catch (error) {
+        console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+      } finally {
+        this.isProcessing = false;
+      }
+    },
   },
   mounted() {
     this.fetchBestNotices();
@@ -139,6 +180,7 @@ export default {
   font-size: 20px;
   font-family: 'KB_C2', sans-serif;
   text-align: start;
+  cursor:pointer;
 }
 
 .title-icon {

@@ -33,6 +33,25 @@ const vuetify = createVuetify({
     },
   },
 });
+
+app.config.errorHandler = (err, vm, info) => {
+  console.error('Caught by Vue error handler:', err, info)
+  
+  // 에러 정보를 상태 관리 시스템(예: Vuex)에 저장
+  store.commit('setError', {
+    message: err.message,
+    stack: err.stack,
+    info: info
+  })
+  
+  // 에러 페이지로 리다이렉트
+  router.push({
+    name: 'ErrorPageView',
+    params: { errorCode: '500' },  // 일반적인 내부 서버 오류 코드
+    query: { message: err.message }
+  })
+}
+
 app.use(vuetify);
 
 // BootstrapVue 설정

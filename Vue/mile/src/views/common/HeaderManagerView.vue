@@ -1,30 +1,52 @@
 <template>
-  <div class="mx-auto" style="width:83%;">
+  <div class="mx-auto" style="width: 83%">
     <!-- 사용자 헤더 -->
     <div class="header">
       <div class="logo lg">
         <a href="/mana" class="a_link">
           <span class="logo-text" style="font-size: 20pt">
-            <img src="@/assets/img/mini_logo.png" class="mb-2 mr-3 ml-2" style="width:33px">MileEasy
+            <img
+              src="@/assets/img/mini_logo.png"
+              class="mb-2 mr-3 ml-2"
+              style="width: 33px"
+            />MileEasy
           </span>
         </a>
       </div>
       <div class="menu">
-        <div class="nav justify-content-start" style="margin-left: 80px;">
+        <div class="nav justify-content-start" style="margin-left: 80px">
           <div class="nav-item">
-            <a class="nav-link hover" href="/introduceMileageAdminView">마일리지 소개</a>
+            <a class="nav-link hover" href="/introduceMileageAdminView"
+              >마일리지 소개</a
+            >
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" aria-current="page" href="/commentMieageeAdminView">추천 멘트</a>
+            <a
+              class="nav-link hover"
+              aria-current="page"
+              href="/commentMieageeAdminView"
+              >추천 멘트</a
+            >
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/mileageTargetView">목표 설정</a>
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" href="/documentsMileageAdminView">문서 관리</a>
+            <a class="nav-link hover" href="/documentsMileageAdminView"
+              >문서 관리</a
+            >
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" href="/scoreMileageAdminView">점수 관리</a>
+            <a class="nav-link hover" href="/scoreMileageAdminView"
+              >점수 관리</a
+            >
+          </div>
+          <div class="nav-item">
+            <a
+              class="nav-link hover"
+              :href="`/promotion/?mile_name=${loginInfo.mile_name}`"
+              >프로모션</a
+            >
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/noticeListView">공지사항</a>
@@ -38,16 +60,27 @@
         </div>
       </div>
       <div class="d-flex justify-content-center align-items-center">
-        <div class="nav-item dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
+        <div
+          class="nav-item dropdown"
+          @mouseenter="showDropdown"
+          @mouseleave="hideDropdown"
+        >
           <a class="nav-link dropdown-toggle no-caret" href="#" role="button">
-            <img v-if="loginInfo && loginInfo.user_no"
-         :src="profileImageUrl"
+            <img
+              v-if="loginInfo && loginInfo.user_no"
+              :src="profileImageUrl"
               class="profile-small my-3"
               alt="Profile Picture"
-              @error="setDefaultImage"/>
+              @error="setDefaultImage"
+            />
           </a>
-          <div class="dropdown-menu dropdown-menu-end profile-dropdown" :class="{ 'show': isHovered }">
-            <a class="dropdown-item" aria-current="page" @click="Logout">로그아웃</a>
+          <div
+            class="dropdown-menu dropdown-menu-end profile-dropdown"
+            :class="{ show: isHovered }"
+          >
+            <a class="dropdown-item" aria-current="page" @click="Logout"
+              >로그아웃</a
+            >
             <a class="dropdown-item" href="/passwordChange">비밀번호 변경</a>
           </div>
         </div>
@@ -62,21 +95,21 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   data() {
     return {
-      isHovered: false
+      isHovered: false,
     };
   },
   computed: {
-    ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     profileImageUrl() {
-  if (this.loginInfo && this.loginInfo.user_no) {
-    if (process.env.NODE_ENV === 'development') {
-      return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
-    } else {
-      return `/profile/${this.loginInfo.user_no}.jpg`;
-    }
-  }
-  return ''; // 또는 기본 이미지 URL
-},
+      if (this.loginInfo && this.loginInfo.user_no) {
+        if (process.env.NODE_ENV === 'development') {
+          return `${process.env.VUE_APP_API_URL}/profile/${this.loginInfo.user_no}.jpg`;
+        } else {
+          return `/profile/${this.loginInfo.user_no}.jpg`;
+        }
+      }
+      return ''; // 또는 기본 이미지 URL
+    },
     loginInfo() {
       return this.getLoginInfo;
     },
@@ -85,10 +118,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions("login", ["logout"]),
+    ...mapActions('login', ['logout']),
+
     Logout() {
       this.logout();
-      window.location.href = "/login";
+      window.location.href = '/login';
     },
 
     willBeUpdate() {
@@ -106,7 +140,7 @@ export default {
       if (window.innerWidth >= 768) {
         this.isHovered = false;
       }
-    }
+    },
   },
   mounted() {
     window.addEventListener('resize', () => {
@@ -117,7 +151,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.hideDropdown);
-  }
+  },
 };
 </script>
 
@@ -164,7 +198,7 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   width: auto !important;
   position: absolute;
-  border : none !important;
+  border: none !important;
 }
 
 .profile-dropdown {
