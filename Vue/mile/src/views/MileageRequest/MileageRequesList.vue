@@ -65,7 +65,7 @@
         </div>
       </div>
       <div>
-        <div>
+        <div class="writeBtn">
           <button class="write-button" @click="goToWritePage">
             <i class="bi bi-pencil" style="margin-right: 10px"></i> 글작성
           </button>
@@ -326,13 +326,6 @@ export default {
 </script>
 
 <style scoped>
-.notice-list {
-  display: flex;
-  flex-direction: column;
-  width: 1200px;
-  margin-left: 30px;
-}
-
 .pagination button {
   background-color: #ffffff;
   padding: 10px 20px;
@@ -391,16 +384,6 @@ h2::after {
   justify-content: center;
   align-items: center;
   margin-top: 4%;
-}
-
-.content {
-  text-align: center;
-  padding: 20px;
-  width: 95%;
-  max-width: 1300px;
-  box-sizing: border-box;
-  min-height: 100vh;
-  margin: auto;
 }
 
 .search-container {
@@ -499,13 +482,16 @@ h2::after {
 }
 
 .input-base {
-  width: 100%;
+  width: auto;
   height: 65px;
   background-color: #f9f9f9;
   text-align: center;
   line-height: 65px;
   font-size: 20px;
   margin-bottom: 20px;
+}
+.list-wrapper {
+  width: auto;
 }
 
 .list-wrapper:hover {
@@ -672,6 +658,7 @@ h2::after {
 }
 
 .write-button {
+  width: 100%;
   display: flex;
   align-items: center;
   background-color: #ffffff;
@@ -682,7 +669,7 @@ h2::after {
   font-size: 20px;
   color: #000;
   background-color: transparent;
-  margin-left: 89%; /* 왼쪽으로 이동 */
+  margin-left: 90%; /* 왼쪽으로 이동 */
   margin-bottom: 3vh;
   font-family: 'KB_S5', sans-serif;
 }
@@ -769,13 +756,35 @@ h2::after {
 .topbuton {
   margin-top: 80px;
 }
+
+.content {
+  text-align: center;
+  padding: 20px 10px; /* 상하 20px, 좌우 10px 패딩 */
+  width: 1300px; /* 너비를 자동으로 설정 */
+  max-width: 1300px; /* 최대 너비 유지 */
+  box-sizing: border-box; /* 패딩을 너비에 포함 */
+  min-height: 100vh;
+  margin: auto;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  margin-left: 30px;
+}
+
+.writeBtn {
+  width: auto;
+}
+
 /* 모바일 화면에서의 스타일 */
 @media (max-width: 768px) {
   .notice-count {
     font-size: 11pt; /* 총 0건 텍스트의 폰트 크기 조정 */
     text-align: left; /* 텍스트 왼쪽 정렬 */
     width: 100%; /* 텍스트가 가로 전체를 차지하도록 설정 */
-    padding-left: 13px; /* 왼쪽 여백 추가 */
     box-sizing: border-box; /* 패딩 포함 너비 계산 */
   }
 
@@ -830,14 +839,12 @@ h2::after {
     margin-top: 100px;
   }
   .input-base {
-    width: 370px;
     height: 48px;
     justify-content: center;
     line-height: 50px;
   }
   .notice-list {
     margin-left: 5px;
-    width: 370px;
   }
   .notice-num-expanded i.bi-trash-fill {
     display: none;
@@ -861,10 +868,13 @@ h2::after {
     height: 48px;
   }
   .notice-details-expanded {
-    width: 370px;
+    width: auto;
   }
   .con {
-    width: 370px;
+    width: auto;
+  }
+  .content {
+    padding: 10px 0px 0px 10px;
   }
 }
 </style>
