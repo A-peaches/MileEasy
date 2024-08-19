@@ -1,5 +1,5 @@
 <template>
-  <div :style="{height:computedHeight}">
+  <div class="page-back mx-auto">
     <div class="d-flex justify-content-between align-items-center">
       <div class="lg2 document-count">총 {{ documentSum }}건</div>
       <div class="input-search input-base search-mobile">
@@ -64,8 +64,8 @@
         </button>
       </div>
     </div>
-
-  </div>
+</div>
+ 
 </template>
 
 <script>
@@ -80,9 +80,9 @@ export default {
   data() {
     return {
       file: null,
-      baseHeight: 80,
-      increment: 5,
-      buttonHeight: 10,
+      baseHeight: 500,
+      increment: 90,
+      buttonHeight: 150,
       searchQuery: '', // 검색어 추가
       currentPage: 1, // 현재 페이지
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
@@ -97,14 +97,11 @@ export default {
   },
   computed: {
     ...mapGetters("login", ["getLoginInfo"]),
-    ...mapGetters('mileExcel', ['getArrayMileDocument', 'getDocumentSum']),
+    ...mapGetters('mileExcel', ['getDocumentSum']),
 
-    arrayMileDocument(){
-      return this.getArrayMileDocument;
-    },
     computedHeight(){
       if(this.isMobile){
-        return "90vh";
+        return "1100px";
       }else{
         let height = this.baseHeight + this.paginatedDocuments.length * this.increment;
         if(this.paginatedDocuments.length % this.itemsPerPage === 0 && this.paginatedDocuments.length >0){
@@ -112,7 +109,7 @@ export default {
         }else{
           height += this.buttonHeight/2;
         }
-        return `${height}vh`;
+        return `${height}px`;
       }
     },
     documentSum(){
@@ -147,7 +144,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('mileExcel', ['mileDocumentLists', 'getMileDocumentSum', 'downloadDocument']),
+    ...mapActions('mileExcel', ['mileDocumentsTotal', 'getMileDocumentSum', 'downloadDocument']),
     
     downloadDocu(document_file){
       this.downloadDocument({ document_file });
@@ -164,21 +161,17 @@ export default {
     },
     async loadDocuments(){
       // 문서 리스트 가져오기 (페이지네이션 처리)
-      const response = await this.mileDocumentLists({
-        mile_no: this.mile_no,
-        page: this.currentPage,
-        itemsPerPage: this.itemsPerPage,
-      });
+      const response = await this.mileDocumentsTotal(this.mile_no);
+      
+      this.allDocuments = response.data; // 문서 리스트 불러오기 
 
-      if(response.data.length == 0 || response.data == null){
+      if(this.allDocuments.length == 0 || this.allDocuments == null){
         console.error('불러올 문서가 존재하지 않습니다.');
       } 
-
-      this.allDocuments = response.data; // 문서 리스트 불러오기 
       
       this.getMileDocumentSum(this.mile_no); // 문서 리스트 총 건수 불러오기 
 
-      this.totalPages = Math.ceil(this.getDocumentSum / this.itemsPerPage);
+      this.totalPages = Math.ceil(this.documentSum / this.itemsPerPage);
       this.updateSearchPages();
     },
     updateSearchPages() {
@@ -269,6 +262,10 @@ export default {
   .left-wrapper {
     width: 90% !important; 
   }
+}
+
+.page-back {
+  width: 95%;
 }
 
 .document-date {
