@@ -32,15 +32,15 @@
         </div>
       </div>
       <div class="content">
-        <span v-if="isNew(notice.mtip_board_date)" class="new-label">NEW</span>
-        <h1 class="title">{{ notice.mtip_board_title }}</h1>
+        <span v-if="isNew(notice?.mtip_board_date)" class="new-label">NEW</span>
+        <h1 class="title">{{ notice?.mtip_board_title }}</h1>
         <div class="meta">
-          <span class="author">{{ notice.user_name }}</span>
+          <span class="author">{{ notice?.user_name }}</span>
           <span class="date">{{ formatDate(notice?.mtip_board_date) }}</span>
         </div>
         <div class="main-content">
           <div class="body">
-            <pre><p>{{ notice.mtip_board_content }}</p></pre>
+            <pre><p>{{ notice?.mtip_board_content }}</p></pre>
             <!-- 줄 바꿈 -->
           </div>
           <div class="file cards">
@@ -63,7 +63,7 @@
                 href="#"
                 class="file-download-link"
               >
-                {{ getDisplayFileName(notice.mtip_board_file) }}
+                {{ getDisplayFileName(notice?.mtip_board_file) }}
               </a>
             </div>
           </div>
@@ -73,7 +73,7 @@
             <div class="views-icon">
               <i class="bi bi-eye"></i>
             </div>
-            <div class="views-text">{{ notice.mtip_board_hit }}</div>
+            <div class="views-text">{{ notice?.mtip_board_hit }}</div>
           </div>
           <div class="icon-container" @click="toggleLike">
             <div class="heart-icon">
@@ -82,11 +82,11 @@
                 :style="{ color: isLiked ? '#dc3545' : 'inherit' }"
               ></i>
             </div>
-            <div class="views-text">{{ notice.mtip_board_like }}</div>
+            <div class="views-text">{{ notice?.mtip_board_like }}</div>
           </div>
         </div>
       </div>
-      <div class="content-container">
+      <div class="content-container mx-auto">
         <div class="actions">
           <div
             v-if="
@@ -162,22 +162,25 @@ export default {
     ]),
 
     async toggleLike() {
-      if (!this.loginInfo) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
 
-      if (!this.notice) {
-        console.error('Notice data is not available');
-        return;
-      }
-
-      try {
-        const action = this.isLiked ? 'unlikePost' : 'likePost';
-        const result = await this.$store.dispatch(`mtipBoard/${action}`, {
-          mtip_board_no: this.notice.mtip_board_no,
-          user_no: this.loginInfo.user_no,
-        });
+      console.log('여기까지오긴옴')
+  if (!this.loginInfo) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+  console.log('로그인확인완룡')
+  if (!this.notice) {
+    console.error('Notice data is not available');
+    return;
+  }
+  console.log('노티스확인완룡!')
+  try {
+    const action = this.isLiked ? 'unlikePost' : 'likePost';
+    console.log('이제 엑시오스 갈거임.')
+    const result = await this.$store.dispatch(`mtipBoard/${action}`, {
+      mtip_board_no: this.notice.mtip_board_no,
+      user_no: this.loginInfo.user_no,
+    });
 
         console.log('서버에서 받은 좋아요 상태:', result);
 
@@ -572,7 +575,7 @@ export default {
   width: 95%;
   max-width: 1300px;
   box-sizing: border-box;
-  min-height: 100vh;
+  min-height: 90vh;
 }
 
 .content.cards {
@@ -692,6 +695,7 @@ export default {
 .heart-icon i {
   font-size: 1.3vw;
   color: #dc3545;
+  cursor : pointer
 }
 .views-text {
   flex: 0 0 auto;
@@ -715,7 +719,6 @@ export default {
 }
 
 .content-container {
-  margin-top: 20px; /* 상단 여백 추가 */
   width: 95%;
 }
 
