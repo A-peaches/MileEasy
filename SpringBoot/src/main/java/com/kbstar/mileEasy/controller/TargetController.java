@@ -110,4 +110,15 @@ public class TargetController {
         }
     }
 
+    // 특정 목표에 참가한 사용자들의 목록, 달성률, 마일리지 점수 반환
+    @GetMapping("/participants/{targetNo}")
+    public ResponseEntity<List<Map<String, Object>>> getParticipantsByTargetNo(
+            @PathVariable int targetNo,
+            @RequestParam int mileNo   // mile_no 파라미터 추가
+    ) {
+        List<Map<String, Object>> participants = targetService.getParticipantsByTargetNo(targetNo, mileNo);
+        return ResponseEntity.ok(participants);
+    }
+
+
 }

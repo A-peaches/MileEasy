@@ -113,5 +113,10 @@ public class TargetService {
         return targetDao.updateMawangScore(userNo,targetNo);
     }
 
+    // 특정 목표에 참가한 사용자의 목록, 달성률, 현재 마일리지 점수 조회
+    public List<Map<String, Object>> getParticipantsByTargetNo(int targetNo, int mileNo) {
+        return targetDao.getParticipantsByTargetNo(targetNo, mileNo);
+    }
+
 
 }

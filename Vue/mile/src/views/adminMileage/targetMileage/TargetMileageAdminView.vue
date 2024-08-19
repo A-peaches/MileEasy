@@ -42,15 +42,24 @@
         <div v-show="expandedTargets.includes(target.target_no)" class="goal-details">
           <!-- 추가 상세 정보를 여기에 넣을 수 있습니다 -->
            <div style="margin-top: 40px;">
-          <p style="font-size: 18px; font-family: 'KB_C2', sans-serif; text-align: left; ">직원 목록</p>
-          <p>상세 정보 2</p>
-          <p>상세 정보 3</p>
+          <!-- 참가자 목록 -->
+            <div v-if="participants && participants.length > 0">
+              <div v-for="(participant, index) in participants" :key="index" class="participant-card">
+                <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
+                  직원 번호: {{ participant.user_no }}
+                </p>
+                <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
+                  현재 마일리지 : {{ participant.current_mileage_score }}
+                  달성률: {{participant.achievementRate}}%
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-else class="no-goals">
-      <p class="lg2">목표가 없습니다.</p>
+    <div v-else>
+      <p>참가자가 없습니다.</p>
     </div>
   </div>
 
@@ -104,6 +113,7 @@ export default {
       searchEndDate: '',
       searchStatus: '',
       expandedTargets: [],
+      participants: [] // 참가자 데이터를 저장할 배열
     }
   },
   computed: {
@@ -227,16 +237,6 @@ export default {
       return `${year}-${month}-${day}`;
     },
 
-    toggleExpand(index) {
-      const targetId = this.filteredTargets[index].target_no; // 또는 고유한 식별자
-      const expandedIndex = this.expandedTargets.indexOf(targetId);
-      if (expandedIndex === -1) {
-        this.expandedTargets.push(targetId);
-      } else {
-        this.expandedTargets.splice(expandedIndex, 1);
-      }
-    },
-
     isOngoing(target) {
       const now = new Date();
       return target.startDate <= now && now <= target.endDate;
@@ -258,6 +258,32 @@ export default {
     filterTargets() {
       // 필터링 로직은 computed 속성에서 처리됩니다.
     },
+    toggleExpand(index) {
+    const targetId = this.filteredTargets[index].target_no;
+    const expandedIndex = this.expandedTargets.indexOf(targetId);
+    if (expandedIndex === -1) {
+      this.expandedTargets.push(targetId);
+      this.loadParticipants(targetId);  // 확장될 때만 참가자 데이터 로드
+    } else {
+      this.expandedTargets.splice(expandedIndex, 1);
+    }
+  },
+  
+  async loadParticipants(targetId) {
+  const mileNo = this.loginInfo.mile_no;  // 로그인 정보에서 mile_no 가져오기
+
+  try {
+    const response = await this.$store.dispatch('target/loadParticipants', {
+      targetNo: targetId,
+      mileNo: mileNo
+    });
+
+    this.participants = response;
+  } catch (error) {
+    console.error('참가자 로드 실패:', error);
+  }
+},
+
   },
   async created(){
     const user_no = this.loginInfo ? this.loginInfo.user_no : null;
@@ -284,6 +310,7 @@ export default {
       console.error('mile_no가 유효하지 않습니다.');
     }
   },
+
 };
 </script>
 
