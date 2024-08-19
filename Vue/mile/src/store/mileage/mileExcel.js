@@ -6,7 +6,7 @@ const state = {
   arrayMileExcel: [],
   arrayMileDocument: [],
   document_sum: 0,
-  totalDocuments: [],
+  totalDocuments: [{}],
   excelNotice : []
 };
 
@@ -94,18 +94,19 @@ const actions = {
       console.error('Error get mile excel lists:', error);
     }
   },
-  async mileDocumentsTotal({commit}, mile_no){
+  async mileDocumentsTotal(context, mile_no){
     try{
       const response = await api.get(`/mileage/totalLists/${mile_no}`);
-      commit('setTotalDocuments', response.data);
+      // commit('setTotalDocuments', response.data);
+      return response;
     }catch(error){
       console.error('Error get document total lists:', error);
     }
   },
-  async mileDocumentLists(context, {mile_no, page, itemsPerPage}){
+  async mileDocumentLists({commit}, {mile_no, page, itemsPerPage}){
     try{
       const response = await api.get(`/mileage/totalMileDocument/${mile_no}?page=${page}&itemsPerPage=${itemsPerPage}`);
-      return response; // 데이터를 반환하여 컴포넌트에서 처리하도록 함 
+      commit('setArrayMileDocument', response.data);
     }catch(error){
       console.error('Error get mile document lists:', error);
     }

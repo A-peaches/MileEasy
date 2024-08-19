@@ -1,6 +1,6 @@
 <!--🚨마일리지 관리자 :  마일리지 문서-->
 <template>
-  <div class="cards page-back mx-auto" :style="{height:computedHeight}">
+  <div class="cards page-back mx-auto">
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 점수</h2>
 
     <!-- 날짜 선택 -->
@@ -140,9 +140,9 @@ export default {
       file: null,
       selectedDate: null,
       deleteArray: [],
-      baseHeight: 90,
-      increment: 10,
-      buttonHeight: 10,
+      baseHeight: 1100,
+      increment: 90,
+      buttonHeight: 40,
       currentPage: 1, // 현재 페이지
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
       allScores: [], // 모든 엑셀파일 데이터 
@@ -169,7 +169,7 @@ export default {
       }else{
         height += this.buttonHeight/2;
       }
-      return `${height}vh`;
+      return `${height}px`;
     },
     filteredScores(){
       if(this.selectedDate){
