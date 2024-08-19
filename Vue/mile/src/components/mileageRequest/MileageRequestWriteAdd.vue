@@ -360,6 +360,7 @@ export default {
   text-align: left;
   background-color: #f6f6f6;
   padding: 10px 140px 60px 140px !important;
+  width: auto;
 }
 .yn {
   margin-top: 2em;
@@ -372,7 +373,6 @@ textarea {
 @media (max-width: 768px) {
   .p-2 {
     padding: 30px 15px 5px 15px !important;
-    width: 360px;
     margin-left: 0px;
   }
   .p-4 {
@@ -385,14 +385,14 @@ textarea {
     margin-top: 0px;
   }
   .input-base {
-    width: 330px;
+    width: 100%;
     height: 40px;
   }
   .table {
-    width: 330px;
+    width: 100%;
   }
   textarea {
-    width: 330px;
+    width: 100%;
   }
   .back-button {
     font-size: 12px;
