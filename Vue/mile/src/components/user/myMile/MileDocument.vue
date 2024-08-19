@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       file: null,
-      baseHeight: 60,
+      baseHeight: 80,
       increment: 5,
       buttonHeight: 10,
       searchQuery: '', // 검색어 추가
@@ -103,9 +103,9 @@ export default {
       return this.getArrayMileDocument;
     },
     computedHeight(){
-      // if(this.isMobile){
-      //   return "90vh";
-      // }else{
+      if(this.isMobile){
+        return "90vh";
+      }else{
         let height = this.baseHeight + this.paginatedDocuments.length * this.increment;
         if(this.paginatedDocuments.length % this.itemsPerPage === 0 && this.paginatedDocuments.length >0){
           height += this.buttonHeight/2;
@@ -113,7 +113,7 @@ export default {
           height += this.buttonHeight/2;
         }
         return `${height}vh`;
-      // }
+      }
     },
     documentSum(){
       return this.getDocumentSum;

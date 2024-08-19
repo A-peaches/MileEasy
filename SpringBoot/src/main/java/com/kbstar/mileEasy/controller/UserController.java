@@ -167,10 +167,23 @@ public class UserController {
 
     @PostMapping("/requestAdd")
     public void requestAdd(@RequestBody Map<String, Object> requestBody) {
+        String max = (String) requestBody.get("request_mil_max");
+        String milMaxValue = "0";
+        try {
+            if (max != null && !max.trim().isEmpty()) {
+                milMaxValue = max.trim();
+            }
+        } catch (NumberFormatException e) {
+            // NaN이나 형식 오류가 발생하면 milMaxValue는 0으로 유지됩니다.
+        }
+
+
 
         String is_branch = (String) requestBody.get("request_is_branch");
         String mile_name = (String) requestBody.get("request_mile_name");
-        String mil_max = (String) requestBody.get("request_mil_max");
+
+
+        String mil_max =  milMaxValue;
         String admin = (String) requestBody.get("request_admin");
         String etc = (String) requestBody.get("request_etc");
 
