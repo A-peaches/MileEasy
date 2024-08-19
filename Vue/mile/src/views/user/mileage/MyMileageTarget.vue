@@ -168,9 +168,25 @@ export default {
 
 @media (max-width: 768px) {
   .help-popover {
-    width: 100%;
+    position: absolute;
     left: 0;
-    margin-left: 0px;
+    right: 0;
+    top: 2%;
+    width: 100%;
+    max-width: none;
+    margin: 10px auto 0;
+    transform: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .help-popover {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    margin-left: 0;
   }
 }
 </style>
