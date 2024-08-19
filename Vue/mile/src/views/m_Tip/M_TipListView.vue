@@ -33,7 +33,7 @@
         </label>
       </div>
       <div>
-        <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+        <div v-if="isLoggedIn">
           <button class="write-button" @click="goToWritePage">
             <i class="bi bi-pencil" style="margin-right:10px;"></i> 글작성
           </button>
@@ -814,14 +814,14 @@ h2::after {
   align-items: center;
   background-color: #ffffff;
   border: none;
-  padding: 10px 20px;
+  padding: 0px 20px;
   cursor: pointer;
   border-radius: 5px;
   font-size: 20px;
   color: #000;
   background-color: transparent;
   margin-left: 89%; /* 왼쪽으로 이동 */
-  margin-bottom: 3vh;
+  margin-bottom: 1vh;
   font-family: 'KB_C3', sans-serif;
 }
 
