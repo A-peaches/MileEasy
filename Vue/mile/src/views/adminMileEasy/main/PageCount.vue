@@ -109,6 +109,7 @@ export default {
           icon: 'error',
           title: 'Error',
           text: '차트 데이터 다운로드 중 오류가 발생했습니다.',
+          scrollbarPadding: false,
         });
       }
     },
@@ -134,6 +135,7 @@ export default {
           icon: 'error',
           title: 'Error',
           text: '시작 날짜는 종료 날짜보다 이전이어야 합니다.',
+          scrollbarPadding: false,
         });
         return;
       }

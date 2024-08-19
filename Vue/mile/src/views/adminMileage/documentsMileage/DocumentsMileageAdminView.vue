@@ -1,6 +1,6 @@
 <!--🚨마일리지 관리자 :  마일리지 문서-->
 <template>
-  <div class="cards page-back mx-auto" :style="{height:computedHeight}">
+  <div class="cards page-back mx-auto">
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">{{ mileInfo ? mileInfo.mile_no : '' }} 마일리지 문서</h2>
     <div class="d-flex justify-content-between align-items-center">
       <div class="lg2" style="padding: 3em">총 {{ documentSum }}건</div>
@@ -109,9 +109,9 @@ export default {
       isModalOpen: false,
       file: null,
       deleteArray: [],
-      baseHeight: 90,
-      increment: 10,
-      buttonHeight: 10,
+      baseHeight: 1100,
+      increment: 90,
+      buttonHeight: 40,
       searchQuery: '', // 검색어 추가
       currentPage: 1, // 현재 페이지
       itemsPerPage: 7, // 한 페이지에 보여줄 항목 수
@@ -140,7 +140,7 @@ export default {
       }else{
         height += this.buttonHeight/2;
       }
-      return `${height}vh`;
+      return `${height}px`;
     },
     documentSum(){
       return this.getDocumentSum;
@@ -259,7 +259,7 @@ export default {
       
       const mile_no = this.loginInfo.mile_no;
       const countList = await api.get(`/mileage/countListDocuments/${mile_no}`);
-      this.countList = countList.data;
+      this.listSum = countList.data;
     },
     onSearch(){
       const currentTime = Date.now();
