@@ -136,6 +136,21 @@ const state = {  // 애플리케이션의 상태를 저장
       async deletePersonalTarget({ dispatch }, { userNo, targetNo }) {
         return dispatch('deleteTarget', { userNo, targetNo, type: 'personal' });
       },
+        // 마왕 점수 상승 액션 추가
+    async increaseMawangScore(_, { userNo, targetNo }) {
+      try {
+        const response = await api.get(`/target/increaseMawangScore`, {
+          params: {
+            user_no: userNo,
+            target_no: targetNo
+          }
+        });
+        console.log('마왕 점수 증가 성공:', response.data);
+      } catch (error) {
+        console.error('마왕 점수 증가 중 오류 발생:', error.response ? error.response.data : error.message);
+        throw error;
+      }
+    },
   };
   
   const getters = {  // 상태를 가져오는 게터
