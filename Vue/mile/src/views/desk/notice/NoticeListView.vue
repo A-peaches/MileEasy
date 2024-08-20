@@ -427,6 +427,37 @@ export default {
   }
 }
 
+.app-container {
+  width: 100%;
+  padding: 0;
+  min-height: 100vh; /* 최소 높이를 설정하여 페이지 전체를 채움 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top : 4%;
+  
+}
+
+.content {
+  text-align: center;
+  padding: 20px;
+  width: 95%;
+  max-width: 1300px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: auto;
+}
+
+.content.cards {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 60px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
 .title-line {
   width: 13%; 
   border: 0; 
@@ -626,7 +657,7 @@ body {
   background-color: #f9f9f9;
   text-align: center; /* 가로 정렬 */
   line-height: 65px; /* 세로 정렬 */
-  /* font-size: 20px; */
+  font-size: 20px;
   margin-bottom: 20px; /*글 목록 사이 공간*/
 }
 
@@ -646,7 +677,8 @@ body {
   flex: 1 1 150%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
-  font-family: "KB_C3", sans-serif;
+  font-size: 18px;
+  font-family: "KB_C2", sans-serif;
 }
 
 .notice-num {
@@ -668,9 +700,9 @@ body {
   flex: 1 1 50%;
   text-align: left;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
-  color: #745f40;
+  color: #675437;
   font-family: "KB_C3", sans-serif;
-  font-size: 0.75em;
+  font-size: 0.70em;
   margin-left: 10px; /* 왼쪽 여백 추가 */
 }
 
@@ -678,17 +710,17 @@ body {
   flex: 1 1 60%;
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
-  font-size: 16px;
+  font-size: 15px;
   font-family: "KB_C3", sans-serif;
 }
 
 .notice-views {
-  flex: 1 1 20%; /* flex-grow, flex-shrink, flex-basis */
+  flex: 1 1 12%; /* flex-grow, flex-shrink, flex-basis */
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 15px;
   margin-bottom: 10%;
 }
 
