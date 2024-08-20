@@ -4,9 +4,12 @@
       {{ this.loginInfo.user_name }}님의 AI 리포트
     </h2>
 
-    <div class="text-end mb-4 mr-3">
-      <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
-    </div>
+    <div class="button-container mb-4">
+    <button @click="downloadPDF" class="w-50 text-start mt-3">
+      <i class="bi bi-download download-icon"></i> PDF 다운로드
+    </button>
+    <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
+  </div>
 
     <!-- 데이터가 없을 때 메시지 표시 -->
     <div
@@ -121,11 +124,11 @@
               <h5 class="text-emphasis text-start">
                 <i class="bi bi-info-circle-fill"></i> 유의 사항
               </h5>
-              <span class="ml-5">
+              <span class="ml-5 note">
                 본 리포트는 마일이지 플랫폼에 축척된 데이터를 학습한 AI 모델의
                 예측에 기반하고 있습니다. <br />
               </span>
-              <span class="ml-5">
+              <span class="ml-5 note">
                 본 리포트는 마일리지 관리를 위한 참고 목적으로 활용할 수 있도록
                 제공되며, 증빙 등의 다른 목적으로는 사용할 수 없습니다.
               </span>
@@ -143,6 +146,8 @@ import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import api from '@/api/axios';
 import Swal from 'sweetalert2';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 Chart.register(annotationPlugin);
 
@@ -158,6 +163,41 @@ export default {
     this.checkLoginInfo();
   },
   methods: {
+    async downloadPDF() {
+      const element = document.querySelector('.page-back');
+      if (!element) {
+        console.error('Element with class "page-back" not found');
+        return;
+      }
+
+      const canvas = await html2canvas(element, {
+        scale: 2, // 해상도를 높이기 위해 scale 옵션 추가
+        useCORS: true, // 외부 이미지 로드를 위한 옵션
+        logging: false, // 콘솔 로그 비활성화
+      });
+
+       const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트`);
+    },
     checkLoginInfo() {
       if (
         !this.getLoginInfo ||
@@ -771,6 +811,19 @@ span {
   padding-right: 5%;
 }
 
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+}
+
+.bi-download {
+  cursor: pointer;
+  font-size: 16pt;
+  margin-left: 1%;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -814,5 +867,17 @@ span {
 #myChart2 {
   height: 100% !important;
   width: 100% !important;
+}
+
+
+@media (max-width: 480px) {
+  .note {
+    font-size :11pt;
+  }
+  
+  .btn-analysis {
+    width:160px;
+    font-size:11pt;
+  }
 }
 </style>

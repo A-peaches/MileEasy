@@ -14,15 +14,15 @@
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
-            <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
-              {{ mileage.mile_name }}마일리지
+            <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage?.mile_name)">
+              {{ mileage?.mile_name }}&nbsp;&nbsp;마일리지
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
         </div>
       </div>
       <div class="notice-count-container">
-        <div class="notice-count">총 {{ filteredNotices.length }}건</div>
+        <div class="notice-count">총 {{ filteredNotices?.length }}건</div>
         <label class="checkbox-container">
           <input type="checkbox" v-model="sortByViews" @change="handleCheckboxChange('views')">
           <span class="custom-checkbox"></span> <span class="checkbox-label">조회수</span>
@@ -55,18 +55,18 @@
         <div v-if="paginatedNotices.length">
           <div class="input-base list-wrapper" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice)">
               <div class="notice-details">
-                <div v-if="notice.is_new" class="notice-new">{{ notice.display_num }}</div>
-                <div v-else class="notice-num">{{ notice.display_num }}</div>
-                <div class="notice-mile">{{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}</div>
+                <div v-if="notice.is_new" class="notice-new">{{ notice?.display_num }}</div>
+                <div v-else class="notice-num">{{ notice?.display_num }}</div>
+                <div class="notice-mile">{{ notice?.mile_name && notice?.mile_name !== '기타' ? notice?.mile_name + ' 마일리지' : '기타' }}</div>
                 <div class="notice-title">
-                  {{ notice.mtip_board_title.length > 30 ? notice.mtip_board_title.substring(0, 30) + ' ...' : notice.mtip_board_title }}
+                  {{ notice?.mtip_board_title.length > 30 ? notice?.mtip_board_title.substring(0, 30) + ' ...' : notice?.mtip_board_title }}
                 </div>
-                <pre class="notice-date">{{ formatDate(notice.mtip_board_date) }}</pre>
+                <pre class="notice-date">{{ formatDate(notice?.mtip_board_date) }}</pre>
                 <i class="bi bi-eye"></i>
-                <div class="notice-views">{{ notice.mtip_board_hit }} <i class="fa fa-eye"></i></div>
-                <i :class="['bi', isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"
-                :style="{ color: isPostLiked(loginInfo.user_no, notice.mtip_board_no) ? '#dc3545' : 'inherit' }"></i>
-                <div class="notice-like">{{ notice.mtip_board_like }}</div>
+                <div class="notice-views">{{ notice?.mtip_board_hit }} <i class="fa fa-eye"></i></div>
+                <i :class="['bi', isPostLiked(loginInfo?.user_no, notice?.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"
+                :style="{ color: isPostLiked(loginInfo?.user_no, notice.mtip_board_no) ? '#dc3545' : 'inherit' }"></i>
+                <div class="notice-like">{{ notice?.mtip_board_like }}</div>
               </div>
             </div>
 

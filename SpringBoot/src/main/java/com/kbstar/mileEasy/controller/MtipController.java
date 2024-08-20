@@ -128,10 +128,10 @@ public class MtipController {
     @GetMapping("/MtipNewlist")
     public ResponseEntity<?> getMtipNewlist() {
         try {
-            System.out.print("m-tip 도달 ");
+            System.out.print("newm-tip 도달 ");
             List<MtipBoard> notices = mtipBoardService.getMtipNewlist();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는 데이터:");
+            System.out.println("프론트엔드로 보내는 new 데이터:");
             for (MtipBoard notice : notices) {
                 System.out.println(notice.toString());
             }
@@ -387,7 +387,7 @@ public class MtipController {
             System.out.print("m-tip 도달 ");
             List<MtipBoard> bestNotices = mtipBoardService.getTopLikedMtiplist();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는 데이터:");
+            System.out.println("프론트엔드로 보내는  좋아요가 많은 게시글 9개 데이터:");
             for (MtipBoard notice : bestNotices) {
                 System.out.println(notice.toString());
             }
