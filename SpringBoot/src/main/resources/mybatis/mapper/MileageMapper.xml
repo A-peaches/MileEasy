@@ -97,7 +97,7 @@
     </insert>
 
     <insert id="insertMileDocu">
-        insert into Document_mile (mile_no, document_file) values (#{mile_no}, #{document_file});
+        insert into document_mile (mile_no, document_file) values (#{mile_no}, #{document_file});
     </insert>
 
     <insert id="moveMileScoreToHistory">
@@ -113,7 +113,7 @@
     </delete>
 
     <delete id="deleteDocument">
-        delete from Document_mile where document_mile_no = #{num}
+        delete from document_mile where document_mile_no = #{num}
     </delete>
 
     <insert id="insertDetailMileScore">
@@ -130,11 +130,11 @@
     </select>
 
     <select id="selectTotalDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
-        select * from Document_mile where mile_no=#{mile_no} order by document_date DESC limit #{limit} offset #{offset};
+        select * from document_mile where mile_no=#{mile_no} order by document_date DESC limit #{limit} offset #{offset};
     </select>
 
     <select id="selectDocumentLists" resultType="com.kbstar.mileEasy.dto.DocumentMile">
-        select * from Document_mile where mile_no=#{mile_no} order by document_date DESC;
+        select * from document_mile where mile_no=#{mile_no} order by document_date DESC;
     </select>
 
     <select id="selectCount" resultType="int">
@@ -142,11 +142,11 @@
     </select>
 
     <select id="selectCountDocu" resultType="int">
-        select count(document_mile_no) from Document_mile where mile_no =#{mile_no};
+        select count(document_mile_no) from document_mile where mile_no =#{mile_no};
     </select>
 
     <select id="selectMileSum" resultType="int">
-        select count(document_mile_no) from Document_mile where mile_no=#{mile_no};
+        select count(document_mile_no) from document_mile where mile_no=#{mile_no};
     </select>
 
     <select id="kingData" resultType="com.kbstar.mileEasy.dto.MileScore">

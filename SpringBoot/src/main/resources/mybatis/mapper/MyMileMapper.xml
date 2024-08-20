@@ -108,13 +108,13 @@
 
     <select id="selectMileDocument" resultType="com.kbstar.mileEasy.dto.DocumentMile">
         select mile_name, document_file, date(document_date) as document_date
-        from Document_mile dm
+        from document_mile dm
         join mileage m on dm.mile_no = m.mile_no
         order by document_date DESC;
     </select>
 
     <select id="selectCount" resultType="int">
-        select count(*) from Document_mile;
+        select count(*) from document_mile;
 
     </select>
 
