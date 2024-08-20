@@ -19,7 +19,7 @@ export default [
 
   {
     //관리자 : 공지사항 수정하기
-    path: '/oticeModifyAdminView/:id',
+    path: '/noticeModifyAdminView/:id',
     name: 'noticeModifyAdminView',
     component: () => import('../views/desk/notice/NoticeModifyAdminView.vue'),
     meta: { requiresAuth: true },

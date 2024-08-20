@@ -225,7 +225,10 @@ filteredNotices() {
         this.closeDropdown();
       }
     },
-    
+    filterByCategory(category) {
+      this.selectedCategory = category;
+      this.currentPage = 1;
+    },
     
     async fetchNotices() {
       console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
