@@ -37,22 +37,23 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('mtipBoard', ['getNotices']), // Vuex에서 공지사항 데이터 가져오기
-    ...mapGetters('mtipBoard', ['getBestNotices']),
+    ...mapGetters('mtipBoard', ['getNewNotices']),
 
     latestNotices() {
-    const latest = {};
-    this.mileageCategories.forEach(category => {
-      const notice = this.getNotices.find(n => 
-        n.mile_name === category.mile_name || 
-        (category.mile_name === '기타' && (n.mile_name === null || n.mile_name === '기타'))
-      );
-      if (notice) {
-        latest[category.mile_name] = notice;
-      }
-    });
-    return latest;
-  },
+      const latest = {};
+      const notices = this.getNewNotices || [];  // this.getNotices가 undefined일 경우 빈 배열로 초기화
+
+      this.mileageCategories.forEach(category => {
+        const notice = notices.find(n => 
+          n.mile_name === category.mile_name || 
+          (category.mile_name === '기타' && (n.mile_name === null || n.mile_name === '기타'))
+        );
+        if (notice) {
+          latest[category.mile_name] = notice;
+        }
+      });
+      return latest;
+    },
     displayedCategories() {
       return this.isMobile ? this.mileageCategories.slice(0, 3) : this.mileageCategories;
     },
@@ -74,16 +75,16 @@ export default {
       this.isMobile = window.innerWidth <= 480;
       console.log('Is Mobile:', this.isMobile);
     },
-    async fetchNotices() {
-      try {
-        const response = await api.get('/mtip/MtipNewlist');
-        this.notices = response.data;
-        this.paginatedNotices = this.notices;
-        console.log('Mtiplist 서버에서 가지고 온 값 :', this.notices);
-      } catch (error) {
-        console.error('Error fetching notices:', error.response ? error.response.data : error.message);
-      }
-    },
+    // async fetchNotices() {
+    //   try {
+    //     const response = await api.get('/mtip/MtipNewlist');
+    //     this.notices = response.data;
+    //     this.paginatedNotices = this.notices;
+    //     console.log('Mtiplist 서버에서 가지고 온 값 :', this.notices);
+    //   } catch (error) {
+    //     console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+    //   }
+    // },
     async fetchMileages() {
     try {
       const response = await api.get('/mtip/Mtipmileage'); // DB에서 카테고리 가져오기
@@ -123,7 +124,8 @@ export default {
 },
   },
   mounted() {
-    this.fetchNotices();
+    // this.fetchNotices();
+    this.fetchNewNotices();
     this.fetchMileages(); // 카테고리 가져오기 호출
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile);

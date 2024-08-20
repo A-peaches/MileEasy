@@ -71,7 +71,13 @@ export default {
         if (result.isConfirmed) {
           try {
             await api.delete(`/notice/delete/${this.notice.notice_board_no}`);
-            Swal.fire('게시글 삭제 완료', '게시글이 삭제 되었습니다.', 'success').then(() => {
+            Swal.fire({
+              title : '게시글 삭제 완료', 
+              text : '게시글이 삭제 되었습니다.', 
+              icon : 'success',
+              allowOutsideClick: false,
+              scrollbarPadding: false
+            }).then(() => {
               this.$router.push('/noticeListView');
             });
           } catch (error) {
