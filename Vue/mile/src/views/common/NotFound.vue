@@ -5,8 +5,8 @@
             <img src="@/assets/imoji/bb/비비얼굴놀람.png" alt="오류" class="img mb-4"/>
         </div>
         <h3 class="error-title">페이지를 찾을 수 없습니다.</h3>
-        <p class="error-code fw-bold">에러 코드: Page Not Pound</p>
-        <button class="btn-home mt-3" @click="goHome">홈으로 돌아가기</button>
+        <p class="error-code fw-bold" style="    margin-bottom: 30px;">에러 코드: Page Not Pound</p>
+        <button class="btn-home" @click="goBack">이전페이지로</button>
       </div>
     </div>
   </template>
@@ -16,8 +16,8 @@
     name: 'NotFoundPage',
   
     methods: {
-      goHome() {
-        this.$router.push('/'); 
+      goBack() {
+        this.$router.go(-1);
       }
     }
   }
