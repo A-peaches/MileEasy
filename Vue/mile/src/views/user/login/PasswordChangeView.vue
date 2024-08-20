@@ -1,11 +1,7 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
-    <div class="button-container">
-      <button class="back-button" @click="goBack">
-        <span class="arrow">❮</span> 이전
-      </button>
-    </div>
-    <h2 class="mt-3">비밀번호 변경</h2>
+
+    <h2  style="margin-top:70px">비밀번호 변경</h2>
     <form @submit.prevent="changePassword" class="reset-form">
       <div class="password-reset">
         <div class="form-group mb-3">
@@ -35,7 +31,7 @@
         반복문자(4자리), 대표단어(kbstar, kbfng, kbfg, kbcard)
       </div>
       <div class="button-container d-flex mx-auto justify-content-center my-5">
-        <button type="submit" class="btn-green my-4" style="margin-right: 30px">
+        <button type="submit" class="btn-green my-4" >
           변경
         </button>
       </div>
@@ -328,6 +324,7 @@ input {
   }
 
   .btn-green {
+    width: 150px;
     font-size: 16px;
     padding: 12px;
   }

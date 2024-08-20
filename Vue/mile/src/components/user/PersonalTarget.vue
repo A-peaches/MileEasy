@@ -442,10 +442,6 @@ export default {
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
-        showCancelButton: true,
-        scrollbarPadding: false,
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
         reverseButtons: false,
         willOpen: () => {
           // 스크롤바 패딩 제거
