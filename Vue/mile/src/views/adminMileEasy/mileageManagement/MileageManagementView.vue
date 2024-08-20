@@ -62,11 +62,7 @@ export default {
         title: '삭제 확인',
         text: '정말로 이 마일리지를 삭제하시겠습니까?',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: '삭제',
-        cancelButtonText: '취소',
+
         scrollbarPadding: false,
       });
 

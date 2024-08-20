@@ -124,6 +124,25 @@ public class MtipController {
         }
     }
 
+    //m-tip 게시글 9개 new 리스트
+    @GetMapping("/MtipNewlist")
+    public ResponseEntity<?> getMtipNewlist() {
+        try {
+            System.out.print("newm-tip 도달 ");
+            List<MtipBoard> notices = mtipBoardService.getMtipNewlist();
+            // 프론트엔드로 보내는 내용을 콘솔에 출력
+            System.out.println("프론트엔드로 보내는 new 데이터:");
+            for (MtipBoard notice : notices) {
+                System.out.println(notice.toString());
+            }
+            return ResponseEntity.ok(notices);
+        } catch (Exception e) {
+            System.err.println("Error retrieving notices: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error retrieving notices: " + e.getMessage());
+        }
+    }
+
     // m-tip 게시글 상세보기
     @GetMapping("/details/{noticeId}")
     public ResponseEntity<?> getMtipDetails(@PathVariable int noticeId) {
@@ -368,7 +387,7 @@ public class MtipController {
             System.out.print("m-tip 도달 ");
             List<MtipBoard> bestNotices = mtipBoardService.getTopLikedMtiplist();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는 데이터:");
+            System.out.println("프론트엔드로 보내는  좋아요가 많은 게시글 9개 데이터:");
             for (MtipBoard notice : bestNotices) {
                 System.out.println(notice.toString());
             }

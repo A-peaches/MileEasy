@@ -142,6 +142,7 @@
                   v-if="notice.request_status === 0"
                   style="text-align: right; margin-right: 10px"
                 >
+                <div style="cursor:pointer;">
                   <i
                     class="bi bi-trash-fill"
                     style="color: gray; font-size: larger"
@@ -152,6 +153,7 @@
                     >삭제</span
                   >
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -274,8 +276,6 @@ export default {
         title: '삭제 확인',
         text: '정말로 요청을 삭제하시겠습니까?',
         icon: 'warning',
-        showCancelButton: true,
-        scrollbarPadding: false,
       });
 
       if (result.isConfirmed) {

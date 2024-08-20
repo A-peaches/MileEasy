@@ -18,16 +18,16 @@
               class="dropdown-item"
               v-for="mileage in mileages"
               :key="mileage.mile_no"
-              @click="filterByCategory(mileage.mile_name)"
+              @click="filterByCategory(mileage?.mile_name)"
             >
-              {{ mileage.mile_name }}
+              {{ mileage?.mile_name }}&nbsp;&nbsp;마일리지
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
         </div>
       </div>
       <div class="notice-count-container">
-        <div class="notice-count">총 {{ filteredNotices.length }}건</div>
+        <div class="notice-count">총 {{ filteredNotices?.length }}건</div>
       </div>
       <div>
         <div
@@ -55,7 +55,6 @@
           <i class="bi bi-search"></i>
         </button>
       </div>
-
       <div class="notice-list">
         <div v-if="paginatedNotices.length">
           <div
@@ -66,21 +65,21 @@
           >
             <div class="notice-details">
               <div v-if="notice.is_new" class="notice-new">
-                {{ notice.display_num }}
+                {{ notice?.display_num }}
               </div>
-              <div v-else class="notice-num">{{ notice.display_num }}</div>
+              <div v-else class="notice-num">{{ notice?.display_num }}</div>
               <div class="notice-mile">
                 {{
-                  notice.mile_name && notice.mile_name !== '기타'
-                    ? notice.mile_name
+                  notice?.mile_name && notice?.mile_name !== '기타'
+                    ? notice.mile_name + ' 마일리지'
                     : '기타'
                 }}
               </div>
               <div class="notice-title">
                 {{
-                  notice.mtip_board_title.length > 30
-                    ? notice.mtip_board_title.substring(0, 30) + ' ...'
-                    : notice.mtip_board_title
+                  notice?.mtip_board_title.length > 30
+                    ? notice?.mtip_board_title.substring(0, 30) + ' ...'
+                    : notice?.mtip_board_title
                 }}
               </div>
               <pre class="notice-date">{{
@@ -88,22 +87,22 @@
               }}</pre>
               <i class="bi bi-eye"></i>
               <div class="notice-views">
-                {{ notice.mtip_board_hit }} <i class="fa fa-eye"></i>
+                {{ notice?.mtip_board_hit }} <i class="fa fa-eye"></i>
               </div>
               <i
                 :class="[
                   'bi',
-                  isPostLiked(loginInfo.user_no, notice.mtip_board_no)
+                  isPostLiked(loginInfo?.user_no, notice.mtip_board_no)
                     ? 'bi-heart-fill'
                     : 'bi-heart',
                 ]"
                 :style="{
-                  color: isPostLiked(loginInfo.user_no, notice.mtip_board_no)
-                    ? '#dc3545'
+                  color: isPostLiked(loginInfo?.user_no, notice.mtip_board_no)
+                    ? '#DC3545'
                     : 'inherit',
                 }"
               ></i>
-              <div class="notice-like">{{ notice.mtip_board_like }}</div>
+              <div class="notice-like">{{ notice?.mtip_board_like }}</div>
             </div>
           </div>
         </div>
@@ -257,6 +256,10 @@ export default {
       ) {
         this.closeDropdown();
       }
+    },
+    filterByCategory(category) {
+      this.selectedCategory = category;
+      this.currentPage = 1;
     },
 
     async fetchNotices() {

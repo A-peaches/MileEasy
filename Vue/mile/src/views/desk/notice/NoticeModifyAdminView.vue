@@ -74,12 +74,14 @@ export default {
         content: '',
         user_no: '',
         user_name: '',
+       
       },
       uploadedFileName: '',
       displayFileName: '',
       mileages: [],
       showCategory: false,
       selectedCategory: null,
+      notice_board : null, // 변수 초기화
     };
   },
   computed: {
@@ -98,7 +100,15 @@ export default {
 
 
   mounted() {
-    this.fetchNoticeDetails();
+    this.$nextTick(() => {
+    console.log("notice_board  :",this.$route.params.id);
+    this.notice_board  = this.$route.params.id || null;
+    if (this.notice_board ) {
+      this.fetchNoticeDetails();
+    } else {
+      console.error("Notice ID not found");
+    }
+  });
     this.fetchMileages();
     this.setUserInfo();
     document.addEventListener('click', this.handleClickOutside);
@@ -180,6 +190,7 @@ export default {
   }
 
   try {
+    console.log("formdata :",formData);
     const response = await api.post('/notice/update', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -236,25 +247,24 @@ export default {
         this.form.user_name = loginInfo.user_name;
       }
     },
-    fetchNoticeDetails() { //detail 에서 정보 가지고 오기.
-      const noticeId = this.$route.params.id;
-      api.get(`/notice/${noticeId}`)
-        .then(response => {
-          const notice = response.data;
-          this.form.notice_board_no = notice.notice_board_no;
-          this.form.title = notice.notice_board_title;
-          this.form.mile_no = notice.mile_no;
-          this.originalMileNo = notice.mile_no;
-          this.selectedCategory = notice.mile_no === null ? '기타' : notice.mile_name; // 카테고리가 null이면 '기타'로 설정
-          this.form.content = notice.notice_board_content;
-          this.displayFileName = notice.notice_board_file;
-
-          console.log('detail 에서 정보 가지고 오기.:', notice); // 로그 추가
-          console.log('수정 카테고리 로그', this.selectedCategory); // 선택된 카테고리 로그 추가
-        })
-        .catch(error => {
-          console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
-        });
+    async fetchNoticeDetails() { //detail 에서 정보 가지고 오기.
+      console.log("fetchNoticeDetails:",this.notice_board );
+      if (!this.notice_board) {
+      console.error("Notice ID is not available");
+      return;
+  }
+  try {
+        const response = await api.get(`/notice/${this.notice_board}`);
+        const notice = response.data;
+        this.form.notice_board_no = notice.notice_board_no;
+        this.form.title = notice.notice_board_title;
+        this.form.mile_no = notice.mile_no;
+        this.selectedCategory = notice.mile_no === null ? '기타' : notice.mile_name;
+        this.form.content = notice.notice_board_content;
+        this.displayFileName = notice.notice_board_file;
+      } catch (error) {
+        console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+      }
     },
     async fetchMileages() {
       try {

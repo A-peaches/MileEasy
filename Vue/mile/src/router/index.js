@@ -6,7 +6,6 @@ import store from '@/store'; // store import 추가
 import M_TipRoutes from './m_Tip';
 import NoticeRoutes from './notice';
 import ContactRoutes from './contact';
-import QnaRoutes from './qna';
 import MileEasyAdminRoutes from './mileEasyAdmin';
 import MileageAdminRoutes from './mileageAdmin';
 import RequestRoutes from './request';
@@ -18,7 +17,6 @@ const routes = [
   ...M_TipRoutes,
   ...NoticeRoutes,
   ...ContactRoutes,
-  ...QnaRoutes,
   ...MileEasyAdminRoutes,
   ...MileageAdminRoutes,
   ...RequestRoutes,

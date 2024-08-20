@@ -5,15 +5,15 @@
       <a href="/M_TipListView" class="view-all">전체보기</a>
     </div>
     <div class="notice-list" :class="{ 'mobile-scroll': isMobile }">
-      <div v-for="category in mileageCategories" :key="category" class="notice-item">
-        <span class="notice-mile">{{ category }}</span>
-        <template v-if="latestNotices[category]">
-          <div class="notice-content" @click="handleNoticeClick(latestNotices[category])">
+      <div v-for="category in mileageCategories" :key="category.mile_no" class="notice-item">
+        <span class="notice-mile">{{ category.mile_name || '기타' }}</span>
+        <template v-if="latestNotices[category.mile_name] || (category.mile_name === '기타' && latestNotices['기타'])">
+          <div class="notice-content"  @click="handleNoticeClick(latestNotices[category.mile_name] || latestNotices['기타'])">
             <span class="notice-title">
-              {{ truncateTitle(latestNotices[category].mtip_board_title) }}
+              {{ truncateTitle((latestNotices[category.mile_name] || latestNotices['기타']).mtip_board_title) }}
               <span class="title-icon">new</span>
             </span>
-            <span class="notice-date">{{ formatDate(latestNotices[category].mtip_board_date) }}</span>
+            <span class="notice-date">{{ formatDate(latestNotices[category.mile_name].mtip_board_date) }}</span>
           </div>
         </template>
         <span v-else class="no-notice">게시글이 없습니다.</span>
@@ -22,50 +22,50 @@
   </div>
 </template>
 
-
 <script>
 import api from '@/api/axios';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'M-TipCom',
   data() {
     return {
       notices: [],
+      mileageCategories: [], // DB에서 가져온 카테고리 저장
       paginatedNotices: [],
-      mileageCategories: ['HRD', 'Monthly Best', 'Monthly Base', 'HotTip','BEST PG', 'BEST Branch', '소비자 지원', '리그 테이블', '기타'],
-      isMobile: false
+      isMobile: false,
     };
   },
   computed: {
+    ...mapGetters('mtipBoard', ['getNewNotices']),
+
     latestNotices() {
       const latest = {};
+      const notices = this.getNewNotices || [];  // this.getNotices가 undefined일 경우 빈 배열로 초기화
+
       this.mileageCategories.forEach(category => {
-        const notice = this.paginatedNotices.find(n => (n.mile_name === category) || (category === '기타' && (n.mile_name === null || n.mile_name === '기타')));
+        const notice = notices.find(n => 
+          n.mile_name === category.mile_name || 
+          (category.mile_name === '기타' && (n.mile_name === null || n.mile_name === '기타'))
+        );
         if (notice) {
-          latest[category] = notice;
+          latest[category.mile_name] = notice;
         }
       });
       return latest;
     },
-  displayedCategories() {
+    displayedCategories() {
       return this.isMobile ? this.mileageCategories.slice(0, 3) : this.mileageCategories;
     },
     mobileScrollStyle() {
-      if (this.isMobile) {
-        return {
-          maxHeight: '300px',
-          overflowY: 'auto'
-        };
-      }
-      return {};
+      return this.isMobile ? { maxHeight: '300px', overflowY: 'auto' } : {};
     }
   },
   methods: {
+    ...mapActions('mtipBoard', ['fetchNewNotices']), // Vuex 액션 호출
+
     truncateTitle(title) {
-      if (title.length > 25) {
-        return title.slice(0, 25) + '....';
-      }
-      return title;
+      return title.length > 25 ? title.slice(0, 25) + '....' : title;
     },
     formatDate(dateString) {
       const date = new Date(dateString);
@@ -73,62 +73,60 @@ export default {
     },
     checkMobile() {
       this.isMobile = window.innerWidth <= 480;
-      console.log('Is Mobile:', this.isMobile); // 디버깅용
+      console.log('Is Mobile:', this.isMobile);
     },
-    async fetchNotices() {
-      console.log('Mtiplist DB 메소드로 이동 ~ ');
-      try {
-        const response = await api.get('/mtip/Mtiplist');
-        this.notices = response.data;
-        this.paginatedNotices = this.notices; // 페이지네이션 로직이 없으므로 모든 공지사항을 표시
-        console.log('Mtiplist 서버에서 가지고 온 값 :', this.notices);
-      } catch (error) {
-        console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+    // async fetchNotices() {
+    //   try {
+    //     const response = await api.get('/mtip/MtipNewlist');
+    //     this.notices = response.data;
+    //     this.paginatedNotices = this.notices;
+    //     console.log('Mtiplist 서버에서 가지고 온 값 :', this.notices);
+    //   } catch (error) {
+    //     console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+    //   }
+    // },
+    async fetchMileages() {
+    try {
+      const response = await api.get('/mtip/Mtipmileage'); // DB에서 카테고리 가져오기
+      this.mileageCategories = response.data;
+      // '기타' 카테고리를 명시적으로 추가
+      if (!this.mileageCategories.some(category => category.mile_name === '기타')) {
+        this.mileageCategories.push({ mile_name: '기타', mile_no: null });
       }
-    },
+      console.log('m-tip 카테고리 :', this.mileageCategories);
+    } catch (error) {
+      console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
+    }
+  },
+
     async handleNoticeClick(notice) {
-      console.log("notice:", notice);
-      if (this.isProcessing) return;
-      this.isProcessing = true;
-      try {
-        console.log("게시글 상세보기+조회수 메소드 도달", notice);
-        
-        // 조회수 증가 요청
-        await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
+  if (this.isProcessing) return;
+  this.isProcessing = true;
+  try {
+    await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
+    
+    // 게시글 상세 정보 요청, 하지만 응답 데이터를 사용하지 않음
+    await api.get(`/mtip/details/${notice.mtip_board_no}`);
+    
+    // 조회수 업데이트
+    notice.mtip_board_hit += 1;
 
-        // 게시글 상세 정보 요청
-        const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response);
-        const noticeDetails = response.data;
-        
-        // 조회수 업데이트
-        notice.mtip_board_hit += 1;
-
-        const noticeToPass = {
-          ...noticeDetails,
-          mile_no: noticeDetails.mile_no,
-          mile_name: noticeDetails.mile_name,
-          file: noticeDetails.mtip_board_file || null,
-          mtip_board_hit: notice.mtip_board_hit, // 업데이트된 조회수 사용
-        };
-
-        console.log('Navigating to noticeDetailView with notice:', {
-          id: notice.mtip_board_no,
-          notice: noticeToPass,
-        });
-        this.$router.push({
-          name: 'm_TipDetailView',
-          params: { mtip_board_no: notice.mtip_board_no },
-        });
-      } catch (error) {
-        console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
-      } finally {
-        this.isProcessing = false;
-      }
-    },
+    // 바로 라우팅 처리
+    this.$router.push({
+      name: 'm_TipDetailView',
+      params: { mtip_board_no: notice.mtip_board_no }
+    });
+  } catch (error) {
+    console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
+  } finally {
+    this.isProcessing = false;
+  }
+},
   },
   mounted() {
-    this.fetchNotices();
+    // this.fetchNotices();
+    this.fetchNewNotices();
+    this.fetchMileages(); // 카테고리 가져오기 호출
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile);
   },

@@ -66,16 +66,18 @@ export default {
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
-        reverseButtons: false,
         scrollbarPadding: false,
       }).then(async result => {
         if (result.isConfirmed) {
           try {
             await api.delete(`/notice/delete/${this.notice.notice_board_no}`);
-            Swal.fire('게시글 삭제 완료', '게시글이 삭제 되었습니다.', 'success').then(() => {
+            Swal.fire({
+              title : '게시글 삭제 완료', 
+              text : '게시글이 삭제 되었습니다.', 
+              icon : 'success',
+              allowOutsideClick: false,
+              scrollbarPadding: false
+            }).then(() => {
               this.$router.push('/noticeListView');
             });
           } catch (error) {

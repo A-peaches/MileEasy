@@ -47,6 +47,44 @@ public interface MtipDao {
     List<MtipBoard> selectMtiplist();
     /* m-tip 게시글 리스트 */
 
+    @Select("SELECT mb.mtip_board_no, " +
+            "mb.user_no, " +
+            "mb.user_name, " +
+            "mb.mtip_board_title, " +
+            "mb.mtip_board_content, " +
+            "mb.mtip_board_file, " +
+            "mb.mtip_board_date, " +
+            "mb.mtip_board_like, " +
+            "mb.mtip_board_hit, " +
+            "mb.mtip_board_is_delete, " +
+            "mb.mtip_complain, " +
+            "COALESCE(m.mile_name, '기타') AS mile_name " +
+            "FROM mtip_board mb " +
+            "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
+            "WHERE mb.mtip_board_is_delete = 0 " +
+            "AND ( " +
+            "    mb.mtip_board_date = ( " +
+            "        SELECT MAX(inner_mb.mtip_board_date) " +
+            "        FROM mtip_board inner_mb " +
+            "        WHERE inner_mb.mile_no = mb.mile_no " +
+            "        AND inner_mb.mtip_board_is_delete = 0 " +
+            "    ) " +
+            "    OR ( " +
+            "        m.mile_name IS NULL " +
+            "        AND mb.mtip_board_date = ( " +
+            "            SELECT MAX(inner_mb.mtip_board_date) " +
+            "            FROM mtip_board inner_mb " +
+            "            WHERE inner_mb.mile_no IS NULL " +
+            "            AND inner_mb.mtip_board_is_delete = 0 " +
+            "        ) " +
+            "    ) " +
+            ") " +
+            "ORDER BY COALESCE(m.mile_name, '기타') ASC")
+    List<MtipBoard> selectMtipNewlist();
+    /* 각 마일리지별로 가장 최근에 등록된 게시글을 반환하는 메소드 */
+
+
+
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
             "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, mb.mtip_complain," +
@@ -86,10 +124,14 @@ public interface MtipDao {
             "SET mtip_board_title = #{mtip_board_title},",
             "    mtip_board_content = #{mtip_board_content},",
             "    mtip_board_file = #{mtip_board_file, jdbcType=VARCHAR},",
-            "    mile_no = (SELECT mile_no FROM mileage WHERE mile_name = #{mile_name})",
+            "    mile_no = CASE",
+            "                WHEN #{mile_name} = '기타' THEN NULL",
+            "                ELSE (SELECT mile_no FROM mileage WHERE mile_name = #{mile_name})",
+            "              END",
             "WHERE mtip_board_no = #{mtip_board_no}"
     })
     void updateNotice(MtipBoard notice);
+
     /* mtip 수정*/
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
@@ -118,14 +160,14 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
-            "m.mile_name " +
+            "mb.mile_no, m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
             "WHERE mb.mtip_board_is_delete = 0 " +
             "ORDER BY mb.mtip_board_like DESC " +
             "LIMIT 9")
     List<MtipBoard> selectTopLikedMtiplist();
+
     /* 좋아요가 많은 상위 9개의 m-tip 게시글 리스트 */
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +

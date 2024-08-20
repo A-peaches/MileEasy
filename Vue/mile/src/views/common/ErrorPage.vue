@@ -7,7 +7,7 @@
         <h1 class="error-title">오류가 발생했습니다</h1>
         <p class="error-code fw-bold">에러 코드: {{ errorCode }}</p>
         <p class="error-message">죄송합니다.</p>
-        <button class="btn-home" @click="goHome">홈으로 돌아가기</button>
+        <button class="btn-home" @click="goBack">이전페이지로</button>
       </div>
     </div>
   </template>
@@ -41,8 +41,8 @@
         }
     },
     methods: {
-      goHome() {
-        this.$router.push('/'); // Vue Router를 사용한다고 가정
+      goBack() {
+        this.$router.go(-1);
       }
     }
   }

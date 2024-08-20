@@ -59,6 +59,9 @@ const mutations = {
   SET_BEST_NOTICES(state, notices) {
     state.bestNotices = notices;
   },
+  SET_NEW_NOTICES(state, notices) {
+    state.newNotices = notices;
+  },
 };
 
 const actions = {
@@ -76,6 +79,16 @@ const actions = {
     try {
       const response = await api.get('/mtip/Mtiplist');
       commit('SET_NOTICES', response.data);
+      return response; // 명시적으로 response 반환
+    } catch (error) {
+      console.error('Error fetching notices:', error);
+    }
+  },
+  async fetchNewNotices({ commit }) {
+    try {
+      console.log("fetchNewNotices 메서드 도착");
+      const response = await api.get('/mtip/MtipNewlist');
+      commit('SET_NEW_NOTICES', response.data);
       return response; // 명시적으로 response 반환
     } catch (error) {
       console.error('Error fetching notices:', error);
@@ -224,6 +237,7 @@ const getters = {
   },
   userTotalNotices: (state) => state.userTotalNotices,
   getBestNotices: state => state.bestNotices,
+  getNewNotices: state => state.newNotices,
 };
 
 export default {

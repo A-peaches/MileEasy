@@ -67,7 +67,7 @@
               text-align: left;
               box-sizing: border-box;"></textarea>
         </div>
-         <div v-else class="comment-text" style="font-family: 'KB_C2', sans-serif; font-size: 18px; margin-right: 50%; text-align:left;">{{ comment.mtip_reply_content }}</div>
+         <div v-else class="comment-text" style="font-family: 'KB_C2', sans-serif; font-size: 18px; margin-right: 1%; text-align:left;">{{ comment.mtip_reply_content }}</div>
         </div>   
       </div>
     </div>

@@ -18,117 +18,125 @@
               class="dropdown-item"
               v-for="mileage in mileages"
               :key="mileage.mile_no"
-              @click="filterByCategory(mileage.mile_name)"
+              @click="filterByCategory(mileage?.mile_name)"
             >
-              {{ mileage.mile_name }}
+              {{ mileage?.mile_name }}&nbsp;&nbsp;마일리지
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
         </div>
       </div>
-      <div class="notice-count-container">
-        <div class="notice-count">총 {{ filteredNotices.length }}건</div>
-        <label class="checkbox-container">
-          <input
-            type="checkbox"
-            v-model="sortByViews"
-            @change="handleCheckboxChange('views')"
-          />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">조회수</span>
-        </label>
-        <label class="checkbox-container">
-          <input
-            type="checkbox"
-            v-model="sortByDateAsc"
-            @change="handleCheckboxChange('date')"
-          />
-          <span class="custom-checkbox"></span>
-          <span class="checkbox-label">최신순</span>
-        </label>
-      </div>
-      <div class="write_btn">
-        <div class="write_btn" v-if="isLoggedIn">
-          <button class="write-button" @click="goToWritePage">
-            <i class="bi bi-pencil" style="margin-right: 10px"></i> 글작성
-          </button>
+      <div>
+        <div class="notice-count-container">
+          <div class="notice-count">총 {{ filteredNotices?.length }}건</div>
+          <label class="checkbox-container">
+            <input
+              type="checkbox"
+              v-model="sortByViews"
+              @change="handleCheckboxChange('views')"
+            />
+            <span class="custom-checkbox"></span>
+            <span class="checkbox-label">조회수</span>
+          </label>
+          <label class="checkbox-container">
+            <input
+              type="checkbox"
+              v-model="sortByDateAsc"
+              @change="handleCheckboxChange('date')"
+            />
+            <span class="custom-checkbox"></span>
+            <span class="checkbox-label">최신순</span>
+          </label>
         </div>
-      </div>
-      <!-- 검색 창 -->
-      <div class="search-container">
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="검색어를 입력하세요"
-          class="input-search"
-        />
-        <button class="search-button" @click="searchNotices">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-
-      <div class="notice-list">
-        <div v-if="paginatedNotices.length">
-          <div
-            class="input-base list-wrapper"
-            v-for="notice in paginatedNotices"
-            :key="notice.notice_board_no"
-            @click="handleNoticeClick(notice)"
-          >
-            <div class="notice-details">
-              <div v-if="notice.is_new" class="notice-new">
-                {{ notice.display_num }}
-              </div>
-              <div v-else class="notice-num">{{ notice.display_num }}</div>
-              <div class="notice-mile">
-                {{
-                  notice.mile_name && notice.mile_name !== '기타'
-                    ? notice.mile_name
-                    : '기타'
-                }}
-              </div>
-              <div class="notice-title">
-                {{
-                  notice.mtip_board_title.length > 30
-                    ? notice.mtip_board_title.substring(0, 30) + ' ...'
-                    : notice.mtip_board_title
-                }}
-              </div>
-              <pre class="notice-date">{{
-                formatDate(notice.mtip_board_date)
-              }}</pre>
-              <i class="bi bi-eye"></i>
-              <div class="notice-views">
-                {{ notice.mtip_board_hit }} <i class="fa fa-eye"></i>
-              </div>
-              <!-- 좋아요 아이콘과 카운트 -->
-
-              <i
-                :class="['bi', notice.liked ? 'bi-heart-fill' : 'bi-heart']"
-                :style="{ color: notice.liked ? '#dc3545' : 'inherit' }"
-              ></i>
-              <div class="notice-like">{{ notice.mtip_board_like }}</div>
-            </div>
+        <div class="write_btn">
+          <div class="write_btn" v-if="isLoggedIn">
+            <button class="write-button" @click="goToWritePage">
+              <i class="bi bi-pencil" style="margin-right: 10px"></i> 글작성
+            </button>
           </div>
         </div>
-        <div v-else>
-          <p>게시글이 없습니다.</p>
+        <!-- 검색 창 -->
+        <div class="search-container">
+          <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="검색어를 입력하세요"
+            class="input-search"
+          />
+          <button class="search-button" @click="searchNotices">
+            <i class="bi bi-search"></i>
+          </button>
         </div>
-      </div>
 
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
-        <button
-          @click="goToPage(page)"
-          :class="{ active: currentPage === page }"
-          v-for="page in totalPages"
-          :key="page"
-        >
-          {{ page }}
-        </button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">
-          〉
-        </button>
+        <div class="notice-list">
+          <div v-if="paginatedNotices.length">
+            <div
+              class="input-base list-wrapper"
+              v-for="notice in paginatedNotices"
+              :key="notice.notice_board_no"
+              @click="handleNoticeClick(notice)"
+            >
+              <div class="notice-details">
+                <div v-if="notice.is_new" class="notice-new">
+                  {{ notice?.display_num }}
+                </div>
+                <div v-else class="notice-num">{{ notice?.display_num }}</div>
+                <div class="notice-mile">
+                  {{
+                    notice?.mile_name && notice?.mile_name !== '기타'
+                      ? notice?.mile_name + ' 마일리지'
+                      : '기타'
+                  }}
+                </div>
+                <div class="notice-title">
+                  {{
+                    notice?.mtip_board_title.length > 30
+                      ? notice?.mtip_board_title.substring(0, 30) + ' ...'
+                      : notice?.mtip_board_title
+                  }}
+                </div>
+                <pre class="notice-date">{{
+                  formatDate(notice?.mtip_board_date)
+                }}</pre>
+                <i class="bi bi-eye"></i>
+                <div class="notice-views">
+                  {{ notice?.mtip_board_hit }} <i class="fa fa-eye"></i>
+                </div>
+                <i
+                  :class="[
+                    'bi',
+                    isPostLiked(loginInfo?.user_no, notice?.mtip_board_no)
+                      ? 'bi-heart-fill'
+                      : 'bi-heart',
+                  ]"
+                  :style="{
+                    color: isPostLiked(loginInfo?.user_no, notice.mtip_board_no)
+                      ? '#DC3545'
+                      : 'inherit',
+                  }"
+                ></i>
+                <div class="notice-like">{{ notice?.mtip_board_like }}</div>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <p>게시글이 없습니다.</p>
+          </div>
+        </div>
+        <div class="pagination">
+          <button @click="prevPage" :disabled="currentPage === 1">〈</button>
+          <button
+            @click="goToPage(page)"
+            :class="{ active: currentPage === page }"
+            v-for="page in totalPages"
+            :key="page"
+          >
+            {{ page }}
+          </button>
+          <button @click="nextPage" :disabled="currentPage === totalPages">
+            〉
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -178,7 +186,6 @@ export default {
         ),
       ];
     },
-
     filteredNotices() {
       let result = this.notices;
       if (this.searchQuery) {
@@ -215,7 +222,6 @@ export default {
           (a, b) => new Date(a.mtip_board_date) - new Date(b.mtip_board_date)
         );
       }
-
       let displayNum = 1;
       return result.map((notice) => ({
         ...notice,
@@ -255,6 +261,9 @@ export default {
     },
     goBack() {
       this.$router.go(-1);
+    },
+    goToWritePage() {
+      this.$router.push({ name: 'm_TipWriteView' });
     },
     isNew(dateString) {
       const today = new Date();
@@ -847,7 +856,7 @@ h2::after {
   color: #000;
   background-color: transparent;
   margin-left: 89%; /* 왼쪽으로 이동 */
-  margin-bottom: 1vh;
+  margin-bottom: 20px;
   font-family: 'KB_C3', sans-serif;
 }
 

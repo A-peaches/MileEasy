@@ -16,7 +16,7 @@
               :key="mileage.mile_no"
               @click="filterByCategory(mileage.mile_name)"
             >
-              {{ mileage.mile_name }} 마일리지
+              {{ mileage.mile_name }} <span class="mileage-text">마일리지</span>
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
@@ -79,14 +79,16 @@
             @click="handleNoticeClick(notice)"
           >
             <div class="notice-details">
-              <div v-if="notice.is_new" class="notice-new">
+              <div v-if="notice.is_new" class="notice-new" >
                 {{ notice.display_num }}
               </div>
               <div v-else class="notice-num">{{ notice.display_num }}</div>
               <div class="notice-mile">
-                {{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name + ' 마일리지' : '기타' }}
+                {{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name : '' }}
+                <span class="mileage-text" v-if="!isMobile && notice.mile_name !== '기타'">마일리지</span>
+                <span v-if="notice.mile_name === '기타' || !notice.mile_name">기타</span>
               </div>
-              <div class="notice-title">{{ notice.notice_board_title }}</div>
+              <div class="notice-title">{{ truncateTitle(notice.notice_board_title) }}</div>
               <pre class="notice-date">{{
                 formatDate(notice.notice_board_date)
               }}</pre>
@@ -139,6 +141,7 @@ export default {
       isProcessing: false,
       sortByDateAsc: true, // 최신순 체크박스가 기본으로 선택
       sortByViews: false, // 조회 수 정렬 여부
+      isMobile: false,
     };
   },
   computed: {
@@ -154,11 +157,10 @@ export default {
       ];
     },
     filteredNotices() {
-      let result = this.notices;
-      // .map(notice => ({
-      // ...notice,
-      // mile_name: notice.mile_no === null ? '기타' : notice.mile_name
-      // }));
+      let result = this.notices.map(notice => ({
+        ...notice,
+        mile_name: notice.mile_name || '기타'
+      }));
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         result = result.filter(
@@ -223,6 +225,17 @@ export default {
     },
   },
   methods: {
+    checkMobile() {
+    this.isMobile = window.innerWidth <= 768;
+  },
+
+  truncateTitle(title) {
+    const maxLength = 15;
+    if (this.isMobile && title.length > maxLength) {
+      return title.substring(0, maxLength) + '...';
+    }
+    return title;
+  },
     isNew(dateString) {
       const today = new Date();
       const noticeDate = new Date(dateString);
@@ -370,9 +383,13 @@ export default {
 
     this.fetchNotices();
     this.fetchMileages();
+
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+    window.removeEventListener('resize', this.checkMobile);
   },
 };
 </script>
@@ -408,6 +425,37 @@ export default {
     top: 0 !important;
     padding-top: 5% !important;
   }
+}
+
+.app-container {
+  width: 100%;
+  padding: 0;
+  min-height: 100vh; /* 최소 높이를 설정하여 페이지 전체를 채움 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top : 4%;
+  
+}
+
+.content {
+  text-align: center;
+  padding: 20px;
+  width: 95%;
+  max-width: 1300px;
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: auto;
+}
+
+.content.cards {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 60px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .title-line {
@@ -630,7 +678,7 @@ body {
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
   font-size: 18px;
-  font-family: "KB_C3", sans-serif;
+  font-family: "KB_C2", sans-serif;
 }
 
 .notice-num {
@@ -652,9 +700,9 @@ body {
   flex: 1 1 50%;
   text-align: left;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
-  color: #745f40;
+  color: #675437;
   font-family: "KB_C3", sans-serif;
-  font-size: 0.75em;
+  font-size: 0.70em;
   margin-left: 10px; /* 왼쪽 여백 추가 */
 }
 
@@ -662,17 +710,17 @@ body {
   flex: 1 1 60%;
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
-  font-size: 16px;
+  font-size: 15px;
   font-family: "KB_C3", sans-serif;
 }
 
 .notice-views {
-  flex: 1 1 20%; /* flex-grow, flex-shrink, flex-basis */
+  flex: 1 1 12%; /* flex-grow, flex-shrink, flex-basis */
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
+  font-size: 15px;
   margin-bottom: 10%;
 }
 
@@ -846,5 +894,89 @@ body {
   font-size: 16px;
   color: #333; /* 라벨 텍스트 색상 */
 }
+.mileage-text {
+  display: inline;
+}
 
+@media (max-width: 768px) {
+  .notice-new{
+    display: none;
+  }
+  .notice-num{
+    display: none;
+  }
+  .notice-date{
+    display: none;
+  }
+.input-search{
+    border-radius: 30px;
+    padding-right: 15px; 
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    outline: none;
+    font-size: 12px;
+    font-family: "KB_C3", sans-serif;
+    width: 45%;
+    border: none;
+    margin: 4px;
+    height: 0px;
+}
+.bi-search {
+  font-size: 10px !important;
+  margin-left: 70px;
+}
+.notice-mile{
+  /* flex: 1 1 100%; */
+  text-align: left;
+  letter-spacing: 0px;
+  color: #745f40;
+  font-family: "KB_C2", sans-serif;
+  font-size: 8pt;
+  margin-left: 0px;
+}    
+/* .input-base {
+    width: 100%;
+    height: 65px;
+    background-color: #f9f9f9;
+    text-align: center;
+    line-height: 65px;
+    font-size: 10px;
+    margin-bottom: 20px;
+} */
+
+.notice-views {
+    /* flex: 1 1 10%; */
+    text-align: center;
+    display: inline;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    margin-bottom: 10%;
+}
+.mileage-text {
+    display: none;
+  }
+  .input-base {
+    width: 100%;
+    height: 45px;
+    background-color: #f9f9f9;
+    text-align: center;
+    line-height: 50px;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+.notice-title {
+    flex: 1 1 150%;
+    text-align: center;
+    letter-spacing: 1px;
+    font-family: "KB_C2", sans-serif;
+    font-size: 12pt;
+}
+ ::before, ::after {
+    background-repeat: no-repeat;
+    box-sizing: inherit;
+    font-size: 12px;
+    
+}
+
+}
 </style>

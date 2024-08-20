@@ -9,7 +9,7 @@
         </div>
         <div class="actions">
           <!-- 로그인한 사용자가 글 작성자인 경우 -->
-          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no">
+          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no && !isChecked">
             <button class="edit-button mr-3" @click="goToModifyView">
               수정
             </button>
@@ -194,29 +194,42 @@ export default {
       }
     },
     async deleteNotice() {
+
       Swal.fire({
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
-        scrollbarPadding: false,
+        allowOutsideClick: false,
+        scrollbarPadding: false
       }).then(async (result) => {
+
+
         if (result.isConfirmed) {
           try {
             await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
-            Swal.fire(
-              '게시글 삭제 완료',
-              '게시글이 삭제 되었습니다.',
-              'success'
-            ).then(() => {
+            Swal.fire({
+              title: '게시글 삭제 완료',
+              text: '게시글이 삭제 되었습니다.',
+              icon: 'success',
+              allowOutsideClick: false,
+              scrollbarPadding: false
+            }).then(() => {
               this.$router.push('/M_TipListView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
-            Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
+            Swal.fire({
+            title: '게시글 삭제 중 오류가 발생했습니다.',
+            icon: 'error',
+            allowOutsideClick: false,
+            scrollbarPadding: false,
+          });
           }
         }
       });
@@ -228,22 +241,34 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
         reverseButtons: false,
+        allowOutsideClick: false,
         scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
-            Swal.fire(
-              '게시글 삭제 완료',
-              '게시글이 삭제 되었습니다.',
-              'success'
-            ).then(() => {
+            Swal.fire({
+              title: '게시글 삭제 완료',
+              text: '게시글이 삭제 되었습니다.',
+              icon: 'success',
+              allowOutsideClick: false,
+              scrollbarPadding: false
+            }).then(() => {
               this.$router.push('/mTipMainAdminView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
-            Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
+            Swal.fire({
+              title: '게시글 삭제 중 오류가 발생했습니다.',
+              icon: 'error',
+              allowOutsideClick: false,
+              scrollbarPadding: false,
+            });
           }
         }
       });
@@ -259,7 +284,10 @@ export default {
           text: '이미 신고된 게시글 입니다.',
           icon: 'error',
           showCancelButton: true,
-          scrollbarPadding: false,
+          confirmButtonColor: '#4b4a4a',
+          cancelButtonColor: '#bd2c3a',
+          confirmButtonText: '확인',
+          cancelButtonText: '취소',
           reverseButtons: false,
         });
         return;
@@ -270,7 +298,10 @@ export default {
         text: '정말로 이 게시글을 신고하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        scrollbarPadding: false,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -297,7 +328,10 @@ export default {
         text: '정말로 이 게시글을 신고취하 하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        scrollbarPadding: false,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -322,6 +356,8 @@ export default {
       this.$swal({
         title: message,
         icon: icon,
+        confirmButtonText: '확인',
+        confirmButtonColor: '#4b4a4a',
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,
