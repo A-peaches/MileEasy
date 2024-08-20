@@ -27,6 +27,17 @@ public class MtipBoardService {
             throw new Exception("Error fetching notices from database", e);
         }
     }
+    //m-tip 게시글 NEW 조회
+    public List<MtipBoard> getMtipNewlist() throws Exception {
+        try {
+            List<MtipBoard> notices = mtipDao.selectMtipNewlist();
+            return notices;
+        } catch (Exception e) {
+            System.err.println("Error in getAllNotices: " + e.getMessage());  // 로그 추가
+            e.printStackTrace();
+            throw new Exception("Error fetching notices from database", e);
+        }
+    }
 
     //m-tip 상세보기
     public MtipBoard getMtipDetails(int noticeId) {

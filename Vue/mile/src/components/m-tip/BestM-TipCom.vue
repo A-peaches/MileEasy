@@ -42,14 +42,23 @@ export default {
       return date.toLocaleDateString();
     },
     async fetchBestNotices() {
-      console.log('Best Mtiplist DB 메소드로 이동 ~ ');
-      try {
-        const response = await api.get('/mtip/bestMtiplist');
-        this.bestNotices = response.data.slice(0, 9); // 좋아요가 많은 상위 9개의 게시글
-        console.log('Best Mtiplist 서버에서 가지고 온 값 :', this.bestNotices);
-      } catch (error) {
-        console.error('Error fetching best notices:', error.response ? error.response.data : error.message);
-      }
+  console.log('Best Mtiplist DB 메소드로 이동 ~ ');
+  try {
+    const response = await api.get('/mtip/bestMtiplist');
+    
+    // mile_no 기준으로 오름차순 정렬, mile_name이 '기타' 또는 null인 항목은 마지막으로 이동
+    console.log("bestNotices:", response.data);
+    this.bestNotices = response.data
+      .sort((a, b) => {
+        if (!a.mile_name || a.mile_name === '기타') return 1;  // a가 '기타'이면 뒤로 이동
+        if (!b.mile_name || b.mile_name === '기타') return -1; // b가 '기타'이면 앞으로 이동
+        return a.mile_no - b.mile_no;  // mile_no 기준으로 오름차순 정렬
+      })
+      .slice(0, 9); // 상위 9개의 게시글만 표시
+    console.log('Best Mtiplist 서버에서 가지고 온 값 :', this.bestNotices);
+  } catch (error) {
+    console.error('Error fetching best notices:', error.response ? error.response.data : error.message);
+  }
     },
     checkMobile() {
       this.isMobile = window.innerWidth <= 480;
