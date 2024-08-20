@@ -180,6 +180,7 @@ export default {
   }
 
   try {
+    console.log("formdata :",formData);
     const response = await api.post('/notice/update', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -237,7 +238,9 @@ export default {
       }
     },
     fetchNoticeDetails() { //detail 에서 정보 가지고 오기.
+      console.log("fetchNoticeDetails:",noticeId);
       const noticeId = this.$route.params.id;
+      console.log("noticeId 간다 ?:",noticeId);
       api.get(`/notice/${noticeId}`)
         .then(response => {
           const notice = response.data;

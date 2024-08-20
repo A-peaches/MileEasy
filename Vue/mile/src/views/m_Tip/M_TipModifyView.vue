@@ -252,13 +252,8 @@ export default {
     const response = await this.fetchNoticeDetail(noticeId);
     console.log('Full response:', response); // 전체 응답 로깅
 
-    if (!response || !response.data) {
-      console.error('Invalid response structure');
-      return;
-    }
-
-    const notice = response.data;
-    console.log('Notice data:', notice); // notice 객체 로깅
+    const notice = response;
+    console.log('Notice data가 나왔다 :', notice); // notice 객체 로깅
 
 
     if (notice.mtip_board_no !== undefined) {
