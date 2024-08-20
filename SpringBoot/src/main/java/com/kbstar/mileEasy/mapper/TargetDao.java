@@ -36,4 +36,7 @@ public interface TargetDao {
     void deleteTarget(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
     //마왕점수 업그레이드
     int updateMawangScore(@Param("userNo") String userNo, @Param("targetNo") int targetNo);
+    // 특정 목표에 참가한 사용자의 목록, 달성률, 현재 마일리지 점수 조회
+    List<Map<String, Object>> getParticipantsByTargetNo(@Param("targetNo") int targetNo, @Param("mileNo") int mileNo);
+
 }

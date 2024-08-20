@@ -49,6 +49,19 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
+            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, mb.mtip_complain, " +
+            "m.mile_name " +
+            "FROM mtip_board mb " +
+            "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
+            "WHERE mb.mtip_board_is_delete = 0 " +
+            "ORDER BY mb.mtip_board_date DESC " +  // 최신 게시글을 가져오기 위해 날짜를 기준으로 내림차순 정렬
+            "LIMIT 9")  // 상위 9개 게시글만 선택
+    List<MtipBoard> selectMtipNewlist();
+    /* m-tip 게시글 리스트 */
+
+
+    @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
+            "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
             "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete, mb.mtip_complain," +
             "mb.mile_no, m.mile_name " +
             "FROM mtip_board mb " +
@@ -118,14 +131,14 @@ public interface MtipDao {
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +
             "mb.mtip_board_content, mb.mtip_board_file, mb.mtip_board_date, " +
-            "mb.mtip_board_like, mb.mtip_board_hit, mb.mtip_board_is_delete,mb.mtip_complain, " +
-            "m.mile_name " +
+            "mb.mile_no, m.mile_name " +
             "FROM mtip_board mb " +
             "LEFT JOIN mileage m ON mb.mile_no = m.mile_no " +
             "WHERE mb.mtip_board_is_delete = 0 " +
             "ORDER BY mb.mtip_board_like DESC " +
             "LIMIT 9")
     List<MtipBoard> selectTopLikedMtiplist();
+
     /* 좋아요가 많은 상위 9개의 m-tip 게시글 리스트 */
 
     @Select("SELECT mb.mtip_board_no, mb.user_no, mb.user_name, mb.mtip_board_title, " +

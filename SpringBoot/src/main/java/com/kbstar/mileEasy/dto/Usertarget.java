@@ -20,4 +20,5 @@ public class Usertarget {
     private Date end_date;
     private Integer target_mileage;
     private boolean is_together;
+    private int initial_mileage;
 }

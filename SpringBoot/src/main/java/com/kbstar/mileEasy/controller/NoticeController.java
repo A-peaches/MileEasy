@@ -47,6 +47,7 @@ public class NoticeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
+        System.out.println(id);
         Notice notice = noticeService.findById(id);
         if (notice != null) {
             return ResponseEntity.ok(notice);

@@ -151,6 +151,19 @@ const state = {  // 애플리케이션의 상태를 저장
         throw error;
       }
     },
+     async loadParticipants(_, { targetNo, mileNo }) {
+    try {
+      console.log("참가자 목록 서버로 들어갑니다. participants")
+      const response = await api.get(`/target/participants/${targetNo}`, {
+        params: { mileNo: mileNo }  // userNo와 mileNo를 쿼리 파라미터로 전달
+      });
+      console.log("reponse :",response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error loading participants:', error);
+      throw error;
+    }
+  },
   };
   
   const getters = {  // 상태를 가져오는 게터
