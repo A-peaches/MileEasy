@@ -123,39 +123,6 @@ export default {
     uniqueMileages() {
     return [...new Set(this.notices.filter(notice => notice.mile_name).map(notice => notice.mile_name))];
     },
-//     filteredNotices() {
-//       let result = this.notices;
-//       // .map(notice => ({
-//     // ...notice,
-//     // mile_name: notice.mile_no === null ? '기타' : notice.mile_name
-//     // }));
-//     if (this.searchQuery) {
-//       const query = this.searchQuery.toLowerCase();
-//       result = result.filter(notice => 
-//       (notice.mtip_board_title && notice.mtip_board_title.toLowerCase().includes(query)) || 
-//       (notice.mtip_board_content && notice.mtip_board_content.toLowerCase().includes(query))
-//       );
-//     }
-//     if (this.selectedCategory !== null) {
-//       if (this.selectedCategory === '기타') {
-//       result = result.filter(notice => !notice.mile_name);
-//     } else {
-//       result = result.filter(notice => notice.mile_name === this.selectedCategory);
-//     }
-//   }
-//   if (this.sortByViews) {
-//     result.sort((a, b) => b.mtip_board_hit - a.mtip_board_hit || new Date(b.mtip_board_date) - new Date(a.notice_board_date));
-//   } else {
-//     result.sort((a, b) => new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
-//   }
-
-//   let displayNum = 1;
-//   return result.map(notice => ({
-//     ...notice,
-//     is_new: this.isNew(notice.mtip_board_date),
-//     display_num: this.isNew(notice.mtip_board_date) ? 'NEW' : displayNum++
-//   }));
-// },
 filteredNotices() {
     let result = this.notices;
     if (this.searchQuery) {
@@ -210,6 +177,9 @@ filteredNotices() {
       if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
           window.location.href="/noAccess"
         } 
+    },
+    goToWritePage() {
+      window.location.href='/m_TipWriteView';
     },
     goBack() {
       this.$router.go(-1);
