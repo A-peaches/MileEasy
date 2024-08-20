@@ -2,7 +2,7 @@
   <div class="app-container">
     <div v-if="notice" class="content cards">
       <div class="header">
-        <div class="button-container">
+        <div class="back-container">
           <button class="back-button" @click="goBack">
             <span class="arrow">❮</span> 이전
           </button>
@@ -496,32 +496,6 @@ export default {
   flex: 1;
 }
 
-.back-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5b5b5b;
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 0;
-  font-family: 'KB_C2', sans-serif;
-}
-
-.back-button .arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-right: 15px;
-  font-size: 17px;
-  font-family: 'KB_C2', sans-serif;
-}
-
 .edit-button {
   background-color: transparent;
   border: none;
@@ -659,7 +633,8 @@ export default {
 }
 
 .views-icon i {
-  font-size: 1.4vw;
+  /*font-size: 1.4vw;*/
+  font-size: 14pt;
   color: #4b4a4a;
 }
 
@@ -673,14 +648,16 @@ export default {
 }
 
 .heart-icon i {
-  font-size: 1.3vw;
+  /*font-size: 1.3vw;*/
+  font-size: 14pt;
   color: #dc3545;
   cursor: pointer;
 }
 .views-text {
   flex: 0 0 auto;
   text-align: left;
-  font-size: 1.2vw;
+  /*font-size: 1.2vw;*/
+  font-size: 14pt;
   font-family: 'KB_C2', sans-serif;
   color: #4b4a4a;
   margin-left: 0.8vw;
@@ -724,5 +701,19 @@ export default {
 
 .divider {
   margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .views-icon i {
+    font-size: 14pt;
+  }
+  .views-text {
+    font-size: 14pt;
+  }
+  .bi-heart::before {
+    font-size: 14pt;
+  }
+  .bi-heart-fill::before {
+    font-size: 14pt;
+  }
 }
 </style>
