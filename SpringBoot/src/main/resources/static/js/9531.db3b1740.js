@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkmile"]=self["webpackChunkmile"]||[]).push([[9531],{9531:function(e,t,r){r.r(t),r.d(t,{default:function(){return h}});var n=r(641);function i(e,t,r,i,o,u){return(0,n.uX)(),(0,n.CE)("div")}var o=r(8465),u=r.n(o),s={name:"SweetAlertView",mounted(){this.showAlert()},methods:{showAlert(){u().fire({title:"접근 불가",text:"로그인이 필요하거나 권한이 없는 페이지입니다.",icon:"error",confirmButtonText:"이전페이지로"}).then((e=>{e.isConfirmed&&this.$router.go(-1)}))}}},c=r(6262);const f=(0,c.A)(s,[["render",i]]);var h=f}}]);
-//# sourceMappingURL=9531.db3b1740.js.map
