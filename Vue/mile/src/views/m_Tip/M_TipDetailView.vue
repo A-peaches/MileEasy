@@ -194,6 +194,7 @@ export default {
       }
     },
     async deleteNotice() {
+
       Swal.fire({
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
@@ -203,20 +204,30 @@ export default {
         cancelButtonText: '취소',
         reverseButtons: false,
         scrollbarPadding: false,
+        allowOutsideClick: false,  // 외부 클릭 방지
       }).then(async (result) => {
+
+
         if (result.isConfirmed) {
           try {
             await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
-            Swal.fire(
-              '게시글 삭제 완료',
-              '게시글이 삭제 되었습니다.',
-              'success'
-            ).then(() => {
+            Swal.fire({
+              title: '게시글 삭제 완료',
+              text: '게시글이 삭제 되었습니다.',
+              icon: 'success',
+              allowOutsideClick: false,
+              scrollbarPadding: false
+            }).then(() => {
               this.$router.push('/M_TipListView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
-            Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
+            Swal.fire({
+            title: '게시글 삭제 중 오류가 발생했습니다.',
+            icon: 'error',
+            allowOutsideClick: false,
+            scrollbarPadding: false,
+          });
           }
         }
       });
@@ -230,20 +241,28 @@ export default {
         showCancelButton: true,
         reverseButtons: false,
         scrollbarPadding: false,
+        allowOutsideClick: false,  // 외부 클릭 방지
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
-            Swal.fire(
-              '게시글 삭제 완료',
-              '게시글이 삭제 되었습니다.',
-              'success'
-            ).then(() => {
+            Swal.fire({
+              title: '게시글 삭제 완료',
+              text: '게시글이 삭제 되었습니다.',
+              icon: 'success',
+              allowOutsideClick: false,
+              scrollbarPadding: false
+            }).then(() => {
               this.$router.push('/mTipMainAdminView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
-            Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
+            Swal.fire({
+              title: '게시글 삭제 중 오류가 발생했습니다.',
+              icon: 'error',
+              allowOutsideClick: false,
+              scrollbarPadding: false,
+            });
           }
         }
       });

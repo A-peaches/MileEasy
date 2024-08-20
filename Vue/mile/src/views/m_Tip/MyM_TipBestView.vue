@@ -15,7 +15,7 @@
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
             <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage.mile_name)">
-              {{ mileage.mile_name }}마일리지
+              {{ mileage.mile_name }}&nbsp;&nbsp;마일리지
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
