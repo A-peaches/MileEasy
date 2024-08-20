@@ -57,7 +57,7 @@
           </a>
           <a href="/mileageTargetView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">
-              목표설정
+              목표 관리
               <i
                 class="bi bi-chevron-compact-right icon-right"
                 style="margin-left: auto"
@@ -93,7 +93,7 @@
           </a> -->
           <a href="/mileEasyContactView" class="mileage-link">
             <p class="lg2 link-text" style="text-align: left">
-              업무별 연락처
+              연락처
               <i
                 class="bi bi-chevron-compact-right icon-right"
                 style="margin-left: auto"

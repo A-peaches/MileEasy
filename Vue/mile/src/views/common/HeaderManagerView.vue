@@ -29,7 +29,7 @@
             >
           </div>
           <div class="nav-item">
-            <a class="nav-link hover" href="/mileageTargetView">목표 설정</a>
+            <a class="nav-link hover" href="/mileageTargetView">목표 관리</a>
           </div>
           <div class="nav-item">
             <a class="nav-link hover" href="/documentsMileageAdminView"

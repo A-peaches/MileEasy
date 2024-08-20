@@ -92,6 +92,9 @@
                 >M-Tip 관리</a
               ></span
             >
+            <span class="menu"
+              ><a href="/adminPromotion" class="link-menu">프로모션</a></span
+            >
           </template>
           <template v-else-if="getLoginInfo?.user_is_manager">
             <span class="menu-title">Management</span>
@@ -106,6 +109,11 @@
               ></span
             >
             <span class="menu"
+              ><a href="/mileageTargetView" class="link-menu"
+                >목표 관리</a
+              ></span
+            >
+            <span class="menu"
               ><a href="/documentsMileageAdminView" class="link-menu"
                 >문서 관리</a
               ></span
@@ -113,6 +121,11 @@
             <span class="menu"
               ><a href="/scoreMileageAdminView" class="link-menu"
                 >점수 관리</a
+              ></span
+            >
+            <span class="menu"
+              ><a href="/promotion" class="link-menu"
+                >프로모션</a
               ></span
             >
           </template>
@@ -138,7 +151,7 @@
         > -->
           <span class="menu"
             ><a href="/mileEasyContactView" class="link-menu"
-              >업무별 연락처</a
+              >연락처</a
             ></span
           >
         </div>
