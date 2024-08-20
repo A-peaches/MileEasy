@@ -20,7 +20,8 @@
               :key="mileage.mile_no"
               @click="filterByCategory(mileage?.mile_name)"
             >
-              {{ mileage?.mile_name }}&nbsp;&nbsp;마일리지
+              {{ mileage?.mile_name }}&nbsp;&nbsp;
+              <span class="mileage-text">마일리지</span>
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
@@ -911,6 +912,9 @@ h2::after {
   }
   .notice-views {
     margin-right: 5px;
+  }
+  .mileage_text {
+    display: none;
   }
 }
 </style>

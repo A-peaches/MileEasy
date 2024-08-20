@@ -43,7 +43,7 @@
                   selectCategory(mileage.mile_no, mileage.mile_name, $event)
                 "
               >
-                {{ mileage.mile_name }}
+                {{ mileage.mile_name }}&nbsp;&nbsp;마일리지
               </a>
               <a
                 class="dropdown-item"
@@ -604,6 +604,17 @@ form {
     white-space: nowrap; /* 텍스트를 한 줄로 유지 */
     overflow: hidden; /* 넘치는 텍스트를 숨김 */
     text-overflow: ellipsis; /* 넘치는 텍스트의 끝에 ... 추가 */
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 13pt;
+  }
+  textarea {
+    font-size: 13pt;
+  }
+  .form-group.content textarea {
+    font-size: 13pt;
   }
 }
 </style>

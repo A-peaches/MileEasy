@@ -7,7 +7,7 @@
         </button>
       </div>
       <div>
-        <h2>나의 M-Tip</h2>
+        <h2 class="bold-x-lg">나의 M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
@@ -20,7 +20,8 @@
               :key="mileage.mile_no"
               @click="filterByCategory(mileage?.mile_name)"
             >
-              {{ mileage?.mile_name }}&nbsp;&nbsp;마일리지
+              {{ mileage?.mile_name }}&nbsp;&nbsp;
+              <span class="mileage-text">마일리지</span>
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
@@ -429,7 +430,6 @@ body {
 
 h2 {
   font-family: 'KB_C2', sans-serif;
-  font-size: 40px;
   margin-top: 30px;
   display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
   position: relative;
@@ -852,6 +852,24 @@ h2::after {
   }
   .notice-views {
     margin-right: 5px;
+  }
+  .mileage_text {
+    display: none;
+  }
+  .notice-count {
+    font-size: 18px;
+  }
+  .checkbox-container .custom-checkbox {
+    font-size: 16px;
+  }
+  .checkbox-label[data-v-7bd8b372] {
+    font-size: 16px;
+  }
+  .menu-items :hover {
+    font-size: 13pt;
+  }
+  .menu-items {
+    font-size: 13pt;
   }
 }
 </style>
