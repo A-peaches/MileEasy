@@ -18,6 +18,8 @@
     "chartjs-plugin-annotation": "^3.0.1",
     "core-js": "^3.8.3",
     "express": "^4.19.2",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "mobile-detect": "^1.4.5",
     "moment": "^2.30.1",
