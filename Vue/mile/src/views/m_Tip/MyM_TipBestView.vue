@@ -7,7 +7,7 @@
         </button>
       </div>
       <div>
-        <h2>내가 좋아요한 M-Tip</h2>
+        <h2 class="bold--x-lg">내가 좋아요한 M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
@@ -449,7 +449,7 @@ body {
 
 h2 {
   font-family: 'KB_C2', sans-serif;
-  font-size: 40px;
+
   margin-top: 30px;
   display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
   position: relative;
@@ -875,6 +875,43 @@ h2::after {
   }
   .mileage_text {
     display: none;
+  }
+  .notice-details .notice-title {
+    font-size: 14px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
+  .notice-mile {
+    flex: 1 1 55%;
+    font-size: 14px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
+  .pagination {
+    margin-bottom: 40px;
+  }
+  .notice-views {
+    margin-right: 5px;
+  }
+  .mileage_text {
+    display: none;
+  }
+  .notice-count {
+    font-size: 18px;
+  }
+  .checkbox-container .custom-checkbox {
+    font-size: 16px;
+  }
+  .checkbox-label {
+    font-size: 16px;
+  }
+  .menu-items :hover {
+    font-size: 13pt;
+  }
+  .menu-items {
+    font-size: 13pt;
   }
 }
 </style>

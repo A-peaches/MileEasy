@@ -862,7 +862,7 @@ h2::after {
   .checkbox-container .custom-checkbox {
     font-size: 16px;
   }
-  .checkbox-label[data-v-7bd8b372] {
+  .checkbox-label {
     font-size: 16px;
   }
   .menu-items :hover {

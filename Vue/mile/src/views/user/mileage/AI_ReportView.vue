@@ -5,11 +5,11 @@
     </h2>
 
     <div class="button-container mb-4">
-    <button @click="downloadPDF" class="w-50 text-start mt-3">
-      <i class="bi bi-download download-icon"></i> PDF 다운로드
-    </button>
-    <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
-  </div>
+      <button @click="downloadPDF" class="w-50 text-start mt-3">
+        <i class="bi bi-download download-icon"></i> PDF 다운로드
+      </button>
+      <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
+    </div>
 
     <!-- 데이터가 없을 때 메시지 표시 -->
     <div
@@ -171,13 +171,19 @@ export default {
       }
 
       const canvas = await html2canvas(element, {
-        scale: 2, // 해상도를 높이기 위해 scale 옵션 추가
-        useCORS: true, // 외부 이미지 로드를 위한 옵션
-        logging: false, // 콘솔 로그 비활성화
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: null, // 배경색을 투명하게 설정
       });
 
-       const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        putOnlyUsedFonts: true,
+        colorSpace: 'sRGB',
+      });
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const imgWidth = pageWidth;
@@ -186,17 +192,35 @@ export default {
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      pdf.addImage(
+        imgData,
+        'PNG',
+        0,
+        position,
+        imgWidth,
+        imgHeight,
+        '',
+        'FAST'
+      );
       heightLeft -= pageHeight;
 
       while (heightLeft >= 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        pdf.addImage(
+          imgData,
+          'PNG',
+          0,
+          position,
+          imgWidth,
+          imgHeight,
+          '',
+          'FAST'
+        );
         heightLeft -= pageHeight;
       }
-      
-      pdf.save(`${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트`);
+
+      pdf.save(`${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트.pdf`);
     },
     checkLoginInfo() {
       if (
@@ -869,15 +893,14 @@ span {
   width: 100% !important;
 }
 
-
 @media (max-width: 480px) {
   .note {
-    font-size :11pt;
+    font-size: 11pt;
   }
-  
+
   .btn-analysis {
-    width:160px;
-    font-size:11pt;
+    width: 160px;
+    font-size: 11pt;
   }
 }
 </style>

@@ -7,7 +7,7 @@
         </button>
       </div>
       <div>
-        <h2>M-Tip</h2>
+        <h2 class="bold-x-lg">M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
@@ -489,7 +489,7 @@ body {
 
 h2 {
   font-family: 'KB_C2', sans-serif;
-  font-size: 40px;
+
   margin-top: 30px;
   display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
   position: relative;
@@ -915,6 +915,21 @@ h2::after {
   }
   .mileage_text {
     display: none;
+  }
+  .notice-count {
+    font-size: 18px;
+  }
+  .checkbox-container .custom-checkbox {
+    font-size: 16px;
+  }
+  .checkbox-label {
+    font-size: 16px;
+  }
+  .menu-items :hover {
+    font-size: 13pt;
+  }
+  .menu-items {
+    font-size: 13pt;
   }
 }
 </style>

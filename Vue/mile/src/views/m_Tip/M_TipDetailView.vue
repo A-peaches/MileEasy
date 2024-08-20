@@ -9,11 +9,17 @@
         </div>
         <div class="actions">
           <!-- 로그인한 사용자가 글 작성자인 경우 -->
-          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no && !isChecked">
+          <div
+            v-if="
+              isLoggedIn && notice.user_no === loginInfo.user_no && !isChecked
+            "
+          >
             <button class="edit-button mr-3" @click="goToModifyView">
               수정
             </button>
-            <button class="delete-button" @click="deleteNotice">삭제</button>
+            <button class="delete-button mr-3" @click="deleteNotice">
+              삭제
+            </button>
           </div>
           <div
             v-if="
@@ -194,7 +200,6 @@ export default {
       }
     },
     async deleteNotice() {
-
       Swal.fire({
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
@@ -206,10 +211,8 @@ export default {
         cancelButtonText: '취소',
         reverseButtons: false,
         allowOutsideClick: false,
-        scrollbarPadding: false
+        scrollbarPadding: false,
       }).then(async (result) => {
-
-
         if (result.isConfirmed) {
           try {
             await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
@@ -218,18 +221,18 @@ export default {
               text: '게시글이 삭제 되었습니다.',
               icon: 'success',
               allowOutsideClick: false,
-              scrollbarPadding: false
+              scrollbarPadding: false,
             }).then(() => {
               this.$router.push('/M_TipListView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
             Swal.fire({
-            title: '게시글 삭제 중 오류가 발생했습니다.',
-            icon: 'error',
-            allowOutsideClick: false,
-            scrollbarPadding: false,
-          });
+              title: '게시글 삭제 중 오류가 발생했습니다.',
+              icon: 'error',
+              allowOutsideClick: false,
+              scrollbarPadding: false,
+            });
           }
         }
       });
@@ -257,7 +260,7 @@ export default {
               text: '게시글이 삭제 되었습니다.',
               icon: 'success',
               allowOutsideClick: false,
-              scrollbarPadding: false
+              scrollbarPadding: false,
             }).then(() => {
               this.$router.push('/mTipMainAdminView');
             });
@@ -750,6 +753,12 @@ export default {
   }
   .bi-heart-fill::before {
     font-size: 14pt;
+  }
+  .edit-button {
+    font-size: 15px;
+  }
+  .delete-button[data-v-5eeb8322] {
+    font-size: 15px;
   }
 }
 </style>
