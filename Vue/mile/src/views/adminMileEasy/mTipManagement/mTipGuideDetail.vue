@@ -97,12 +97,6 @@ export default {
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#4b4a4a',
-        cancelButtonColor: '#bd2c3a',
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
-        reverseButtons: false,
         scrollbarPadding: false,
       }).then(async (result) => {
         if (result.isConfirmed) {

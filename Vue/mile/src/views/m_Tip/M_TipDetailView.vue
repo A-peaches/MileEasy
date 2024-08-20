@@ -9,7 +9,7 @@
         </div>
         <div class="actions">
           <!-- 로그인한 사용자가 글 작성자인 경우 -->
-          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no">
+          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no && !isChecked">
             <button class="edit-button mr-3" @click="goToModifyView">
               수정
             </button>
@@ -200,11 +200,13 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
         confirmButtonText: '확인',
         cancelButtonText: '취소',
         reverseButtons: false,
-        scrollbarPadding: false,
-        allowOutsideClick: false,  // 외부 클릭 방지
+        allowOutsideClick: false,
+        scrollbarPadding: false
       }).then(async (result) => {
 
 
@@ -239,9 +241,13 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
         reverseButtons: false,
+        allowOutsideClick: false,
         scrollbarPadding: false,
-        allowOutsideClick: false,  // 외부 클릭 방지
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -278,7 +284,10 @@ export default {
           text: '이미 신고된 게시글 입니다.',
           icon: 'error',
           showCancelButton: true,
-          scrollbarPadding: false,
+          confirmButtonColor: '#4b4a4a',
+          cancelButtonColor: '#bd2c3a',
+          confirmButtonText: '확인',
+          cancelButtonText: '취소',
           reverseButtons: false,
         });
         return;
@@ -289,7 +298,10 @@ export default {
         text: '정말로 이 게시글을 신고하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        scrollbarPadding: false,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -316,7 +328,10 @@ export default {
         text: '정말로 이 게시글을 신고취하 하시겠습니까?',
         icon: 'warning',
         showCancelButton: true,
-        scrollbarPadding: false,
+        confirmButtonColor: '#4b4a4a',
+        cancelButtonColor: '#bd2c3a',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
         reverseButtons: false,
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -341,6 +356,8 @@ export default {
       this.$swal({
         title: message,
         icon: icon,
+        confirmButtonText: '확인',
+        confirmButtonColor: '#4b4a4a',
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,

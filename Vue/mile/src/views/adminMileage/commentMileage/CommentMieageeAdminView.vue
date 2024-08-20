@@ -135,9 +135,6 @@ export default {
       return this.$swal({
         title: t,
         icon: i,
-        showCancelButton: true,
-        confirmButtonText: '확인',
-        cancelButtonText: '취소',
         scrollbarPadding: false
       }).then((result) => {
         return result.isConfirmed;

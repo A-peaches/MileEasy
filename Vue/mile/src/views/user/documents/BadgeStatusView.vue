@@ -3,12 +3,7 @@
     class="cards page-back mx-auto"
     style="color: #4b4a4a; padding-bottom: 90px"
   >
-    <div class="button-container">
-      <button class="back-button" @click="goBack">
-        <span class="arrow">❮</span> 이전
-      </button>
-    </div>
-    <h2 class="mt-3 main-title">배지 취득 현황</h2>
+    <h2 class="main-title" style="margin-top:70px">배지 취득 현황</h2>
     <div class="badge-container">
       <div class="badge-card" :class="{ 'cards-active': badgeData[0]?.current_month && badgeData[0]?.mile_is_king }">
         <div class="badge-image-container">
