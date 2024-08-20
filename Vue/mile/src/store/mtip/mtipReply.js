@@ -59,7 +59,7 @@ const actions = {
   },
   async updateComment({ commit }, commentData) {
     try {
-      await api.post(`/mtip/updateComment/${commentData.mtip_reply_no}`, commentData);
+      await api.put(`/mtip/updateComment/${commentData.mtip_reply_no}`, commentData);
       commit('UPDATE_COMMENT', commentData);
     } catch (error) {
       console.error('댓글 수정 중 오류가 발생했습니다:', error);
