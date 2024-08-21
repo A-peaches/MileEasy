@@ -2,9 +2,7 @@
   <div class="app-container">
     <div class="content cards page-back mx-auto" @click="handleClick">
       <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">공지사항</h2>
-      <hr
-      class="mx-auto title-line"
-    />
+      <hr class="mx-auto title-line" />
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper-category">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
@@ -62,7 +60,7 @@
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="제목 및 내용을 검색하세요"
+          placeholder="검색어를 입력하세요"
           class="input-search"
         />
         <button class="search-button" @click="searchNotices">
@@ -79,16 +77,28 @@
             @click="handleNoticeClick(notice)"
           >
             <div class="notice-details">
-              <div v-if="notice.is_new" class="notice-new" >
+              <div v-if="notice.is_new" class="notice-new">
                 {{ notice.display_num }}
               </div>
               <div v-else class="notice-num">{{ notice.display_num }}</div>
               <div class="notice-mile">
-                {{ notice.mile_name && notice.mile_name !== '기타' ? notice.mile_name : '' }}
-                <span class="mileage-text" v-if="!isMobile && notice.mile_name !== '기타'">마일리지</span>
-                <span v-if="notice.mile_name === '기타' || !notice.mile_name">기타</span>
+                {{
+                  notice.mile_name && notice.mile_name !== '기타'
+                    ? notice.mile_name
+                    : ''
+                }}
+                <span
+                  class="mileage-text"
+                  v-if="!isMobile && notice.mile_name !== '기타'"
+                  >마일리지</span
+                >
+                <span v-if="notice.mile_name === '기타' || !notice.mile_name"
+                  >기타</span
+                >
               </div>
-              <div class="notice-title">{{ truncateTitle(notice.notice_board_title) }}</div>
+              <div class="notice-title">
+                {{ truncateTitle(notice.notice_board_title) }}
+              </div>
               <pre class="notice-date">{{
                 formatDate(notice.notice_board_date)
               }}</pre>
@@ -104,20 +114,20 @@
         </div>
       </div>
 
-    <div class="pagination-container">
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
-        <button
-          @click="goToPage(page)"
-          :class="{ active: currentPage === page }"
-          v-for="page in totalPages"
-          :key="page"
-        >
-          {{ page }}
-        </button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">
-          〉
-        </button>
+      <div class="pagination-container">
+        <div class="pagination">
+          <button @click="prevPage" :disabled="currentPage === 1">〈</button>
+          <button
+            @click="goToPage(page)"
+            :class="{ active: currentPage === page }"
+            v-for="page in totalPages"
+            :key="page"
+          >
+            {{ page }}
+          </button>
+          <button @click="nextPage" :disabled="currentPage === totalPages">
+            〉
+          </button>
         </div>
       </div>
     </div>
@@ -125,8 +135,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import api from "@/api/axios";
+import { mapGetters } from 'vuex';
+import api from '@/api/axios';
 
 export default {
   data() {
@@ -136,7 +146,7 @@ export default {
       showCategory: false,
       currentPage: 1,
       itemsPerPage: 10,
-      searchQuery: "",
+      searchQuery: '',
       selectedCategory: null,
       isProcessing: false,
       sortByDateAsc: true, // 최신순 체크박스가 기본으로 선택
@@ -145,7 +155,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("login", ["getLoginInfo", "getIsChecked"]),
+    ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
 
     uniqueMileages() {
       return [
@@ -157,9 +167,9 @@ export default {
       ];
     },
     filteredNotices() {
-      let result = this.notices.map(notice => ({
+      let result = this.notices.map((notice) => ({
         ...notice,
-        mile_name: notice.mile_name || '기타'
+        mile_name: notice.mile_name || '기타',
       }));
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
@@ -170,7 +180,7 @@ export default {
         );
       }
       if (this.selectedCategory !== null) {
-        if (this.selectedCategory === "기타") {
+        if (this.selectedCategory === '기타') {
           result = result.filter((notice) => !notice.mile_name);
         } else {
           result = result.filter(
@@ -201,7 +211,7 @@ export default {
         ...notice,
         is_new: this.isNew(notice.notice_board_date),
         display_num: this.isNew(notice.notice_board_date)
-          ? "NEW"
+          ? 'NEW'
           : displayNum++,
       }));
     },
@@ -226,16 +236,16 @@ export default {
   },
   methods: {
     checkMobile() {
-    this.isMobile = window.innerWidth <= 768;
-  },
+      this.isMobile = window.innerWidth <= 768;
+    },
 
-  truncateTitle(title) {
-    const maxLength = 15;
-    if (this.isMobile && title.length > maxLength) {
-      return title.substring(0, maxLength) + '...';
-    }
-    return title;
-  },
+    truncateTitle(title) {
+      const maxLength = 15;
+      if (this.isMobile && title.length > maxLength) {
+        return title.substring(0, maxLength) + '...';
+      }
+      return title;
+    },
     isNew(dateString) {
       const today = new Date();
       const noticeDate = new Date(dateString);
@@ -244,9 +254,9 @@ export default {
       return differenceInDays <= 7;
     },
     handleCheckboxChange(sortType) {
-      if (sortType === "views" && this.sortByViews) {
+      if (sortType === 'views' && this.sortByViews) {
         this.sortByDateAsc = false;
-      } else if (sortType === "date" && this.sortByDateAsc) {
+      } else if (sortType === 'date' && this.sortByDateAsc) {
         this.sortByViews = false;
       }
     },
@@ -280,39 +290,39 @@ export default {
       }
     },
     goToWritePage() {
-      this.$router.push({ name: "noticeWriteAdminView" });
+      this.$router.push({ name: 'noticeWriteAdminView' });
     },
     async fetchNotices() {
-      console.log("게시글 list 서버 메소드로 이동 ~ "); // 이 로그가 출력되는지 확인합니다.
+      console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
-        const response = await api.get("/notice/list");
+        const response = await api.get('/notice/list');
         this.notices = response.data;
-        console.log("list 서버에서 가지고 온 값 :", this.notices);
+        console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
         console.error(
-          "Error fetching notices:",
+          'Error fetching notices:',
           error.response ? error.response.data : error.message
         );
       }
     },
     async fetchMileages() {
       try {
-        const response = await api.get("/notice/mileage");
-        console.log("Fetched mileages:", response.data);
+        const response = await api.get('/notice/mileage');
+        console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
         console.error(
-          "Error fetching mileages:",
+          'Error fetching mileages:',
           error.response ? error.response.data : error.message
         );
       }
     },
     async handleNoticeClick(notice) {
-      console.log("notice:", notice);
+      console.log('notice:', notice);
       if (this.isProcessing) return;
       this.isProcessing = true;
       try {
-        console.log("게시글 상세보기+조회수 메소드 도달", notice);
+        console.log('게시글 상세보기+조회수 메소드 도달', notice);
         // 조회수 증가 요청
         await api.post(`/notice/increment-views/${notice.notice_board_no}`);
 
@@ -320,9 +330,9 @@ export default {
         const response = await api.get(
           `/notice/details/${notice.notice_board_no}`
         );
-        console.log("게시글 상세보기 서버에서 가지고 온 데이터:", response); // 응답이 정상적으로 오는지 확인
+        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
         const noticeDetails = response.data;
-        console.log("Fetched notice details:", noticeDetails);
+        console.log('Fetched notice details:', noticeDetails);
 
         // 조회수 업데이트
         notice.notice_board_hit += 1;
@@ -335,13 +345,13 @@ export default {
           notice_board_hit: notice.notice_board_hit, // 업데이트된 조회수 사용
         };
 
-        console.log("Navigating to noticeDetailView with notice:", {
+        console.log('Navigating to noticeDetailView with notice:', {
           id: notice.notice_board_no,
           notice: noticeToPass,
         });
 
         this.$router.push({
-          name: "noticeDetailView",
+          name: 'noticeDetailView',
           params: {
             id: notice.notice_board_no,
             notice: noticeToPass,
@@ -349,7 +359,7 @@ export default {
         });
       } catch (error) {
         console.error(
-          "Error fetching notice details:",
+          'Error fetching notice details:',
           error.response ? error.response.data : error.message
         );
       } finally {
@@ -358,8 +368,8 @@ export default {
     },
 
     formatDate(dateString) {
-      const options = { year: "numeric", month: "2-digit", day: "2-digit" };
-      return new Date(dateString).toLocaleDateString("ko-KR", options);
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
     searchNotices() {
       this.currentPage = 1;
@@ -370,16 +380,16 @@ export default {
     },
     refreshPage() {
       this.selectedCategory = null;
-      this.searchQuery = "";
+      this.searchQuery = '';
       this.currentPage = 1;
     },
   },
   mounted() {
-    console.log("loginInfo:", this.loginInfo);
-    console.log("isLoggedIn:", this.isLoggedIn);
-    console.log("isChecked:", this.isChecked);
+    console.log('loginInfo:', this.loginInfo);
+    console.log('isLoggedIn:', this.isLoggedIn);
+    console.log('isChecked:', this.isChecked);
 
-    document.addEventListener("click", this.handleClickOutside);
+    document.addEventListener('click', this.handleClickOutside);
 
     this.fetchNotices();
     this.fetchMileages();
@@ -388,12 +398,11 @@ export default {
     window.addEventListener('resize', this.checkMobile);
   },
   beforeUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener('click', this.handleClickOutside);
     window.removeEventListener('resize', this.checkMobile);
   },
 };
 </script>
-
 
 <style scoped>
 @media (max-width: 768px) {
@@ -434,8 +443,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top : 4%;
-  
+  margin-top: 4%;
 }
 
 .content {
@@ -459,9 +467,9 @@ export default {
 }
 
 .title-line {
-  width: 13%; 
-  border: 0; 
-  height: 2px; 
+  width: 13%;
+  border: 0;
+  height: 2px;
   background: black;
 }
 
@@ -565,7 +573,7 @@ body {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
   outline: none;
   font-size: 19px;
-  font-family: "KB_C3", sans-serif;
+  font-family: 'KB_C3', sans-serif;
   width: 28%;
   border: none;
   margin: 5px;
@@ -617,7 +625,7 @@ body {
   position: relative;
 }
 
-.checkbox-container input[type="checkbox"] {
+.checkbox-container input[type='checkbox'] {
   display: none; /* 기본 체크박스를 숨깁니다 */
 }
 
@@ -632,13 +640,13 @@ body {
   position: relative;
 }
 
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
+.checkbox-container input[type='checkbox']:checked + .custom-checkbox {
   background-color: #f6a319; /* 체크된 상태일 때 배경색 변경 (노란색) */
   border: none; /* 체크된 상태일 때 테두리 제거 */
 }
 
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox::after {
-  content: "✓";
+.checkbox-container input[type='checkbox']:checked + .custom-checkbox::after {
+  content: '✓';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -648,7 +656,7 @@ body {
 
 .checkbox-label {
   margin-left: 10px; /* 체크박스와 텍스트 사이 간격 */
-  font-family: "KB_S5", sans-serif;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .input-base {
@@ -678,7 +686,7 @@ body {
   text-align: center;
   letter-spacing: 1px; /* 예시: 제목의 글자 간 거리 */
   font-size: 18px;
-  font-family: "KB_C2", sans-serif;
+  font-family: 'KB_C2', sans-serif;
 }
 
 .notice-num {
@@ -686,14 +694,14 @@ body {
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
   font-size: 12pt;
-  font-family: "KB_C3", sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 .notice-new {
   flex: 1 1 20%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
   font-size: 12pt;
-  font-family: "KB_C3", sans-serif;
+  font-family: 'KB_C3', sans-serif;
   color: #edbb00;
 }
 .notice-mile {
@@ -701,8 +709,8 @@ body {
   text-align: left;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
   color: #675437;
-  font-family: "KB_C3", sans-serif;
-  font-size: 0.70em;
+  font-family: 'KB_C3', sans-serif;
+  font-size: 0.7em;
   margin-left: 10px; /* 왼쪽 여백 추가 */
 }
 
@@ -711,7 +719,7 @@ body {
   text-align: center;
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
   font-size: 15px;
-  font-family: "KB_C3", sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 
 .notice-views {
@@ -728,7 +736,7 @@ body {
   flex: 1;
   text-align: right; /* 텍스트를 오른쪽 정렬 */
   font-size: 18px;
-  font-family: "KB_C3", sans-serif;
+  font-family: 'KB_C3', sans-serif;
 }
 
 .views-icon {
@@ -775,7 +783,7 @@ body {
   padding: 10px 20px; /* 상하 패딩과 좌우 패딩을 픽셀 단위로 설정 */
   text-decoration: none;
   color: #4b4a4a;
-  font-family: "KB_C3", sans-serif;
+  font-family: 'KB_C3', sans-serif;
   font-size: 18px; /* 텍스트 크기를 픽셀 단위로 설정 */
 }
 
@@ -786,14 +794,13 @@ body {
   width: auto; /* 너비를 자동으로 설정 */
 }
 
-
 /* 페이지 네이션 및 글쓰기 버튼 스타일 */
 .pagination-container {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
-  object-fit:contain;
+  object-fit: contain;
 }
 
 .pagination {
@@ -828,7 +835,6 @@ body {
   font-size: 18px; /* 화살표의 폰트 크기 */
 }
 
-
 .write-button {
   display: flex;
   align-items: center;
@@ -842,7 +848,7 @@ body {
   background-color: transparent;
   margin-left: 89%; /* 왼쪽으로 이동 */
   margin-bottom: 3vh;
-  font-family: "KB_S5", sans-serif;
+  font-family: 'KB_S5', sans-serif;
 }
 
 .write-button i {
@@ -880,7 +886,7 @@ body {
 }
 
 .radio-input:checked + .custom-radio::after {
-  content: "✓";
+  content: '✓';
   position: absolute;
   top: 50%;
   left: 50%;
@@ -899,41 +905,41 @@ body {
 }
 
 @media (max-width: 768px) {
-  .notice-new{
+  .notice-new {
     display: none;
   }
-  .notice-num{
+  .notice-num {
     display: none;
   }
-  .notice-date{
+  .notice-date {
     display: none;
   }
-.input-search{
+  .input-search {
     border-radius: 30px;
-    padding-right: 15px; 
+    padding-right: 15px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     outline: none;
     font-size: 12px;
-    font-family: "KB_C3", sans-serif;
+    font-family: 'KB_C3', sans-serif;
     width: 45%;
     border: none;
     margin: 4px;
     height: 0px;
-}
-.bi-search {
-  font-size: 10px !important;
-  margin-left: 70px;
-}
-.notice-mile{
-  /* flex: 1 1 100%; */
-  text-align: left;
-  letter-spacing: 0px;
-  color: #745f40;
-  font-family: "KB_C2", sans-serif;
-  font-size: 8pt;
-  margin-left: 0px;
-}    
-/* .input-base {
+  }
+  .bi-search {
+    font-size: 10px !important;
+    margin-left: 70px;
+  }
+  .notice-mile {
+    /* flex: 1 1 100%; */
+    text-align: left;
+    letter-spacing: 0px;
+    color: #745f40;
+    font-family: 'KB_C2', sans-serif;
+    font-size: 8pt;
+    margin-left: 0px;
+  }
+  /* .input-base {
     width: 100%;
     height: 65px;
     background-color: #f9f9f9;
@@ -943,40 +949,54 @@ body {
     margin-bottom: 20px;
 } */
 
-.notice-views {
-    /* flex: 1 1 10%; */
+  .notice-views {
     text-align: center;
     display: inline;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 14px;
     margin-bottom: 10%;
-}
-.mileage-text {
+  }
+  .mileage-text {
     display: none;
   }
   .input-base {
     width: 100%;
-    height: 45px;
+    height: 48px;
     background-color: #f9f9f9;
     text-align: center;
     line-height: 50px;
     font-size: 20px;
     margin-bottom: 20px;
-}
-.notice-title {
+  }
+  .notice-title {
     flex: 1 1 150%;
     text-align: center;
     letter-spacing: 1px;
-    font-family: "KB_C2", sans-serif;
+    font-family: 'KB_C2', sans-serif;
     font-size: 12pt;
-}
- ::before, ::after {
+  }
+  ::before,
+  ::after {
     background-repeat: no-repeat;
     box-sizing: inherit;
-    font-size: 12px;
-    
-}
-
+    font-size: 16px;
+  }
+  .input-base {
+    margin: 0px 0px 10px 0px;
+  }
+  .notice-details .notice-title {
+    font-size: 14px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
+  .notice-mile {
+    flex: 1 1 55%;
+    font-size: 14px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
 }
 </style>

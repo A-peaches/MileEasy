@@ -2,18 +2,24 @@
   <div class="app-container">
     <div v-if="notice" class="content cards">
       <div class="header">
-        <div class="button-container">
+        <div class="back-container">
           <button class="back-button" @click="goBack">
             <span class="arrow">❮</span> 이전
           </button>
         </div>
         <div class="actions">
           <!-- 로그인한 사용자가 글 작성자인 경우 -->
-          <div v-if="isLoggedIn && notice.user_no === loginInfo.user_no && !isChecked">
+          <div
+            v-if="
+              isLoggedIn && notice.user_no === loginInfo.user_no && !isChecked
+            "
+          >
             <button class="edit-button mr-3" @click="goToModifyView">
               수정
             </button>
-            <button class="delete-button" @click="deleteNotice">삭제</button>
+            <button class="delete-button mr-3" @click="deleteNotice">
+              삭제
+            </button>
           </div>
           <div
             v-if="
@@ -194,7 +200,6 @@ export default {
       }
     },
     async deleteNotice() {
-
       Swal.fire({
         title: '경고',
         text: '정말로 삭제하시겠습니까?',
@@ -206,10 +211,8 @@ export default {
         cancelButtonText: '취소',
         reverseButtons: false,
         allowOutsideClick: false,
-        scrollbarPadding: false
+        scrollbarPadding: false,
       }).then(async (result) => {
-
-
         if (result.isConfirmed) {
           try {
             await api.delete(`/mtip/delete/${this.notice.mtip_board_no}`);
@@ -218,18 +221,18 @@ export default {
               text: '게시글이 삭제 되었습니다.',
               icon: 'success',
               allowOutsideClick: false,
-              scrollbarPadding: false
+              scrollbarPadding: false,
             }).then(() => {
               this.$router.push('/M_TipListView');
             });
           } catch (error) {
             console.error('게시글 삭제 중 오류가 발생했습니다.', error);
             Swal.fire({
-            title: '게시글 삭제 중 오류가 발생했습니다.',
-            icon: 'error',
-            allowOutsideClick: false,
-            scrollbarPadding: false,
-          });
+              title: '게시글 삭제 중 오류가 발생했습니다.',
+              icon: 'error',
+              allowOutsideClick: false,
+              scrollbarPadding: false,
+            });
           }
         }
       });
@@ -257,7 +260,7 @@ export default {
               text: '게시글이 삭제 되었습니다.',
               icon: 'success',
               allowOutsideClick: false,
-              scrollbarPadding: false
+              scrollbarPadding: false,
             }).then(() => {
               this.$router.push('/mTipMainAdminView');
             });
@@ -532,32 +535,6 @@ export default {
   flex: 1;
 }
 
-.back-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5b5b5b;
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 0;
-  font-family: 'KB_C2', sans-serif;
-}
-
-.back-button .arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-right: 15px;
-  font-size: 17px;
-  font-family: 'KB_C2', sans-serif;
-}
-
 .edit-button {
   background-color: transparent;
   border: none;
@@ -695,7 +672,8 @@ export default {
 }
 
 .views-icon i {
-  font-size: 1.4vw;
+  /*font-size: 1.4vw;*/
+  font-size: 14pt;
   color: #4b4a4a;
 }
 
@@ -709,14 +687,16 @@ export default {
 }
 
 .heart-icon i {
-  font-size: 1.3vw;
+  /*font-size: 1.3vw;*/
+  font-size: 14pt;
   color: #dc3545;
   cursor: pointer;
 }
 .views-text {
   flex: 0 0 auto;
   text-align: left;
-  font-size: 1.2vw;
+  /*font-size: 1.2vw;*/
+  font-size: 14pt;
   font-family: 'KB_C2', sans-serif;
   color: #4b4a4a;
   margin-left: 0.8vw;
@@ -760,5 +740,25 @@ export default {
 
 .divider {
   margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .views-icon i {
+    font-size: 14pt;
+  }
+  .views-text {
+    font-size: 14pt;
+  }
+  .bi-heart::before {
+    font-size: 14pt;
+  }
+  .bi-heart-fill::before {
+    font-size: 14pt;
+  }
+  .edit-button {
+    font-size: 15px;
+  }
+  .delete-button[data-v-5eeb8322] {
+    font-size: 15px;
+  }
 }
 </style>

@@ -2,41 +2,64 @@
   <div class="app-container">
     <div v-if="notice" class="content cards">
       <div class="header">
-        <div class="button-container">
+        <div class="back-container">
           <button class="back-button" @click="goBack">
             <span class="arrow">❮</span> 이전
           </button>
         </div>
-        <div v-if="isLoggedIn && isChecked && (loginInfo.user_is_admin || loginInfo.user_is_manager) && loginInfo.user_no === notice.user_no">
-  <div class="actions">
-    <button class="edit-button" @click="goToModifyView">수정</button>
-    <button class="delete-button" @click="deleteNotice">삭제</button>
-  </div>
-</div>
+        <div
+          v-if="
+            isLoggedIn &&
+            isChecked &&
+            (loginInfo.user_is_admin || loginInfo.user_is_manager) &&
+            loginInfo.user_no === notice.user_no
+          "
+        >
+          <div class="actions">
+            <button class="edit-button" @click="goToModifyView">수정</button>
+            <button class="delete-button" @click="deleteNotice">삭제</button>
+          </div>
+        </div>
       </div>
       <div class="content">
-        <span v-if="isNew(notice.notice_board_date)" class="new-label">NEW</span>
+        <span v-if="isNew(notice.notice_board_date)" class="new-label"
+          >NEW</span
+        >
         <h1 class="title">{{ notice.notice_board_title }}</h1>
         <div class="meta">
           <span class="author">{{ notice.user_name }}</span>
           <span class="date">{{ formatDate(notice.notice_board_date) }}</span>
         </div>
         <div class="main-content">
-        <div class="body">
-          <pre><p>{{ notice.notice_board_content }}</p></pre> <!-- 줄 바꿈 -->
-        </div>
-        <div class="file cards" >
-          <div style="display: flex; align-items: center;">
-              <h2 style="margin-right: 10px;">첨부파일</h2>
-              <span v-if="!notice.notice_board_file" style="color: #4b4a4a; font-family: 'KB_S5',sans-serif; margin-left: 2%; white-space: nowrap;">파일이 존재하지 않습니다.</span>
+          <div class="body">
+            <pre><p>{{ notice.notice_board_content }}</p></pre>
+            <!-- 줄 바꿈 -->
+          </div>
+          <div class="file cards">
+            <div style="display: flex; align-items: center">
+              <h2 style="margin-right: 10px">첨부파일</h2>
+              <span
+                v-if="!notice.notice_board_file"
+                style="
+                  color: #4b4a4a;
+                  font-family: 'KB_S5', sans-serif;
+                  margin-left: 2%;
+                  white-space: nowrap;
+                "
+                >파일이 존재하지 않습니다.</span
+              >
             </div>
-          <div v-if="notice.notice_board_file" style="margin-top: 10px;">
-            <a @click.prevent="downloadFile" href="#" class="file-download-link">
-              {{ getDisplayFileName(notice.notice_board_file) }} 
-            </a>
+            <div v-if="notice.notice_board_file" style="margin-top: 10px">
+              <a
+                @click.prevent="downloadFile"
+                href="#"
+                class="file-download-link"
+              >
+                {{ getDisplayFileName(notice.notice_board_file) }}
+              </a>
+            </div>
           </div>
         </div>
-      </div>
         <div class="icon-container">
           <div class="views-icon">
             <i class="bi bi-eye"></i>
@@ -67,16 +90,16 @@ export default {
         text: '정말로 삭제하시겠습니까?',
         icon: 'warning',
         scrollbarPadding: false,
-      }).then(async result => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             await api.delete(`/notice/delete/${this.notice.notice_board_no}`);
             Swal.fire({
-              title : '게시글 삭제 완료', 
-              text : '게시글이 삭제 되었습니다.', 
-              icon : 'success',
+              title: '게시글 삭제 완료',
+              text: '게시글이 삭제 되었습니다.',
+              icon: 'success',
               allowOutsideClick: false,
-              scrollbarPadding: false
+              scrollbarPadding: false,
             }).then(() => {
               this.$router.push('/noticeListView');
             });
@@ -107,33 +130,36 @@ export default {
         willClose: () => {
           document.body.classList.remove('no-scroll');
           document.documentElement.style.overflow = '';
-        }
+        },
       });
     },
-    
+
     getDisplayFileName(fileName) {
-  // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
-  const UUID_LENGTH = 36 + 1;
+      // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
+      const UUID_LENGTH = 36 + 1;
 
-  // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
-  if (!fileName || fileName.length <= UUID_LENGTH) {
-    return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
-  }
+      // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
+      if (!fileName || fileName.length <= UUID_LENGTH) {
+        return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
+      }
 
-  // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
-  if (fileName.charAt(UUID_LENGTH - 1) === '_') {
-    return fileName.substring(UUID_LENGTH);
-  }
-  
-  return fileName;
-},
+      // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
+      if (fileName.charAt(UUID_LENGTH - 1) === '_') {
+        return fileName.substring(UUID_LENGTH);
+      }
+
+      return fileName;
+    },
 
     goBack() {
       this.$router.go(-1);
     },
     goToModifyView() {
-      console.log('id ;',this.notice.notice_board_no);
-      this.$router.push({ name: 'noticeModifyAdminView', params: { id: this.notice.notice_board_no } });
+      console.log('id ;', this.notice.notice_board_no);
+      this.$router.push({
+        name: 'noticeModifyAdminView',
+        params: { id: this.notice.notice_board_no },
+      });
     },
     isNew(dateString) {
       const today = new Date();
@@ -147,30 +173,32 @@ export default {
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
 
-
     async downloadFile() {
-    try {
-      console.log("글쓰기 상세보기 fileName :",this.notice.notice_board_file);
-      const fileName = encodeURIComponent(this.notice.notice_board_file);
-      const response = await api({
-        url: `/notice/download/${fileName}`,
-        method: 'GET',
-        responseType: 'blob',
-      });
+      try {
+        console.log(
+          '글쓰기 상세보기 fileName :',
+          this.notice.notice_board_file
+        );
+        const fileName = encodeURIComponent(this.notice.notice_board_file);
+        const response = await api({
+          url: `/notice/download/${fileName}`,
+          method: 'GET',
+          responseType: 'blob',
+        });
 
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', this.notice.notice_board_file); // 서버에서 받은 파일명을 그대로 사용
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error('파일 다운로드 중 오류 발생:', error);
-    this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
-    }
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', this.notice.notice_board_file); // 서버에서 받은 파일명을 그대로 사용
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('파일 다운로드 중 오류 발생:', error);
+        this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
+      }
+    },
   },
-},
   computed: {
     ...mapGetters('login', ['getLoginInfo', 'getIsChecked']),
     ...mapGetters('notice', ['getNotice']),
@@ -185,7 +213,7 @@ export default {
     },
     isLoggedIn() {
       return !!this.loginInfo;
-    }
+    },
   },
   watch: {
     id: {
@@ -201,13 +229,11 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
- .body pre {
-    white-space: pre-wrap; /* 줄바꿈과 공백을 유지하여 표시 */
-    word-wrap: break-word; /* 길이가 길 경우 줄바꿈 */
-  }
+.body pre {
+  white-space: pre-wrap; /* 줄바꿈과 공백을 유지하여 표시 */
+  word-wrap: break-word; /* 길이가 길 경우 줄바꿈 */
+}
 .app-container {
   width: 100%;
   padding: 0px;
@@ -215,7 +241,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top : 4%;
+  margin-top: 4%;
 }
 
 .header {
@@ -229,33 +255,7 @@ export default {
   display: flex;
   align-items: center;
   padding-left: 10px;
-  flex: 1; 
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5B5B5B;
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
-}
-
-.back-button .arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-right: 8px;
-  font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
+  flex: 1;
 }
 
 .actions {
@@ -402,11 +402,10 @@ export default {
   color: #ffca05;
   /* margin-left: 5px; */
   text-align: center;
-  font-size:18px;
+  font-size: 18px;
   font-family: 'KB_S3', sans-serif;
-  margin-left:0%;
+  margin-left: 0%;
   display: inline-block;
   margin-bottom: 8px;
 }
-
 </style>
