@@ -55,13 +55,6 @@ public class NoticeService {
             throw new IllegalArgumentException("Invalid user_no: " + notice.getUser_no());
         }
 
-        // User 검증이 필요한 경우 (옵션)
-        // User user = userDao.selectUserById(notice.getUser_no());
-        // if (user == null) {
-        //     throw new IllegalArgumentException("User not found for user_no: " + notice.getUser_no());
-        // }
-
-        // 파일 이름이 null이 아닌 경우에만 설정
         if (notice.getNotice_board_file() != null && !notice.getNotice_board_file().isEmpty()) {
             notice.setNotice_board_file(notice.getNotice_board_file());
         } else {

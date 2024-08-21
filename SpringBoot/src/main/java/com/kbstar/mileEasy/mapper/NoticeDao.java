@@ -49,7 +49,10 @@ public interface NoticeDao {
             "SET notice_board_title = #{notice_board_title},",
             "    notice_board_content = #{notice_board_content},",
             "    notice_board_file = #{notice_board_file, jdbcType=VARCHAR},",
-            "    mile_no = (SELECT mile_no FROM mileage WHERE mile_name = #{mile_name})",
+            "    mile_no = CASE",
+            "                WHEN #{mile_name} = '기타' THEN NULL",
+            "                ELSE (SELECT mile_no FROM mileage WHERE mile_name = #{mile_name})",
+            "              END",
             "WHERE notice_board_no = #{notice_board_no}"
     })
     void updateNotice(Notice notice);
