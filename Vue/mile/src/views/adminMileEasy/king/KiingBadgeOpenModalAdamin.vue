@@ -41,7 +41,12 @@ export default {
     async uploadFile() {
       if (!this.file) {
         // 파일이 선택되지 않았을 경우 처리
-        Swal.fire('파일 오류', '파일을 먼저 선택해주세요.', 'warning');
+        Swal.fire({
+          title: '파일 오류',
+          text: '파일을 먼저 선택해주세요.',
+          icon: 'warning',
+          scrollbarPadding: false, // 스크롤바가 사라질 때 패딩을 추가하지 않음
+        });
         return;
       }
       let formData = new FormData();
@@ -54,11 +59,21 @@ export default {
           },
         });
 
-        Swal.fire('성공', '파일 업로드가 완료되었습니다.', 'success');
+        Swal.fire({
+          title: '성공',
+          text: '파일 업로드가 완료되었습니다.',
+          icon: 'success',
+          scrollbarPadding: false, // 스크롤바가 사라질 때 패딩을 추가하지 않음
+        });
 
         this.$emit('close'); // 모달 닫기 이벤트 발생
       } catch (error) {
-        Swal.fire('실패', '파일 업로드가 실패하였습니다.', 'error');
+        Swal.fire({
+          title: '실패', // 팝업의 제목
+          text: '파일 업로드가 실패하였습니다.', // 팝업의 내용
+          icon: 'error', // 팝업의 아이콘 유형 (success, error, warning, info, question)
+          scrollbarPadding: false, // 스크롤바가 사라질 때 패딩을 추가하지 않음
+        });
       }
     },
   },

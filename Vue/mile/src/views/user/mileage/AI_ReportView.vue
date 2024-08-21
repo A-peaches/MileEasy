@@ -1,8 +1,6 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
 
-   
-
     <h2 class="bold-x-lg mt-5 mb-5" style="font-family: KB_C3">
       {{ this.loginInfo.user_name }}님의 AI 리포트
     </h2>
@@ -17,14 +15,15 @@
   </div>
 
 
-  <div v-if="isGeneratingPDF" class="pdf-generation-status d-flex align-items-center 
-  justify-content-center mx-auto w-100">
-    <div class="spinner-border my-5 me-3" role="status" style="color: #ffca05;">
-      <span class="visually-hidden">Loading...</span>
+    <div
+      v-if="isGeneratingPDF"
+      class="pdf-generation-status d-flex align-items-center justify-content-center mx-auto w-100"
+    >
+      <div class="spinner-border  my-5 me-3" role="status" style="color: #ffca05">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <span>PDF 추출중입니다 ....</span>
     </div>
-    <span>PDF 추출중입니다 ....</span>
-  </div>
-
 
     <!-- 데이터가 없을 때 메시지 표시 -->
     <div
@@ -172,7 +171,7 @@ export default {
   data() {
     return {
       hasReport: true, // 리포트 데이터 존재 여부
-      isGeneratingPDF: false, 
+      isGeneratingPDF: false,
     };
   },
   created() {
@@ -180,81 +179,81 @@ export default {
   },
   methods: {
     async downloadPDF() {
-
-
       this.isGeneratingPDF = true;
 
-  const element = document.querySelector('.page-back');
-  if (!element) {
-    console.error('Element with class "page-back" not found');
-    this.isGeneratingPDF = false;
-    return;
-  }
+      const element = document.querySelector('.page-back');
+      if (!element) {
+        console.error('Element with class "page-back" not found');
+        this.isGeneratingPDF = false;
+        return;
+      }
 
-  // 원본 스타일 저장
-  const originalStyle = element.style.cssText;
-  const originalTransform = window.getComputedStyle(element).transform;
+      // 원본 스타일 저장
+      const originalStyle = element.style.cssText;
+      const originalTransform = window.getComputedStyle(element).transform;
 
-  const pcWidth = 1325;
-  const pcHeight = Math.floor((pcWidth / 210) * 297); // A4 비율
-  const padding = 40; // 원하는 패딩 값 (픽셀)
+      const pcWidth = 1325;
+      const pcHeight = Math.floor((pcWidth / 210) * 297); // A4 비율
+      const padding = 40; // 원하는 패딩 값 (픽셀)
 
-  // 요소 스타일 임시 변경
-  Object.assign(element.style, {
-    width: `${pcWidth}px`,
-    height: 'auto',
-    transform: 'scale(1)',
-    transformOrigin: 'top left',
-    background: 'white',
-    margin: '0',
-    padding: `${padding}px`,
-    boxSizing: 'border-box',
-  });
+      // 요소 스타일 임시 변경
+      Object.assign(element.style, {
+        width: `${pcWidth}px`,
+        height: 'auto',
+        transform: 'scale(1)',
+        transformOrigin: 'top left',
+        background: 'white',
+        margin: '0',
+        padding: `${padding}px`,
+        boxSizing: 'border-box',
+      });
 
-  try {
-    console.log('Rendering PDF...');
+      try {
+        console.log('Rendering PDF...');
 
-    const pdf = new jsPDF({
-      unit: 'px',
-      format: [pcWidth, pcHeight],
-      orientation: 'portrait',
-      compress: true,
-      precision: 16
-    });
+        const pdf = new jsPDF({
+          unit: 'px',
+          format: [pcWidth, pcHeight],
+          orientation: 'portrait',
+          compress: true,
+          precision: 16,
+        });
 
-    // 첫 번째 페이지만 렌더링
-    const canvas = await html2canvas(element, {
-      dpi: 600,
-      scale: 10,
-      useCORS: true,
-      logging: false,
-      width: pcWidth,
-      height: pcHeight,
-      windowWidth: pcWidth,
-      windowHeight: pcHeight,
-      backgroundColor: '#ffffff'
-    });
+        // 첫 번째 페이지만 렌더링
+        const canvas = await html2canvas(element, {
+          dpi: 600,
+          scale: 10,
+          useCORS: true,
+          logging: false,
+          width: pcWidth,
+          height: pcHeight,
+          windowWidth: pcWidth,
+          windowHeight: pcHeight,
+          backgroundColor: '#ffffff',
+        });
 
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    pdf.addImage(imgData, 'JPEG', 0, 0, pcWidth, pcHeight);
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pcWidth, pcHeight);
 
-    // PDF 저장
-    pdf.save(`${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트.pdf`);
-  } catch (error) {
-    console.error('PDF 생성 중 오류 발생:', error);
-    alert('PDF 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
-  } finally {
-    // 요소 스타일 복원
-    element.style.cssText = originalStyle;
-    element.style.transform = originalTransform;
+        // PDF 저장
+        pdf.save(
+          `${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트.pdf`
+        );
+      } catch (error) {
+        console.error('PDF 생성 중 오류 발생:', error);
+        alert('PDF 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      } finally {
+        // 요소 스타일 복원
+        element.style.cssText = originalStyle;
+        element.style.transform = originalTransform;
 
-    this.isGeneratingPDF = false;
+        this.isGeneratingPDF = false;
 
-    this.$nextTick(() => {
-    this.createCharts();
-  });
-  }
-},
+        this.$nextTick(() => {
+          this.createCharts();
+        });
+      }
+    },
     checkLoginInfo() {
       if (
         !this.getLoginInfo ||
@@ -800,7 +799,6 @@ export default {
 
 .card {
   transition: all 0.3s ease;
-  
 }
 
 .card-ml {
@@ -922,23 +920,22 @@ span {
   width: 100% !important;
 }
 
-
 @media (max-width: 480px) {
   .note {
-    font-size :11pt;
-  }
-  
-  .btn-analysis {
-    width:160px;
-    font-size:11pt;
+    font-size: 11pt;
   }
 
-  .down-btn{
-    font-size : 12pt
+  .btn-analysis {
+    width: 160px;
+    font-size: 11pt;
+  }
+
+  .down-btn {
+    font-size: 12pt;
   }
 
   .bi-download {
-    font-size : 12pt
+    font-size: 12pt;
   }
 }
 </style>

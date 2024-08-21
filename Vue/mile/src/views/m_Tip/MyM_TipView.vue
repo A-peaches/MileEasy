@@ -1,21 +1,27 @@
 <template>
   <div class="app-container">
     <div class="content cards" @click="handleClick">
-      <div class="button-container">
-          <button class="back-button" @click="goBack">
-            <span class="arrow">❮</span> 이전
-          </button>
-        </div>
+      <div class="back-container">
+        <button class="back-button" @click="goBack">
+          <span class="arrow">❮</span> 이전
+        </button>
+      </div>
       <div>
-        <h2>나만의 M-Tip</h2>
+        <h2 class="bold-x-lg">나의 M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">카테고리</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
-            <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="filterByCategory(mileage?.mile_name)">
-              {{ mileage?.mile_name }}&nbsp;&nbsp;마일리지
+            <a
+              class="dropdown-item"
+              v-for="mileage in mileages"
+              :key="mileage.mile_no"
+              @click="filterByCategory(mileage?.mile_name)"
+            >
+              {{ mileage?.mile_name }}&nbsp;&nbsp;
+              <span class="mileage-text">마일리지</span>
             </a>
             <a class="dropdown-item" @click="filterByCategory('기타')">기타</a>
           </div>
@@ -24,28 +30,46 @@
       <div class="notice-count-container">
         <div class="notice-count">총 {{ filteredNotices?.length }}건</div>
         <label class="checkbox-container">
-          <input type="checkbox" v-model="sortByViews" @change="handleCheckboxChange('views')">
-          <span class="custom-checkbox"></span> <span class="checkbox-label">조회수</span>
+          <input
+            type="checkbox"
+            v-model="sortByViews"
+            @change="handleCheckboxChange('views')"
+          />
+          <span class="custom-checkbox"></span>
+          <span class="checkbox-label">조회수</span>
         </label>
         <label class="checkbox-container">
-          <input type="checkbox" v-model="sortByDateAsc" @change="handleCheckboxChange('date')">
-          <span class="custom-checkbox"></span> <span class="checkbox-label">최신순</span>
+          <input
+            type="checkbox"
+            v-model="sortByDateAsc"
+            @change="handleCheckboxChange('date')"
+          />
+          <span class="custom-checkbox"></span>
+          <span class="checkbox-label">최신순</span>
         </label>
       </div>
       <div>
-        <div v-if="isLoggedIn && loginInfo.user_is_admin && !loginInfo.user_is_manager && isChecked">
+        <div
+          v-if="
+            isLoggedIn &&
+            loginInfo.user_is_admin &&
+            !loginInfo.user_is_manager &&
+            isChecked
+          "
+        >
           <button class="write-button" @click="goToWritePage">
-            <i class="bi bi-pencil" style="margin-right:10px;"></i> 글작성
+            <i class="bi bi-pencil" style="margin-right: 10px"></i> 글작성
           </button>
-         </div>
+        </div>
       </div>
       <!-- 검색 창 -->
       <div class="search-container">
-        <input 
-        type="text" 
-        v-model="searchQuery" 
-        placeholder="제목 및 내용을 검색하세요" 
-        class="input-search"/>
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="검색어를 입력하세요"
+          class="input-search"
+        />
         <button class="search-button" @click="searchNotices">
           <i class="bi bi-search"></i>
         </button>
@@ -53,33 +77,58 @@
 
       <div class="notice-list">
         <div v-if="paginatedNotices.length">
-          <div class="input-base list-wrapper" v-for="notice in paginatedNotices" :key="notice.notice_board_no" @click="handleNoticeClick(notice)">
-              <div class="notice-details">
-                <div v-if="notice.is_new" class="notice-new">{{ notice?.display_num }}</div>
-                <div v-else class="notice-num">{{ notice?.display_num }}</div>
-                <div class="notice-mile">{{ notice?.mile_name && notice?.mile_name !== '기타' ? notice?.mile_name + ' 마일리지' : '기타' }}</div>
-                <div class="notice-title">
-                  {{ notice?.mtip_board_title.length > 30 ? notice?.mtip_board_title.substring(0, 30) + ' ...' : notice?.mtip_board_title }}
-                </div>
-                <pre class="notice-date">{{ formatDate(notice?.mtip_board_date) }}</pre>
-                <i class="bi bi-eye"></i>
-                <div class="notice-views">{{ notice?.mtip_board_hit }} <i class="fa fa-eye"></i></div>
-                <i :class="['bi', isPostLiked(loginInfo?.user_no, notice?.mtip_board_no) ? 'bi-heart-fill' : 'bi-heart']"
-                :style="{ color: isPostLiked(loginInfo?.user_no, notice.mtip_board_no) ? '#dc3545' : 'inherit' }"></i>
-                <div class="notice-like">{{ notice?.mtip_board_like }}</div>
+          <div
+            class="input-base list-wrapper"
+            v-for="notice in paginatedNotices"
+            :key="notice.notice_board_no"
+            @click="handleNoticeClick(notice)"
+          >
+            <div class="notice-details">
+              <div v-if="notice.is_new" class="notice-new">
+                {{ notice?.display_num }}
               </div>
+              <div v-else class="notice-num">{{ notice?.display_num }}</div>
+              <div class="notice-mile">
+                {{
+                  notice?.mile_name && notice?.mile_name !== '기타'
+                    ? notice.mile_name + ' 마일리지'
+                    : '기타'
+                }}
+              </div>
+              <div class="notice-title">
+                {{
+                  notice?.mtip_board_title.length > 30
+                    ? notice?.mtip_board_title.substring(0, 30) + ' ...'
+                    : notice?.mtip_board_title
+                }}
+              </div>
+              <pre class="notice-date">{{
+                formatDate(notice.mtip_board_date)
+              }}</pre>
+              <i class="bi bi-eye"></i>
+              <div class="notice-views">
+                {{ notice?.mtip_board_hit }} <i class="fa fa-eye"></i>
+              </div>
+              <i
+                :class="[
+                  'bi',
+                  isPostLiked(loginInfo?.user_no, notice.mtip_board_no)
+                    ? 'bi-heart-fill'
+                    : 'bi-heart',
+                ]"
+                :style="{
+                  color: isPostLiked(loginInfo?.user_no, notice.mtip_board_no)
+                    ? '#DC3545'
+                    : 'inherit',
+                }"
+              ></i>
+              <div class="notice-like">{{ notice?.mtip_board_like }}</div>
             </div>
-
+          </div>
         </div>
         <div v-else>
           <p>게시글이 없습니다.</p>
         </div>
-      </div>
-
-      <div class="pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
-        <button @click="goToPage(page)" :class="{ active: currentPage === page }" v-for="page in totalPages" :key="page">{{ page }}</button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">〉</button>
       </div>
     </div>
   </div>
@@ -110,72 +159,59 @@ export default {
     ...mapGetters('mtipBoard', ['isPostLiked']),
 
     uniqueMileages() {
-    return [...new Set(this.notices.filter(notice => notice.mile_name).map(notice => notice.mile_name))];
+      return [
+        ...new Set(
+          this.notices
+            .filter((notice) => notice.mile_name)
+            .map((notice) => notice.mile_name)
+        ),
+      ];
     },
-//     filteredNotices() {
-//       let result = this.notices;
-//       // .map(notice => ({
-//     // ...notice,
-//     // mile_name: notice.mile_no === null ? '기타' : notice.mile_name
-//     // }));
-//     if (this.searchQuery) {
-//       const query = this.searchQuery.toLowerCase();
-//       result = result.filter(notice => 
-//       (notice.mtip_board_title && notice.mtip_board_title.toLowerCase().includes(query)) || 
-//       (notice.mtip_board_content && notice.mtip_board_content.toLowerCase().includes(query))
-//       );
-//     }
-//     if (this.selectedCategory !== null) {
-//       if (this.selectedCategory === '기타') {
-//       result = result.filter(notice => !notice.mile_name);
-//     } else {
-//       result = result.filter(notice => notice.mile_name === this.selectedCategory);
-//     }
-//   }
-//   if (this.sortByViews) {
-//     result.sort((a, b) => b.mtip_board_hit - a.mtip_board_hit || new Date(b.mtip_board_date) - new Date(a.notice_board_date));
-//   } else {
-//     result.sort((a, b) => new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
-//   }
 
-//   let displayNum = 1;
-//   return result.map(notice => ({
-//     ...notice,
-//     is_new: this.isNew(notice.mtip_board_date),
-//     display_num: this.isNew(notice.mtip_board_date) ? 'NEW' : displayNum++
-//   }));
-// },
-filteredNotices() {
-    let result = this.notices;
-    if (this.searchQuery) {
-      const query = this.searchQuery.toLowerCase();
-      result = result.filter(notice => 
-        (notice.mtip_board_title && notice.mtip_board_title.toLowerCase().includes(query)) || 
-        (notice.mtip_board_content && notice.mtip_board_content.toLowerCase().includes(query))
-      );
-    }
-    if (this.selectedCategory !== null) {
-      if (this.selectedCategory === '기타') {
-        result = result.filter(notice => !notice.mile_name);
-      } else {
-        result = result.filter(notice => notice.mile_name === this.selectedCategory);
+    filteredNotices() {
+      let result = this.notices;
+      if (this.searchQuery) {
+        const query = this.searchQuery.toLowerCase();
+        result = result.filter(
+          (notice) =>
+            (notice.mtip_board_title &&
+              notice.mtip_board_title.toLowerCase().includes(query)) ||
+            (notice.mtip_board_content &&
+              notice.mtip_board_content.toLowerCase().includes(query))
+        );
       }
-    }
-    if (this.sortByViews) {
-      result.sort((a, b) => b.mtip_board_hit - a.mtip_board_hit || new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
-    } else if (this.sortByDateAsc) {
-      result.sort((a, b) => new Date(b.mtip_board_date) - new Date(a.mtip_board_date));
-    } else {
-      result.sort((a, b) => new Date(a.mtip_board_date) - new Date(b.mtip_board_date));
-    }
+      if (this.selectedCategory !== null) {
+        if (this.selectedCategory === '기타') {
+          result = result.filter((notice) => !notice.mile_name);
+        } else {
+          result = result.filter(
+            (notice) => notice.mile_name === this.selectedCategory
+          );
+        }
+      }
+      if (this.sortByViews) {
+        result.sort(
+          (a, b) =>
+            b.mtip_board_hit - a.mtip_board_hit ||
+            new Date(b.mtip_board_date) - new Date(a.mtip_board_date)
+        );
+      } else if (this.sortByDateAsc) {
+        result.sort(
+          (a, b) => new Date(b.mtip_board_date) - new Date(a.mtip_board_date)
+        );
+      } else {
+        result.sort(
+          (a, b) => new Date(a.mtip_board_date) - new Date(b.mtip_board_date)
+        );
+      }
 
-    let displayNum = 1;
-    return result.map(notice => ({
-      ...notice,
-      is_new: this.isNew(notice.mtip_board_date),
-      display_num: this.isNew(notice.mtip_board_date) ? 'NEW' : displayNum++
-    }));
-  },
+      let displayNum = 1;
+      return result.map((notice) => ({
+        ...notice,
+        is_new: this.isNew(notice.mtip_board_date),
+        display_num: this.isNew(notice.mtip_board_date) ? 'NEW' : displayNum++,
+      }));
+    },
 
     loginInfo() {
       return this.getLoginInfo;
@@ -190,11 +226,10 @@ filteredNotices() {
       return Math.ceil(this.filteredNotices.length / this.itemsPerPage);
     },
     paginatedNotices() {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-    return this.filteredNotices.slice(start, end);
-  },
-
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredNotices.slice(start, end);
+    },
   },
   created() {
     this.checkLoginInfo();
@@ -203,22 +238,25 @@ filteredNotices() {
     ...mapActions('mtipBoard', ['fetchNotices', 'fetchLikedPosts']),
     ...mapActions('mileage', ['fetchMileages']),
     checkLoginInfo() {
-      if (!this.getLoginInfo || (this.getLoginInfo && this.getIsChecked == true)) {
-          window.location.href="/noAccess"
-        } 
+      if (
+        !this.getLoginInfo ||
+        (this.getLoginInfo && this.getIsChecked == true)
+      ) {
+        window.location.href = '/noAccess';
+      }
     },
     goBack() {
       this.$router.go(-1);
     },
     isNew(dateString) {
-    const today = new Date();
-    const noticeDate = new Date(dateString);
-    const differenceInTime = today.getTime() - noticeDate.getTime();
-    const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-    return differenceInDays <= 7;
-  },
- // methods 부분
- handleCheckboxChange(sortType) {
+      const today = new Date();
+      const noticeDate = new Date(dateString);
+      const differenceInTime = today.getTime() - noticeDate.getTime();
+      const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+      return differenceInDays <= 7;
+    },
+    // methods 부분
+    handleCheckboxChange(sortType) {
       if (sortType === 'views' && this.sortByViews) {
         this.sortByDateAsc = false;
       } else if (sortType === 'date' && this.sortByDateAsc) {
@@ -260,13 +298,16 @@ filteredNotices() {
         const response = await api.get('/mtip/Mymtiplist', {
           params: {
             user_no: this.loginInfo ? this.loginInfo.user_no : null,
-            user_name: this.loginInfo ? this.loginInfo.user_name : null
-          }
+            user_name: this.loginInfo ? this.loginInfo.user_name : null,
+          },
         });
         this.notices = response.data;
         console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
-        console.error('Error fetching notices:', error.response ? error.response.data : error.message);
+        console.error(
+          'Error fetching notices:',
+          error.response ? error.response.data : error.message
+        );
       }
     },
     async fetchMileages() {
@@ -275,48 +316,56 @@ filteredNotices() {
         console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
-        console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
+        console.error(
+          'Error fetching mileages:',
+          error.response ? error.response.data : error.message
+        );
       }
     },
     async handleNoticeClick(notice) {
-    console.log("notice:", notice);
-    if (this.isProcessing) return;
-    this.isProcessing = true;
-    try {
-    console.log("게시글 상세보기+조회수 메소드 도달", notice);
-    // 조회수 증가 요청
-    await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
-    
-    // 게시글 상세 정보 요청
-    const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-    console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
-    const noticeDetails = response.data;
-    console.log('Fetched notice details:', noticeDetails);
+      console.log('notice:', notice);
+      if (this.isProcessing) return;
+      this.isProcessing = true;
+      try {
+        console.log('게시글 상세보기+조회수 메소드 도달', notice);
+        // 조회수 증가 요청
+        await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
 
-    // 조회수 업데이트
-    notice.mtip_board_hit += 1;
+        // 게시글 상세 정보 요청
+        const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
+        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
+        const noticeDetails = response.data;
+        console.log('Fetched notice details:', noticeDetails);
 
-    const noticeToPass = {
-      ...noticeDetails,
-      mile_no: noticeDetails.mile_no,
-      mile_name: noticeDetails.mile_name,
-      file: noticeDetails.mtip_board_file || null,
-      mtip_board_hit: notice.mtip_board_hit // 업데이트된 조회수 사용
-    };
+        // 조회수 업데이트
+        notice.mtip_board_hit += 1;
 
-    console.log('Navigating to noticeDetailView with notice:', {
-      id: notice.mtip_board_no,
-      notice: noticeToPass
-    });
-    console.log("MtipListView에서 넘기는 notice:", notice);
-    this.$router.push({ name: 'm_TipDetailView', params: { mtip_board_no: notice.mtip_board_no } });
+        const noticeToPass = {
+          ...noticeDetails,
+          mile_no: noticeDetails.mile_no,
+          mile_name: noticeDetails.mile_name,
+          file: noticeDetails.mtip_board_file || null,
+          mtip_board_hit: notice.mtip_board_hit, // 업데이트된 조회수 사용
+        };
 
-  } catch (error) {
-    console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
-  } finally {
-    this.isProcessing = false;
-  }
-},
+        console.log('Navigating to noticeDetailView with notice:', {
+          id: notice.mtip_board_no,
+          notice: noticeToPass,
+        });
+        console.log('MtipListView에서 넘기는 notice:', notice);
+        this.$router.push({
+          name: 'm_TipDetailView',
+          params: { mtip_board_no: notice.mtip_board_no },
+        });
+      } catch (error) {
+        console.error(
+          'Error fetching notice details:',
+          error.response ? error.response.data : error.message
+        );
+      } finally {
+        this.isProcessing = false;
+      }
+    },
 
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -335,17 +384,17 @@ filteredNotices() {
       this.currentPage = 1;
     },
     async initializeData() {
-    try {
-      await this.fetchNotices();
-      await this.fetchMileages();
+      try {
+        await this.fetchNotices();
+        await this.fetchMileages();
 
-      if (this.loginInfo) {
-        await this.fetchLikedPosts(this.loginInfo.user_no);
+        if (this.loginInfo) {
+          await this.fetchLikedPosts(this.loginInfo.user_no);
+        }
+      } catch (error) {
+        console.error('Error initializing data:', error);
       }
-    } catch (error) {
-      console.error('Error initializing data:', error);
-    }
-  },
+    },
   },
   mounted() {
     console.log('loginInfo:', this.loginInfo);
@@ -357,18 +406,17 @@ filteredNotices() {
     this.fetchNotices();
     this.fetchMileages();
     this.initializeData();
-
   },
 
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
-  }
+  },
 };
 </script>
 
-
 <style scoped>
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   font-family: 'Arial, sans-serif';
@@ -382,7 +430,6 @@ body {
 
 h2 {
   font-family: 'KB_C2', sans-serif;
-  font-size: 40px;
   margin-top: 30px;
   display: inline-block; /* 밑줄 길이를 텍스트 길이에 맞춥니다 */
   position: relative;
@@ -406,8 +453,7 @@ h2::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top : 4%;
-  
+  margin-top: 4%;
 }
 
 .content {
@@ -470,33 +516,9 @@ h2::after {
   display: flex;
   align-items: center;
   padding-left: 10px;
-  flex: 1; 
-}
-.back-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5B5B5B;
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 0;
-  font-family: 'KB_C2', sans-serif;
+  flex: 1;
 }
 
-.back-button .arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-right: 15px;
-  font-size: 17px;
-  font-family: 'KB_C2', sans-serif;
-}
 .search-button {
   position: absolute;
   right: 20px;
@@ -542,7 +564,7 @@ h2::after {
   top: -5px; /* 위치를 살짝 위로 올립니다 */
 }
 
-.checkbox-container input[type="checkbox"] {
+.checkbox-container input[type='checkbox'] {
   display: none; /* 기본 체크박스를 숨깁니다 */
 }
 
@@ -557,12 +579,12 @@ h2::after {
   position: relative;
 }
 
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox {
+.checkbox-container input[type='checkbox']:checked + .custom-checkbox {
   background-color: #f6a319; /* 체크된 상태일 때 배경색 변경 (노란색) */
   border: none; /* 체크된 상태일 때 테두리 제거 */
 }
 
-.checkbox-container input[type="checkbox"]:checked + .custom-checkbox::after {
+.checkbox-container input[type='checkbox']:checked + .custom-checkbox::after {
   content: '✓';
   position: absolute;
   top: 50%;
@@ -589,7 +611,7 @@ h2::after {
 
 .list-wrapper:hover {
   cursor: pointer;
-  background-color: #E1E3E4 !important;
+  background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
 }
 
@@ -614,7 +636,7 @@ h2::after {
   font-size: 10pt;
   font-family: 'KB_C3', sans-serif;
 }
-.notice-new{
+.notice-new {
   flex: 1 1 20%;
   text-align: center;
   letter-spacing: 1px; /* 예시: 번호의 글자 간 거리 */
@@ -628,7 +650,7 @@ h2::after {
   letter-spacing: 1.5px; /* 예시: 날짜의 글자 간 거리 */
   color: #675437;
   font-family: 'KB_C3', sans-serif;
-  font-size: 0.70em;
+  font-size: 0.7em;
   margin-left: 10px; /* 왼쪽 여백 추가 */
 }
 
@@ -647,7 +669,7 @@ h2::after {
   align-items: center;
   justify-content: center;
   font-size: 15px;
-  margin-bottom:10%;
+  margin-bottom: 10%;
 }
 
 .notice-like {
@@ -657,7 +679,7 @@ h2::after {
   align-items: center;
   justify-content: center;
   font-size: 15px;
-  margin-bottom:10%;
+  margin-bottom: 10%;
 }
 
 .views-text {
@@ -689,7 +711,10 @@ h2::after {
   border-radius: 30px;
   cursor: pointer;
   width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
-  transform: translate(-50%, -16%); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
+  transform: translate(
+    -50%,
+    -16%
+  ); /* 수평 위치 중앙 정렬, 수직 위치 위로 이동 */
 }
 
 .QnA:hover .dropdown-menu,
@@ -783,5 +808,68 @@ h2::after {
 .write-button i.bi.bi-pencil {
   color: #32ab8b;
   font-size: 20px;
+}
+@media (max-width: 768px) {
+  .write-button {
+    margin-left: 0%;
+    display: inline;
+  }
+  .write_btn {
+    text-align: right;
+  }
+  .input-search {
+    width: auto;
+  }
+  .notice-date {
+    display: none;
+  }
+  .notice-new {
+    display: none;
+  }
+  .notice-num {
+    display: none;
+  }
+  .input-base {
+    line-height: 50px;
+    height: 48px;
+  }
+
+  .notice-details .notice-title {
+    font-size: 14px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
+  .notice-mile {
+    flex: 1 1 55%;
+    font-size: 14px; /* 글자 크기 조정 */
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
+  .pagination {
+    margin-bottom: 40px;
+  }
+  .notice-views {
+    margin-right: 5px;
+  }
+  .mileage_text {
+    display: none;
+  }
+  .notice-count {
+    font-size: 18px;
+  }
+  .checkbox-container .custom-checkbox {
+    font-size: 16px;
+  }
+  .checkbox-label {
+    font-size: 16px;
+  }
+  .menu-items :hover {
+    font-size: 13pt;
+  }
+  .menu-items {
+    font-size: 13pt;
+  }
 }
 </style>

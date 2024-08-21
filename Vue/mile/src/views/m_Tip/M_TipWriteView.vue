@@ -2,44 +2,76 @@
   <div class="app-container">
     <div class="content cards">
       <div class="header">
-        <div class="button-container">
+        <div class="back-container">
           <button class="back-button" @click="goBack">
             <span class="arrow">❮</span> 이전
           </button>
         </div>
       </div>
       <div class="actions">
-        <h1 class="title">M-Tip 글작성</h1>
+        <h2 class="bold-x-lg">M-Tip 글작성</h2>
       </div>
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="title">제목</label>
-          <input type="text" id="title" v-model="form.title" placeholder="제목을 입력해주세요" class="title-input" />
+          <input
+            type="text"
+            id="title"
+            v-model="form.title"
+            placeholder="제목을 입력해주세요"
+            class="title-input"
+          />
         </div>
-        <div class="form-group" @click.stop="toggleCategory" ref="categoryButton">
+        <div
+          class="form-group"
+          @click.stop="toggleCategory"
+          ref="categoryButton"
+        >
           <label for="category">카테고리</label>
           <div class="drop-category">
-            <div class="selected">{{ selectedCategory || '마일리지를 선택해주세요' }}</div>
+            <div class="selected">
+              {{ selectedCategory || '마일리지를 선택해주세요' }}
+            </div>
           </div>
           <div class="dropdown-category" v-if="showCategory" ref="dropdownMenu">
             <div class="menu-items">
-              <a class="dropdown-item" v-for="mileage in mileages" :key="mileage.mile_no" @click="selectCategory(mileage.mile_no, mileage.mile_name, $event)">
-                {{ mileage.mile_name }} 마일리지
+              <a
+                class="dropdown-item"
+                v-for="mileage in mileages"
+                :key="mileage.mile_no"
+                @click="
+                  selectCategory(mileage.mile_no, mileage.mile_name, $event)
+                "
+              >
+                {{ mileage.mile_name }}&nbsp;&nbsp;마일리지
               </a>
-              <a class="dropdown-item" @click="selectCategory(null, '기타', $event)">기타</a>
+              <a
+                class="dropdown-item"
+                @click="selectCategory(null, '기타', $event)"
+                >기타</a
+              >
             </div>
           </div>
           <div><i class="bi bi-caret-down-fill icon-right"></i></div>
         </div>
         <div class="form-group content">
           <label for="content">내용</label>
-          <textarea id="content" v-model="form.content" placeholder="내용을 입력해주세요"></textarea>
+          <textarea
+            id="content"
+            v-model="form.content"
+            placeholder="내용을 입력해주세요"
+          ></textarea>
         </div>
         <div class="form-group file-upload">
           <label for="file">첨부파일</label>
           <div class="p-4">
             <div>
-              <input type="file" @change="handleFileUpload" class="md" style="width: 100%; text-align: right; padding-right: 70px;" />
+              <input
+                type="file"
+                @change="handleFileUpload"
+                class="md"
+                style="width: 100%; text-align: right; padding-right: 70px"
+              />
             </div>
           </div>
         </div>
@@ -50,7 +82,6 @@
     </div>
   </div>
 </template>
-             
 
 <script>
 import api from '@/api/axios'; // axios를 정의합니다.
@@ -67,7 +98,7 @@ export default {
         file: null,
         content: '',
         category: '',
-        selectedKind: ''
+        selectedKind: '',
       },
       mileages: [],
       showCategory: false,
@@ -87,87 +118,88 @@ export default {
     document.removeEventListener('click', this.handleClickOutside);
   },
   methods: {
-
     async handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+      const file = event.target.files[0];
+      if (!file) return;
 
-    const formData = new FormData();
-    formData.append('files', file);
+      const formData = new FormData();
+      formData.append('files', file);
 
-    try {
-      const response = await api.post('/mtip/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      try {
+        const response = await api.post('/mtip/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        const [savedFileName, originalFileName] = response.data.split(',');
+        console.log('Saved file name with UUID:', savedFileName); // 저장된 파일명
+        console.log('Original file name:', originalFileName); // 원본 파일명
+
+        this.uploadedFileName = savedFileName + ',' + originalFileName; // fileInfo 형식으로 저장
+        console.log('글쓰기 fileInfo:', this.uploadedFileName); // fileInfo 값을 확인
+
+        this.displayFileName = originalFileName; // 화면에 표시할 파일명
+        this.form.file = this.uploadedFileName; // 실제 파일 정보 저장 (서버 파일명, 원본 파일명)
+      } catch (error) {
+        console.error('파일 업로드 중 오류 발생:', error);
+        this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
+      }
+    },
+
+    getDisplayFileName(fileName) {
+      // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
+      const UUID_LENGTH = 36 + 1;
+
+      // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
+      if (!fileName || fileName.length <= UUID_LENGTH) {
+        return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
+      }
+
+      // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
+      if (fileName.charAt(UUID_LENGTH - 1) === '_') {
+        return fileName.substring(UUID_LENGTH);
+      }
+
+      return fileName;
+    },
+
+    async submitForm() {
+      const formData = new FormData();
+      formData.append('title', this.form.title);
+      formData.append(
+        'mile_no',
+        this.form.mile_no !== null ? this.form.mile_no : '기타'
+      ); // null이면 '기타'로 설정
+      formData.append('content', this.form.content);
+      formData.append('user_no', this.form.user_no);
+      formData.append('user_name', this.form.user_name);
+
+      if (this.form.file) {
+        formData.append('file', this.form.file); // 업로드된 파일 정보 추가
+        console.log('Form fileInfo:', this.form.file); // formData에 추가된 fileInfo 값 확인
+      }
+      if (this.uploadedFileName) {
+        formData.append('file', this.uploadedFileName);
+      }
+
+      try {
+        const response = await api.post('/mtip/write', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200) {
+          this.showAlert('공지사항이 등록되었습니다.', 'success');
+          this.$router.push('/M_TipListView');
+        } else {
+          this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
         }
-      });
-      const [savedFileName, originalFileName] = response.data.split(',');
-    console.log('Saved file name with UUID:', savedFileName); // 저장된 파일명
-    console.log('Original file name:', originalFileName); // 원본 파일명
-
-    this.uploadedFileName = savedFileName + "," + originalFileName; // fileInfo 형식으로 저장
-    console.log('글쓰기 fileInfo:', this.uploadedFileName); // fileInfo 값을 확인
-
-    this.displayFileName = originalFileName; // 화면에 표시할 파일명
-    this.form.file =  this.uploadedFileName; // 실제 파일 정보 저장 (서버 파일명, 원본 파일명)
-  } catch (error) {
-    console.error('파일 업로드 중 오류 발생:', error);
-    this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
-  }
-},
-
-getDisplayFileName(fileName) {
-  // UUID 길이와 구분자 "_"의 길이를 합한 값 (UUID: 36자, 구분자: 1자)
-  const UUID_LENGTH = 36 + 1;
-
-  // 파일 이름이 null이거나 길이가 UUID_LENGTH보다 짧은 경우
-  if (!fileName || fileName.length <= UUID_LENGTH) {
-    return fileName; // 파일 이름이 너무 짧아서 UUID가 포함될 수 없는 경우
-  }
-
-  // 파일 이름의 첫 부분이 UUID 형식인 경우 제거
-  if (fileName.charAt(UUID_LENGTH - 1) === '_') {
-    return fileName.substring(UUID_LENGTH);
-  }
-  
-  return fileName;
-},
-
-  async submitForm() {
-    const formData = new FormData();
-    formData.append('title', this.form.title);
-    formData.append('mile_no', this.form.mile_no !== null ? this.form.mile_no : '기타'); // null이면 '기타'로 설정
-    formData.append('content', this.form.content);
-    formData.append('user_no', this.form.user_no);
-    formData.append('user_name', this.form.user_name);
-
-    if (this.form.file) {
-    formData.append('file', this.form.file); // 업로드된 파일 정보 추가
-    console.log('Form fileInfo:', this.form.file); // formData에 추가된 fileInfo 값 확인
-  }
-    if (this.uploadedFileName) {
-      formData.append('file', this.uploadedFileName);
-    }
-
-    try {
-      
-      const response = await api.post('/mtip/write', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      if (response.status === 200) {
-        this.showAlert('공지사항이 등록되었습니다.', 'success');
-        this.$router.push('/M_TipListView');
-      } else {
+      } catch (error) {
+        console.error('Error submitting form:', error);
         this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
       }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
-    }
-  },
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -208,91 +240,7 @@ getDisplayFileName(fileName) {
         this.showKind = false;
       }
     },
-//     async handleFileUpload(event) {
-//   const files = event.target.files;
-//   if (!files.length) return;
 
-//   const formData = new FormData();
-//   for (let i = 0; i < files.length; i++) {
-//     formData.append('files', files[i]);
-//   }
-
-//   try {
-//     console.log('업로드할 파일:', files); // 로그 추가
-//     const response = await api.post('/notice/upload', formData, {
-//       headers: {
-//         'Content-Type': 'multipart/form-data'
-//       }
-//     });
-//     console.log('Uploaded files:', response.data);
-//     // 업로드된 파일명 저장
-//     if (response.data && response.data.length > 0) {
-//       this.uploadedFileName = response.data[0];
-//     } else {
-//       console.error('파일 업로드 응답에 파일명이 포함되지 않음');
-//     }
-//   } catch (error) {
-//     console.error('파일 업로드 중 오류 발생:', error);
-//   }
-// },
-  
-//   async submitForm() {
-//     const formData = new FormData();
-//     formData.append('title', this.form.title);
-//     formData.append('mile_no', this.form.mile_no);
-//     formData.append('content', this.form.content);
-//     formData.append('user_no', this.form.user_no);
-//     formData.append('user_name', this.form.user_name);
-
-//     if (this.uploadedFileName) {
-//       formData.append('file', this.uploadedFileName);
-//     }
-
-//     try {
-//       const response = await api.post('/notice/write', formData, {
-//         headers: {
-//           'Content-Type': 'multipart/form-data'
-//         }
-//       });
-
-//       if (response.status === 200) {
-//         this.showAlert('공지사항이 등록되었습니다.', 'success');
-//         this.$router.push('/noticeListView');
-//       } else {
-//         this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
-//       }
-//     } catch (error) {
-//       console.error('Error submitting form:', error);
-//       this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
-//     }
-//   },
-//   async downloadFile() {
-//   console.log("downloadFile 함수 호출됨");
-//   if (!this.uploadedFileName) {
-//     console.log("uploadedFileName이 정의되지 않음");
-//     return;
-//   }
-
-//   try {
-//     console.log("파일 :", this.uploadedFileName);
-//     const response = await api.get(`/notice/download/${this.uploadedFileName}`, {
-//       responseType: 'blob'
-//     });
-    
-//     const url = window.URL.createObjectURL(new Blob([response.data]));
-//     const link = document.createElement('a');
-//     link.href = url;
-//     link.setAttribute('download', this.uploadedFileName.split('_').pop()); // UUID 제거
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//   } catch (error) {
-//     console.error('파일 다운로드 중 오류 발생:', error);
-//     this.showAlert('파일 다운로드 중 오류가 발생했습니다.', 'error');
-//   }
-// },
-
-    
     setUserInfo() {
       const loginInfo = this.getLoginInfo;
       if (loginInfo) {
@@ -300,13 +248,16 @@ getDisplayFileName(fileName) {
         this.form.user_name = loginInfo.user_name;
       }
     },
-    
+
     async fetchMileages() {
       try {
         const response = await api.get('/notice/mileage');
         this.mileages = response.data;
       } catch (error) {
-        console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
+        console.error(
+          'Error fetching mileages:',
+          error.response ? error.response.data : error.message
+        );
       }
     },
     showAlert(message, icon) {
@@ -327,7 +278,7 @@ getDisplayFileName(fileName) {
           document.body.classList.remove('no-scroll');
           document.documentElement.style.overflow = '';
           window.scrollTo(0, scrollY);
-        }
+        },
       });
     },
     handleClick(event) {
@@ -337,8 +288,8 @@ getDisplayFileName(fileName) {
   watch: {
     selectedCategory(newCategory) {
       this.form.category = newCategory;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -364,7 +315,7 @@ getDisplayFileName(fileName) {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top : 4%;
+  margin-top: 4%;
 }
 
 .header {
@@ -447,40 +398,15 @@ h2 {
   display: flex;
   align-items: center;
   padding-left: 10px; /* 왼쪽 여백을 추가하여 위치 조정 */
-  flex: 1; 
+  flex: 1;
   margin-top: -10px; /* 상단 마진을 음수 값으로 설정하여 위로 이동 */
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5B5B5B; /* 검은색 텍스트 */
-  font-size: 18px;
-  cursor: pointer;
-  margin-top: 0;
-  font-family: 'KB_S5', sans-serif;
-}
-
-.back-button .arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 40px;
-  border: 1px solid #ccc; /* 둥근 직사각형 */
-  border-radius: 5px; /* 둥근 모서리 */
-  margin-right: 15px;
-  font-size: 17px;
-  font-family: 'KB_S5', sans-serif;
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-top: 10%;
 }
 
 .form-group {
@@ -492,7 +418,7 @@ form {
   padding: 15px;
   border-radius: 25px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height:auto;
+  height: auto;
 }
 
 .form-group label {
@@ -527,7 +453,6 @@ form {
 .form-group.file-upload {
   height: 80px; /* 원하는 높이로 조절 */
 }
-
 
 .form-group input:focus,
 .form-group select:focus,
@@ -570,10 +495,10 @@ form {
   display: block;
   position: absolute;
   z-index: 1000;
-  background-color:  rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.69);
   /* 배경색상: FFFFFF, 투명도 69% */
   top: 78px; /* 아래로 살짝 내림 */
-  left:135px; /* 오른쪽으로 위치 조정 */
+  left: 135px; /* 오른쪽으로 위치 조정 */
   border: none; /* 테두리 제거 */
   border-radius: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
@@ -586,15 +511,15 @@ form {
   display: block;
   position: absolute;
   z-index: 1000;
-  background-color:  rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.69);
   /* 배경색상: FFFFFF, 투명도 69% */
   top: 78px; /* 아래로 살짝 내림 */
-  left: 135px; /* 오른쪽으로 위치 조정 */
+  left: 12%; /* 오른쪽으로 위치 조정 */
   border: none; /* 테두리 제거 */
   border-radius: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
   padding: 10px; /* 안쪽 여백 추가 */
-  width: 920px; /* 가로로 늘림 */
+  width: 88%; /* 가로로 늘림 */
   height: auto; /* 세로로 늘림 */
   max-height: 2000px; /* 최대 높이 설정 */
 }
@@ -608,8 +533,12 @@ form {
   border: none; /* 테두리 제거 */
   cursor: pointer;
   border-radius: 30px;
-  background-color: rgba(255, 255, 255, 0.69); /* 배경색상: FFFFFF, 투명도 69% */
- 
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.69
+  ); /* 배경색상: FFFFFF, 투명도 69% */
 }
 
 .dropdown-item:hover {
@@ -617,7 +546,6 @@ form {
   border-radius: 30px; /* 모서리 30px */
   border: none; /* 테두리 제거 */
 }
-
 
 .btn-yellow-container {
   display: flex;
@@ -636,9 +564,8 @@ form {
   border-radius: 10px;
   transition: background-color 0.3s;
   margin: 5px 5px 5px 5px;
-  width: 7vw;
-  height: 6vh;
-  font-size : 23px;
+
+  font-size: 23px;
   font-family: 'KB_S5', sans-serif;
 }
 
@@ -651,8 +578,43 @@ form {
   border-radius: 10px;
   transition: background-color 0.3s;
   margin: 5px 5px 5px 5px;
-  width: 7vw;
-  height: 6vh;
+
   font-family: 'KB_S5', sans-serif;
+}
+@media (max-width: 768px) {
+  .dropdown-category {
+    left: 5px;
+    font-size: 13pt;
+    width: 100%;
+  }
+  .bold-x-lg {
+    font-size: 20pt;
+  }
+  .dropdown-item:hover {
+    font-size: 13pt;
+  }
+  .dropdown-item {
+    font-size: 13pt;
+  }
+  .form-group label[data-v-44b7394a] {
+    flex: 0 0 25%;
+  }
+  .drop-category .selected {
+    font-size: 13pt;
+    white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+    overflow: hidden; /* 넘치는 텍스트를 숨김 */
+    text-overflow: ellipsis; /* 넘치는 텍스트의 끝에 ... 추가 */
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 13pt;
+  }
+  textarea {
+    font-size: 13pt;
+  }
+  .form-group.content textarea {
+    font-size: 13pt;
+  }
 }
 </style>
