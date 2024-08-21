@@ -5,15 +5,28 @@
     </h2>
 
     <div class="button-container mb-4">
-      <button @click="downloadPDF" class="w-50 text-start mt-3">
-        <i class="bi bi-download download-icon"></i> PDF 다운로드
+      <button class="w-50 text-start mt-3">
+        <span class="down-btn" @click="downloadPDF"
+          ><i class="bi bi-download download-icon"></i>
+          PDF 다운로드
+        </span>
       </button>
       <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
     </div>
 
+    <div
+      v-if="isGeneratingPDF"
+      class="pdf-generation-status d-flex align-items-center justify-content-center mx-auto w-100"
+    >
+      <div class="spinner-border text-warning my-5 me-3" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <span>PDF 추출중입니다 ....</span>
+    </div>
+
     <!-- 데이터가 없을 때 메시지 표시 -->
     <div
-      v-if="!all"
+      v-else-if="!all"
       class="text-center"
       style="
         display: flex;
@@ -25,7 +38,7 @@
       <h4 class="text-center">조회한 이력이 없습니다.</h4>
     </div>
 
-    <div v-else>
+    <div v-else-if="all">
       <div class="row">
         <div class="col-md-3 mb-4">
           <div class="card h-100 shadow-sm fade-in">
@@ -157,6 +170,7 @@ export default {
   data() {
     return {
       hasReport: true, // 리포트 데이터 존재 여부
+      isGeneratingPDF: false,
     };
   },
   created() {
@@ -164,63 +178,80 @@ export default {
   },
   methods: {
     async downloadPDF() {
+      this.isGeneratingPDF = true;
+
       const element = document.querySelector('.page-back');
       if (!element) {
         console.error('Element with class "page-back" not found');
+        this.isGeneratingPDF = false;
         return;
       }
 
-      const canvas = await html2canvas(element, {
-        scale: 2, // 해상도를 높이기 위해 scale 옵션 추가
-        dpi: 600,
-        useCORS: true, // 외부 이미지 로드를 위한 옵션
-        logging: false, // 콘솔 로그 비활성화
+      // 원본 스타일 저장
+      const originalStyle = element.style.cssText;
+      const originalTransform = window.getComputedStyle(element).transform;
+
+      const pcWidth = 1325;
+      const pcHeight = Math.floor((pcWidth / 210) * 297); // A4 비율
+      const padding = 40; // 원하는 패딩 값 (픽셀)
+
+      // 요소 스타일 임시 변경
+      Object.assign(element.style, {
+        width: `${pcWidth}px`,
+        height: 'auto',
+        transform: 'scale(1)',
+        transformOrigin: 'top left',
+        background: 'white',
+        margin: '0',
+        padding: `${padding}px`,
+        boxSizing: 'border-box',
       });
 
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      const pdf = new jsPDF({
-        unit: 'mm',
-        format: 'a4',
-        putOnlyUsedFonts: true,
-        colorSpace: 'sRGB',
-      });
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      try {
+        console.log('Rendering PDF...');
 
-      let heightLeft = imgHeight;
-      let position = 0;
+        const pdf = new jsPDF({
+          unit: 'px',
+          format: [pcWidth, pcHeight],
+          orientation: 'portrait',
+          compress: true,
+          precision: 16,
+        });
 
-      pdf.addImage(
-        imgData,
-        'PNG',
-        0,
-        position,
-        imgWidth,
-        imgHeight,
-        '',
-        'FAST'
-      );
-      heightLeft -= pageHeight;
+        // 첫 번째 페이지만 렌더링
+        const canvas = await html2canvas(element, {
+          dpi: 600,
+          scale: 10,
+          useCORS: true,
+          logging: false,
+          width: pcWidth,
+          height: pcHeight,
+          windowWidth: pcWidth,
+          windowHeight: pcHeight,
+          backgroundColor: '#ffffff',
+        });
 
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(
-          imgData,
-          'PNG',
-          0,
-          position,
-          imgWidth,
-          imgHeight,
-          '',
-          'FAST'
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pcWidth, pcHeight);
+
+        // PDF 저장
+        pdf.save(
+          `${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트.pdf`
         );
-        heightLeft -= pageHeight;
-      }
+      } catch (error) {
+        console.error('PDF 생성 중 오류 발생:', error);
+        alert('PDF 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      } finally {
+        // 요소 스타일 복원
+        element.style.cssText = originalStyle;
+        element.style.transform = originalTransform;
 
-      pdf.save(`${this.dateAi}_${this.loginInfo.user_name}님의 AI 리포트.pdf`);
+        this.isGeneratingPDF = false;
+
+        this.$nextTick(() => {
+          this.createCharts();
+        });
+      }
     },
     checkLoginInfo() {
       if (
@@ -901,6 +932,14 @@ span {
   .btn-analysis {
     width: 160px;
     font-size: 11pt;
+  }
+
+  .down-btn {
+    font-size: 12pt;
+  }
+
+  .bi-download {
+    font-size: 12pt;
   }
 }
 </style>
