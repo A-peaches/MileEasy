@@ -445,7 +445,7 @@ public class MtipController {
     }
 
     // 댓글 수정
-    @PostMapping("/updateComment/{mtipReplyNo}")
+    @PutMapping("/updateComment/{mtipReplyNo}")
     public ResponseEntity<?> updateComment(@PathVariable int mtipReplyNo, @RequestBody MtipReply mtipReply) {
         try {
             mtipReply.setMtip_reply_no(mtipReplyNo);
