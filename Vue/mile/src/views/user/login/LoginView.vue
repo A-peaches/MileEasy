@@ -1,27 +1,36 @@
 <template>
   <div class="background-video-wrapper">
-    <video autoplay muted loop playsInline webkit-playsinline class="background-video">
+    <video
+      autoplay
+      muted
+      loop
+      playsInline
+      webkit-playsinline
+      class="background-video"
+    >
       <source src="../../../assets/background_login.mp4" type="video/mp4" />
     </video>
     <div class="overlay"></div>
   </div>
- 
+
   <div
     class="d-flex justify-content-center align-items-center"
     style="height: 100vh"
   >
     <div class="d-flex flex-column align-items-center">
-
       <div class="KB_C1 mr-2 logofont">
-        <img src="@/assets/img/logo.png" class='mr-5 mb-2 ' style="
-        width:10%">MileEasy</div>
+        <img
+          src="@/assets/img/logo.png"
+          class="mr-5 mb-2"
+          style="width: 10%; width: 70px; height: 60px"
+        />MileEasy
+      </div>
       <div>
         <input
           type="text"
           class="input-base input-white input-id"
           v-model="user_no"
           placeholder="직원번호를 입력하세요"
-          
         />
       </div>
       <div>
@@ -34,13 +43,13 @@
         />
       </div>
       <div>
-        <button
-          class="btn-green lg2 login-btn"
-          @click="goLogin"
-        >
-          로그인
-        </button>
-        <input type="text" style="display: none" @keyup.enter="goLogin" ref="loginInput"/>
+        <button class="btn-green lg2 login-btn" @click="goLogin">로그인</button>
+        <input
+          type="text"
+          style="display: none"
+          @keyup.enter="goLogin"
+          ref="loginInput"
+        />
       </div>
       <div class="d-flex justify-content-center my-3">
         <div class="mr-8">
@@ -88,7 +97,7 @@ export default {
         user_pw: this.user_pw,
         is_checked: this.isChecked,
       };
-      
+
       const response = await this.login(loginInfo);
       if (response) {
         if (response.user_is_admin && this.isChecked) {
@@ -107,7 +116,7 @@ export default {
       this.$swal({
         title: '유효하지 않은 로그인정보 입니다',
         icon: 'error',
-        scrollbarPadding: false
+        scrollbarPadding: false,
       });
     },
   },
@@ -115,7 +124,7 @@ export default {
     if (this.$refs.loginInput) {
       this.$refs.loginInput.focus();
     }
-  }
+  },
 };
 </script>
 
@@ -131,7 +140,7 @@ export default {
   .KB_C1.logofont {
     font-size: 36pt; /* 폰트 크기 조정 */
     margin-bottom: 16px;
-    color:#ffffff;   
+    color: #ffffff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   }
 
@@ -197,21 +206,21 @@ export default {
 }
 
 .logofont {
-  font-size:48pt; 
-  color:#ffffff;   
+  font-size: 48pt;
+  color: #ffffff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  margin-bottom:24px;
+  margin-bottom: 24px;
 }
 
 .input-id {
-  height: 70px; 
-  width: 400px; 
+  height: 70px;
+  width: 400px;
   opacity: 75%;
 }
 
 .login-btn {
-  height: 70px; 
-  width: 400px; 
+  height: 70px;
+  width: 400px;
   color: white;
 }
 
@@ -224,7 +233,4 @@ export default {
     display: none;
   }
 } */
-
 </style>
-
-
