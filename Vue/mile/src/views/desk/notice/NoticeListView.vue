@@ -4,7 +4,8 @@
       <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">공지사항</h2>
       <hr class="mx-auto title-line" />
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button list-wrapper-category">카테고리</div>
+        <div class="category-button list-wrapper-category"> 
+          {{ selectedCategory === null ? '카테고리' : selectedCategory }}</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
@@ -167,10 +168,12 @@ export default {
       ];
     },
     filteredNotices() {
-      let result = this.notices.map((notice) => ({
+          let result = this.notices.map(notice => ({
         ...notice,
         mile_name: notice.mile_name || '기타',
       }));
+
+      // 검색어로 필터링
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         result = result.filter(
@@ -179,15 +182,21 @@ export default {
             notice.notice_board_content.toLowerCase().includes(query)
         );
       }
+
+      // 카테고리로 필터링
       if (this.selectedCategory !== null) {
-        if (this.selectedCategory === '기타') {
-          result = result.filter((notice) => !notice.mile_name);
+        if (this.selectedCategory === "기타") {
+          result = result.filter(
+            (notice) => !notice.mile_no || notice.mile_name === '기타'
+          );
         } else {
           result = result.filter(
             (notice) => notice.mile_name === this.selectedCategory
           );
         }
       }
+
+
       if (this.sortByViews) {
         result.sort(
           (a, b) =>
@@ -375,9 +384,22 @@ export default {
       this.currentPage = 1;
     },
     filterByCategory(category) {
-      this.selectedCategory = category;
-      this.currentPage = 1;
-    },
+    this.selectedCategory = category;
+    this.currentPage = 1;
+    if (category === '기타') {
+      this.filteredNotices = this.notices.filter(
+        notice => !notice.mile_no || notice.mile_name === '기타'
+      );
+    } else if (category === null) {
+      // 전체 항목을 표시
+      this.filteredNotices = this.notices;
+    } else {
+      // 특정 카테고리 필터링
+      this.filteredNotices = this.notices.filter(
+        notice => notice.mile_name === category
+      );
+    }
+  },
     refreshPage() {
       this.selectedCategory = null;
       this.searchQuery = '';
@@ -483,67 +505,6 @@ export default {
   background-color: #e1e3e4 !important;
   transition: background-color 0.3s ease;
 }
-/* html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Arial, sans-serif";
-  overflow-x: hidden; 
-  height: 100%; 
-}
-
-body {
-  overflow-y: scroll; 
-} */
-
-/* h2 {
-  font-family: "KB_C2", sans-serif;
-  font-size: 40px;
-  margin-top: 30px;
-  display: inline-block;
-  position: relative;
-} */
-
-/* h2::after {
-  content: "";
-  display: block;
-  width: 120%;
-  height: 1px;
-  background-color: #8d8d8d; 
-  position: absolute;
-  bottom: -5px; 
-  left: -10%; 
-} */
-
-/* .app-container {
-  width: 100%;
-  padding: 0;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4%;
-} */
-
-/* .content {
-  text-align: center;
-  padding: 20px;
-  width: 95%;
-  max-width: 1300px;
-  box-sizing: border-box;
-  min-height: 100vh;
-  margin: auto;
-} */
-
-/* .content {
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 60px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  max-width: 1300px;
-  margin: 0 auto;
-} */
 
 .category-button {
   background-color: #f9f9f9;
@@ -604,12 +565,11 @@ body {
 }
 
 .notice-count {
-  /* margin-bottom: 10px;
+  margin-bottom: 10px;
   font-size: 19px;
   font-family: "KB_C3", sans-serif;
   text-align: left; 
-  padding-left: 3%; */
-  padding: 2em;
+  padding-left: 3%;
 }
 
 .notice-count-container {
@@ -623,6 +583,7 @@ body {
   align-items: center;
   cursor: pointer;
   position: relative;
+  top: -5px;
 }
 
 .checkbox-container input[type='checkbox'] {
@@ -902,6 +863,7 @@ body {
 }
 .mileage-text {
   display: inline;
+  margin-left: 5px;
 }
 
 @media (max-width: 768px) {
