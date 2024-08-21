@@ -126,10 +126,6 @@ export default {
   background-color: #d3d3d3;
 }
 
-.lg2 {
-  font-size: 16px;
-}
-
 .fw-bold {
   font-weight: bold;
 }
