@@ -19,7 +19,7 @@
 
   <div v-if="isGeneratingPDF" class="pdf-generation-status d-flex align-items-center 
   justify-content-center mx-auto w-100">
-    <div class="spinner-border text-warning my-5 me-3" role="status">
+    <div class="spinner-border my-5 me-3" role="status" style="color: #ffca05;">
       <span class="visually-hidden">Loading...</span>
     </div>
     <span>PDF 추출중입니다 ....</span>
@@ -819,11 +819,6 @@ export default {
   font-family: 'KB_S5';
 }
 
-.text-secondary {
-  color: #4a90e2 !important;
-  font-weight: 600;
-  font-family: 'KB_S5';
-}
 
 .text-goal {
   color: #ff7e5e !important;
