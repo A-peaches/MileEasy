@@ -191,6 +191,10 @@ export default {
       const originalStyle = element.style.cssText;
       const originalTransform = window.getComputedStyle(element).transform;
 
+      // 애니메이션 클래스를 제거합니다.
+      const fadeElements = element.querySelectorAll('.fade-in');
+      fadeElements.forEach(el => el.classList.remove('fade-in'));
+
       const pcWidth = 1325;
       const pcHeight = Math.floor((pcWidth / 210) * 297); // A4 비율
       const padding = 40; // 원하는 패딩 값 (픽셀)
@@ -220,8 +224,8 @@ export default {
 
         // 첫 번째 페이지만 렌더링
         const canvas = await html2canvas(element, {
-          dpi: 600,
-          scale: 10,
+          dpi: 300,
+          scale: 2,
           useCORS: true,
           logging: false,
           width: pcWidth,
@@ -245,6 +249,9 @@ export default {
         // 요소 스타일 복원
         element.style.cssText = originalStyle;
         element.style.transform = originalTransform;
+
+        // 애니메이션 클래스를 복원합니다.
+        fadeElements.forEach(el => el.classList.add('fade-in'));
 
         this.isGeneratingPDF = false;
 
