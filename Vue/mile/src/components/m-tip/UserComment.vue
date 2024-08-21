@@ -67,7 +67,9 @@
               text-align: left;
               box-sizing: border-box;"></textarea>
         </div>
-         <div v-else class="comment-text" style="font-family: 'KB_C2', sans-serif; font-size: 18px; margin-right: 1%; text-align:left;">{{ comment.mtip_reply_content }}</div>
+        <div v-else class="comment-text" style="font-family: 'KB_C2', sans-serif; font-size: 18px; margin-right: 1%; text-align:left;">
+          {{ comment.mtip_reply_content || comment.editingContent }}
+        </div>
         </div>   
       </div>
     </div>
@@ -119,6 +121,14 @@ export default {
       return this.getComments;
     },
   },
+  watch: {
+  comments: {
+    deep: true,
+    handler() {
+      console.log('댓글이 업데이트되었습니다.');
+    }
+  }
+},
 
   methods: {
     ...mapActions('mtipReply', ['fetchComments', 'addComment', 'updateComment', 'deleteComment']),
@@ -194,21 +204,25 @@ export default {
     this.editingCommentId = comment.mtip_reply_no;
   },
   async finishEditing(comment) {
-    if (!comment.editingContent.trim()) return;
+  if (!comment.editingContent.trim()) return;
 
-    const commentData = {
-      mtip_reply_no: comment.mtip_reply_no,
-      mtip_reply_content: comment.editingContent.trim(),
-    };
+  const commentData = {
+    mtip_reply_no: comment.mtip_reply_no,
+    mtip_reply_content: comment.editingContent.trim(),
+  };
 
-    try {
-      await this.$store.dispatch('mtipReply/updateComment', commentData);
-      comment.mtip_reply_content = comment.editingContent.trim();
-      comment.isEditing = false;
-    } catch (error) {
-      console.error('댓글 수정 중 오류가 발생했습니다:', error);
-    }
-  },
+  try {
+    const updatedComment = await this.$store.dispatch('mtipReply/updateComment', commentData);
+    console.log('업데이트된 댓글:', updatedComment);  // 추가된 로그
+
+     // 서버에서 반환된 데이터로 댓글 내용 업데이트
+    comment.mtip_reply_content = updatedComment.mtip_reply_content || comment.editingContent.trim();
+    comment.isEditing = false;
+  } catch (error) {
+    console.error('댓글 수정 중 오류가 발생했습니다:', error);
+    // 오류 처리 (예: 사용자에게 알림)
+  }
+},
   async deleteComment(mtip_reply_no) {
     try {
       await this.$store.dispatch('mtipReply/deleteComment', mtip_reply_no);

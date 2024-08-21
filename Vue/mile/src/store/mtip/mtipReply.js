@@ -19,7 +19,11 @@ const mutations = {
   UPDATE_COMMENT(state, updatedComment) {
     const index = state.comments.findIndex(comment => comment.mtip_reply_no === updatedComment.mtip_reply_no);
     if (index !== -1) {
-      state.comments.splice(index, 1, updatedComment);
+      state.comments[index] = {
+        ...state.comments[index],  // 기존 데이터 유지
+        ...updatedComment,         // 새로운 데이터로 덮어쓰기
+        isEditing: false
+      };
     }
   },
   DELETE_COMMENT(state, commentId) {
@@ -59,10 +63,14 @@ const actions = {
   },
   async updateComment({ commit }, commentData) {
     try {
-      await api.post(`/mtip/updateComment/${commentData.mtip_reply_no}`, commentData);
-      commit('UPDATE_COMMENT', commentData);
+      const response = await api.put(`/mtip/updateComment/${commentData.mtip_reply_no}`, commentData);
+      console.log('서버 응답:', response.data);  // 추가된 로그
+      const updatedComment = response.data;
+      commit('UPDATE_COMMENT', updatedComment);
+      return updatedComment;
     } catch (error) {
       console.error('댓글 수정 중 오류가 발생했습니다:', error);
+      throw error;
     }
   },
   async deleteComment({ commit }, commentId) {

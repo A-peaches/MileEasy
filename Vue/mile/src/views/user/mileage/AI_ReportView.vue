@@ -171,10 +171,10 @@ export default {
       }
 
       const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: null, // 배경색을 투명하게 설정
+        scale: 2, // 해상도를 높이기 위해 scale 옵션 추가
+        dpi: 600,
+        useCORS: true, // 외부 이미지 로드를 위한 옵션
+        logging: false, // 콘솔 로그 비활성화
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
