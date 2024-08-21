@@ -188,6 +188,7 @@ export default {
         return;
       }
 
+
       // 원본 스타일 저장
       const originalStyle = element.style.cssText;
       const originalTransform = window.getComputedStyle(element).transform;
@@ -195,6 +196,8 @@ export default {
       const pcWidth = 1325;
       const pcHeight = Math.floor((pcWidth / 210) * 297); // A4 비율
       const padding = 40; // 원하는 패딩 값 (픽셀)
+
+
 
       // 요소 스타일 임시 변경
       Object.assign(element.style, {
@@ -219,10 +222,14 @@ export default {
           precision: 16,
         });
 
+
+
+
+
         // 첫 번째 페이지만 렌더링
         const canvas = await html2canvas(element, {
-          dpi: 600,
-          scale: 10,
+          dpi: 300,
+          scale: 2,
           useCORS: true,
           logging: false,
           width: pcWidth,
