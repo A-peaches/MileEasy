@@ -382,17 +382,17 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18pt;
 }
 
 .views-icon i {
-  font-size: 1.8vw;
   color: #4b4a4a;
 }
 
 .views-text {
   flex: 0 0 auto;
   text-align: left;
-  font-size: 1.5vw;
+  font-size: 18pt;
   font-family: 'KB_S5', sans-serif;
   color: #4b4a4a;
   margin-left: 0.8vw;
@@ -407,5 +407,14 @@ export default {
   margin-left: 0%;
   display: inline-block;
   margin-bottom: 8px;
+}
+@media (max-width: 768px) {
+  .views-icon {
+    font-size: 14pt;
+  }
+
+  .views-text {
+    font-size: 14pt;
+  }
 }
 </style>
