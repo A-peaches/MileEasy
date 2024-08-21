@@ -10,7 +10,8 @@
         <h2 class="bold-x-lg">나의 M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button list-wrapper">카테고리</div>
+        <div class="category-button list-wrapper"> 
+          {{ selectedCategory === null ? '카테고리' : selectedCategory }}</div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
