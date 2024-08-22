@@ -142,18 +142,18 @@
                   v-if="notice.request_status === 0"
                   style="text-align: right; margin-right: 10px"
                 >
-                <div style="cursor:pointer;">
-                  <i
-                    class="bi bi-trash-fill"
-                    style="color: gray; font-size: larger"
-                  ></i>
-                  <span
-                    style="color: gray; font-size: larger"
-                    @click="deleteRequest(notice.mileage_request_no)"
-                    >삭제</span
-                  >
+                  <div style="cursor: pointer; text-align: right">
+                    <i
+                      class="bi bi-trash-fill"
+                      style="color: gray; font-size: larger"
+                    ></i>
+                    <span
+                      style="color: gray; font-size: larger"
+                      @click="deleteRequest(notice.mileage_request_no)"
+                      >삭제</span
+                    >
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
