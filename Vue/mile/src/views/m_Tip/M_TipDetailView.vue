@@ -754,7 +754,7 @@ export default {
   .edit-button {
     font-size: 15px;
   }
-  .delete-button[data-v-5eeb8322] {
+  .delete-button {
     font-size: 15px;
   }
 }

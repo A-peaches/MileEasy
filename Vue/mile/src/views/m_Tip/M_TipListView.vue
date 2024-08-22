@@ -11,7 +11,8 @@
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
         <div class="category-button list-wrapper">
-          {{ selectedCategory === null ? '카테고리' : selectedCategory }} </div>
+          {{ selectedCategory === null ? '카테고리' : selectedCategory }}
+        </div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
@@ -891,6 +892,10 @@ h2::after {
   }
   .menu-items {
     font-size: 13pt;
+  }
+  .category-button {
+    width: 25vw !important;
+    font-size: 12pt !important;
   }
 }
 </style>

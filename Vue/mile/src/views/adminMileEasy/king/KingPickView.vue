@@ -149,7 +149,6 @@ export default {
     async kingData() {
       try {
         const response = await api.get('/mileage/kingDataSelect');
-        console.log('kingDataSelect top5:', response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : '';
         this.kingTop5 = response.data.slice(0, 5);
         // 사용자 점수별로 정렬
@@ -180,7 +179,7 @@ export default {
     async jumpData() {
       try {
         const response = await api.get('/mileage/jumpDataSelect');
-        console.log('점프업 top5:', response.data);
+
         this.jumpTop5 = response.data.slice(0, 5);
         // 사용자 점수별로 정렬
         const sortedData = response.data.sort((a, b) => b.score - a.score);
@@ -222,7 +221,6 @@ export default {
     async lastUpdate() {
       try {
         const response = await api.get('/admin/lastUpdate');
-        console.log('날짜 데이터', response.data);
         this.dates = response.data.map((item) => item.date || '-');
       } catch (error) {
         console.error('Error fetching last update dates:', error);
@@ -342,10 +340,7 @@ export default {
         this.kingUserList.forEach((user) => params.append('king', user));
         this.jumpUserList.forEach((user) => params.append('jump', user));
 
-        const response = await api.post(
-          `/admin/pickBadge?${params.toString()}`
-        );
-        console.log('Response:', response.data);
+        await api.post(`/admin/pickBadge?${params.toString()}`);
         Swal.fire({
           icon: 'success',
           title: '채택완료',

@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <div class="content cards">
+  <div class="">
+    <div class="cards page-back mx-auto">
       <div class="header">
         <div class="back-container">
           <button class="back-button" @click="goBack">
