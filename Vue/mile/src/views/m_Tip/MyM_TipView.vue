@@ -131,6 +131,21 @@
           <p>게시글이 없습니다.</p>
         </div>
       </div>
+
+        <div class="pagination">
+        <button @click="prevPage" :disabled="currentPage === 1">〈</button>
+        <button
+          @click="goToPage(page)"
+          :class="{ active: currentPage === page }"
+          v-for="page in totalPages"
+          :key="page"
+        >
+          {{ page }}
+        </button>
+        <button @click="nextPage" :disabled="currentPage === totalPages">
+          〉
+        </button>
+      </div>
     </div>
   </div>
 </template>

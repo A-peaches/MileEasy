@@ -16,9 +16,12 @@ public class Usertarget {
     private String user_no;
     private int target_no;
     private int mile_no;
+    private String mile_name;
     private Date start_date;
     private Date end_date;
     private Integer target_mileage;
     private boolean is_together;
-    private int initial_mileage;
+    private int participantCount;
+    private int achievementRate;
+    private int totalMileScoreByTargetNo;
 }

@@ -79,7 +79,7 @@ const state = {  // 애플리케이션의 상태를 저장
           const response = await api.get(`/target/admin/targets/${userNo}`);
           console.log('관리자 목표설정 서버정보:', response.data); // 응답 데이터를 콘솔에 출력
           commit('setTargets', response.data);
-          commit('SET_ADMIN_TARGETS', response.data);
+          commit('SET_ADMIN_TARGETS', response.data); 
         } catch (error) {
           console.error("Error fetching admin targets:", error);
         }

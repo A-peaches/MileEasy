@@ -13,72 +13,212 @@
     </insert>
 
     <!-- 개인형 목표 불러오기 -->
-
-
-
-
-
-    <!-- 참여형 목표 불러오기 -->
-    <select id="getAdminTargets" parameterType="string" resultType="com.kbstar.mileEasy.dto.Target">
+    <select id="getTargetsByUserNo" parameterType="map" resultType="com.kbstar.mileEasy.dto.Usertarget">
+    <![CDATA[
+        WITH closest_date AS (
+            SELECT
+                ut.target_no,
+                ut.user_no,
+                ut.mile_no,
+                ut.start_date,
+                COALESCE(
+                        (SELECT mh.mile_history_date
+                         FROM mile_history mh
+                         WHERE mh.user_no = ut.user_no AND mh.mile_no = ut.mile_no
+                         ORDER BY ABS(DATEDIFF(mh.mile_history_date, ut.start_date))
+                        LIMIT 1),
+            (SELECT ms.mile_score_date
+             FROM mile_score ms
+             WHERE ms.user_no = ut.user_no AND ms.mile_no = ut.mile_no
+             ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
+             LIMIT 1),
+            ut.start_date
+        ) AS closest_date,
+                CASE
+                    WHEN (SELECT mh.mile_history_date
+                          FROM mile_history mh
+                          WHERE mh.user_no = ut.user_no AND mh.mile_no = ut.mile_no
+                          ORDER BY ABS(DATEDIFF(mh.mile_history_date, ut.start_date))
+                        LIMIT 1) <=
+                 (SELECT ms.mile_score_date
+                  FROM mile_score ms
+                  WHERE ms.user_no = ut.user_no AND ms.mile_no = ut.mile_no
+                  ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
+                  LIMIT 1)
+            THEN 'mile_history'
+            ELSE 'mile_score'
+        END AS closest_table
+    FROM user_target ut
+    WHERE ut.user_no = #{userNo} AND ut.is_together = 0
+        ),
+        total_mile_history_score AS (
         SELECT
+        cd.target_no,
+        COALESCE(
+        CASE
+        WHEN cd.closest_table = 'mile_history' THEN
+        (SELECT SUM(mh.mile_history_point)
+        FROM mile_history mh
+        WHERE mh.user_no = cd.user_no
+        AND mh.mile_no = cd.mile_no
+        AND mh.mile_history_date = cd.closest_date)
+        ELSE
+        (SELECT SUM(ms.mile_score_point)
+        FROM mile_score ms
+        WHERE ms.user_no = cd.user_no
+        AND ms.mile_no = cd.mile_no
+        AND ms.mile_score_date = cd.closest_date)
+        END, 0) AS totalMileHistoryScore
+        FROM closest_date cd
+        ),
+        total_mile_score AS (
+        SELECT
+        ut.target_no,
+        COALESCE(SUM(ms.mile_score_point), 0) AS totalMileScore
+        FROM user_target ut
+        LEFT JOIN mile_score ms ON ut.user_no = ms.user_no AND ut.mile_no = ms.mile_no
+        WHERE ut.user_no = #{userNo}
+        AND ut.is_together = 0
+        GROUP BY ut.target_no
+        )
+        SELECT DISTINCT
             t.target_no,
             t.mile_no,
             t.user_no,
             t.start_date,
             t.end_date,
-            t.target_mileage,
+            ut.target_mileage,
             t.is_together,
             t.is_manager_plan,
             m.mile_name,
-
-            -- 참여자 수 계산
-            (SELECT COUNT(ut.user_no)
-             FROM user_target ut
-             WHERE ut.target_no = t.target_no
-            ) AS participantCount,
-
-            -- 로그인한 사용자의 목표 기간 내 마일리지 합산 (달성한 마일리지)
-            (
-                SELECT COALESCE(SUM(mh.mile_history_point), 0)
-                FROM mile_history mh
-                WHERE mh.mile_no = t.mile_no
-                  AND mh.user_no = #{userNo}
-                  AND mh.mile_history_date BETWEEN t.start_date AND t.end_date  -- 목표 기간 내의 마일리지 합산
-            ) AS totalMileScoreByMileNo,
-
-            -- 달성률 계산 (달성 마일리지 / 목표 마일리지 * 100)
+            COALESCE(tmhs.totalMileHistoryScore, 0) AS totalMileHistoryScore,
+            COALESCE(tms.totalMileScore, 0) AS totalMileScore,
+            ABS(COALESCE(tms.totalMileScore, 0) - COALESCE(tmhs.totalMileHistoryScore, 0)) AS totalMileScoreByTargetNo,
             CASE
-                WHEN t.target_mileage > 0 THEN
-                    FLOOR(
-                            (
-                                (
-                                    SELECT COALESCE(SUM(mh.mile_history_point), 0)
-                                    FROM mile_history mh
-                                    WHERE mh.mile_no = t.mile_no
-                                      AND mh.user_no = #{userNo}
-                                      AND mh.mile_history_date BETWEEN t.start_date AND t.end_date  -- 목표 기간 내의 마일리지 합산
-                                ) / t.target_mileage  -- 목표 마일리지로 나눔
-                                ) * 100  -- 백분율로 변환
-                    )
+                WHEN ut.target_mileage > 0 THEN
+                    FLOOR((ABS(COALESCE(tms.totalMileScore, 0) - COALESCE(tmhs.totalMileHistoryScore, 0)) / ut.target_mileage) * 100)
                 ELSE 0
                 END AS achievementRate
+        FROM user_target ut
+                 LEFT JOIN total_mile_history_score tmhs ON tmhs.target_no = ut.target_no
+                 LEFT JOIN total_mile_score tms ON tms.target_no = ut.target_no
+                 LEFT JOIN target t ON t.target_no = ut.target_no
+                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
+        WHERE ut.user_no = #{userNo}
+          AND ut.is_together = 0
+        ORDER BY t.start_date ASC;
+        ]]>
+</select>
 
-        FROM
-            target t
-                LEFT JOIN mileage m ON t.mile_no = m.mile_no
-        WHERE
-            t.is_manager_plan = true
-          AND (t.is_together = 1 OR t.is_manager_plan = true)  -- is_together가 1이거나 is_manager_plan이 true인 경우
-        GROUP BY
+
+    <!-- 참여형 목표 불러오기 -->
+    <select id="getAdminTargets" parameterType="string" resultType="com.kbstar.mileEasy.dto.Usertarget">
+    <![CDATA[
+        WITH closest_date AS (
+            SELECT
+                t.target_no,
+                ut.user_no,
+                t.mile_no,
+                t.start_date,
+                COALESCE(
+                        (SELECT mh.mile_history_date
+                         FROM mile_history mh
+                         WHERE mh.user_no = ut.user_no
+                           AND mh.mile_no = t.mile_no
+                         ORDER BY ABS(DATEDIFF(mh.mile_history_date, t.start_date))
+                        LIMIT 1),
+        (SELECT ms.mile_score_date
+         FROM mile_score ms
+         WHERE ms.user_no = ut.user_no
+           AND ms.mile_no = t.mile_no
+         ORDER BY ABS(DATEDIFF(ms.mile_score_date, t.start_date))
+         LIMIT 1),
+        t.start_date
+    ) AS closest_date,
+                CASE
+                    WHEN (SELECT mh.mile_history_date
+                          FROM mile_history mh
+                          WHERE mh.user_no = ut.user_no
+                            AND mh.mile_no = t.mile_no
+                          ORDER BY ABS(DATEDIFF(mh.mile_history_date, t.start_date))
+                        LIMIT 1) <=
+               (SELECT ms.mile_score_date
+                FROM mile_score ms
+                WHERE ms.user_no = ut.user_no
+                  AND ms.mile_no = t.mile_no
+                ORDER BY ABS(DATEDIFF(ms.mile_score_date, t.start_date))
+                LIMIT 1)
+        THEN 'mile_history'
+        ELSE 'mile_score'
+        END AS closest_table
+FROM target t
+LEFT JOIN user_target ut ON t.target_no = ut.target_no
+WHERE t.is_together = 1
+),
+total_mile_history_score AS (
+    SELECT
+    cd.target_no,
+    COALESCE(
+    SUM(mh.mile_history_point),
+    0
+    ) AS totalMileHistoryScore
+    FROM closest_date cd
+    LEFT JOIN mile_history mh
+    ON mh.user_no = cd.user_no
+    AND mh.mile_no = cd.mile_no
+    AND mh.mile_history_date = cd.closest_date
+    GROUP BY cd.target_no
+),
+total_mile_score AS (
+    SELECT
+    t.target_no,
+    COALESCE(
+    SUM(ms.mile_score_point),
+    0
+    ) AS totalMileScore
+    FROM target t
+    LEFT JOIN user_target ut ON t.target_no = ut.target_no
+    LEFT JOIN mile_score ms ON ut.user_no = ms.user_no
+    AND t.mile_no = ms.mile_no
+    AND ms.mile_score_date = (SELECT cd.closest_date
+    FROM closest_date cd
+    WHERE cd.target_no = t.target_no
+    LIMIT 1)
+    WHERE t.is_together = 1
+    GROUP BY t.target_no
+)
+        SELECT DISTINCT
             t.target_no,
             t.mile_no,
-            t.user_no,
+            ut.user_no,
             t.start_date,
             t.end_date,
-            t.target_mileage,
+            t.target_mileage,  -- target_mileage를 target 테이블에서 가져옴
             t.is_together,
             t.is_manager_plan,
-            m.mile_name;
+            m.mile_name,
+            COALESCE(tmhs.totalMileHistoryScore, 0) AS totalMileHistoryScore,
+            COALESCE(tms.totalMileScore, 0) AS totalMileScore,
+            ABS(COALESCE(tms.totalMileScore, 0) - COALESCE(tmhs.totalMileHistoryScore, 0)) AS totalMileScoreByTargetNo,
+            CASE
+                WHEN t.target_mileage > 0 THEN  -- target_mileage를 target 테이블에서 사용
+                    ROUND(
+                            (ABS(COALESCE(tms.totalMileScore, 0) - COALESCE(tmhs.totalMileHistoryScore, 0)) / t.target_mileage) * 100, 2
+                    )
+                ELSE 0
+                END AS achievementRate,
+            (SELECT COUNT(ut2.user_no)
+             FROM user_target ut2
+             WHERE ut2.target_no = t.target_no
+            ) AS participantCount
+        FROM target t
+                 LEFT JOIN user_target ut ON t.target_no = ut.target_no
+                 LEFT JOIN total_mile_history_score tmhs ON tmhs.target_no = t.target_no
+                 LEFT JOIN total_mile_score tms ON tms.target_no = t.target_no
+                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
+        WHERE t.is_together = 1
+        ORDER BY t.start_date ASC;
+        ]]>
     </select>
 
 
@@ -117,7 +257,6 @@
         end_date,
         target_mileage,
         is_together,
-        initial_mileage
         )
         VALUES (
         #{target_no},
@@ -127,13 +266,7 @@
         #{end_date},
         #{target_mileage},
         #{is_together},
-        0  <!-- 초기값을 0으로 설정 -->
-        )
-        ON DUPLICATE KEY UPDATE
-        start_date = VALUES(start_date),
-        end_date = VALUES(end_date),
-        target_mileage = VALUES(target_mileage),
-        is_together = VALUES(is_together);
+        );
     </insert>
 
     <!-- initial_mileage 업데이트 (UPDATE) -->
@@ -291,22 +424,6 @@
         ORDER BYs
         achievementRate DESC;
     </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
