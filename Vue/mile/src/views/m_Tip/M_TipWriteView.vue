@@ -1,6 +1,5 @@
 <template>
-  <div class="app-container">
-    <div class="content cards">
+    <div class="cards page-back mx-auto">
       <div class="header">
         <div class="back-container">
           <button class="back-button" @click="goBack">
@@ -80,7 +79,7 @@
         </div>
       </form>
     </div>
-  </div>
+
 </template>
 
 <script>
@@ -526,6 +525,12 @@ form {
 .menu-items {
   display: flex;
   flex-direction: column;
+}
+
+.page-back {
+  padding-left : 3%;
+  padding-right: 3%;
+
 }
 /* 종류 드롭다운 */
 .dropdown-item {
