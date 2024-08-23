@@ -43,7 +43,7 @@
           <!-- 추가 상세 정보를 여기에 넣을 수 있습니다 -->
            <div style="margin-top: 40px;">
           <!-- 참가자 목록 -->
-            <div v-if="participants && participants.length > 0">
+            <!-- <div v-if="participants && participants.length > 0">
               <div v-for="(participant, index) in participants" :key="index" class="participant-card">
                 <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
                   직원 번호: {{ participant.user_no }}
@@ -53,7 +53,13 @@
                   달성률: {{participant.achievementRate}}%
                 </p>
               </div>
-            </div>
+            </div> -->
+            <span style="font-family: 'KB_C2', sans-serif; font-size: 18px;"> 참가자 수 : </span>
+            <i class="bi bi-person-fill-check" style="color: #8c8c8c; font-size: 25px"></i> 
+            <i class="bi bi-person-fill-x" style="color: #cf2222; font-size: 25px"></i>
+            <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 25px"></i>
+            <span style="font-family: 'KB_C2', sans-serif; font-size: 17px;"> 문자발송 </span>
+
           </div>
         </div>
       </div>
