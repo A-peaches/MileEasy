@@ -18,7 +18,7 @@
             mr.request_status,
             m.mile_no,
             m.mile_name
-        
+
             mileage_request mr
                 LEFT JOIN mileage m
                           ON mr.mile_no = m.mile_no

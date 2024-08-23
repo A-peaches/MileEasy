@@ -68,42 +68,43 @@ export default {
       }
     },
     sendMessage() {
-  if (this.message.trim()) {
-    const userInput = this.message.toLowerCase();
-    
-    // chatList에서 chat_tag가 사용자 입력에 포함된 항목을 찾습니다.
-    const matchedChat = this.chatList.find(chat => 
-      userInput.includes(chat.chat_tag.toLowerCase())
-    );
+      if (this.message.trim()) {
+        const userInput = this.message.toLowerCase();
 
-    this.chatMessages.push({ type: 'user', content: this.message });
+        // chatList에서 chat_tag가 사용자 입력에 포함된 항목을 찾습니다.
+        const matchedChat = this.chatList.find((chat) =>
+          userInput.includes(chat.chat_tag.toLowerCase())
+        );
 
-    if (matchedChat) {
-      // 일치하는 chat_tag가 있으면 해당 chat_content를 응답합니다.
-      this.chatMessages.push({
-        type: 'bot',
-        content: matchedChat.chat_content,
-      });
-    } else {
-      // 일치하는 chat_tag가 없으면 기본 응답을 합니다.
-      this.chatMessages.push({
-        type: 'bot',
-        content: '죄송합니다. 해당 내용에 대한 정보를 찾을 수 없습니다.',
-      });
-    }
+        this.chatMessages.push({ type: 'user', content: this.message });
 
-    this.message = '';
-    this.$nextTick(() => {
-      const chatBox = document.getElementById('chatBox');
-      chatBox.scrollTop = chatBox.scrollHeight; // 자동 스크롤
-    });
-  }
-},
+        if (matchedChat) {
+          // 일치하는 chat_tag가 있으면 해당 chat_content를 응답합니다.
+          this.chatMessages.push({
+            type: 'bot',
+            content: matchedChat.chat_content,
+          });
+        } else {
+          // 일치하는 chat_tag가 없으면 기본 응답을 합니다.
+          this.chatMessages.push({
+            type: 'bot',
+            content: '죄송합니다. 해당 내용에 대한 정보를 찾을 수 없습니다.',
+          });
+        }
+
+        this.message = '';
+        this.$nextTick(() => {
+          const chatBox = document.getElementById('chatBox');
+          chatBox.scrollTop = chatBox.scrollHeight; // 자동 스크롤
+        });
+      }
+    },
     sendGreeting() {
       if (this.isOpen) {
         this.chatMessages.push({
           type: 'bot',
-          content: '안녕하세요! 저는 리브뚝뚝입니다. 무엇이든 물어보세요!',
+          content:
+            '안녕하세요! 저는 리브뚝뚝입니다. "MileEasy 사이트"에 대해 무엇이든 물어보세요!🙌',
         });
       }
     },
