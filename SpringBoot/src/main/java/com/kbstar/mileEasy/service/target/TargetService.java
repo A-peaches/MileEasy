@@ -64,7 +64,7 @@ public class TargetService {
     // 사용자  참여하기
     public void joinTarget(int targetNo, String userNo) {
 
-        System.out.println("joinTarget service 도착 ! ");
+        System.out.println("joinTarget service 도착 ! "+ targetNo +userNo);
         // 목표 정보를 가져오기
         Target target = targetDao.getTargetByNo(targetNo);
         if (target == null) {
@@ -84,9 +84,7 @@ public class TargetService {
         System.out.println("userTarget dao 들렸다가 옴 : "+userTarget);
         // user_target 테이블에 삽입
         targetDao.insertjoinTarget(userTarget);
-        System.out.println("insertUserTarget 들렸다 옴");
-        // initial_mileage 업데이트
-        targetDao.updateInitialMileage(target.getTarget_no(), userNo, target.getMile_no());
+        System.out.println("insertUserTarget 서버 끝");
 
     }
 

@@ -24,4 +24,5 @@ public class Usertarget {
     private int participantCount;
     private int achievementRate;
     private int totalMileScoreByTargetNo;
+    private int mawang_score;
 }

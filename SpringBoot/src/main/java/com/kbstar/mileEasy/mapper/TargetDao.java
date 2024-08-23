@@ -26,8 +26,6 @@ public interface TargetDao {
     Target getTargetByNo(int targetNo);
     // 사용자 목표 참여 정보 추가
     void insertjoinTarget(com.kbstar.mileEasy.dto.Usertarget userTarget);
-    // initial_mileage 업데이트 (UPDATE)
-    void updateInitialMileage(@Param("target_no") int targetNo, @Param("user_no") String userNo, @Param("mile_no") int mileNo);
     //참여형 참가한 직원 목록
         List<Map<String, Object>> findUsersByTargetNo(int targetNo);
     // UserTarget 삭제하기
