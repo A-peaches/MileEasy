@@ -95,11 +95,18 @@ public class TargetController {
     }
 
     // 마왕 점수 업그레이드
-    @GetMapping("/increaseMawangScore/{targetNo}")
-    public ResponseEntity<String> increaseMawangScore(@RequestParam("user_no") String userNo, @RequestParam("target_no") int targetNo) {
+    @PostMapping("/increaseMawangScore")
+    public ResponseEntity<String> increaseMawangScore(@RequestBody Map<String, Object> requestBody) {
         try {
-            System.out.println("targetService 로 이동합니다.");
+            // 요청 본문에서 user_no 및 target_no를 가져옴 
+            String userNo = (String) requestBody.get("user_no");
+            int targetNo = (int) requestBody.get("target_no");
+
+            System.out.println("마왕 점수 업그레이드: " + userNo + ", Target No: " + targetNo);
+
+            // 마왕 점수 업그레이드 로직 처리
             int updatedRows = targetService.increaseMawangScore(userNo, targetNo);
+
             if (updatedRows > 0) {
                 return ResponseEntity.ok("Mawang score updated successfully");
             } else {
@@ -109,6 +116,7 @@ public class TargetController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating mawang score");
         }
     }
+
 
     // 특정 목표에 참가한 사용자들의 목록, 달성률, 마일리지 점수 반환
     @GetMapping("/participants/{targetNo}")

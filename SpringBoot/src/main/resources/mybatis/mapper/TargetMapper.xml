@@ -275,7 +275,7 @@ total_mile_score AS (
     </delete>
 
     <!--마왕 점수 업그레이드-->
-    <update id="updateMawangScore" parameterType="int">
+    <update id="updateMawangScore" parameterType="map">
         UPDATE user_target
         SET mawang_score = 1
         WHERE target_no = #{targetNo} AND user_no = #{userNo}

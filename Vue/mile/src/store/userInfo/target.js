@@ -136,21 +136,23 @@ const state = {  // 애플리케이션의 상태를 저장
       async deletePersonalTarget({ dispatch }, { userNo, targetNo }) {
         return dispatch('deleteTarget', { userNo, targetNo, type: 'personal' });
       },
-        // 마왕 점수 상승 액션 추가
+    // 마왕 점수 상승 액션 추가
     async increaseMawangScore(_, { userNo, targetNo }) {
+      console.log("마왕 점수 userNo, targetNo :", userNo, targetNo);
       try {
-        const response = await api.get(`/target/increaseMawangScore`, {
-          params: {
-            user_no: userNo,
-            target_no: targetNo
-          }
+        // POST 요청 시 데이터를 body에 넣어 전달
+        const response = await api.post(`/target/increaseMawangScore`, {
+          user_no: userNo,
+          target_no: targetNo
         });
         console.log('마왕 점수 증가 성공:', response.data);
       } catch (error) {
-        console.error('마왕 점수 증가 중 오류 발생:', error.response ? error.response.data : error.message);
+        // JavaScript에서 스택 트레이스를 출력하는 방법
+        console.error('마왕 점수 증가 중 오류 발생:', error);
         throw error;
       }
     },
+
      async loadParticipants(_, { targetNo, mileNo }) {
     try {
       console.log("참가자 목록 서버로 들어갑니다. participants")
