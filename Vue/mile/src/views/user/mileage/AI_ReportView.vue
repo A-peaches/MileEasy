@@ -1,24 +1,25 @@
 <template>
   <div class="cards page-back mx-auto" style="color: #4b4a4a">
+
     <h2 class="bold-x-lg mt-5 mb-5" style="font-family: KB_C3">
       {{ this.loginInfo.user_name }}님의 AI 리포트
     </h2>
 
     <div class="button-container mb-4">
-      <button class="w-50 text-start mt-3">
-        <span class="down-btn" @click="downloadPDF"
-          ><i class="bi bi-download download-icon"></i>
-          PDF 다운로드
-        </span>
-      </button>
-      <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
-    </div>
+    <button  class="w-50 text-start mt-3">
+      <span class="down-btn" @click="downloadPDF"><i class="bi bi-download download-icon" ></i> 
+        PDF 다운로드
+      </span>
+    </button>
+    <button class="btn-analysis" @click="analysis">AI 맞춤형 분석하기</button>
+  </div>
+
 
     <div
       v-if="isGeneratingPDF"
       class="pdf-generation-status d-flex align-items-center justify-content-center mx-auto w-100"
     >
-      <div class="spinner-border text-warning my-5 me-3" role="status">
+      <div class="spinner-border  my-5 me-3" role="status" style="color: #ffca05">
         <span class="visually-hidden">Loading...</span>
       </div>
       <span>PDF 추출중입니다 ....</span>
@@ -187,6 +188,7 @@ export default {
         return;
       }
 
+
       // 원본 스타일 저장
       const originalStyle = element.style.cssText;
       const originalTransform = window.getComputedStyle(element).transform;
@@ -198,6 +200,8 @@ export default {
       const pcWidth = 1325;
       const pcHeight = Math.floor((pcWidth / 210) * 297); // A4 비율
       const padding = 40; // 원하는 패딩 값 (픽셀)
+
+
 
       // 요소 스타일 임시 변경
       Object.assign(element.style, {
@@ -221,6 +225,10 @@ export default {
           compress: true,
           precision: 16,
         });
+
+
+
+
 
         // 첫 번째 페이지만 렌더링
         const canvas = await html2canvas(element, {
@@ -823,11 +831,6 @@ export default {
   font-family: 'KB_S5';
 }
 
-.text-secondary {
-  color: #4a90e2 !important;
-  font-weight: 600;
-  font-family: 'KB_S5';
-}
 
 .text-goal {
   color: #ff7e5e !important;
