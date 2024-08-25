@@ -3,12 +3,12 @@
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3">목표 관리</h2>
     
     <div class="menu-and-filters">
-      <!-- 탭 메뉴 -->
+      <!-- 탭 메뉴
       <div class="tab-menu">
         <button @click="currentTab = 'all'" :class="{ active: currentTab === 'all' }">전체</button>
         <button @click="currentTab = 'ongoing'" :class="{ active: currentTab === 'ongoing' }">진행 중</button>
         <button @click="currentTab = 'completed'" :class="{ active: currentTab === 'completed' }">종료</button>
-      </div>
+      </div> -->
 
       <!-- 검색 필터 -->
       <div class="search-filters">
@@ -33,33 +33,18 @@
           <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
           <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
           <span class="goal-status">{{ getStatusText(target) }}</span>
-          <span class="goal-rate">✨ {{ target.targetRate }}% 달성</span>
-          <span class="dropdown" :class="{ expanded: expandedTargets.includes(target.target_no) }"></span>
+          <span class="goal-rate">✨ {{ target.achievementRate }}% 달성</span>
         </div>
         <div class="progress-container">
-          <div class="progress-bar" :style="{ width: target.targetRate + '%' }"></div>
+          <div class="progress-bar" :style="{ width: target.achievementRate + '%' }"></div>
         </div>
         <div v-show="expandedTargets.includes(target.target_no)" class="goal-details">
-          <!-- 추가 상세 정보를 여기에 넣을 수 있습니다 -->
-           <div style="margin-top: 40px;">
-          <!-- 참가자 목록 -->
-            <!-- <div v-if="participants && participants.length > 0">
-              <div v-for="(participant, index) in participants" :key="index" class="participant-card">
-                <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
-                  직원 번호: {{ participant.user_no }}
-                </p>
-                <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
-                  현재 마일리지 : {{ participant.current_mileage_score }}
-                  달성률: {{participant.achievementRate}}%
-                </p>
-              </div>
-            </div> -->
-            <span style="font-family: 'KB_C2', sans-serif; font-size: 18px;"> 참가자 수 : </span>
-            <i class="bi bi-person-fill-check" style="color: #8c8c8c; font-size: 25px"></i> 
-            <i class="bi bi-person-fill-x" style="color: #cf2222; font-size: 25px"></i>
-            <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 25px"></i>
-            <span style="font-family: 'KB_C2', sans-serif; font-size: 17px;"> 문자발송 </span>
-
+          <div style="margin-top: 40px;">
+            <span style="font-size: 20px;">참가자 수: {{ target.totalParticipants }} 명</span>
+            <span style="font-size: 20px; color: #8c8c8c;">달성한 사람: {{ target.achievedCount }} 명</span>
+            <span style="font-size: 20px; color: #cf2222;">미달성한 사람: {{ target.notAchievedCount }} 명</span>
+            <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px;"></i>
+            <span @click="sendSMS(target)" style="cursor: pointer;">문자 발송</span>
           </div>
         </div>
       </div>
@@ -101,6 +86,8 @@
 import { mapActions, mapGetters } from 'vuex';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import api from "@/api/axios";
+
 
 export default {
   name: 'TargetMileageAdminView',
@@ -109,24 +96,38 @@ export default {
   },
   data() {
     return {
+      // // currentTab: 'all',
+      // totalParticipants: 0,  // 총 참가자 수
+      // achievedCount: 0,  // 달성한 사람 수
+      // notAchievedCount: 0,  // 미달성한 사람 수
+      // notAchievedPhones: [],  // 미달성한 사람의 전화번호
+      // rates: [],  // 각 타겟에 대한 달성률 배열
       isModalOpen: false,
       startDate: null,
       endDate: null,
       targetScore: 0,
       mile_name: '',
-      currentTab: 'all',
       searchStartDate: '',
       searchEndDate: '',
       searchStatus: '',
-      expandedTargets: [],
-      participants: [] // 참가자 데이터를 저장할 배열
+      expandedTargets: [], // 확장된 목표 목록 추적
     }
   },
   computed: {
     ...mapGetters('mile', ['getMileInfo', 'getArrayMiles']),
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getTargets']),
+    ...mapGetters('target', ['getParticipantsData']),
 
+    // achievementRate() {
+    // if (this.totalParticipants > 0 && !isNaN(this.achievedCount) && !isNaN(this.totalParticipants)) {
+    //   return ((this.achievedCount / this.totalParticipants) * 100).toFixed(2);
+    // }
+    // return 0;  // 참가자 수가 0이거나 NaN일 때는 0%로 처리
+    // },
+    participantsData() {
+        return this.getParticipantsData(this.targetNo); // 예시로 현재 타겟 번호 사용
+    },
     targets() {
       return this.getTargets || [];
     },
@@ -154,24 +155,6 @@ export default {
     },
     filteredTargets() {
       let targets = this.formattedTargets;
-      
-      // 탭 필터링
-      if (this.currentTab === 'ongoing') {
-        targets = targets.filter(t => this.isOngoing(t) || this.isScheduled(t));
-      } else if (this.currentTab === 'completed') {
-        targets = targets.filter(t => this.isCompleted(t));
-      }
-
-       // 날짜 검색 수정
-       if (this.searchStartDate && this.searchEndDate) {
-        const startDate = new Date(this.searchStartDate);
-        const endDate = new Date(this.searchEndDate);
-        targets = targets.filter(t => {
-          const targetStart = new Date(t.start_date);
-          const targetEnd = new Date(t.end_date);
-          return targetStart >= startDate && targetEnd <= endDate;
-        });
-      }
 
       // 상태 검색
       if (this.searchStatus) {
@@ -183,13 +166,132 @@ export default {
         });
       }
 
-      return targets.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-    }
+       // 날짜 필터링
+       if (this.searchStartDate && this.searchEndDate) {
+        const startDate = new Date(this.searchStartDate);
+        const endDate = new Date(this.searchEndDate);
+        targets = targets.filter(t => {
+          const targetStart = new Date(t.start_date);
+          const targetEnd = new Date(t.end_date);
+          return targetStart >= startDate && targetEnd <= endDate;
+        });
+      }
+
+      return targets.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+    },
   },
   methods: {
     ...mapActions('mile', ['fetchMileInfo']),
     ...mapActions('mileage', ['addTarget', 'fetchMileTarget', 'targetDelete']),
+    // ...mapActions('target', ['loadParticipants']),
+
+    warningAlert(message) {
+      alert(`경고: ${message}`); // 또는 더 세련된 알림 라이브러리 사용
+       },
+       successAlert(message) {
+        alert(`에러: ${message}`);
+       },
+       errorAlert(message) {
+        alert(`성공: ${message}`);
+       },
+
+
+    //    async loadParticipants(targetId) {
+    //    const mileNo = this.loginInfo.mile_no;
+    //    try {
+    //     const response = await this.$store.dispatch('target/loadParticipants', {
+    //         targetNo: targetId,
+    //         mileNo: mileNo,
+    //     });
+
+    //     console.log('달성 여부 인원수 :', response[0].participants);
+
+    //     // 응답 데이터를 그대로 사용
+    //     const participants = Array.isArray(response[0].participants) ? response[0].participants : [];
+
+    //      // 집계 데이터가 포함된 경우 처리
+    //      this.totalParticipants = participants.length;  // 총 참가자 수는 participants 배열의 길이
+    //     this.achievedCount = participants.filter(p => p.mawang_score === 1).length;  // 마왕 점수가 1인 사람의 수
+    //     this.notAchievedCount = this.totalParticipants - this.achievedCount;  // 미달성한 사람 수
+     
+    //     // 달성률 계산 (rates 배열에 각 목표별로 저장)
+    //     this.rates = this.achievedCount.map((count, index) => {
+    //         if (this.totalParticipants[index] > 0) {
+    //             return (count / this.totalParticipants[index]) * 100;
+    //         } else {
+    //             return 0;  // 총 참가자 수가 0일 경우 달성률은 0%
+    //         }
+    //     });
+
+    //     // 미달성한 사람들의 전화번호 목록 처리
+    //     this.notAchievedPhones = participants
+    //         .filter(p => p.mawang_score !== 1)
+    //         .map(p => p.user_tel);
+
+    //     console.log('참가자 정보:', participants);
+    //     console.log("참가자 수:", this.totalParticipants);
+    //     console.log("달성한 사람 수:", this.achievedCount);
+    //     console.log("미달성한 사람 수:", this.notAchievedCount);
+    //     console.log("미달성한 사람들의 전화번호:", this.notAchievedPhones);
+
+    //     } catch (error) {
+    //         console.error('참가자 로드 실패:', error);
+    //     }
+    // },
+  //   calculateAchievementRate(index) {
+  //   if (target.totalParticipants > 0) {
+  //     return ((target.achievedCount / target.totalParticipants) * 100).toFixed(2);
+  //   } else {
+  //     return 0;
+  //   }
+  // },
+  // errorAlert(message) {
+  //   this.$swal({
+  //     title: '오류',
+  //     text: message,
+  //     icon: 'error',
+  //   });
+  // },
+
+  // successAlert() {
+  //   this.$swal({
+  //     title: '성공',
+  //     text: '문자가 성공적으로 발송되었습니다.',
+  //     icon: 'success',
+  //   });
+  // },
+
+  async sendSms() {
+
+      
+if (this.message.trim().length === 0) {
+  this.warningAlert('메시지를 입력해주세요.');
+  return;
+}
+
+if (this.receivers.length === 0) {
+  this.warningAlert('수신자를 입력해주세요.');
+  return;
+}
+
+
+try {
+  let receiversPhone = this.receivers.map((r) => r.user_tel);
+  const response = await api.post("/user/sendSmsAction", {
+    to: receiversPhone,
+    text: this.message,
+    mile : this.mile_name
+  });
+  console.log(response);
+  this.succesAlert();
+  this.reset();
+} catch (error) {
+  console.error("Error sending SMS:", error);
+  this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
+}
+},
     async addAction() {
+             
       const targetInfo = {
         mile_no: this.loginInfo.mile_no,
         user_no: this.loginInfo.user_no,
@@ -212,20 +314,22 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
-    showAlert(t, i, r) {
-      this.$swal({
-        title: t,
-        icon: i,
-        scrollbarPadding: false
-      }).then((result) => {
-        if(result.isConfirmed){
-          if(r == '#'){
-            location.reload();
-          }else{
-            this.$router.push(r);
-          }
-        }
-      })
+      showAlert(type, message, path = null) {
+    this.$swal({
+      icon: type,
+      title: message,
+      showConfirmButton: false,
+      timer: 1500
+    }).then(() => {
+      if (path) {
+        this.navigateTo(path);
+      }
+    });
+  },
+        navigateTo(path) {
+      if (path) {
+        this.$router.push(path);
+      }
     },
     async deleteTarget(target_no) {
       const response = await this.targetDelete(target_no);
@@ -267,28 +371,30 @@ export default {
     toggleExpand(index) {
     const targetId = this.filteredTargets[index].target_no;
     const expandedIndex = this.expandedTargets.indexOf(targetId);
+
+    console.log("Selected Target Data:", this.filteredTargets[index]); // 선택된 타겟 데이터 출력
+
     if (expandedIndex === -1) {
-      this.expandedTargets.push(targetId);
-      this.loadParticipants(targetId);  // 확장될 때만 참가자 데이터 로드
+      this.expandedTargets = [targetId];  // 다른 목표는 축소하고, 선택된 목표만 확장
     } else {
-      this.expandedTargets.splice(expandedIndex, 1);
+      this.expandedTargets.splice(expandedIndex, 1);  // 선택된 목표를 축소
     }
   },
   
-  async loadParticipants(targetId) {
-  const mileNo = this.loginInfo.mile_no;  // 로그인 정보에서 mile_no 가져오기
+//   async loadParticipants(targetId) {
+//   const mileNo = this.loginInfo.mile_no;  // 로그인 정보에서 mile_no 가져오기
 
-  try {
-    const response = await this.$store.dispatch('target/loadParticipants', {
-      targetNo: targetId,
-      mileNo: mileNo
-    });
+//   try {
+//     const response = await this.$store.dispatch('target/loadParticipants', {
+//       targetNo: targetId,
+//       mileNo: mileNo
+//     });
 
-    this.participants = response;
-  } catch (error) {
-    console.error('참가자 로드 실패:', error);
-  }
-},
+//     this.participants = response;
+//   } catch (error) {
+//     console.error('참가자 로드 실패:', error);
+//   }
+// },
 
   },
   async created(){

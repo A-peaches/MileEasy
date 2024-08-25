@@ -6,6 +6,7 @@ const state = {  // 애플리케이션의 상태를 저장
     togetherTargets: [], // 참여형 목표 저장
     personalTargets: [], // 개인형 목표 저장
     adminTargets: [],  // 관리자가 등록한 모든 목표를 저장
+    participantsData: {},  // 참가자 관련 데이터 저장
   };
   
   const mutations = { // 상태를 변경하는 동기적 변이
@@ -33,6 +34,16 @@ const state = {  // 애플리케이션의 상태를 저장
       setTargets(state, targets) {
         state.targets = targets;
       },
+      SET_PARTICIPANTS_DATA(state, { targetNo, data }) {
+        // 각 타겟 번호에 따른 참가자 데이터를 저장
+        state.participantsData = {
+            ...state.participantsData,
+            [targetNo]: data
+        };
+      },
+      setError(state, error) {
+        state.error = error;
+      }
    
   };
   
@@ -153,26 +164,34 @@ const state = {  // 애플리케이션의 상태를 저장
       }
     },
 
-     async loadParticipants(_, { targetNo, mileNo }) {
-    try {
-      console.log("참가자 목록 서버로 들어갑니다. participants")
-      const response = await api.get(`/target/participants/${targetNo}`, {
-        params: { mileNo: mileNo }  // userNo와 mileNo를 쿼리 파라미터로 전달
-      });
-      console.log("reponse :",response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error loading participants:', error);
-      throw error;
-    }
-  },
-  };
+  // async loadParticipants({ commit }, { targetNo, mileNo }) {
+  //   try {
+  //       console.log("참가자 목록 서버로 들어갑니다. targetNo:", targetNo);
+  //       const response = await api.get(`/target/participants/${targetNo}`, {
+  //           params: { mileNo: mileNo}
+  //       });
+
+  //       console.log("참가자 데이터 응답:", response.data);
+
+  //       // 서버에서 받은 데이터 저장
+  //       commit('SET_PARTICIPANTS_DATA', { targetNo, data: response.data });
+        
+  //       return response.data;
+  //   } catch (error) {
+  //       console.error('참가자 로드 실패:', error);
+  //       throw error;
+  //   }
+  // },
+};
   
   const getters = {  // 상태를 가져오는 게터
     getTogetherTargets: (state) => state.togetherTargets,
     getPersonalTargets: (state) => state.personalTargets,
     getAdminTargets: (state) => state.adminTargets,
-  };
+    getParticipantsData: (state) => (targetNo) => {
+      return state.participantsData[targetNo] || {};
+    },
+};
   
   
   export default {

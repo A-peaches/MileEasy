@@ -116,5 +116,10 @@ public class TargetService {
         return targetDao.getParticipantsByTargetNo(targetNo, mileNo);
     }
 
+    // 관리자에 해당하는 프로모션 참가자 데이터 조회
+//    public List<Map<String, Object>> getPromotionParticipantsData(String userNo) {
+//        return targetDao.getPromotionParticipantsData(userNo);
+//    }
+
 
 }

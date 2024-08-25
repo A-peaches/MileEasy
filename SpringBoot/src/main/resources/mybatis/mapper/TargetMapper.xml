@@ -282,121 +282,150 @@ total_mile_score AS (
     </update>
 
     <!-- 특정 목표(target_no)에 참가한 사용자의 목록, 달성률, 현재 마일리지 점수, 목표 마일리지 및 전화번호 조회 -->
-    <select id="getParticipantsByTargetNo" parameterType="int" resultType="java.util.Map">
+<!--    <select id="getPromotionParticipantsData" parameterType="int" resultType="java.util.Map">-->
+<!--        SELECT-->
+<!--            ut.user_no,-->
+<!--            u.user_name,-->
+<!--            u.user_tel,-->
+<!--            t.target_mileage,-->
+
+<!--            &#45;&#45; start_mileage_score 계산-->
+<!--            (-->
+<!--                SELECT COALESCE(SUM(point_score), 0)-->
+<!--                FROM (-->
+<!--                         SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date-->
+<!--                         FROM mile_score ms-->
+<!--                         WHERE ms.mile_no = #{mileNo}-->
+<!--                           AND ms.mile_score_date &lt;= t.start_date-->
+<!--                         UNION ALL-->
+<!--                         SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date-->
+<!--                         FROM mile_history mh-->
+<!--                         WHERE mh.mile_no = #{mileNo}-->
+<!--                           AND mh.mile_history_date &lt;= t.start_date-->
+<!--                     ) AS combined_scores-->
+<!--                ORDER BY ABS(DATEDIFF(combined_scores.score_date, t.start_date)) ASC-->
+<!--                LIMIT 1-->
+<!--            ) AS start_mileage_score,-->
+
+<!--    &#45;&#45; current_mileage_score 계산-->
+<!--    (-->
+<!--        (-->
+<!--            &#45;&#45; 현재 마일리지 점수 계산 (mile_score와 mile_history 테이블에서 가장 가까운 날짜의 점수)-->
+<!--            SELECT COALESCE(SUM(point_score), 0)-->
+<!--            FROM (-->
+<!--                SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date-->
+<!--                FROM mile_score ms-->
+<!--                WHERE ms.mile_no = #{mileNo}-->
+<!--                AND ms.mile_score_date &lt;= NOW()-->
+<!--                UNION ALL-->
+<!--                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date-->
+<!--            FROM mile_history mh-->
+<!--            WHERE mh.mile_no = #{mileNo}-->
+<!--                AND mh.mile_history_date &lt;= NOW()-->
+<!--                ) AS combined_scores-->
+<!--                ORDER BY combined_scores.score_date DESC-->
+<!--                LIMIT 1-->
+<!--                ) - -->
+<!--            &#45;&#45; 시작 시점의 마일리지 점수를 뺌-->
+<!--                (-->
+<!--                SELECT COALESCE(SUM(point_score), 0)-->
+<!--            FROM (-->
+<!--            SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date-->
+<!--            FROM mile_score ms-->
+<!--            WHERE ms.mile_no = #{mileNo}-->
+<!--                AND ms.mile_score_date &lt;= t.start_date-->
+<!--                UNION ALL-->
+<!--                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date-->
+<!--            FROM mile_history mh-->
+<!--            WHERE mh.mile_no = #{mileNo}-->
+<!--                AND mh.mile_history_date &lt;= t.start_date-->
+<!--                ) AS combined_scores-->
+<!--                ORDER BY ABS(DATEDIFF(combined_scores.score_date, t.start_date)) ASC-->
+<!--            LIMIT 1-->
+<!--            )-->
+<!--            ) AS current_mileage_score,-->
+
+<!--            &#45;&#45; 달성률 계산-->
+<!--            CASE-->
+<!--            WHEN t.target_mileage &gt; 0 THEN-->
+<!--            FLOOR(-->
+<!--            (-->
+<!--            (-->
+<!--            &#45;&#45; 현재 마일리지 점수 계산 (start_mileage_score를 뺀 후 달성률 계산)-->
+<!--            SELECT COALESCE(SUM(point_score), 0)-->
+<!--            FROM (-->
+<!--            SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date-->
+<!--            FROM mile_score ms-->
+<!--            WHERE ms.mile_no = #{mileNo}-->
+<!--                AND ms.mile_score_date &lt;= NOW()-->
+<!--                UNION ALL-->
+<!--                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date-->
+<!--            FROM mile_history mh-->
+<!--            WHERE mh.mile_no = #{mileNo}-->
+<!--                AND mh.mile_history_date &lt;= NOW()-->
+<!--                ) AS combined_scores-->
+<!--                ORDER BY combined_scores.score_date DESC-->
+<!--                LIMIT 1-->
+<!--                ) - -->
+<!--                (-->
+<!--                SELECT COALESCE(SUM(point_score), 0)-->
+<!--            FROM (-->
+<!--            SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date-->
+<!--            FROM mile_score ms-->
+<!--            WHERE ms.mile_no = #{mileNo}-->
+<!--                AND ms.mile_score_date &lt;= t.start_date-->
+<!--                UNION ALL-->
+<!--                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date-->
+<!--            FROM mile_history mh-->
+<!--            WHERE mh.mile_no = #{mileNo}-->
+<!--                AND mh.mile_history_date &lt;= t.start_date-->
+<!--                ) AS combined_scores-->
+<!--                ORDER BY ABS(DATEDIFF(combined_scores.score_date, t.start_date)) ASC-->
+<!--            LIMIT 1-->
+<!--            )-->
+<!--            ) / t.target_mileage * 100-->
+<!--            )-->
+<!--            ELSE 0-->
+<!--        END AS achievementRate-->
+
+<!--    FROM-->
+<!--    user_target ut-->
+<!--    JOIN target t ON ut.target_no = t.target_no-->
+<!--    JOIN user u ON ut.user_no = u.user_no-->
+<!--    WHERE-->
+<!--    ut.target_no = #{targetNo}-->
+<!--        ORDER BY-->
+<!--        achievementRate DESC;-->
+<!--    </select>-->
+
+    <!-- 목표에 참가한 사람들의 정보를 조회 -->
+    <select id="getParticipantsByTargetNo" parameterType="map" resultType="map">
         SELECT
-            ut.user_no,
+            t.target_no,
+            u.user_no,
             u.user_name,
             u.user_tel,
-            ut.initial_mileage,
-            t.target_mileage,
-
-            -- start_mileage_score 계산
-            (
-                SELECT COALESCE(SUM(point_score), 0)
-                FROM (
-                         SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date
-                         FROM mile_score ms
-                         WHERE ms.mile_no = #{mileNo}
-                           AND ms.mile_score_date &lt;= t.start_date
-                         UNION ALL
-                         SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date
-                         FROM mile_history mh
-                         WHERE mh.mile_no = #{mileNo}
-                           AND mh.mile_history_date &lt;= t.start_date
-                     ) AS combined_scores
-                ORDER BY ABS(DATEDIFF(combined_scores.score_date, t.start_date)) ASC
-                LIMIT 1
-            ) AS start_mileage_score,
-
-    -- current_mileage_score 계산
-    (
-        (
-            -- 현재 마일리지 점수 계산 (mile_score와 mile_history 테이블에서 가장 가까운 날짜의 점수)
-            SELECT COALESCE(SUM(point_score), 0)
-            FROM (
-                SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date
-                FROM mile_score ms
-                WHERE ms.mile_no = #{mileNo}
-                AND ms.mile_score_date &lt;= NOW()
-                UNION ALL
-                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date
-            FROM mile_history mh
-            WHERE mh.mile_no = #{mileNo}
-                AND mh.mile_history_date &lt;= NOW()
-                ) AS combined_scores
-                ORDER BY combined_scores.score_date DESC
-                LIMIT 1
-                ) -
-            -- 시작 시점의 마일리지 점수를 뺌
-                (
-                SELECT COALESCE(SUM(point_score), 0)
-            FROM (
-            SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date
-            FROM mile_score ms
-            WHERE ms.mile_no = #{mileNo}
-                AND ms.mile_score_date &lt;= t.start_date
-                UNION ALL
-                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date
-            FROM mile_history mh
-            WHERE mh.mile_no = #{mileNo}
-                AND mh.mile_history_date &lt;= t.start_date
-                ) AS combined_scores
-                ORDER BY ABS(DATEDIFF(combined_scores.score_date, t.start_date)) ASC
-            LIMIT 1
-            )
-            ) AS current_mileage_score,
-
-            -- 달성률 계산
-            CASE
-            WHEN t.target_mileage &gt; 0 THEN
-            FLOOR(
-            (
-            (
-            -- 현재 마일리지 점수 계산 (start_mileage_score를 뺀 후 달성률 계산)
-            SELECT COALESCE(SUM(point_score), 0)
-            FROM (
-            SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date
-            FROM mile_score ms
-            WHERE ms.mile_no = #{mileNo}
-                AND ms.mile_score_date &lt;= NOW()
-                UNION ALL
-                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date
-            FROM mile_history mh
-            WHERE mh.mile_no = #{mileNo}
-                AND mh.mile_history_date &lt;= NOW()
-                ) AS combined_scores
-                ORDER BY combined_scores.score_date DESC
-                LIMIT 1
-                ) -
-                (
-                SELECT COALESCE(SUM(point_score), 0)
-            FROM (
-            SELECT ms.mile_score_point AS point_score, ms.mile_score_date AS score_date
-            FROM mile_score ms
-            WHERE ms.mile_no = #{mileNo}
-                AND ms.mile_score_date &lt;= t.start_date
-                UNION ALL
-                SELECT mh.mile_history_point AS point_score, mh.mile_history_date AS score_date
-            FROM mile_history mh
-            WHERE mh.mile_no = #{mileNo}
-                AND mh.mile_history_date &lt;= t.start_date
-                ) AS combined_scores
-                ORDER BY ABS(DATEDIFF(combined_scores.score_date, t.start_date)) ASC
-            LIMIT 1
-            )
-            ) / t.target_mileage * 100
-            )
-            ELSE 0
-        END AS achievementRate
-
-    FROM
-    user_target ut
-    JOIN target t ON ut.target_no = t.target_no
-    JOIN user u ON ut.user_no = u.user_no
-    WHERE
-    ut.target_no = #{targetNo}
-        ORDER BYs
-        achievementRate DESC;
+            ut.mawang_score,
+            -- 참가자 수, 달성한 사람 수, 미달성한 사람 수를 계산
+            (SELECT COUNT(ut_inner.user_no)
+             FROM user_target ut_inner
+             WHERE ut_inner.target_no = t.target_no) AS total_participants,
+            (SELECT COUNT(ut_inner.user_no)
+             FROM user_target ut_inner
+             WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 1) AS achieved_count,
+            (SELECT COUNT(ut_inner.user_no)
+             FROM user_target ut_inner
+             WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 0) AS not_achieved_count,
+            u.user_tel AS not_achieved_phone -- 개별 전화번호 항목으로 조회
+        FROM
+            target t
+                INNER JOIN user_target ut ON t.target_no = ut.target_no
+                INNER JOIN user u ON ut.user_no = u.user_no
+        WHERE
+            t.target_no = #{targetNo}
+          AND ut.mile_no = #{mileNo}
+        ORDER BY
+            u.user_name;
     </select>
 
 

@@ -9,8 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/target")
@@ -98,7 +101,7 @@ public class TargetController {
     @PostMapping("/increaseMawangScore")
     public ResponseEntity<String> increaseMawangScore(@RequestBody Map<String, Object> requestBody) {
         try {
-            // 요청 본문에서 user_no 및 target_no를 가져옴 
+            // 요청 본문에서 user_no 및 target_no를 가져옴
             String userNo = (String) requestBody.get("user_no");
             int targetNo = (int) requestBody.get("target_no");
 
@@ -122,11 +125,37 @@ public class TargetController {
     @GetMapping("/participants/{targetNo}")
     public ResponseEntity<List<Map<String, Object>>> getParticipantsByTargetNo(
             @PathVariable int targetNo,
-            @RequestParam int mileNo   // mile_no 파라미터 추가
+            @RequestParam int mileNo  // mile_no 파라미터 추가
     ) {
         List<Map<String, Object>> participants = targetService.getParticipantsByTargetNo(targetNo, mileNo);
-        return ResponseEntity.ok(participants);
+
+        System.out.println("participants"+participants);
+
+        // 각 참가자의 마왕 점수를 순회하며 출력
+        for (Map<String, Object> participant : participants) {
+            System.out.println("User: " + participant.get("user_name") + ", 마왕 점수: " + participant.get("mawang_score"));
+        }
+        // 미달성한 사람들의 전화번호를 배열로 저장
+        List<String> notAchievedPhones = participants.stream()
+                .filter(participant -> participant.get("mawang_score") != null && (int) participant.get("mawang_score") == 0)
+                .map(participant -> (String) participant.get("user_tel"))
+                .collect(Collectors.toList());
+
+        // 참가자 정보에 미달성한 사람들의 전화번호 배열을 추가
+        Map<String, Object> response = new HashMap<>();
+        response.put("participants", participants);
+        response.put("notAchievedPhones", notAchievedPhones);
+
+        System.out.println("미달성 전화번호 배열: " + notAchievedPhones);
+
+        return ResponseEntity.ok(Collections.singletonList(response));
     }
 
+//    // 관리자에 해당하는 프로모션 참가자 데이터 조회
+//    @GetMapping("/participantsData")
+//    public ResponseEntity<List<Map<String, Object>>> getPromotionParticipantsData(@RequestParam("user_no") String userNo) {
+//        List<Map<String, Object>> participantsData = targetService.getPromotionParticipantsData(userNo);
+//        return ResponseEntity.ok(participantsData);
+//    }
 
 }

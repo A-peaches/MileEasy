@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.replaceAll;
 
@@ -248,6 +249,18 @@ public class UserController {
         try {
             System.out.println(request.getText() + "이것이 문자메시지");
             smsService.sendSms(request.getTo(), request.getText(), request.getMile());
+            return ResponseEntity.ok().body("{\"success\":true}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/sendSmsAction")
+    public ResponseEntity<?> sendSmsAction(@RequestBody SmsRequest request) {
+        try {
+            System.out.println(request.getText() + "이것이 문자메시지");
+            smsService.sendSmsAction(request.getTo(), request.getText(), request.getMile());
             return ResponseEntity.ok().body("{\"success\":true}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

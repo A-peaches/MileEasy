@@ -62,6 +62,28 @@ public class SmsService {
         }
     }
 
+    public void sendSmsAction(List<String> to, String text, String mile) {
+        for (String recipient : to) {
+            Message message = new Message();
+            message.setFrom(fromNumber);
+            message.setTo(recipient);
+
+            String encodedText = new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            message.setText(encodedText);
+
+            String fullImagePath = getFullImagePath(defaultImagePath);
+            determineMessageType(message, encodedText, mile, fullImagePath);
+
+            try {
+                SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+                logger.info("Sent to {}: {}", recipient, response.toString());
+            } catch (Exception e) {
+                logger.error("Error sending to {}: {}", recipient, e.getMessage());
+                throw new RuntimeException("Failed to send message", e);
+            }
+        }
+    }
+
     private String getFullImagePath(String imageName) {
         return uploadPathRoot + File.separator + imageName;
     }
