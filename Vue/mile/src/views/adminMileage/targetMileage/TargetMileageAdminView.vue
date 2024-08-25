@@ -326,59 +326,11 @@ export default {
       }, 2); // 애니메이션 속도 (밀리초)
     });
   },
-
-//       // 메시지 발송 기능
-//       async sendSms(target) {
-//     try {
-//         // 서버에서 불러온 전화번호와 이름을 사용
-//         let notAchievedNames = target.not_achieved_names || '';
-//         let notAchievedPhones = target.not_achieved_phones || '';
-
-//         // 문자열을 배열로 변환 (콤마로 구분된 문자열일 경우)
-//         if (typeof notAchievedNames === 'string') {
-//             notAchievedNames = notAchievedNames.split(',').map(name => name.trim()).filter(name => name.length > 0);  // 유효한 이름만 필터링
-//         }
-
-//         if (typeof notAchievedPhones === 'string') {
-//             notAchievedPhones = notAchievedPhones.split(',').map(phone => phone.trim()).filter(phone => phone.length > 0);  // 유효한 전화번호만 필터링
-//         }
-
-//         // 콘솔에 로그 출력
-//         console.log('타겟에서 가져온 이름 목록:', notAchievedNames);
-//         console.log('타겟에서 가져온 전화번호 목록:', notAchievedPhones);
-
-
-//         // 미달성자 목록이 비어 있는 경우 처리
-//         if (notAchievedPhones.length === 0 || notAchievedNames.length === 0) {
-//             this. warningAlert('발송할 대상이 없습니다.');
-//             return;
-//         }
-
-//         // 각 이름과 전화번호에 대해 개별 메시지 생성
-//         const messages = notAchievedNames.map((name, i) => {
-//             return {
-//                 to: notAchievedPhones[i],  // 해당 수신자 번호
-//                 text: `${name}님, ${target.mile_name} 마일리지가 ${target.end_date}까지 달성되지 않았습니다. 빠른 참여 부탁드립니다.`,  // 각 수신자에 맞춘 메시지
-//             };
-//         });
-
-//         // 서버에 문자 발송 요청 (모든 수신자를 배열로 보냄)
-//         await api.post('/user/sendSmsAction', {
-//             to: messages.map(m => m.to),   // 수신자 번호 배열
-//             texts: messages.map(m => m.text),  // 개별 메시지 배열
-//             mile: target.mileage_name  // 추가로 마일리지 이름도 서버로 전달
-//         });
-
-//         this.succesAlert('문자 발송이 완료되었습니다.');
-//     } catch (error) {
-//         console.error('문자 발송 중 오류 발생:', error);
-//         this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
-//     }
-// },
-
-
-
-
+  resetModalData() {
+    this.startDate = null;
+    this.endDate = null;
+    this.targetScore = 0;
+  },
     async addAction() {
              
       const targetInfo = {
@@ -392,7 +344,10 @@ export default {
       const response = await this.addTarget(targetInfo);
 
       if(response && response.data.success){
-        this.showAlert('목표가 등록되었습니다', 'success', '#');
+        this.succesAlert('목표가 등록되었습니다', 'success', '#');
+        this.resetModalData(); // 데이터 초기화
+        this.closeModal(); // 목표가 성공적으로 등록된 후 모달 창을 닫습니다.
+        await this.refreshTargets(); // 목표 목록을 새로 고침
       }else{
         this.showAlert('목표 등록에 실패했습니다', 'fail', '#');
       }
@@ -467,6 +422,17 @@ export default {
       this.expandedTargets = [targetId];  // 다른 목표는 축소하고, 선택된 목표만 확장
     } else {
       this.expandedTargets.splice(expandedIndex, 1);  // 선택된 목표를 축소
+    }
+  },
+  async refreshTargets() {
+    const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
+    if (mile_no) {
+      try {
+        await this.fetchMileTarget(mile_no); // 서버에서 최신 목표 목록을 불러옴
+        this.animateProgressBars(); // 새로고침 후 애니메이션 갱신
+      } catch (error) {
+        console.error('목표 목록을 불러오는 중 오류가 발생했습니다:', error);
+      }
     }
   },
   
