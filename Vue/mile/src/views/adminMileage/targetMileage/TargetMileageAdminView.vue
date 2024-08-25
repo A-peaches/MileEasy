@@ -1,6 +1,6 @@
 <template>
   <div class="cards page-back mx-auto">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">목표 관리</h2>
+    <h2 class="bold-x-lg my-5" style="font-family: KB_C3;">목표 관리</h2>
     
     <div class="menu-and-filters">
       <!-- 탭 메뉴
@@ -24,7 +24,7 @@
     </div>
 
     <div class="d-flex justify-content-end mr-5">
-      <div class="target" @click="openModal">+ 새로운 목표 📝</div>
+      <div class="target" @click="openModal"> 📝 목표 등록 </div>
     </div>
 
     <div v-if="filteredTargets.length > 0" class="goals-list">
@@ -32,22 +32,32 @@
         <div class="goal-info" @click="toggleExpand(index)">
           <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
           <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
-          <span class="goal-status">{{ getStatusText(target) }}</span>
-          <span class="goal-rate">✨  {{target.totalParticipants > 0 ? ((target.achievedCount / target.totalParticipants) * 100): 0 
-          }}%  달성</span>
+          <span class="goal-status" :class="{ 'status-completed': isCompleted(target),
+              'status-ongoing': isOngoing(target),'status-scheduled': isScheduled(target)}">
+            {{ getStatusText(target) }}
+          </span>
+          <span class="goal-rate">✨  
+            {{target.totalParticipants > 0 ? Math.round((target.achievedCount / target.totalParticipants) * 100) : 0}}%  달성
+          </span>
         </div>
         <div class="progress-container">
-          <div class="progress-bar" :style="{ width: target.totalParticipants > 0 ? 
+          <!-- <div class="progress-bar" :style="{ width: target.totalParticipants > 0 ? 
             Math.round((target.achievedCount / target.totalParticipants) * 100) + '%' : '0%' }">
-          </div>
+          </div> -->
+          <div class="progress-bar" :style="{ width: animatedWidths[index] + '%' }"></div>
         </div>
         <div v-show="expandedTargets.includes(target.target_no)" class="goal-details">
           <div style="margin-top: 40px;">
-            <span style="font-size: 20px;">참가자 수: {{ target.totalParticipants }} 명</span>
-            <span style="font-size: 20px; color: #8c8c8c;">달성한 사람: {{ target.achievedCount }} 명</span>
-            <span style="font-size: 20px; color: #cf2222;">미달성한 사람: {{ target.notAchievedCount }} 명</span>
-            <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px;"></i>
-            <span @click="sendSms(target)" style="cursor: pointer;">문자 발송</span>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; margin-right: 70px;">참가자 {{ target.totalParticipants }} 명</span>
+            <i class="bi bi-person-fill-check" style=" color: #19c99b; font-size: 27px; margin-right: 10px;"></i>
+            <span style="font-size: 20px;font-family: 'KB_C2', sans-serif; color: #19c99b;">달성 </span>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #19c99b; margin-right: 70px;"> {{ target.achievedCount }} 명</span>
+            <i class="bi bi-person-fill-x" style="color:#cf2222; font-size: 27px; margin-right: 10px;"></i>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222;">미달성 </span>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222; margin-right: 70px;"> {{ target.notAchievedCount }} 명</span>
+            <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px; margin-top: 10px; margin-right: 10px;"></i>
+            <span @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif;"> 문자 발송</span>
+            <span class="loading-dots" v-if="loading[index]">{{ loadingText[index] }}</span>
           </div>
         </div>
       </div>
@@ -114,6 +124,10 @@ export default {
       searchEndDate: '',
       searchStatus: '',
       expandedTargets: [], // 확장된 목표 목록 추적
+      loading: [],
+      loadingText: [], // 로딩 텍스트
+      loadingInterval: [], // 로딩 애니메이션 인터벌
+      animatedWidths: [], // 각 목표에 대한 애니메이션 너비를 저장하는 배열
     }
   },
   computed: {
@@ -152,7 +166,8 @@ export default {
           targetRate: target.achievementRate,
           startDate,
           endDate,
-          expanded: false
+          // expanded: false,
+          animatedWidth: 0, // 초기값은 0
         }
       });
     },
@@ -204,59 +219,163 @@ export default {
         scrollbarPadding: false,
       });
     },
-       errorAlert(message) {
-        alert(`성공: ${message}`);
-       },
+   errorAlert(message) {
+    alert(`에러: ${message}`);
+    },
+
+   // startLoadingAnimation 메서드에 index 추가
+  startLoadingAnimation(index) {
+    let dots = '';
+    this.loading[index] = true; // 인덱스별로 로딩 시작
+    this.loadingInterval[index] = setInterval(() => {
+      if (dots.length < 3) {
+        dots += '.';
+      } else {
+        dots = '';
+      }
+      this.loadingText[index] = '중' + dots; // 인덱스에 맞게 loadingText 업데이트
+    }, 500); // 0.5초마다 점 추가
+  },
 
 
-      // 메시지 발송 기능
-      async sendSms(target) {
-    try {
-        // 서버에서 불러온 전화번호와 이름을 사용
+ // AI 문구 생성 및 문자 발송 기능
+ async generateAIContent(target, index) {
+
+      try {
+        // 로딩 시작
+        this.startLoadingAnimation(index);
+
         let notAchievedNames = target.not_achieved_names || '';
         let notAchievedPhones = target.not_achieved_phones || '';
 
-        // 문자열을 배열로 변환 (콤마로 구분된 문자열일 경우)
         if (typeof notAchievedNames === 'string') {
-            notAchievedNames = notAchievedNames.split(',').map(name => name.trim()).filter(name => name.length > 0);  // 유효한 이름만 필터링
+          notAchievedNames = notAchievedNames.split(',').map(name => name.trim()).filter(name => name.length > 0);
         }
 
         if (typeof notAchievedPhones === 'string') {
-            notAchievedPhones = notAchievedPhones.split(',').map(phone => phone.trim()).filter(phone => phone.length > 0);  // 유효한 전화번호만 필터링
+          notAchievedPhones = notAchievedPhones.split(',').map(phone => phone.trim()).filter(phone => phone.length > 0);
         }
 
-        // 콘솔에 로그 출력
-        console.log('타겟에서 가져온 이름 목록:', notAchievedNames);
-        console.log('타겟에서 가져온 전화번호 목록:', notAchievedPhones);
-
-
-        // 미달성자 목록이 비어 있는 경우 처리
         if (notAchievedPhones.length === 0 || notAchievedNames.length === 0) {
-            this. warningAlert('발송할 대상이 없습니다.');
-            return;
+          this.loading[index] = false;
+          clearInterval(this.loadingInterval[index]);
+          this.loadingText[index] = ''; // 애니메이션 텍스트 초기화
+
+          this.warningAlert('발송할 대상이 없습니다.');
+          return;
         }
 
-        // 각 이름과 전화번호에 대해 개별 메시지 생성
-        const messages = notAchievedNames.map((name, i) => {
-            return {
-                to: notAchievedPhones[i],  // 해당 수신자 번호
-                text: `${name}님, ${target.mile_name} 마일리지가 ${target.end_date}까지 달성되지 않았습니다. 빠른 참여 부탁드립니다.`,  // 각 수신자에 맞춘 메시지
-            };
+
+        // AI 문구 생성
+        const response = await api.post('bot/sms', null, {
+          params: {
+            prompt: `우리 회사 인사고과와 연결되는 마일리지 관리 사이트에서 ${target.mile_name} 마일리지에 관해서 홍보성 문자메시지를 만들어줘.` +
+              `마일리지가 ${target.end_date}까지 달성되지 않으면 마왕 점수를 획득할 수 없다는 소식도 알려줘.`+
+              '회사 이름은 안 밝히지 않고 6줄만 보내줘.'+
+              '마무리 멘트는 활기차게 도전해보자는 내용으로 !를 넣었으면 좋겠어' +
+              '일상생활 속에서 쓰지 않는 어려운 단어는 쓰지 말아줘'+
+              ' ${target.mile_name} 마일리지 알림이라고 문자에 표 '
+          },
         });
 
-        // 서버에 문자 발송 요청 (모든 수신자를 배열로 보냄)
+        const aiMessage = response.data;
+
+       // 모든 수신자에게 동일한 AI 메시지 발송
+    const messages = notAchievedPhones.map((phone) => {
+      return {
+        to: phone,
+        text: aiMessage, // 동일한 AI 문구를 사용
+      };
+    });
+
         await api.post('/user/sendSmsAction', {
-            to: messages.map(m => m.to),   // 수신자 번호 배열
-            texts: messages.map(m => m.text),  // 개별 메시지 배열
-            mile: target.mileage_name  // 추가로 마일리지 이름도 서버로 전달
+          to: messages.map(m => m.to),
+          texts: messages.map(m => m.text),
+          mile: target.mileage_name
         });
 
-        this.succesAlert('문자 발송이 완료되었습니다.');
-    } catch (error) {
-        console.error('문자 발송 중 오류 발생:', error);
-        this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
-    }
-},
+          // 로딩 종료 후 애니메이션을 멈추고 알림 표시
+        this.loading[index] = false;
+        clearInterval(this.loadingInterval[index]);
+        this.loadingText[index] = ''; // 애니메이션 텍스트 초기화
+
+        this.succesAlert();
+      } catch (error) {
+        this.loading[index] = false;
+        clearInterval(this.loadingInterval[index]);
+        this.loadingText[index] = ''; // 애니메이션 텍스트 초기화
+
+        this.errorAlert(error.message || "문자 발송 중 오류가 발생했습니다.");
+      }
+    },
+    animateProgressBars() {
+    this.filteredTargets.forEach((target, index) => {
+      const finalWidth = target.totalParticipants > 0 
+        ? Math.round((target.achievedCount / target.totalParticipants) * 100)
+        : 0;
+
+      let currentWidth = 0;
+      this.animatedWidths[index] = currentWidth; // 애니메이션 초기화
+
+      const interval = setInterval(() => {
+        if (currentWidth < finalWidth) {
+          currentWidth += 1;
+          this.animatedWidths[index] = currentWidth; // 현재 너비 업데이트
+        } else {
+          clearInterval(interval);
+        }
+      }, 2); // 애니메이션 속도 (밀리초)
+    });
+  },
+
+//       // 메시지 발송 기능
+//       async sendSms(target) {
+//     try {
+//         // 서버에서 불러온 전화번호와 이름을 사용
+//         let notAchievedNames = target.not_achieved_names || '';
+//         let notAchievedPhones = target.not_achieved_phones || '';
+
+//         // 문자열을 배열로 변환 (콤마로 구분된 문자열일 경우)
+//         if (typeof notAchievedNames === 'string') {
+//             notAchievedNames = notAchievedNames.split(',').map(name => name.trim()).filter(name => name.length > 0);  // 유효한 이름만 필터링
+//         }
+
+//         if (typeof notAchievedPhones === 'string') {
+//             notAchievedPhones = notAchievedPhones.split(',').map(phone => phone.trim()).filter(phone => phone.length > 0);  // 유효한 전화번호만 필터링
+//         }
+
+//         // 콘솔에 로그 출력
+//         console.log('타겟에서 가져온 이름 목록:', notAchievedNames);
+//         console.log('타겟에서 가져온 전화번호 목록:', notAchievedPhones);
+
+
+//         // 미달성자 목록이 비어 있는 경우 처리
+//         if (notAchievedPhones.length === 0 || notAchievedNames.length === 0) {
+//             this. warningAlert('발송할 대상이 없습니다.');
+//             return;
+//         }
+
+//         // 각 이름과 전화번호에 대해 개별 메시지 생성
+//         const messages = notAchievedNames.map((name, i) => {
+//             return {
+//                 to: notAchievedPhones[i],  // 해당 수신자 번호
+//                 text: `${name}님, ${target.mile_name} 마일리지가 ${target.end_date}까지 달성되지 않았습니다. 빠른 참여 부탁드립니다.`,  // 각 수신자에 맞춘 메시지
+//             };
+//         });
+
+//         // 서버에 문자 발송 요청 (모든 수신자를 배열로 보냄)
+//         await api.post('/user/sendSmsAction', {
+//             to: messages.map(m => m.to),   // 수신자 번호 배열
+//             texts: messages.map(m => m.text),  // 개별 메시지 배열
+//             mile: target.mileage_name  // 추가로 마일리지 이름도 서버로 전달
+//         });
+
+//         this.succesAlert('문자 발송이 완료되었습니다.');
+//     } catch (error) {
+//         console.error('문자 발송 중 오류 발생:', error);
+//         this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
+//     }
+// },
 
 
 
@@ -386,6 +505,7 @@ export default {
     if (mile_no) {
       try {
         await this.fetchMileTarget(mile_no);
+        this.animateProgressBars(); // 페이지 로딩 후 애니메이션 시작
       } catch (error) {
         console.error('마일리지 목표 리스트를 가져오는 중 오류 발생:', error);
       }
@@ -422,8 +542,8 @@ export default {
   font-weight: bold;
   font-size: 15pt;
   font-family: 'KB_C3', sans-serif;
-  margin-bottom: 10px;
-  margin-right: 40px;
+  margin-bottom: 50px;
+  margin-right: 25px;
 }
 
 .mb-3 {
@@ -614,24 +734,58 @@ export default {
   cursor: pointer;
 }
 
-.goal-date, .goal-mileage, .goal-status, .goal-rate {
+.status-completed {
   font-family: 'KB_C2', sans-serif;
   font-size: 18px;
-  color: #4b4a4a;
+  /* font-weight: bold; */
+  color: #dc3545; /* 종료 - 빨간색 */
 }
+
+.status-ongoing {
+  color: #19c99b; /* 진행 중 - 초록색 */
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+}
+
+.status-scheduled {
+  color: #f0ad4e; /* 예정 - 주황색 (필요시 색상 변경 가능) */
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+}
+
 
 .goal-mileage {
   font-weight: bold;
   color: #333;
+  font-family: 'KB_C2', sans-serif;
+  flex: 0 0 190px; /* 고정 너비 설정 */
+  text-align: left; /* 왼쪽 정렬 */
+  font-size: 18px;
+}
+.goal-staus {
+  flex: 0 0 100px; /* 고정 너비 설정 */
+  text-align: left; /* 왼쪽 정렬 */
+  margin-right: auto; /* 오른쪽 여백을 자동으로 설정하여 왼쪽으로 밀기 */
+}
+.goal-date {
+  font-weight: bold;
+  color: #333;
+  font-family: 'KB_C2', sans-serif;
+  font-size: 15px;
 }
 
 .goal-rate {
   font-weight: bold;
   color: #4285f4;
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+  text-align: left; /* 왼쪽 정렬 */
+  flex: 0 0 150px; /* 고정 너비 설정 */
+
 }
 
 .progress-container {
-  height: 8px;
+  height: 15px;
   background-color: #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
@@ -709,6 +863,9 @@ export default {
 
 .search-filters {
   display: flex;
+  font-family: 'KB_C2', sans-serif; /* 폰트 변경 */
+  font-size: 13pt ;
+  margin-bottom: -150px;
 }
 
 .search-filters input,
@@ -717,5 +874,13 @@ export default {
   padding: 5px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.loading-dots {
+  font-size: 18px;
+  text-align: center;
+  margin-top: 10px;
+  margin-left: 3px;
+  font-family: 'KB_C2', sans-serif;
 }
 </style>
