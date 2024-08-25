@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 public class Target {
     private int target_no;
     private int mile_no;
+    private String mile_name;
     private String user_no;
     private Date  start_date;
     private Date end_date;

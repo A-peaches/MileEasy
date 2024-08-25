@@ -62,25 +62,29 @@ public class SmsService {
         }
     }
 
-    public void sendSmsAction(List<String> to, String text, String mile) {
-        for (String recipient : to) {
+    // 각 수신자에게 맞춤형 메시지를 발송하는 메서드
+    public void sendSmsAction(String to, String text, String mile) {
+        try {
+            // 메시지 생성
             Message message = new Message();
-            message.setFrom(fromNumber);
-            message.setTo(recipient);
+            message.setFrom(fromNumber); // 발신자 번호 설정
+            message.setTo(to);           // 수신자 번호 설정
+            message.setText(new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8)); // 메시지 내용 설정
 
-            String encodedText = new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-            message.setText(encodedText);
-
-            String fullImagePath = getFullImagePath(defaultImagePath);
-            determineMessageType(message, encodedText, mile, fullImagePath);
-
-            try {
-                SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
-                logger.info("Sent to {}: {}", recipient, response.toString());
-            } catch (Exception e) {
-                logger.error("Error sending to {}: {}", recipient, e.getMessage());
-                throw new RuntimeException("Failed to send message", e);
+            // 메시지 유형 설정 (SMS, LMS, MMS)
+            if (text.length() > 90) {
+                message.setType(MessageType.LMS); // LMS로 설정
+                message.setSubject(mile + " 알림");
+            } else {
+                message.setType(MessageType.SMS); // SMS로 설정
             }
+
+            // 메시지 발송
+            SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
+            logger.info("Sent to {}: {}", to, response.toString());
+        } catch (Exception e) {
+            logger.error("Error sending to {}: {}", to, e.getMessage());
+            throw new RuntimeException("Failed to send message to " + to, e);
         }
     }
 

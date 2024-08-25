@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SmsRequest {
     private List<String> to;
+    private List<String> texts;  // 각 수신자에게 보낼 메시지 배열
     private String text;
     private String mile;
     private String messageTemplate;

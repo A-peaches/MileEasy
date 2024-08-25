@@ -33,10 +33,13 @@
           <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
           <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
           <span class="goal-status">{{ getStatusText(target) }}</span>
-          <span class="goal-rate">✨ {{ target.achievementRate }}% 달성</span>
+          <span class="goal-rate">✨  {{target.totalParticipants > 0 ? ((target.achievedCount / target.totalParticipants) * 100): 0 
+          }}%  달성</span>
         </div>
         <div class="progress-container">
-          <div class="progress-bar" :style="{ width: target.achievementRate + '%' }"></div>
+          <div class="progress-bar" :style="{ width: target.totalParticipants > 0 ? 
+            Math.round((target.achievedCount / target.totalParticipants) * 100) + '%' : '0%' }">
+          </div>
         </div>
         <div v-show="expandedTargets.includes(target.target_no)" class="goal-details">
           <div style="margin-top: 40px;">
@@ -44,7 +47,7 @@
             <span style="font-size: 20px; color: #8c8c8c;">달성한 사람: {{ target.achievedCount }} 명</span>
             <span style="font-size: 20px; color: #cf2222;">미달성한 사람: {{ target.notAchievedCount }} 명</span>
             <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px;"></i>
-            <span @click="sendSMS(target)" style="cursor: pointer;">문자 발송</span>
+            <span @click="sendSms(target)" style="cursor: pointer;">문자 발송</span>
           </div>
         </div>
       </div>
@@ -196,100 +199,58 @@ export default {
        },
 
 
-    //    async loadParticipants(targetId) {
-    //    const mileNo = this.loginInfo.mile_no;
-    //    try {
-    //     const response = await this.$store.dispatch('target/loadParticipants', {
-    //         targetNo: targetId,
-    //         mileNo: mileNo,
-    //     });
+      // 메시지 발송 기능
+      async sendSms(target) {
+    try {
+        // 서버에서 불러온 전화번호와 이름을 사용
+        let notAchievedNames = target.not_achieved_names || '';
+        let notAchievedPhones = target.not_achieved_phones || '';
 
-    //     console.log('달성 여부 인원수 :', response[0].participants);
+        // 문자열을 배열로 변환 (콤마로 구분된 문자열일 경우)
+        if (typeof notAchievedNames === 'string') {
+            notAchievedNames = notAchievedNames.split(',').map(name => name.trim()).filter(name => name.length > 0);  // 유효한 이름만 필터링
+        }
 
-    //     // 응답 데이터를 그대로 사용
-    //     const participants = Array.isArray(response[0].participants) ? response[0].participants : [];
+        if (typeof notAchievedPhones === 'string') {
+            notAchievedPhones = notAchievedPhones.split(',').map(phone => phone.trim()).filter(phone => phone.length > 0);  // 유효한 전화번호만 필터링
+        }
 
-    //      // 집계 데이터가 포함된 경우 처리
-    //      this.totalParticipants = participants.length;  // 총 참가자 수는 participants 배열의 길이
-    //     this.achievedCount = participants.filter(p => p.mawang_score === 1).length;  // 마왕 점수가 1인 사람의 수
-    //     this.notAchievedCount = this.totalParticipants - this.achievedCount;  // 미달성한 사람 수
-     
-    //     // 달성률 계산 (rates 배열에 각 목표별로 저장)
-    //     this.rates = this.achievedCount.map((count, index) => {
-    //         if (this.totalParticipants[index] > 0) {
-    //             return (count / this.totalParticipants[index]) * 100;
-    //         } else {
-    //             return 0;  // 총 참가자 수가 0일 경우 달성률은 0%
-    //         }
-    //     });
-
-    //     // 미달성한 사람들의 전화번호 목록 처리
-    //     this.notAchievedPhones = participants
-    //         .filter(p => p.mawang_score !== 1)
-    //         .map(p => p.user_tel);
-
-    //     console.log('참가자 정보:', participants);
-    //     console.log("참가자 수:", this.totalParticipants);
-    //     console.log("달성한 사람 수:", this.achievedCount);
-    //     console.log("미달성한 사람 수:", this.notAchievedCount);
-    //     console.log("미달성한 사람들의 전화번호:", this.notAchievedPhones);
-
-    //     } catch (error) {
-    //         console.error('참가자 로드 실패:', error);
-    //     }
-    // },
-  //   calculateAchievementRate(index) {
-  //   if (target.totalParticipants > 0) {
-  //     return ((target.achievedCount / target.totalParticipants) * 100).toFixed(2);
-  //   } else {
-  //     return 0;
-  //   }
-  // },
-  // errorAlert(message) {
-  //   this.$swal({
-  //     title: '오류',
-  //     text: message,
-  //     icon: 'error',
-  //   });
-  // },
-
-  // successAlert() {
-  //   this.$swal({
-  //     title: '성공',
-  //     text: '문자가 성공적으로 발송되었습니다.',
-  //     icon: 'success',
-  //   });
-  // },
-
-  async sendSms() {
-
-      
-if (this.message.trim().length === 0) {
-  this.warningAlert('메시지를 입력해주세요.');
-  return;
-}
-
-if (this.receivers.length === 0) {
-  this.warningAlert('수신자를 입력해주세요.');
-  return;
-}
+        // 콘솔에 로그 출력
+        console.log('타겟에서 가져온 이름 목록:', notAchievedNames);
+        console.log('타겟에서 가져온 전화번호 목록:', notAchievedPhones);
 
 
-try {
-  let receiversPhone = this.receivers.map((r) => r.user_tel);
-  const response = await api.post("/user/sendSmsAction", {
-    to: receiversPhone,
-    text: this.message,
-    mile : this.mile_name
-  });
-  console.log(response);
-  this.succesAlert();
-  this.reset();
-} catch (error) {
-  console.error("Error sending SMS:", error);
-  this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
-}
+        // 미달성자 목록이 비어 있는 경우 처리
+        if (notAchievedPhones.length === 0 || notAchievedNames.length === 0) {
+            alert('발송할 대상이 없습니다.');
+            return;
+        }
+
+        // 각 이름과 전화번호에 대해 개별 메시지 생성
+        const messages = notAchievedNames.map((name, i) => {
+            return {
+                to: notAchievedPhones[i],  // 해당 수신자 번호
+                text: `${name}님, ${target.mile_name} 마일리지가 ${target.end_date}까지 달성되지 않았습니다. 빠른 참여 부탁드립니다.`,  // 각 수신자에 맞춘 메시지
+            };
+        });
+
+        // 서버에 문자 발송 요청 (모든 수신자를 배열로 보냄)
+        await api.post('/user/sendSmsAction', {
+            to: messages.map(m => m.to),   // 수신자 번호 배열
+            texts: messages.map(m => m.text),  // 개별 메시지 배열
+            mile: target.mileage_name  // 추가로 마일리지 이름도 서버로 전달
+        });
+
+        alert('문자 발송이 완료되었습니다.');
+    } catch (error) {
+        console.error('문자 발송 중 오류 발생:', error);
+        alert('메시지 전송 중 오류가 발생했습니다.');
+    }
 },
+
+
+
+
     async addAction() {
              
       const targetInfo = {
