@@ -188,12 +188,22 @@ export default {
     ...mapActions('mileage', ['addTarget', 'fetchMileTarget', 'targetDelete']),
     // ...mapActions('target', ['loadParticipants']),
 
-    warningAlert(message) {
-      alert(`경고: ${message}`); // 또는 더 세련된 알림 라이브러리 사용
-       },
-       successAlert(message) {
-        alert(`에러: ${message}`);
-       },
+    warningAlert(alret) {
+      this.$swal({
+        title: '경고',
+        text: alret,
+        icon: 'warning',
+        scrollbarPadding: false,
+      });
+    },
+    succesAlert() {
+      this.$swal({
+        title: "성공",
+        text: "메시지 발송이 완료되었습니다.",
+        icon: "success",
+        scrollbarPadding: false,
+      });
+    },
        errorAlert(message) {
         alert(`성공: ${message}`);
        },
@@ -222,7 +232,7 @@ export default {
 
         // 미달성자 목록이 비어 있는 경우 처리
         if (notAchievedPhones.length === 0 || notAchievedNames.length === 0) {
-            alert('발송할 대상이 없습니다.');
+            this. warningAlert('발송할 대상이 없습니다.');
             return;
         }
 
@@ -241,10 +251,10 @@ export default {
             mile: target.mileage_name  // 추가로 마일리지 이름도 서버로 전달
         });
 
-        alert('문자 발송이 완료되었습니다.');
+        this.succesAlert('문자 발송이 완료되었습니다.');
     } catch (error) {
         console.error('문자 발송 중 오류 발생:', error);
-        alert('메시지 전송 중 오류가 발생했습니다.');
+        this.errorAlert(error.message || "메시지 전송 중 오류가 발생했습니다.");
     }
 },
 
