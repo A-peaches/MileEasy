@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.replaceAll;
 
@@ -251,5 +252,34 @@ public class UserController {
                     .body("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
         }
     }
+
+    @PostMapping("/sendSmsAction")
+    public ResponseEntity<?> sendSmsAction(@RequestBody SmsRequest request) {
+        try {
+            // 요청으로 받은 수신자 목록 및 메시지 텍스트들
+            List<String> recipients = request.getTo();
+            List<String> messages = request.getTexts();
+
+            // 수신자와 메시지의 수가 일치하는지 확인
+            if (recipients.size() != messages.size()) {
+                return ResponseEntity.badRequest().body("{\"success\":false, \"message\":\"수신자 목록과 메시지 목록의 크기가 일치하지 않습니다.\"}");
+            }
+
+            // SMS 서비스 호출: 각 수신자에게 맞춤형 메시지를 발송
+            for (int i = 0; i < recipients.size(); i++) {
+                String recipient = recipients.get(i);
+                String messageText = messages.get(i);
+                smsService.sendSmsAction(recipient, messageText, request.getMile());
+            }
+
+            // 성공적인 처리 후 응답 반환
+            return ResponseEntity.ok().body("{\"success\":true}");
+        } catch (Exception e) {
+            // 오류 발생 시 예외 처리 및 500 응답 반환
+            return ResponseEntity.status(500).body("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
+
 
 }

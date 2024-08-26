@@ -343,7 +343,6 @@ export default {
         return;
       }
 
-
       
       try {
         let receiversPhone = this.receivers.map((r) => r.user_tel);

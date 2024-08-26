@@ -58,9 +58,8 @@
     <div v-if="!isLoading" class="row">
       <div
         v-for="(target, index) in displayedTargets"
-        :key="target.target_no"
-        class="col-md-4 mb-3"
-      >
+        :key="target.target_no" 
+        class="col-md-4 mb-3 fade-up-item">
         <div class="p-3">
           <div
             :style="{
@@ -198,8 +197,8 @@
                   <div
                     class="progress-bar progress-bar-striped progress-bar-animated"
                     :style="{
-                      width: Math.min(target.achievementRate, 100) + '%',
-                      backgroundColor: '#FB773C ',
+                       width: getAchievementRate(target),
+                      backgroundColor: '#FB773C',
                     }"
                   ></div>
                 </div>
@@ -212,7 +211,7 @@
                     margin-right: 10px;
                   "
                 >
-                  {{ getDisplayableAchievementRate(target) }}</span
+                {{ getAchievementRate(target) }}</span
                 >
               </div>
               <span
@@ -226,9 +225,7 @@
             </span>
             <div class="py-3">
               <span class="bold-x-lg" style="font-family: 'KB_C1'">
-                <span class="highlight-score">{{
-                  target.totalMileScoreByMileNo
-                }}</span>
+                <span class="highlight-score"> {{ getScore(target) }}</span>
                 / {{ target.target_mileage }}</span
               >
             </div>
@@ -313,17 +310,62 @@ export default {
         return 'ongoing';
       }
     },
+     // 서버에서 이미 achievementRate를 받아온 경우 그대로 사용
+    getAchievementRate(target) {
+    // 미참여 상태일 때는 0%로 처리
+    if (!this.isUserParticipating(target.target_no)) {
+      return '0%'; // 미참여 시 0%로 설정
+    }
+
+    // 서버에서 받은 achievementRate 사용
+    return `${Math.min(target.achievementRate, 100)}%`; // 100%를 초과하지 않게 처리
+  },
+  // 미참여 상태일 때는 0점으로 설정
+  getScore(target) {
+    if (!this.isUserParticipating(target.target_no)) {
+      return 0; // 미참여 시 0점으로 설정
+    }
+
+    // 서버에서 받은 totalMileScore 사용
+    return target.totalMileScoreByTargetNo || 0;
+  },
+
     // 달성률 계산을 종료 상태에 따라 처리
-    getDisplayableAchievementRate(target) {
-      const status = this.getStatusText(target);
-      // 종료된 목표는 달성률을 그대로 반환
-      if (status === '종료') {
-        return `${Math.min(target.achievementRate, 100)}%`; // 종료 상태에서 달성률 고정
-      }
-      // 진행 중인 경우도 달성률 반환 (이미 서버에서 계산된 값)
-      return `${Math.min(target.achievementRate, 100)}%`;
-    },
+    // getDisplayableAchievementRate(target) {
+    //   const status = this.getStatusText(target);
+    //   // 종료된 목표는 달성률을 그대로 반환
+    //   if (status === '종료') {
+    //     return `${Math.min(target.achievementRate, 100)}%`; // 종료 상태에서 달성률 고정
+    //   }
+    //   // 진행 중인 경우도 달성률 반환 (이미 서버에서 계산된 값)
+    //   return `${Math.min(target.achievementRate, 100)}%`;
+    // },
+
+    calculateProgress(target) {
+
+      
+    // target 객체가 정의되지 않았거나 totalMileScoreByMileNo 속성이 없는 경우 기본값을 반환
+    if (!target || target.achievementRate === undefined || target.target_mileage === undefined) {
+      return '0%'; // 적절한 기본값 반환
+    }
+
+    // 상태가 종료("completed")일 경우 진행률 계산 중단
+    if (this.getStatusText(target) === '종료') {
+      return '0%'; // 종료된 경우 진행률을 100%로 고정
+    }
+
+    // 정상적인 진행률 계산
+    const progress = (target.totalMileScoreByMileNo / target.target_mileage) * 100;
+    return isNaN(progress) ? '0%' : `${progress.toFixed(2)}%`;
+  },
+
+
+
     getStatusText(target) {
+       // target 객체가 정의되었는지 확인하고, start_date와 end_date가 있는지 확인
+    if (!target || !target.start_date || !target.end_date) {
+      return '알 수 없음'; // 적절한 기본값 또는 에러 메시지
+    }
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
@@ -498,22 +540,15 @@ export default {
       return target.participants && target.participants.length > 0;
     },
     applyFadeUpEffect() {
-      console.log('Applying fade-up effect');
-      const items = this.$el.querySelectorAll('.fade-up-item');
-      console.log(`Found ${items.length} items to animate`);
-
-      items.forEach((item, index) => {
-        item.style.setProperty('--index', index);
-        item.style.setProperty('z-index', items.length - index);
-
-        const baseDelay = 50;
-        const delay = baseDelay + 50 * index;
-
-        setTimeout(() => {
-          item.classList.add('fade-up-active');
-        }, delay);
-      });
-    },
+  console.log("Applying fade-up effect");
+  const items = document.querySelectorAll('.fade-up-item');
+  items.forEach((item, index) => {
+    const delay = 50 * index;
+    setTimeout(() => {
+      item.classList.add('fade-up-active');
+    }, delay);
+  });
+},
   },
 
   async created() {
@@ -543,15 +578,11 @@ export default {
     adminTargets() {
       return this.getAdminTargets;
     },
+    // 사용자가 참여하지 않은 경우 기본값 반환
     displayedTargets() {
-      const filtered = this.filteredTargets(this.sortBy);
-      return this.sortTargets(filtered);
-    },
-    //   displayedTargets() {
-    //   const filtered = this.filteredTargets(this.sortBy);
-    //   const sorted = this.sortedAdminTargets(filtered);
-    //   return this.sortBy === 'not-finished' ? this.sortTargets(sorted) : sorted;
-    // },
+    const filtered = this.filteredTargets(this.sortBy);
+    return this.sortTargets(filtered);
+  },
     totalTargetsCount() {
       return this.adminTargets.length;
     },
@@ -786,9 +817,7 @@ export default {
 .fade-up-item {
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.5s ease-out;
-  transition-delay: calc(var(--index) * 100ms);
-  position: relative;
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* 애니메이션 효과 */
 }
 
 .fade-up-active {
@@ -834,18 +863,16 @@ export default {
   .p-3 {
     padding: 0rem !important;
   }
-  .target-box {
-    transition: transform 0.3s ease;
-    width: 100%;
-    height: 220px;
-    transition: transform 0.3s ease;
-    border-radius: 1px;
-  }
+ 
   .py-3 {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
     margin-top: 5px;
   }
+  .target-box{
+        width: 100%;
+        height: 220px;
+    }
 }
 
 @media (max-width: 800px) {
@@ -878,17 +905,15 @@ export default {
   .p-3 {
     padding: 0rem !important;
   }
-  .target-box {
-    transition: transform 0.3s ease;
-    width: 100%;
-    height: 220px;
-    transition: transform 0.3s ease;
-    border-radius: 1px;
-  }
+  
   .py-3 {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
     margin-top: 5px;
+  }
+  
+  .target-box {
+    height: 220px;
   }
 }
 </style>
