@@ -26,7 +26,9 @@
     <select id="selectMileTarget" resultType="com.kbstar.mileEasy.dto.Target">
         <![CDATA[
         WITH RECURSIVE date_range AS (
-            SELECT MIN(start_date) AS date FROM target WHERE mile_no = #{mile_no}
+            SELECT MIN(start_date) AS date
+        FROM target
+        WHERE mile_no = #{mile_no}
         UNION ALL
         SELECT date + INTERVAL 1 DAY
         FROM date_range
@@ -113,14 +115,13 @@
         SELECT DISTINCT
             t.target_no,
             t.mile_no,
-            t.user_no,   -- 참가자 ID (유저 넘버)
+            t.user_no,
             t.start_date,
             t.end_date,
             t.target_mileage,
             t.is_together,
             t.is_manager_plan,
             m.mile_name,
-            -- 총 참가자 수, 달성한 사람 수, 미달성한 사람 수 계산
             (SELECT COUNT(ut_inner.user_no)
              FROM user_target ut_inner
              WHERE ut_inner.target_no = t.target_no) AS totalParticipants,
@@ -130,12 +131,10 @@
             (SELECT COUNT(ut_inner.user_no)
              FROM user_target ut_inner
              WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 0) AS notAchievedCount,
-            -- 미달성한 참가자의 이름 나열
             (SELECT GROUP_CONCAT(u_inner.user_name SEPARATOR ', ')
              FROM user_target ut_inner
                       JOIN user u_inner ON ut_inner.user_no = u_inner.user_no
              WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 0) AS not_achieved_names,
-            -- 미달성한 참가자의 전화번호 나열
             (SELECT GROUP_CONCAT(u_inner.user_tel SEPARATOR ', ')
              FROM user_target ut_inner
                       JOIN user u_inner ON ut_inner.user_no = u_inner.user_no
@@ -144,9 +143,8 @@
                  LEFT JOIN user_target ut ON t.target_no = ut.target_no
                  LEFT JOIN mileage m ON t.mile_no = m.mile_no
                  LEFT JOIN target_summary ts ON t.target_no = ts.target_no
-        WHERE t.is_together = 1
+        WHERE t.mile_no = #{mile_no}  -- 이 조건을 추가해서 mile_no가 일치하는 데이터만 가져옴
         ORDER BY t.start_date ASC;
-
 
         ]]>
     </select>

@@ -82,7 +82,7 @@ public class SmsService {
             // 메시지 유형 설정 (SMS, LMS, MMS)
             if (text.length() > 90) {
                 message.setType(MessageType.LMS); // LMS로 설정
-                message.setSubject(mile + " 알림");
+                message.setSubject(mile + "마일리지 알림");
             } else {
                 message.setType(MessageType.SMS); // SMS로 설정
             }

@@ -56,7 +56,13 @@
             <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222;">미달성 </span>
             <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222; margin-right: 70px;"> {{ target.notAchievedCount }} 명</span>
             <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px; margin-top: 10px; margin-right: 10px;"></i>
-            <span @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif;"> 문자 발송</span>
+            <span v-if="isOngoing(target)" @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif;"> 문자 발송</span>
+
+            <!-- 진행 중이 아닐 때 "문자 발송 불가" 메시지 표시 -->
+            <span v-else style="font-size: 18px; font-family: 'KB_C2', sans-serif;">
+              문자발송 불가
+            </span>
+
             <span class="loading-dots" v-if="loading[index]">{{ loadingText[index] }}</span>
           </div>
         </div>
@@ -273,7 +279,8 @@ export default {
               `마일리지가 ${target.end_date}까지 달성되지 않으면 마왕 점수를 획득할 수 없다는 소식도 알려줘.`+
               '회사 이름은 안 밝히지 않고 100자 이내로 보내줘.'+
               '마무리 멘트는 활기차게 도전해보자는 내용으로 !를 넣었으면 좋겠어' +
-              '일상생활 속에서 쓰지 않는 어려운 단어는 쓰지 말아줘'
+              '일상생활 속에서 쓰지 않는 어려운 단어는 쓰지 말아줘'+
+              '${target.mile_name} 마일리지 종류에 따라 멘트를 정해줄게. ${target.mile_name}이 HRD 마일리지라면 동영상 시청을 하면서 마일리지를 쌓아보자는 멘트를 넣어줘.${target.mile_name}이 Monthly Best랑 Monthly Base랑 Best PG 랑 Best Branch랑 리그 테이블라면 직원들과의 힘을 합쳐서 열심히 마일리지를 쌓아보자는 말을 문구에 넣어줘. ${target.mile_name}이 HotTip라면 노하우를 직원들과 공유해봅시다라는 문구를 넣어줘. ${target.mile_name}이 소비자 지원라면 직원 칭찬이나 꿀Tip 참여,제도개선관련 의견 제시를 통해 마일리지를 쌓아봅시다 라는 문구를 넣어줘'
           },
         });
 
@@ -290,7 +297,7 @@ export default {
         await api.post('/user/sendSmsAction', {
           to: messages.map(m => m.to),
           texts: messages.map(m => m.text),
-          mile: target.mileage_name
+          mile: target.mile_name
         });
 
           // 로딩 종료 후 애니메이션을 멈추고 알림 표시
