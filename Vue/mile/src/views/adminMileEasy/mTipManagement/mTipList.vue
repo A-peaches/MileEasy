@@ -49,7 +49,7 @@
     </button>
   </div>
 
-  <div class="notice-list" style="margin-left: 30px">
+  <div class="notice-list">
     <div v-if="paginatedNotices.length">
       <div
         class="input-base list-wrapper"
@@ -658,7 +658,6 @@ h2::after {
   line-height: 65px; /* 세로 정렬 */
   font-size: 20px;
   margin-bottom: 20px; /*글 목록 사이 공간*/
-  width: 1200px;
 }
 
 .list-wrapper:hover {
