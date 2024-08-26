@@ -139,17 +139,13 @@ export default {
           },
         });
 
-        console.log('서버 응답:', response.data);
-
         const [savedFileName, originalFileName] = response.data.split(',');
-        console.log('저장된 파일명:', savedFileName);
-        console.log('원본 파일명:', originalFileName);
+
 
         this.uploadedFileName = savedFileName;
         this.displayFileName = originalFileName;
         this.form.file = savedFileName;
       } catch (error) {
-        console.error('파일 업로드 중 오류 발생:', error);
         this.showAlert('파일 업로드 중 오류가 발생했습니다.', 'error');
       }
     },

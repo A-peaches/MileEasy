@@ -13,7 +13,7 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'KingMain',
-
+  
   computed: {
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getArrayMileage']),

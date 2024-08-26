@@ -52,12 +52,10 @@ const mutations = {
 
 const actions = {
   async getReport({ commit }, user_no) {
-    console.log(user_no);
     try {
       const response = await api.post('/bot/getAiReport', null, {
         params: { user_no: user_no },
       });
-      console.log('뀨', response.data.data);
       if (response.data.success) {
         commit('setAll', response.data.data.comprehensive_analysis);
         commit('setRank', response.data.data.ranking_analysis);

@@ -6,7 +6,6 @@
     <!-- 날짜 선택 -->
     <div class="d-flex justify-content-end align-items-center" style="margin-top: 10vh; padding-left: 3%; padding-right: 3%;">
       <Datepicker  v-model="selectedDate" :format="formatDate" style="width:25%"></Datepicker>
-      <!-- <button @click="fetchScoresByDate" class="btn-green">날짜 선택</button> -->
     </div>
 
     <!-- 양식 다운로드 -->
@@ -220,11 +219,9 @@ export default {
       if(this.deleteArray!=null){
         const response = await this.deleteMileExcel(this.deleteArray);
         if(response && response.data.success){
-            console.log('마일리지 엑셀 파일 삭제 완료');
             this.showAlert('마일리지 파일이 삭제되었습니다', 'success', '#');
             this.deleteArray = [];
         }else{
-          console.log('마일리지 엑셀 파일 삭제 실패');
           this.showAlert('마일리지 파일 삭제가 실패했습니다', 'error', '#');
         }
       }
@@ -235,7 +232,6 @@ export default {
       }else{
         this.deleteArray = this.deleteArray.filter(item => item !== score);
       }
-      console.log("이건 삭제할 대상 배열", this.deleteArray);
     },
     downloadExcel(mile_excel_file){
       this.downloadFile({ mile_excel_file });
@@ -262,7 +258,6 @@ export default {
           this.showAlert('마일리지 업로드 실패', 'error', '#');
         }
       }catch(error){
-        console.error('Error uploading file', error);
         this.showAlert('마일리지 업로드 실패', 'error', '#');
       }
     },

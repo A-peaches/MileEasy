@@ -170,7 +170,6 @@ export default {
 
         this.kingUserList = kingUserList;
       } catch (error) {
-        console.error('kingDataSelect top5:', error);
         this.kingTop5 = [];
         this.kingUserList = [];
       }
@@ -200,7 +199,6 @@ export default {
 
         this.jumpUserList = jumpUserList;
       } catch (error) {
-        console.error('점프업 top5:', error);
         this.jumpTop5 = [];
         this.jumpUserList = [];
       }
@@ -212,7 +210,6 @@ export default {
         this.mileageLabels = response.data.map((item) => item.mile_name);
         this.dates = new Array(this.mileageLabels.length).fill('-');
       } catch (error) {
-        console.error('Error fetching mileage labels:', error);
         this.mileageLabels = [];
         this.dates = [];
       }
@@ -223,7 +220,6 @@ export default {
         const response = await api.get('/admin/lastUpdate');
         this.dates = response.data.map((item) => item.date || '-');
       } catch (error) {
-        console.error('Error fetching last update dates:', error);
         this.dates = new Array(this.mileageLabels.length).fill('-');
       }
     },

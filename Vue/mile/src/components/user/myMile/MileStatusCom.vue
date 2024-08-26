@@ -85,9 +85,7 @@ export default {
       el.style.setProperty("--index", index);
     },
     applyFadeUpEffect() {
-      console.log("Applying fade-up effect");
       const items = this.$el.querySelectorAll(".fade-up-item");
-      console.log(`Found ${items.length} items to animate`);
       items.forEach((item, index) => {
         item.style.setProperty("--index", index);
         item.style.setProperty("z-index", items.length - index);
@@ -106,7 +104,6 @@ export default {
             user_no: loginInfo.user_no,
             mile_no: this.mile_no,
           });
-          console.log("상속:", this.getMileStatus[0].mile_name);
           this.$emit("data-loaded", this.getMileStatus[0].mile_name);
           this.dataLoaded = true;
           this.$nextTick(() => {

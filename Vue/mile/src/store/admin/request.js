@@ -14,7 +14,6 @@ const actions = {
   async requestList({ commit }) {
     try {
       const response = await api.get(`/admin/requestList`);
-      console.log('리스트', response.data);
       commit('setRequestList', response.data);
     } catch (error) {
       console.error(`Error fetching badge:`, error);

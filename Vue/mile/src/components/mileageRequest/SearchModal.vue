@@ -66,7 +66,6 @@ export default {
         this.userList = response.data;
         this.filterUserList();
       } catch (error) {
-        console.error('유저 리스트를 가져오는 중 오류 발생:', error);
         this.userList = [];
         this.filteredUserList = [];
       }

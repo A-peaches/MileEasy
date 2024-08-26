@@ -17,7 +17,6 @@ const mutations = {
     state.notices = notices;
   },
   SET_NOTICE(state, notice) {
-    console.log('Setting notice in store:', notice);
     state.notice = notice;
   },
   SET_LIKE_STATUS(state, { user_no, mtip_board_no, isLiked }) {
@@ -86,7 +85,6 @@ const actions = {
   },
   async fetchNewNotices({ commit }) {
     try {
-      console.log("fetchNewNotices 메서드 도착");
       const response = await api.get('/mtip/MtipNewlist');
       commit('SET_NEW_NOTICES', response.data);
       return response; // 명시적으로 response 반환
@@ -132,15 +130,12 @@ const actions = {
 
   async likePost({ commit }, { mtip_board_no, user_no }) {
     try {
-      console.log('좋아요 증가 게시글 번호랑 user_no :', mtip_board_no, user_no );
       const response = await api.post('/mtip/like', { mtip_board_no, user_no });
-      console.log('좋아요 증가 :', response.data); // 서버 응답 로그 출력
   
       // 서버에서 받은 상태를 기반으로 상태를 업데이트
       if (response.data !== -1) {
         commit('SET_LIKE_STATUS', { user_no, mtip_board_no, isLiked: true });
       }
-      console.log('좋아요 증가 :', response.data); // 서버 응답 로그 출력
       return response.data;
     } catch (error) {
       console.error('Error liking post:', error);
@@ -151,13 +146,11 @@ const actions = {
   async unlikePost({ commit }, { mtip_board_no, user_no }) {
     try {
       const response = await api.post('/mtip/unlike', { mtip_board_no, user_no });
-      console.log('좋아요 감소:', response.data); // 서버 응답 로그 출력
   
       // 서버에서 받은 상태를 기반으로 상태를 업데이트
       if (response.data !== -1) {
         commit('SET_LIKE_STATUS', { user_no, mtip_board_no, isLiked: false });
       }
-      console.log('좋아요 감소 :', response.data); // 서버 응답 로그 출력
       return response.data;
     } catch (error) {
       console.error('Error unliking post:', error);

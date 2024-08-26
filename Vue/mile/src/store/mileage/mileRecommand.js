@@ -1,4 +1,4 @@
-// src/store/modules/mileRecommand.js
+
 import api from '@/api/axios';
 
 const state = {
@@ -27,12 +27,6 @@ const actions = {
   },
   async addRecommands(context, recommand){
     try{
-      // recommand: {
-      //  mile_no: loginInfo 안의 mile_no,
-      //  mile_mention: mile_mention,
-      //  mile_link: null,
-      //  mile_recommand_no: null
-      //}
       const response = await api.post(`/mana/addRecommand`, recommand)
       return response;
     }catch(error){

@@ -104,7 +104,6 @@ export default {
 
         XLSX.writeFile(workbook, 'chart_data.xlsx'); // 엑셀 파일 다운로드 
       }catch (error) {
-        console.error('Error downloading chart data:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -165,12 +164,9 @@ export default {
             },
           }
         );
-        console.log('Response data:', response.data);
         const counts = response.data.map((item) => item.count);
-        console.log('결과:', counts);
         return counts;
       } catch (error) {
-        console.error('Error fetching login history:', error);
         return [];
       }
     },
@@ -182,7 +178,6 @@ export default {
         const ctx = document.getElementById(chartId)?.getContext('2d');
 
         if (!ctx) {
-          console.error(`Canvas element with id '${chartId}' not found.`);
           return;
         }
 
