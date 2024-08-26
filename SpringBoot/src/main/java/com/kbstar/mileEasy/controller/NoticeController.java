@@ -47,7 +47,7 @@ public class NoticeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Notice> getNotice(@PathVariable Long id) {
-        System.out.println(id);
+
         Notice notice = noticeService.findById(id);
         if (notice != null) {
             return ResponseEntity.ok(notice);
@@ -336,7 +336,6 @@ public class NoticeController {
 
     @PostMapping("/GuideIncrement-views/{mtipGuideNo}")
     public ResponseEntity<MtipGuide> incrementGuideNoticeViews(@PathVariable("mtipGuideNo") int mtipGuideNo) {
-        System.out.println("조회수");
         try {
             mtipGuideService.incrementViews(mtipGuideNo);
             return ResponseEntity.ok().build();
@@ -360,7 +359,6 @@ public class NoticeController {
 
     @GetMapping("/downloadGuide/{originalFileName:.+}")
     public ResponseEntity<Resource> GuidedownloadFile(@PathVariable String originalFileName) throws IOException {
-        System.out.println("도착");
         // 파일명 디코딩
         originalFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8.toString());
 
@@ -443,7 +441,7 @@ public class NoticeController {
 
     @GetMapping("/Guide/{mtipGuideNo}")
     public ResponseEntity<MtipGuide> getGuide(@PathVariable Long mtipGuideNo) {
-        System.out.println("안뇽");
+
         MtipGuide mtipGuide = mtipGuideService.findById(mtipGuideNo);
         if (mtipGuide != null) {
             return ResponseEntity.ok(mtipGuide);

@@ -26,7 +26,6 @@ public class GroupController {
             List<Map<String, Object>> result = groupService.getUserMileages(date, group_no);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
-            System.out.println("Error in getUserMileages: " + e.getMessage());
             e.printStackTrace(); // 스택 트레이스 출력
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: " + e.getMessage());

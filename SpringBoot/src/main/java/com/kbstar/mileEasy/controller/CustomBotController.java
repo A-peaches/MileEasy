@@ -42,7 +42,6 @@ public class CustomBotController {
 
     @GetMapping("/chat")
     public String chat(@RequestParam(name = "prompt") String prompt){
-        System.out.println("gpt시작!!");
         ChatGPTRequest request = new ChatGPTRequest(model, prompt);
         ChatGPTResponse chatGPTResponse =  template.postForObject(apiURL, request, ChatGPTResponse.class);
         assert chatGPTResponse != null;
@@ -234,14 +233,6 @@ public class CustomBotController {
         // Null이 아닌 경우 데이터 반환
         return ResponseEntity.ok(Map.of("success", true, "data", aiReport));
     }
-
-
-
-
-
-
-
-
 
 
     @PostMapping("/sms")

@@ -101,7 +101,6 @@ public class AdminController {
 
                 try (var inputStream = file.getInputStream()) {
                     Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING); // 파일 저장
-                    System.out.println("저장된 파일 경로: " + filePath.toAbsolutePath());
                 }
 
                 return ResponseEntity.ok().body(Map.of("success", true));
@@ -167,14 +166,13 @@ public class AdminController {
 
     @PostMapping("/deleteMile")
     public void deleteMile(@RequestParam("mile_no") String mile_no) {
-        System.out.println("삭제할 mile_no: " + mile_no);
+
         mileService.deleteMile(mile_no);
     }
 
     @PostMapping("/getMileageAdminList")
     public ArrayList<User> getileageAdminList(@RequestParam("mile_no") String mile_no) {
-        System.out.println("마일리지: " + mile_no);
-        System.out.println(adminService.getileageAdminList(mile_no));
+
         return adminService.getileageAdminList(mile_no);
     }
 
@@ -211,7 +209,6 @@ public class AdminController {
 
     @GetMapping ("/lastUpdate")
     public ArrayList<MileScore> lastUpdate() {
-        System.out.println("들어옴");
        return  adminService.lastUpdate();
     }
 
@@ -225,8 +222,6 @@ public class AdminController {
 
     @GetMapping ("/requestList")
     public ArrayList<Mileage_request> requestList() {
-        // userNo를 사용하여 필요한 데이터 처리
-        System.out.println("처리");
         return requestService.requestListAdmin();
     }
 
@@ -237,7 +232,6 @@ public class AdminController {
             @RequestParam("manager") String manager,
             @RequestParam("request_is_branch") int request_is_branch,
             @RequestParam("num") String no) {
-        System.out.println("========================================================================바꾸자");
         int mile_no = adminService.getMaxMileNo() +1;
         adminService.addMileage(mileageName,mileageLimit,request_is_branch,mile_no);
         mile_no = adminService.getMaxMileNo();
