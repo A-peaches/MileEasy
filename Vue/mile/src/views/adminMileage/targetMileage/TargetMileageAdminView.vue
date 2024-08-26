@@ -3,12 +3,6 @@
     <h2 class="bold-x-lg my-5" style="font-family: KB_C3;">목표 관리</h2>
     
     <div class="menu-and-filters">
-      <!-- 탭 메뉴
-      <div class="tab-menu">
-        <button @click="currentTab = 'all'" :class="{ active: currentTab === 'all' }">전체</button>
-        <button @click="currentTab = 'ongoing'" :class="{ active: currentTab === 'ongoing' }">진행 중</button>
-        <button @click="currentTab = 'completed'" :class="{ active: currentTab === 'completed' }">종료</button>
-      </div> -->
 
       <!-- 검색 필터 -->
       <div class="search-filters">
@@ -423,8 +417,6 @@ export default {
     const targetId = this.filteredTargets[index].target_no;
     const expandedIndex = this.expandedTargets.indexOf(targetId);
 
-    console.log("Selected Target Data:", this.filteredTargets[index]); // 선택된 타겟 데이터 출력
-
     if (expandedIndex === -1) {
       this.expandedTargets = [targetId];  // 다른 목표는 축소하고, 선택된 목표만 확장
     } else {
@@ -443,20 +435,6 @@ export default {
     }
   },
   
-//   async loadParticipants(targetId) {
-//   const mileNo = this.loginInfo.mile_no;  // 로그인 정보에서 mile_no 가져오기
-
-//   try {
-//     const response = await this.$store.dispatch('target/loadParticipants', {
-//       targetNo: targetId,
-//       mileNo: mileNo
-//     });
-
-//     this.participants = response;
-//   } catch (error) {
-//     console.error('참가자 로드 실패:', error);
-//   }
-// },
 
   },
   async created(){

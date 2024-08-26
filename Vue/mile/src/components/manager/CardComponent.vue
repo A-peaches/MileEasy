@@ -163,15 +163,13 @@ export default {
         this.mincountDate = this.formatted(new Date(dates[minIndex]));
         this.renderCharts(counts);
       } catch (error) {
-        console.error('오잉:', error);
+        console.error('에러', error);
       }
     },
     formatted(date){
-      // const year = date.getFullYear();
       const month = String(date.getMonth()+1).padStart(2, '0'); // 01, 02... 형식
       const day = String(date.getDate()).padStart(2, '0');
       return `${month}월 ${day}일`;
-      // return `${day}`;
     },
     async chartDataCount() {
       const start = this.startDate.trim();
@@ -213,21 +211,8 @@ export default {
         }
 
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        // gradient.addColorStop(0, 'rgba(255, 170, 231, 1)');  // 핑크색 
-        // gradient.addColorStop(1, 'rgba(255, 170, 231, 0.2)'); 
-
-        // gradient.addColorStop(0, 'rgba(228, 228, 228, 1)');  // 회색
-        // gradient.addColorStop(1, 'rgba(228, 228, 228, 0.2)'); 
-
         gradient.addColorStop(0, 'rgba(255, 231, 143, 1)');  // 노란색
         gradient.addColorStop(1, 'rgba(255, 231, 143, 1)'); 
-
-        // gradient.addColorStop(0, 'rgba(159, 237, 209, 1)');  // 초록색
-        // gradient.addColorStop(1, 'rgba(159, 237, 209, 1)'); 
-
-        // gradient.addColorStop(0, 'rgba(170, 204, 255, 1)');  // 파란색
-        // gradient.addColorStop(1, 'rgba(170, 204, 255, 1)'); 
-
         this.managerChart1[chartId] = new Chart(ctx, {
           type: 'bar',
           data: {
@@ -237,7 +222,6 @@ export default {
                 label: `방문자 수`,
                 backgroundColor: gradient,
                 data: counts,
-                // borderRadius: 5,
                 maxBarThickness: 30, // 막대의 너비를 설정합니다.
                 
               },
@@ -250,7 +234,6 @@ export default {
               legend: {
                 display: true,
                 position: 'top',
-                // padding: 2,
                 labels: {
                   font: {
                     family: 'KB_C2',
@@ -258,10 +241,6 @@ export default {
                   }
                 }
               },
-              // title: {
-              //   display: false,
-                
-              // },
               tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 titleFont: {
@@ -273,7 +252,6 @@ export default {
                   size: 12,
                 },
                 padding: 10,
-                // cornerRadius: 5,
                 displayColors: false,
               },
             },
@@ -281,7 +259,6 @@ export default {
               y: {
                 beginAtZero: true,
                 ticks: {
-                  // display: true,
                   font: {
                     family: 'KB_C2',
                     size: 10,
@@ -291,15 +268,6 @@ export default {
                   color: 'rgba(0, 0, 0, 0.1)',
                   drawBorder: false,
                 },
-                // title: {
-                //   display: true,
-                //   text: '방문자 수',
-                //   font: {
-                //     family: 'KB_C2',
-                //     size: 14,
-                //     weight: 'bold',
-                //   },
-                // }
               },
               x: {
                 grid: {
@@ -393,9 +361,6 @@ export default {
 
 .total-visitors {
   margin-top: 20px;
-  /* font-family: 'KB_C2';
-  font-size: 16px; */
-  /* font-weight: bold; */
 }
 
 .highlight {

@@ -53,7 +53,6 @@ export default {
   async created() {
     if(this.mile_no){
       this.arrayMiles = await this.getMileDetail(this.mile_no);
-      console.log('이건 가져온 마일리지 소개글', this.arrayMiles);
       if(this.arrayMiles.length==0){
         this.showAlert('등록된 마일리지 소개 글이 없습니다', 'warning', '/myMileageView');
       }

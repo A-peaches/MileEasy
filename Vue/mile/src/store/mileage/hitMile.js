@@ -31,7 +31,6 @@ const actions = {
         `/mileage/hit_mileChart`
       );
       commit('setHitMileChart', response.data); // 수정: setHitMileChart 사용
-      console.log(response.data);
     } catch (error) {
       console.error('hit_mile:', error);
     }

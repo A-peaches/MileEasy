@@ -93,8 +93,15 @@ public class TargetController {
 
     // 마왕 점수 업그레이드
     @PostMapping("/increaseMawangScore")
-    public ResponseEntity<String> increaseMawangScore(@RequestParam("user_no") String userNo, @RequestParam("target_no") int targetNo) {
+    public ResponseEntity<String> increaseMawangScore(@RequestBody Map<String, Object> requestBody) {
         try {
+            // 요청 본문에서 user_no 및 target_no를 가져옴
+            String userNo = (String) requestBody.get("user_no");
+            int targetNo = Integer.parseInt(requestBody.get("target_no").toString());
+
+            System.out.println("마왕 점수 업그레이드: " + userNo + ", Target No: " + targetNo);
+
+            // 마왕 점수 업그레이드 로직 처리
             int updatedRows = targetService.increaseMawangScore(userNo, targetNo);
 
             if (updatedRows > 0) {

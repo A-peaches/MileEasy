@@ -71,24 +71,18 @@
 
     async fetchNotices() {
       try {
-        console.log('m-tip 게시글 db 접근');
         const response = await api.get('/mtip/list');
-        console.log('m-tip 게시글 db에서 가지고 온 데이터:', response.data); // 가져온 데이터 출력
         this.notices = response.data.filter(notice => notice && notice.mtip_guide_no);
-        console.log('Filtered notices:', this.notices); // 필터링된 데이터 출력
       } catch (error) {
         console.error('Error fetching notices:', error);
       }
     },
 
     async downloadFile(notice) {
-  console.log('downloadFile 함수가 호출되었습니다.');
   try {
-    console.log('다운로드 요청 URL:', `/notice/downloadGuide/${notice.mtip_guide_file}`);
     const response = await api.get(`/notice/downloadGuide/${notice.mtip_guide_file}`, {
       responseType: 'blob',
     });
-    console.log('서버 응답:', response);  // 서버 응답 전체를 출력합니다.
     const blob = new Blob([response.data], {
       type: response.headers['content-type'],
     });
@@ -101,7 +95,6 @@
   } catch (error) {
     console.error('파일 다운로드 중 오류가 발생했습니다.', error.response ? error.response.data : error.message);
     if (error.response) {
-      console.error('서버 응답 상태 코드:', error.response.status);
       console.error('서버 응답 데이터:', error.response.data);
     }
   }

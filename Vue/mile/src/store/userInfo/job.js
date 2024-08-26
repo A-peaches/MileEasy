@@ -1,5 +1,3 @@
-// src/store/modules/job.js
-// import api from '@/api/axios';
 
 const state = {
   objectJob : null,

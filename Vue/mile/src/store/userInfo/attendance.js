@@ -18,7 +18,6 @@ const actions = {
   async getAttendance({ commit }, user_no) {
     const response = await api.get(`/attendance/getAttendance/${user_no}`);
     const attendanceData = response.data;
-    console.log("출석정보 :",attendanceData);
     commit('setArrayAttendance', attendanceData);
   },
   async addAttendance({ dispatch }, user_no) {
