@@ -35,6 +35,9 @@ public class SmsService {
     @Value("${sms.default.image}")
     private String defaultImagePath;
 
+    @Value("target.jpg")
+    private String ImagePath;
+
     public SmsService(@Value("${coolsms.api.key}") String apiKey,
                       @Value("${coolsms.api.secret}") String apiSecret) {
         this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, "https://api.coolsms.co.kr");
@@ -65,6 +68,11 @@ public class SmsService {
     // 각 수신자에게 맞춤형 메시지를 발송하는 메서드
     public void sendSmsAction(String to, String text, String mile) {
         try {
+
+            // mile 값 로그로 출력
+            logger.info("Mile value: {}", mile);
+
+
             // 메시지 생성
             Message message = new Message();
             message.setFrom(fromNumber); // 발신자 번호 설정
@@ -79,6 +87,21 @@ public class SmsService {
                 message.setType(MessageType.SMS); // SMS로 설정
             }
 
+            // 이미지 경로 설정 (target_sms.PNG가 uploadPathRoot 디렉토리에 있다고 가정)
+            String fullImagePath = getFullImagePath(ImagePath);
+            logger.info("Full image path: {}", fullImagePath); // 이미지 경로 확인 로그
+
+            // 이미지가 첨부될 경우, MMS로 처리
+            File imageFile = new File(fullImagePath);
+            if (imageFile.exists()) {
+                message.setType(MessageType.MMS); // MMS로 설정
+                String encodedText = new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+                determineType(message, encodedText, mile, fullImagePath); // 이미지가 포함된 메시지로 처리
+                logger.info("Image attached: {}", fullImagePath);
+            } else {
+                logger.warn("Image not found at path: {}", fullImagePath); // 이미지가 없을 경우 경고 출력
+            }
+
             // 메시지 발송
             SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
             logger.info("Sent to {}: {}", to, response.toString());
@@ -87,6 +110,8 @@ public class SmsService {
             throw new RuntimeException("Failed to send message to " + to, e);
         }
     }
+
+
 
     private String getFullImagePath(String imageName) {
         return uploadPathRoot + File.separator + imageName;
@@ -106,6 +131,20 @@ public class SmsService {
         }
     }
 
+    private void determineType(Message message, String text, String mile, String imagePath) {
+        int textLength = text.length();
+        boolean isOverSmsLimit = textLength > SMS_KOREAN_LIMIT ||
+                (textLength > SMS_ENGLISH_LIMIT && text.matches("\\A\\p{ASCII}*\\z"));
+
+        if (imagePath != null && !imagePath.isEmpty()) {
+            Properties(message, mile, imagePath);
+        } else if (isOverSmsLimit) {
+            setLmsProperties(message, mile);
+        } else {
+            message.setType(MessageType.SMS);
+        }
+    }
+
     private void setMmsProperties(Message message, String mile, String imagePath) {
         try {
             FileSystemResource resource = new FileSystemResource(imagePath);
@@ -117,6 +156,26 @@ public class SmsService {
                 message.setSubject("MileEasy 운영자 알림");
             } else {
                 message.setSubject(mile + " 마일리지 알림");
+            }
+
+        } catch (Exception e) {
+            logger.error("Error uploading image file: {}", e.getMessage());
+            setLmsProperties(message, mile);
+        }
+    }
+
+    private void Properties(Message message, String mile, String imagePath) {
+        logger.debug("Mile value: {}", mile);  // mile 값이 제대로 전달되는지 확인
+        try {
+            FileSystemResource resource = new FileSystemResource(imagePath);
+            File imageFile = resource.getFile();
+            String imageId = messageService.uploadFile(imageFile, StorageType.MMS, null);
+            message.setImageId(imageId);
+            message.setType(MessageType.MMS);
+            if(mile != null && mile.equals("site")) {
+                message.setSubject(mile + " 마일리지 알림");
+            } else {
+                logger.warn("Mile is null or does not match 'site'");
             }
 
         } catch (Exception e) {
