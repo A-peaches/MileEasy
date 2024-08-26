@@ -30,6 +30,7 @@
 
       <button
         v-if="loginInfo && loginInfo.job_no === '기획'"
+        마일리지
         class="btn-yellow KB_C2 my-3"
         @click="goToMile"
       >

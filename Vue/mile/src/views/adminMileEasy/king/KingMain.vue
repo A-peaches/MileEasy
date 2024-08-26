@@ -257,21 +257,17 @@ export default {
     async kingData() {
       try {
         const response = await api.get('/mileage/kingData');
-        console.log('마왕 top3:', response.data);
         this.kingTop3 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 3만 가져오기
       } catch (error) {
-        console.error('마왕 top3:', error);
         this.kingTop3 = []; // 오류 발생 시 빈 배열로 초기화
       }
     },
     async jumpData() {
       try {
         const response = await api.get('/mileage/jumpData');
-        console.log('점프업 top3:', response.data);
         this.baseDate = response.data.length ? response.data[0].base_date : ''; // 첫 번째 데이터의 기준일자 설정
         this.jumpTop3 = response.data.slice(0, 5); // 받아온 데이터에서 TOP 3만 가져오기
       } catch (error) {
-        console.error('점프업 top3:', error);
         this.jumpTop3 = []; // 오류 발생 시 빈 배열로 초기화
       }
     },

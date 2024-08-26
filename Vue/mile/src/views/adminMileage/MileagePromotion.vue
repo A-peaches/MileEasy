@@ -423,7 +423,6 @@ export default {
 .page-back {
   padding-left: 5%;
   padding-right: 5%;
-  max-width: 1200px;
 }
 .text-emphasis {
   font-size: 13pt;

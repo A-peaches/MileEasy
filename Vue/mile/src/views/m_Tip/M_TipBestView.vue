@@ -10,8 +10,9 @@
         <h2 class="bold-x-lg">Best M-Tip</h2>
       </div>
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button list-wrapper"> 
-          {{ selectedCategory === null ? '카테고리' : selectedCategory }}</div>
+        <div class="category-button list-wrapper">
+          {{ selectedCategory === null ? '카테고리' : selectedCategory }}
+        </div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
@@ -454,7 +455,6 @@ h2::after {
 .category-button {
   background-color: #f9f9f9;
   border-radius: 25px;
-  padding: 12px 40px;
   cursor: pointer;
   margin-bottom: 80px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -463,6 +463,10 @@ h2::after {
   font-size: 20px;
   font-family: 'KB_C3', sans-serif;
   opacity: 0.8; /* 투명도 설정, 1은 불투명, 0은 완전 투명 */
+  padding: 13px 0px 0px 0px;
+
+  width: 206.09px;
+  height: 58px;
 }
 
 .search-container {
@@ -639,7 +643,7 @@ h2::after {
   left: 50%;
   z-index: 1;
   border: none; /* 테두리 제거 */
-  background-color: rgba(255, 255, 255, 0.69);
+  background-color: rgba(255, 255, 255, 0.96);
   border-radius: 30px;
   cursor: pointer;
   width: 230px; /* 드롭다운 메뉴의 너비를 픽셀 단위로 고정 */
@@ -762,6 +766,12 @@ h2::after {
   }
   .menu-items {
     font-size: 13pt;
+  }
+  .category-button {
+    width: 107.5px;
+    height: 48px;
+    font-size: 12pt !important;
+    padding: 13px 0px 0px 0px;
   }
 }
 </style>

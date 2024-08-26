@@ -1,8 +1,0 @@
-"use strict";(self["webpackChunkmile"]=self["webpackChunkmile"]||[]).push([[3689],{3689:function(n,t,e){e.r(t),e.d(t,{allDay:function(){return y},am:function(){return v},createEvent:function(){return h},dateFormat:function(){return k},day:function(){return d},default:function(){return E},deleteEvent:function(){return l},month:function(){return c},months:function(){return u},monthsGenitive:function(){return o},noEvent:function(){return s},pm:function(){return w},today:function(){return m},week:function(){return f},weekDays:function(){return r},year:function(){return i},years:function(){return a}});
-/**
-  * vue-cal v4.9.0
-  * (c) 2024 Antoni Andre <antoniandre.web@gmail.com>
-  * @license MIT
-  */
-const r=["Δευτέρα","Τρίτη","Τετάρτη","Πέμπτη","Παρασκευή","Σάββατο","Κυριακή"],u=["Ιανουάριος","Φεβρουάριος","Μάρτιος","Απρίλιος","Μάιος","Ιούνιος","Ιούλιος","Αύγουστος","Σεπτέμβριος","Οκτώβριος","Νοέμβριος","Δεκέμβριος"],o=["Ιανουαρίου","Φεβρουαρίου","Μαρτίου","Απριλίου","Μαΐου","Ιουνίου","Ιουλίου","Αυγούστου","Σεπτεμβρίου","Οκτωβρίου","Νοεμβρίου","Δεκεμβρίου"],a="Έτη",i="Έτος",c="Μήνα",f="Εβδομάδα",d="Ημέρα",m="Σήμερα",s="Κανένα συμβάν",y="Ημερήσιο συμβάν",l="Διαγραφή",h="Δημιουργία συμβάντος",k="dddd D MMMMG YYYY",v="π.μ.",w="μ.μ.",E={weekDays:r,months:u,monthsGenitive:o,years:"Έτη",year:i,month:c,week:f,day:d,today:m,noEvent:s,allDay:y,deleteEvent:l,createEvent:h,dateFormat:k,am:v,pm:w}}}]);
-//# sourceMappingURL=3689.fb45cc0b.js.map

@@ -55,14 +55,13 @@ public class UserController {
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
         User user = GetUserInfoService.getUserById(user_no);
-        System.out.println(user);
         return user;
     }
 
     @GetMapping("/allUser")   //'http://localhost:8090/user/allUser'  /allUser 부분!
     public ArrayList<User> allUser() {
         ArrayList<User> users = GetUserInfoService.getAllUser(); //UserService의 getAllUser 실행
-        System.out.println(users);
+
         return users; //호출된 곳으로 다시 돌아감!!!
     }
 
@@ -92,7 +91,7 @@ public class UserController {
         User checkedUser = GetUserInfoService.checkedUser(user_no, user_pw);
         // 서비스 계층의 checkedUser 메서드를 호출하여 로그인 정보를 인증한다.
         // 메서드 결과 일치하는 사용자가 있으면 User 객체를 반환. 없으면 null을 반환.
-        System.out.println(checkedUser);
+
         if (checkedUser != null) {
 
             if(is_checked && checkedUser.isUser_is_admin()){ // 관리자 로그인 && 운영관리자일 때
@@ -161,8 +160,7 @@ public class UserController {
     @PostMapping("/levelChartData")
     public ArrayList<User> levelChartData(@RequestBody Map<String, String> requestBody) {
         String date = requestBody.get("date");
-        System.out.println("들어왔따!");
-        System.out.println(mileService.levelChartData(date));
+
         return mileService.levelChartData(date);
     }
 
@@ -210,7 +208,7 @@ public class UserController {
     @PostMapping("/requestListDelete")
     public void  requestListDelete(@RequestParam("mileage_request_no") String mileage_request_no) {
         // userNo를 사용하여 필요한 데이터 처리
-        System.out.println(mileage_request_no);
+
         requestService.requestListDelete(mileage_request_no);
     }
 
@@ -227,13 +225,12 @@ public class UserController {
     @GetMapping("/chatList")
     public ArrayList<Chat> chatList(){
 
-        System.out.println("chat입장");
         return chatService.chatList();
     }
 
     @PostMapping("/badgeList")
     public ArrayList<MonthlyKing> badgeList() {
-        System.out.println("배지배지배지");
+
         return monthlyKingService.badgeList();
 
     }
@@ -247,7 +244,7 @@ public class UserController {
     @PostMapping("/sendSms")
     public ResponseEntity<?> sendSms(@RequestBody SmsRequest request) {
         try {
-            System.out.println(request.getText() + "이것이 문자메시지");
+
             smsService.sendSms(request.getTo(), request.getText(), request.getMile());
             return ResponseEntity.ok().body("{\"success\":true}");
         } catch (Exception e) {

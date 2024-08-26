@@ -50,7 +50,7 @@ public class MtipController {
     @GetMapping("/list")
     public ResponseEntity<?> getNotices() {
         try {
-            System.out.print("m-tip 게시글 리스트 도달 ");
+
             List<MtipGuide> notices = mtipService.getAllNotices();
             return ResponseEntity.ok(notices);
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class MtipController {
 
     @GetMapping("/downloadGuide/{originalFileName:.+}")
     public ResponseEntity<Resource> GuidedownloadFile(@PathVariable String originalFileName) throws IOException {
-        System.out.println("도착");
+
         // 파일명 디코딩
         originalFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8.toString());
 
@@ -109,13 +109,10 @@ public class MtipController {
     @GetMapping("/Mtiplist")
     public ResponseEntity<?> getMtiplist() {
         try {
-            System.out.print("m-tip 도달 ");
+
             List<MtipBoard> notices = mtipBoardService.getMtiplist();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는 데이터:");
-            for (MtipBoard notice : notices) {
-                System.out.println(notice.toString());
-            }
+
             return ResponseEntity.ok(notices);
         } catch (Exception e) {
             System.err.println("Error retrieving notices: " + e.getMessage());
@@ -128,13 +125,11 @@ public class MtipController {
     @GetMapping("/MtipNewlist")
     public ResponseEntity<?> getMtipNewlist() {
         try {
-            System.out.print("newm-tip 도달 ");
+
             List<MtipBoard> notices = mtipBoardService.getMtipNewlist();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는 new 데이터:");
-            for (MtipBoard notice : notices) {
-                System.out.println(notice.toString());
-            }
+
+
             return ResponseEntity.ok(notices);
         } catch (Exception e) {
             System.err.println("Error retrieving notices: " + e.getMessage());
@@ -384,13 +379,10 @@ public class MtipController {
     @GetMapping("/bestMtiplist")
     public ResponseEntity<?> getBestMtiplist() {
         try {
-            System.out.print("m-tip 도달 ");
+
             List<MtipBoard> bestNotices = mtipBoardService.getTopLikedMtiplist();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는  좋아요가 많은 게시글 9개 데이터:");
-            for (MtipBoard notice : bestNotices) {
-                System.out.println(notice.toString());
-            }
+
             return ResponseEntity.ok(bestNotices);
         } catch (Exception e) {
             System.err.println("Error retrieving best notices: " + e.getMessage());
@@ -403,13 +395,10 @@ public class MtipController {
     @GetMapping("/PlusbestMtiplist")
     public ResponseEntity<List<MtipBoard>> getPlusbestMtiplist() {
         try {
-            System.out.print("m-tip 도달 ");
+
             List<MtipBoard> bestNotices = mtipBoardService.getTopLikedMtiplistPlus();
             // 프론트엔드로 보내는 내용을 콘솔에 출력
-            System.out.println("프론트엔드로 보내는 데이터:");
-            for (MtipBoard notice : bestNotices) {
-                System.out.println(notice.toString());
-            }
+
             return ResponseEntity.ok(bestNotices);
         } catch (Exception e) {
             System.err.println("Error retrieving best notices: " + e.getMessage());

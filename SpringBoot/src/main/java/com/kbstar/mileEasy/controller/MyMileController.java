@@ -25,21 +25,18 @@ public class MyMileController {
     @GetMapping("/getMyMiles/{user_no}")
     public List<MyMiles> getMyMiles(@PathVariable String user_no) {
         List<MyMiles> myMiles = myMileageService.getMyMiles(user_no);
-        System.out.println("나의마일리지 " + myMiles);
         return myMiles;
     }
 
     @GetMapping("/getMileStatus/{user_no}/{mile_no}")
     public List<MileStatus>  getMileStatus(@PathVariable String user_no,@PathVariable int mile_no) {
         List<MileStatus> mileStatus = myMileageService.getMileStatus(user_no,mile_no);
-        System.out.println("취득현황 " + mileStatus);
         return mileStatus;
     }
 
     @GetMapping("/getExcelNotice")
     public List<ExcelNotice> getExcelNotice() {
             List<ExcelNotice> excelNotices = myMileageService.getExcelNotice();
-            System.out.println("엑셀알림" + excelNotices);
             return excelNotices;
     }
 
@@ -65,7 +62,6 @@ public class MyMileController {
     @GetMapping("/loadBadgeData/{user_no}")
     public List<BadgeData> loadBadgeData(@PathVariable String user_no) {
         List<BadgeData> badgeData = myMileageService.loadBadgeData(user_no);
-        System.out.println("badgeData" + badgeData);
         return badgeData;
     }
 
