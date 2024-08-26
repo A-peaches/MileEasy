@@ -26,7 +26,6 @@ const actions = {
         '/mileage/getMileage'
       );
       commit('setArrayMileage', response.data);
-      console.log('마일리지즐겨찾기에 그 점수 ' ,response.data);
     } catch (error) {
       console.error('Error getting all mileage data:', error);
     }
@@ -45,7 +44,6 @@ const actions = {
   async fetchMileTarget({commit}, mile_no){
     try{
       const response = await api.get(`/mana/targetList/${mile_no}`);
-      console.log("마일리지 담당자가 서버에서 넘어온 값 :", response.data);
       commit('setTargets', response.data);
     }catch(error){
       console.error('Error get mile Target:', error);

@@ -111,7 +111,6 @@ export default {
           );
           this.getMileage();
           Swal.fire('삭제 완료!', '마일리지가 삭제되었습니다.', 'success');
-          console.log('삭제', response.data);
         } catch (error) {
           Swal.fire(
             '삭제 오류!',

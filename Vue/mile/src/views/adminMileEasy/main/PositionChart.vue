@@ -117,7 +117,6 @@ export default {
 
         XLSX.writeFile(workbook, `position_visitors_data_${date}.xlsx`); // 엑셀 파일 다운로드 
       }catch (error) {
-        console.error('Error downloading position_visitors data:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -147,7 +146,6 @@ export default {
         }
 
         const levelChartData = response.data.map((item) => item.visitorCount);
-        console.log("원형차트 결과", levelChartData);
 
         return levelChartData;
       } catch (error) {
@@ -161,7 +159,6 @@ export default {
       const ctx = document.getElementById(chartId);
 
       if (!ctx) {
-        console.error(`Canvas element with id '${chartId}' not found.`);
         return;
       }
 

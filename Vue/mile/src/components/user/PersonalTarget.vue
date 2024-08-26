@@ -280,7 +280,6 @@ export default {
       // 마일리지 카테고리 가져오기
       try {
         const response = await api.get('/notice/mileage');
-        console.log('fetchMileages 메소드 :', response.data); // 응답 데이터를 콘솔에 출력
         this.labels = response.data;
       } catch (error) {
         console.error(
@@ -321,7 +320,6 @@ export default {
         month: new Date().getMonth() + 1, //1~12월 범위를 맞추기 위해서
         achievementRate: 0, //목표 달성률
       };
-      console.log('target이 서버로 데이터 넘기는 것 :', target);
       try {
         await this.addPersonalTarget(target);
         this.closeModal();
@@ -423,7 +421,6 @@ export default {
     async loadUserParticipatedTargets() {
       try {
         const targetNos = this.adminTargets.map((target) => target.target_no);
-        console.log('5. Target numbers:', targetNos);
 
         for (const targetNo of targetNos) {
           const isParticipating = await this.checkParticipation(targetNo);
@@ -432,10 +429,6 @@ export default {
           }
         }
 
-        console.log(
-          '7. Updated userParticipatedTargets:',
-          this.userParticipatedTargets
-        );
       } catch (error) {
         console.error('Failed to load user participated targets:', error);
       } finally {
@@ -479,7 +472,6 @@ export default {
             window.location.reload(); // 페이지 새로고침 추가
           });
           } catch (error) {
-            console.error('Error deleting target:', error);
             Swal.fire({
               title: '오류 발생',
               text: '삭제 중 오류가 발생했습니다. 다시 시도해 주세요.',
@@ -532,17 +524,14 @@ export default {
       });
     },
     applyFadeUpEffect() {
-    console.log("Applying fade-up effect");
 
     // $refs.fadeUpItems가 배열인지 확인
     const items = this.$refs.fadeUpItems;
 
     if (!items || items.length === 0) {
-      console.log("No items found for animation");
       return;
     }
 
-    console.log(`Found ${items.length} items to animate`);
 
     items.forEach((item, index) => {
       item.style.setProperty("--index", index);
@@ -559,14 +548,10 @@ export default {
 },
 
   async created() {
-    console.log('targer loginInfo 이 찍히나요 ?:', this.loginInfo);
-    console.log('isLoggedIn:', this.isLoggedIn);
-    console.log('isChecked:', this.isChecked);
     this.isLoading = true;
     try {
       await this.fetchMileages();
       await this.fetchPersonalTargets(this.loginInfo.user_no);
-      console.log('Targets after fetch:', this.getPersonalTargets);
     } catch (error) {
       console.error('Error initializing component:', error);
     } finally {
@@ -592,7 +577,6 @@ export default {
     },
     targets() {
       const targets = this.getPersonalTargets;
-      console.log('Targets:', targets);
       return Array.isArray(targets) ? targets : []; // 배열이 아니면 빈 배열을 반환
     },
 
@@ -614,13 +598,11 @@ export default {
 
       return sortedTargets.filter((mileage) => {
         if (!mileage || !mileage.end_date) {
-          console.warn('Skipping mileage due to missing endDate:', mileage);
           return false;
         }
 
         const endDate = new Date(mileage.end_date);
         if (isNaN(endDate.getTime())) {
-          console.warn('Invalid date format in endDate:', mileage.end_date);
           return false;
         }
 
@@ -639,7 +621,6 @@ export default {
       immediate: true,
       handler(newLoginInfo) {
         if (newLoginInfo && newLoginInfo.user_no) {
-          console.log('Calling getAdminTargets with user_no:', newLoginInfo.user_no); // 로그 추가
           this.fetchPersonalTargets(newLoginInfo.user_no).then(() => {
             this.isLoading = false;
             this.$nextTick(() => {

@@ -178,20 +178,12 @@ export default {
   },
 
   created() {
-    // 추가된 부분
-    console.log('UserComment component created 확인해보기');
-    console.log('mtip_board_no 확인 중:', this.mtip_board_no);
-    console.log('loginInfo 확인 중:', this.loginInfo);
-    console.log('API URL 확인 중:', process.env.VUE_APP_API_URL);
-    // this.$store.dispatch('mtipReply/fetchComments', this.mtip_board_no);
-    console.log('mtip_board_no:', this.mtip_board_no); // 이 부분을 추가하여 값이 올바르게 전달되었는지 확인합니다.
     this.fetchComments(this.mtip_board_no);
   },
 
   computed: {
     ...mapGetters('mtipReply', ['getComments']),
     comments() {
-      console.log('Computed comments:', this.getComments);
       return this.getComments;
     },
   },
@@ -245,7 +237,6 @@ export default {
         mtip_board_no: this.mtip_board_no,
         mtip_reply_content: this.newComment.trim(),
       };
-      console.log('Comment data to be sent:', commentData); // 추가된 로그
       try {
         const response = await this.$store.dispatch(
           'mtipReply/addComment',
@@ -312,22 +303,10 @@ export default {
       }
     },
   },
-  // beforeRouteUpdate(to, from, next) {
-  //   if (to.params.mtip_board_no !== from.params.mtip_board_no) {
-  //     this.$store.dispatch('mtipReply/fetchComments', to.params.mtip_board_no);
-  //   }
-  //   next();
-  // },
 };
 </script>
 
 <style scoped>
-/* .comments-section {
-  margin-top: 30px;
-  padding: 20px;
-  border-top: 1px solid #ccc;
-} */
-
 .comments-header {
   display: flex;
   align-items: center;

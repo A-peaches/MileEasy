@@ -112,7 +112,6 @@ export default {
               this.$router.push('/mTipMainAdminView');
             });
           } catch (error) {
-            console.error('게시글 삭제 중 오류가 발생했습니다.', error);
             Swal.fire('게시글 삭제 중 오류가 발생했습니다.', '', 'error');
           }
         }
@@ -212,9 +211,7 @@ export default {
     },
   },
   mounted() {
-    console.log('mtipGuideNo:', this.mtipGuideNo);
     if (this.mtipGuideNo) {
-      console.log('Calling MtipGuideDetail with:', this.mtipGuideNo);
       this.MtipGuideDetail(this.mtipGuideNo);
       this.guide_incrementViews(this.mtipGuideNo);
     } else {

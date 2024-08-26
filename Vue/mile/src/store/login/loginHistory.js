@@ -33,7 +33,6 @@ const actions = {
 
   async loginHistoryCountArray({ commit }, start, end) {
     try {
-      console.log('Requesting data with:', { start, end });
       const response = await api.get(
         '/user/loginHistoryCountArray',
         {
@@ -41,7 +40,6 @@ const actions = {
         }
       );
       commit('setLoginHistoryCountArray', response.data);
-      console.log('Response data:', response.data);
     } catch (error) {
       // 상세한 오류 출력
       console.error(

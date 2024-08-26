@@ -1,5 +1,3 @@
-// src/store/modules/mileHistory.js
-// import api from '@/api/axios';
 
 const state = {
   objectMileHistory: null,

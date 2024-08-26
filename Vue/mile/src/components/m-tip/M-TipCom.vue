@@ -73,18 +73,7 @@ export default {
     },
     checkMobile() {
       this.isMobile = window.innerWidth <= 480;
-      console.log('Is Mobile:', this.isMobile);
     },
-    // async fetchNotices() {
-    //   try {
-    //     const response = await api.get('/mtip/MtipNewlist');
-    //     this.notices = response.data;
-    //     this.paginatedNotices = this.notices;
-    //     console.log('Mtiplist 서버에서 가지고 온 값 :', this.notices);
-    //   } catch (error) {
-    //     console.error('Error fetching notices:', error.response ? error.response.data : error.message);
-    //   }
-    // },
     async fetchMileages() {
     try {
       const response = await api.get('/mtip/Mtipmileage'); // DB에서 카테고리 가져오기
@@ -93,7 +82,6 @@ export default {
       if (!this.mileageCategories.some(category => category.mile_name === '기타')) {
         this.mileageCategories.push({ mile_name: '기타', mile_no: null });
       }
-      console.log('m-tip 카테고리 :', this.mileageCategories);
     } catch (error) {
       console.error('Error fetching mileages:', error.response ? error.response.data : error.message);
     }

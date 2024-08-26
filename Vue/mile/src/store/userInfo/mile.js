@@ -1,4 +1,3 @@
-// src/store/modules/mile.js
 import api from '@/api/axios';
 
 const state = {
@@ -23,11 +22,6 @@ const actions = {
   async fetchMileInfo({commit}, user_no){
     try{
       const response = await api.get(`/mana/mileIntro/${user_no}`);
-      // reponse.data {
-      //  user_name: 사용자 이름
-      //  user_profile: 사용자 프로필 사진 파일명
-      //  mile_no: 마일리지 이름(한글로 가져옴)
-      //}
       commit('setMileInfo', response.data);
     }catch(error){
       console.error('Error fetching mile info:', error);

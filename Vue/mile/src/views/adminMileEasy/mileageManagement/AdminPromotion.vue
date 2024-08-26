@@ -190,7 +190,6 @@ export default {
       this.message = sample.content;
     },
     async generateAIContent() {
-      console.log('AI 내용 생성');
       this.AIAlret();
       try {
         const response = await api.post('bot/sms', null, {
@@ -203,7 +202,6 @@ export default {
               '꼭 이런 멘트가 들어가지않아도 마일리지에 관심이 돋거나 독려하는 문장으로도 충분해. 100자이내로 하나의 메시지만 생성 부탁할게. 바로 문자메시지를 발송할거니까  하나의 문자메시지내용 그대로를 줘.',
           },
         });
-        console.log(response.data);
         this.message = response.data;
       } catch (error) {
         console.error('Error during API request:', error);
@@ -318,7 +316,6 @@ export default {
       try {
         const response = await api.get('/user/getAllUsers');
         this.employees = response.data;
-        console.log('모든직원정보 :', response.data);
       } catch (error) {
         console.error('Error getAllUsers');
       }
