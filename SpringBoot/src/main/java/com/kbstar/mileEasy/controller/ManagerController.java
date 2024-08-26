@@ -37,7 +37,6 @@ public class ManagerController {
     @GetMapping("/mileIntro/{user_no}")
     public User getMileTitle(@PathVariable String user_no) {
         User user = managerService.getMileTitle(user_no);
-        System.out.println(user);
         return user;
     }
 
@@ -45,14 +44,12 @@ public class ManagerController {
     @GetMapping("/mileRecommand/{mile_no}")
     public List<MileRecommand> getMileRecommand(@PathVariable String mile_no) {
         List<MileRecommand> mileRecommands = managerService.getRecommand(mile_no);
-        System.out.println(mileRecommands);
         return mileRecommands;
     }
 
     // 마일리지 추천멘트 수정하기
     @PostMapping("/updateRecommand")
     public ResponseEntity<?> updateRecommand(@RequestBody MileRecommand mileRecommand) {
-        System.out.println("지금 이건 업데이트 할 멘트~~" + mileRecommand);
         int result = managerService.updateMileRecommand(mileRecommand.getMile_mention(), mileRecommand.getMile_recommand_no());
         if (result > 0) {
             return ResponseEntity.ok().body("{\"success\":true}");
@@ -86,7 +83,6 @@ public class ManagerController {
     // addTarget 마일리지 목표 설정 추가하기(param: targetInfo)
     @PostMapping("/addTarget")
     public ResponseEntity<?> addTarget(@RequestBody Target target) {
-        System.out.println("이건 등록할 거" + target);
         int result = managerService.addTarget(target.getMile_no(), target.getUser_no(), target.getStart_date(), target.getEnd_date(), target.getTarget_mileage(),true,true);
         if (result > 0) {
             return ResponseEntity.ok().body("{\"success\":true}");
@@ -214,7 +210,6 @@ public class ManagerController {
     @GetMapping("/mileModifyDetail/{mile_introduce_no}")
     public MileIntroduce mileModifyDetail(@PathVariable String mile_introduce_no, @RequestParam String mile_no) {
         MileIntroduce mileModify = managerService.mileModifyDetail(mile_introduce_no, mile_no);
-        System.out.println(mileModify);
         return mileModify;
     }
 

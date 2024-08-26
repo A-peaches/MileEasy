@@ -79,14 +79,14 @@ public class MileageController {
     @GetMapping("/getMileage")
     public ArrayList<Mileage> getMileage() {
         ArrayList<Mileage> mileList = mileService.getMileage();
-        System.out.println(mileList);
+
         return mileList;
     }
 
     @GetMapping("/getMileScore/{user_no}")
     public ArrayList<MileScore> getMileScore(@PathVariable String user_no) {
         ArrayList<MileScore> mileScoreList = mileScoreService.getMileScore(user_no);
-        System.out.println(mileScoreList);
+
         return mileScoreList;
     }
 
@@ -197,8 +197,7 @@ public class MileageController {
                 if (titleRow == null) {
                     throw new IllegalStateException("Title row is null");
                 }
-                System.out.println("Title Row Physical Number of Cells: " + titleRow.getPhysicalNumberOfCells());
-                System.out.println("Title Row Last Cell Num: " + titleRow.getLastCellNum());
+
 
                 List<String> mile_score_names = new ArrayList<>();
                 for(int i=2; i<titleRow.getLastCellNum(); i++){
@@ -520,21 +519,18 @@ public class MileageController {
     @GetMapping("/getMileAge/{user_no}")
     public MileByAge getMileAge(@PathVariable String user_no) {
         MileByAge mileByAge = mileScoreService.getMileAge(user_no);
-        System.out.println("나이별별 차트 " + mileByAge);
         return mileByAge;
     }
 
     @GetMapping("/getMilePosition/{user_no}")
     public MileByPosition getMilePosition(@PathVariable String user_no) {
         MileByPosition mileByPosition = mileScoreService.getMilePosition(user_no);
-        System.out.println("직급별 차트 " + mileByPosition);
         return mileByPosition;
     }
 
     @GetMapping("/getMileJob/{user_no}")
     public MileByJob getMileJob(@PathVariable String user_no) {
         MileByJob mileByJob = mileScoreService.getMileJob(user_no);
-        System.out.println("직무별 차트 " + mileByJob);
         return mileByJob;
     }
     @GetMapping("/jumpData")

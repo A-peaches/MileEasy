@@ -22,21 +22,17 @@ public class TargetController {
         //개인형 목표 추가하기
         @PostMapping("/create")
         public void createTarget(@RequestBody Target target) {
-            System.out.println("target created 메소드 도착 ! " + target);
             targetService.addTarget(target);
-            System.out.print("target:"+target);
          }
         //개인형 목표 불러오기
         @GetMapping("/user/{userNo}")
         public List<Target> getTarget(@PathVariable String userNo) {
-            System.out.print("target getTarget 메소드 도착 ! ");
             return targetService.getTargetByUserNo(userNo);
         }
 
         // 참여형 목표 불러오기
         @GetMapping("/admin/targets/{userNo}")
         public List<Target> getAdminTargets(@PathVariable String userNo) {
-            System.out.println("Admin targets !");
             return targetService.getAdminTargets(userNo);
         }
 
@@ -51,8 +47,6 @@ public class TargetController {
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> joinTarget(@RequestBody Map<String, Object> requestBody) {
         try {
-            System.out.println("join 메소드 도착 !");
-            System.out.println("Received Request Body: " + requestBody);
 
             if (!requestBody.containsKey("targetNo") || !requestBody.containsKey("userNo")) {
                 return ResponseEntity.badRequest().body(Map.of("success", false, "message", "필수 파라미터가 누락되었습니다."));
@@ -98,7 +92,6 @@ public class TargetController {
     @GetMapping("/increaseMawangScore/{targetNo}")
     public ResponseEntity<String> increaseMawangScore(@RequestParam("user_no") String userNo, @RequestParam("target_no") int targetNo) {
         try {
-            System.out.println("targetService 로 이동합니다.");
             int updatedRows = targetService.increaseMawangScore(userNo, targetNo);
             if (updatedRows > 0) {
                 return ResponseEntity.ok("Mawang score updated successfully");

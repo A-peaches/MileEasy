@@ -20,7 +20,6 @@ public class FavoriteController {
     @GetMapping("getFavorite/{user_no}")
     public ArrayList<Favorite> user_no(@PathVariable String user_no) {
         ArrayList<Favorite> favoriteList = favoriteService.getFavorite(user_no);
-        System.out.println(favoriteList);
         return favoriteList;
     }
 

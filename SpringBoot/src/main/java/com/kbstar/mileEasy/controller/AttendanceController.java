@@ -18,13 +18,11 @@ public class AttendanceController {
     @GetMapping("getAttendance/{user_no}")
     public List<Attendances> getAttendance(@PathVariable String user_no) {
         List<Attendances> attendances = attendanceService.getAttendance(user_no);
-        System.out.println("출석 체크 몽땅" + attendances);
         return attendances;
     }
 
     @GetMapping("addAttendance/{user_no}")
     public void addAttendance(@PathVariable String user_no) {
         attendanceService.addAttendance(user_no);
-        System.out.println("출석 체크 성공!");
     }
 }
