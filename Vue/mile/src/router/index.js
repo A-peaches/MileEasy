@@ -63,8 +63,6 @@ router.beforeEach(async (to, from, next) => {
   await store.dispatch('login/checkLogin');
   const loginInfo = store.state.login.loginInfo;
 
-  console.log('Login Info:', loginInfo); // 로그인 정보 확인
-
   if (requiresAuth && !loginInfo) {
     next({ name: 'LoginView' });
   } else {

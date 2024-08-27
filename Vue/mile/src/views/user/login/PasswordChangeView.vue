@@ -65,8 +65,6 @@ export default {
         user_no: this.loginInfo.user_no,
       };
 
-      console.log(inputInfo);
-
       // 입력 여부 확인
       if (!this.password || !this.confirm_password) {
         this.msg = "비밀번호를 모두 입력해주세요.";
@@ -96,7 +94,6 @@ export default {
       if (!hasLetter || !hasDigit || !hasSpecialChar) {
         this.msg = "비밀번호 유의사항을 확인해주세요.";
         this.warningAlert();
-        console.log("password pattern Error!");
         return;
       }
 
@@ -104,7 +101,6 @@ export default {
       if (/(\w)\1\1\1/.test(this.password)) {
         this.msg = "비밀번호 유의사항을 확인해주세요.";
         this.warningAlert();
-        console.log("password continuous Error!");
         return false;
       }
 
@@ -117,7 +113,6 @@ export default {
       ) {
         this.msg = "비밀번호 유의사항을 확인해주세요.";
         this.warningAlert();
-        console.log("password words contain Error!");
         return;
       }
 
@@ -129,8 +124,6 @@ export default {
           "/user/changePassword",
           inputInfo
         );
-
-        console.log("비밀번호 변경완료", response.data);
 
         if (response.data.success) {
           this.msg = response.data.message;

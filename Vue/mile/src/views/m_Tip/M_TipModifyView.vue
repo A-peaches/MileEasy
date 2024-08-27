@@ -101,7 +101,7 @@ export default {
 
   async mounted() {
   const noticeId = this.$route.params.mtip_board_no;
-  console.log('Notice ID:', noticeId);
+  
   if (noticeId) {
     await this.fetchNoticeDetails(noticeId);
   } else {
@@ -248,13 +248,10 @@ export default {
     },
     async fetchNoticeDetails(noticeId) {
   try {
-    console.log('noticeId:',noticeId);
     const response = await this.fetchNoticeDetail(noticeId);
     console.log('Full response:', response); // 전체 응답 로깅
 
     const notice = response;
-    console.log('Notice data가 나왔다 :', notice); // notice 객체 로깅
-
 
     if (notice.mtip_board_no !== undefined) {
       this.form.notice_board_no = notice.mtip_board_no;
@@ -272,8 +269,6 @@ export default {
     this.form.content = notice.mtip_board_content;
     this.displayFileName = notice.mtip_board_file;
 
-    console.log('Fetched notice details:', notice);
-    console.log('Selected category:', this.selectedCategory);
   } catch (error) {
     console.error('Error fetching notice details:', error);
   }

@@ -313,14 +313,12 @@ export default {
       }
     },
     async fetchNotices() {
-      console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
         const response = await api.get('/mtip/Mtiplist');
         this.notices = response.data.map((notice) => ({
           ...notice,
           liked: notice.liked || false, // 서버에서 좋아요 여부를 전달해줬을 경우
         }));
-        console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
         console.error(
           'Error fetching notices:',
@@ -331,7 +329,6 @@ export default {
     async fetchMileages() {
       try {
         const response = await api.get('/mtip/Mtipmileage');
-        console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
         console.error(
@@ -341,18 +338,14 @@ export default {
       }
     },
     async handleNoticeClick(notice) {
-      console.log('notice:', notice);
       if (this.isProcessing) return;
       this.isProcessing = true;
       try {
-        console.log('게시글 상세보기+조회수 메소드 도달', notice);
-
         // 조회수 증가 요청
         await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
 
         // 게시글 상세 정보 요청
         const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response);
         const noticeDetails = response.data;
 
         // 좋아요 상태 확인 요청
@@ -415,10 +408,6 @@ export default {
     },
   },
   mounted() {
-    console.log('loginInfo:', this.loginInfo);
-    console.log('isLoggedIn:', this.isLoggedIn);
-    console.log('isChecked:', this.isChecked);
-
     document.addEventListener('click', this.handleClickOutside);
 
     this.fetchNotices();
