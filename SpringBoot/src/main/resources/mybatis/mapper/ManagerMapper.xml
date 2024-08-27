@@ -26,67 +26,126 @@
     <select id="selectMileTarget" resultType="com.kbstar.mileEasy.dto.Target">
         <![CDATA[
         WITH RECURSIVE date_range AS (
-        SELECT MIN(start_date) AS date FROM target WHERE mile_no = 1
+            SELECT MIN(start_date) AS date
+        FROM target
+        WHERE mile_no = #{mile_no}
         UNION ALL
         SELECT date + INTERVAL 1 DAY
         FROM date_range
         WHERE date < CURDATE()
-        ),
-        user_mileage AS (
+            ),
+            user_mileage AS (
         SELECT
-        t.target_no,
-        t.start_date,
-        t.end_date,
-        t.target_mileage,
-        ut.user_no,
-        COALESCE(
-        (SELECT SUM(mile_score_point)
-        FROM mile_score ms
-        WHERE ms.user_no = ut.user_no
-        AND ms.mile_no = t.mile_no
-        AND ms.mile_score_date BETWEEN t.start_date AND LEAST(t.end_date, CURDATE())),
-        0
-        ) +
-        COALESCE(
-        (SELECT SUM(mile_history_point)
-        FROM mile_history mh
-        WHERE mh.user_no = ut.user_no
-        AND mh.mile_no = t.mile_no
-        AND mh.mile_history_date BETWEEN t.start_date AND LEAST(t.end_date, CURDATE())),
-        0
-        ) AS total_mileage
+            t.target_no,
+            t.start_date,
+            t.end_date,
+            t.target_mileage,
+            ut.user_no,
+            COALESCE(
+            (SELECT SUM(mile_score_point)
+            FROM mile_score ms
+            WHERE ms.user_no = ut.user_no
+            AND ms.mile_no = t.mile_no
+            AND ms.mile_score_date BETWEEN t.start_date AND LEAST(t.end_date, CURDATE())),
+            0
+            ) +
+            COALESCE(
+            (SELECT SUM(mile_history_point)
+            FROM mile_history mh
+            WHERE mh.user_no = ut.user_no
+            AND mh.mile_no = t.mile_no
+            AND mh.mile_history_date BETWEEN t.start_date AND LEAST(t.end_date, CURDATE())),
+            0
+            ) AS total_mileage
         FROM target t
-        LEFT JOIN user_target ut ON t.target_no = ut.target_no
+            LEFT JOIN user_target ut ON t.target_no = ut.target_no
         WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
-        ),
-        target_summary AS (
+            ),
+            target_summary AS (
         SELECT
-        um.target_no,
-        um.start_date,
-        um.end_date,
-        um.target_mileage,
-        COUNT(DISTINCT um.user_no) AS total_participants,
-        COUNT(DISTINCT CASE WHEN um.total_mileage >= um.target_mileage THEN um.user_no END) AS achieved_participants
+            um.target_no,
+            um.start_date,
+            um.end_date,
+            um.target_mileage,
+            COUNT(DISTINCT um.user_no) AS total_participants,
+            COUNT(DISTINCT CASE WHEN um.total_mileage >= um.target_mileage THEN um.user_no END) AS achieved_participants
         FROM user_mileage um
         GROUP BY um.target_no, um.start_date, um.end_date, um.target_mileage
-        )
+            ),
+            closest_date AS (
         SELECT
-        t.target_no,
-        t.start_date,
-        t.end_date,
-        t.target_mileage,
-        total_participants,
-        achieved_participants,
-        CASE
-        WHEN t.start_date > CURDATE() THEN 0  -- 미래의 목표
-        WHEN ts.total_participants > 0 THEN
-        ROUND((ts.achieved_participants * 100.0 / ts.total_participants), 2)
-        ELSE 0
-        END AS achievementRate
+            t.target_no,
+            t.user_no,
+            t.mile_no,
+            t.start_date,
+            COALESCE(
+            (SELECT mh.mile_history_date
+            FROM mile_history mh
+            WHERE mh.user_no = t.user_no
+            AND mh.mile_no = t.mile_no
+            ORDER BY ABS(DATEDIFF(mh.mile_history_date, t.start_date))
+            LIMIT 1),
+            (SELECT ms.mile_score_date
+            FROM mile_score ms
+            WHERE ms.user_no = t.user_no
+            AND ms.mile_no = t.mile_no
+            ORDER BY ABS(DATEDIFF(ms.mile_score_date, t.start_date))
+            LIMIT 1),
+            t.start_date
+            ) AS closest_date,
+            CASE
+            WHEN (SELECT mh.mile_history_date
+            FROM mile_history mh
+            WHERE mh.user_no = t.user_no
+            AND mh.mile_no = t.mile_no
+            ORDER BY ABS(DATEDIFF(mh.mile_history_date, t.start_date))
+            LIMIT 1) <=
+            (SELECT ms.mile_score_date
+            FROM mile_score ms
+            WHERE ms.user_no = t.user_no
+            AND ms.mile_no = t.mile_no
+            ORDER BY ABS(DATEDIFF(ms.mile_score_date, t.start_date))
+            LIMIT 1)
+            THEN 'mile_history'
+            ELSE 'mile_score'
+            END AS closest_table
         FROM target t
-        LEFT JOIN target_summary ts ON t.target_no = ts.target_no
-        WHERE t.mile_no = #{mile_no} AND t.is_manager_plan = 1
-        ORDER BY t.start_date DESC, t.target_no;
+        WHERE t.is_together = 1
+            )
+        SELECT DISTINCT
+            t.target_no,
+            t.mile_no,
+            t.user_no,
+            t.start_date,
+            t.end_date,
+            t.target_mileage,
+            t.is_together,
+            t.is_manager_plan,
+            m.mile_name,
+            (SELECT COUNT(ut_inner.user_no)
+             FROM user_target ut_inner
+             WHERE ut_inner.target_no = t.target_no) AS totalParticipants,
+            (SELECT COUNT(ut_inner.user_no)
+             FROM user_target ut_inner
+             WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 1) AS achievedCount,
+            (SELECT COUNT(ut_inner.user_no)
+             FROM user_target ut_inner
+             WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 0) AS notAchievedCount,
+            (SELECT GROUP_CONCAT(u_inner.user_name SEPARATOR ', ')
+             FROM user_target ut_inner
+                      JOIN user u_inner ON ut_inner.user_no = u_inner.user_no
+             WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 0) AS not_achieved_names,
+            (SELECT GROUP_CONCAT(u_inner.user_tel SEPARATOR ', ')
+             FROM user_target ut_inner
+                      JOIN user u_inner ON ut_inner.user_no = u_inner.user_no
+             WHERE ut_inner.target_no = t.target_no AND ut_inner.mawang_score = 0) AS not_achieved_phones
+        FROM target t
+                 LEFT JOIN user_target ut ON t.target_no = ut.target_no
+                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
+                 LEFT JOIN target_summary ts ON t.target_no = ts.target_no
+        WHERE t.mile_no = #{mile_no}  -- 이 조건을 추가해서 mile_no가 일치하는 데이터만 가져옴
+        ORDER BY t.start_date ASC;
+
         ]]>
     </select>
 

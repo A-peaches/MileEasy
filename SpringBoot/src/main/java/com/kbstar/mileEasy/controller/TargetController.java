@@ -9,8 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/target")
@@ -22,21 +25,17 @@ public class TargetController {
         //개인형 목표 추가하기
         @PostMapping("/create")
         public void createTarget(@RequestBody Target target) {
-            System.out.println("target created 메소드 도착 ! " + target);
             targetService.addTarget(target);
-            System.out.print("target:"+target);
          }
         //개인형 목표 불러오기
         @GetMapping("/user/{userNo}")
         public List<Target> getTarget(@PathVariable String userNo) {
-            System.out.print("target getTarget 메소드 도착 ! ");
             return targetService.getTargetByUserNo(userNo);
         }
 
         // 참여형 목표 불러오기
         @GetMapping("/admin/targets/{userNo}")
         public List<Target> getAdminTargets(@PathVariable String userNo) {
-            System.out.println("Admin targets !");
             return targetService.getAdminTargets(userNo);
         }
 
@@ -51,8 +50,6 @@ public class TargetController {
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> joinTarget(@RequestBody Map<String, Object> requestBody) {
         try {
-            System.out.println("join 메소드 도착 !");
-            System.out.println("Received Request Body: " + requestBody);
 
             if (!requestBody.containsKey("targetNo") || !requestBody.containsKey("userNo")) {
                 return ResponseEntity.badRequest().body(Map.of("success", false, "message", "필수 파라미터가 누락되었습니다."));
@@ -95,11 +92,18 @@ public class TargetController {
     }
 
     // 마왕 점수 업그레이드
-    @GetMapping("/increaseMawangScore/{targetNo}")
-    public ResponseEntity<String> increaseMawangScore(@RequestParam("user_no") String userNo, @RequestParam("target_no") int targetNo) {
+    @PostMapping("/increaseMawangScore")
+    public ResponseEntity<String> increaseMawangScore(@RequestBody Map<String, Object> requestBody) {
         try {
-            System.out.println("targetService 로 이동합니다.");
+            // 요청 본문에서 user_no 및 target_no를 가져옴
+            String userNo = (String) requestBody.get("user_no");
+            int targetNo = Integer.parseInt(requestBody.get("target_no").toString());
+
+            System.out.println("마왕 점수 업그레이드: " + userNo + ", Target No: " + targetNo);
+
+            // 마왕 점수 업그레이드 로직 처리
             int updatedRows = targetService.increaseMawangScore(userNo, targetNo);
+
             if (updatedRows > 0) {
                 return ResponseEntity.ok("Mawang score updated successfully");
             } else {
@@ -110,15 +114,35 @@ public class TargetController {
         }
     }
 
+
     // 특정 목표에 참가한 사용자들의 목록, 달성률, 마일리지 점수 반환
     @GetMapping("/participants/{targetNo}")
     public ResponseEntity<List<Map<String, Object>>> getParticipantsByTargetNo(
             @PathVariable int targetNo,
-            @RequestParam int mileNo   // mile_no 파라미터 추가
+            @RequestParam int mileNo  // mile_no 파라미터 추가
     ) {
         List<Map<String, Object>> participants = targetService.getParticipantsByTargetNo(targetNo, mileNo);
-        return ResponseEntity.ok(participants);
-    }
 
+        System.out.println("participants"+participants);
+
+        // 각 참가자의 마왕 점수를 순회하며 출력
+        for (Map<String, Object> participant : participants) {
+            System.out.println("User: " + participant.get("user_name") + ", 마왕 점수: " + participant.get("mawang_score"));
+        }
+        // 미달성한 사람들의 전화번호를 배열로 저장
+        List<String> notAchievedPhones = participants.stream()
+                .filter(participant -> participant.get("mawang_score") != null && (int) participant.get("mawang_score") == 0)
+                .map(participant -> (String) participant.get("user_tel"))
+                .collect(Collectors.toList());
+
+        // 참가자 정보에 미달성한 사람들의 전화번호 배열을 추가
+        Map<String, Object> response = new HashMap<>();
+        response.put("participants", participants);
+        response.put("notAchievedPhones", notAchievedPhones);
+
+        System.out.println("미달성 전화번호 배열: " + notAchievedPhones);
+
+        return ResponseEntity.ok(Collections.singletonList(response));
+    }
 
 }

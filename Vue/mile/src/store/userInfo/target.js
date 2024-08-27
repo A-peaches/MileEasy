@@ -6,6 +6,7 @@ const state = {  // 애플리케이션의 상태를 저장
     togetherTargets: [], // 참여형 목표 저장
     personalTargets: [], // 개인형 목표 저장
     adminTargets: [],  // 관리자가 등록한 모든 목표를 저장
+    participantsData: {},  // 참가자 관련 데이터 저장
   };
   
   const mutations = { // 상태를 변경하는 동기적 변이
@@ -33,6 +34,16 @@ const state = {  // 애플리케이션의 상태를 저장
       setTargets(state, targets) {
         state.targets = targets;
       },
+      SET_PARTICIPANTS_DATA(state, { targetNo, data }) {
+        // 각 타겟 번호에 따른 참가자 데이터를 저장
+        state.participantsData = {
+            ...state.participantsData,
+            [targetNo]: data
+        };
+      },
+      setError(state, error) {
+        state.error = error;
+      }
    
   };
   
@@ -75,11 +86,9 @@ const state = {  // 애플리케이션의 상태를 저장
     },
       async fetchAdminTargets({ commit }, userNo) {
         try {
-          console.log('관리자 목표설정 정보 불러오기.js 도착 !', userNo);
           const response = await api.get(`/target/admin/targets/${userNo}`);
-          console.log('관리자 목표설정 서버정보:', response.data); // 응답 데이터를 콘솔에 출력
           commit('setTargets', response.data);
-          commit('SET_ADMIN_TARGETS', response.data);
+          commit('SET_ADMIN_TARGETS', response.data); 
         } catch (error) {
           console.error("Error fetching admin targets:", error);
         }
@@ -87,7 +96,6 @@ const state = {  // 애플리케이션의 상태를 저장
       // 사용자가 참여한 모든 타겟의 번호를 가져오는 액션
       async checkParticipation(_, { targetNo, userNo }) {
         try {
-          console.log("joinTarget.js :", { targetNo, userNo });
           const response = await api.get(`/target/checkParticipation/${targetNo}/${userNo}`);
           return response.data;  // 참여 여부 반환
         } catch (error) {
@@ -100,7 +108,6 @@ const state = {  // 애플리케이션의 상태를 저장
       async joinTarget(_, { targetNo, userNo }) {
         try {
           const response = await api.post('/target/join', { targetNo, userNo });
-          console.log('API joinTarget response:', response.data);
           
           if (response.data && response.data.success) {
             return { success: true, message: response.data.message };
@@ -136,41 +143,31 @@ const state = {  // 애플리케이션의 상태를 저장
       async deletePersonalTarget({ dispatch }, { userNo, targetNo }) {
         return dispatch('deleteTarget', { userNo, targetNo, type: 'personal' });
       },
-        // 마왕 점수 상승 액션 추가
+    // 마왕 점수 상승 액션 추가
     async increaseMawangScore(_, { userNo, targetNo }) {
       try {
-        const response = await api.get(`/target/increaseMawangScore`, {
-          params: {
-            user_no: userNo,
-            target_no: targetNo
-          }
+        // POST 요청 시 데이터를 body에 넣어 전달
+        const response = await api.post(`/target/increaseMawangScore`, {
+          user_no: userNo,
+          target_no: targetNo
         });
         console.log('마왕 점수 증가 성공:', response.data);
       } catch (error) {
-        console.error('마왕 점수 증가 중 오류 발생:', error.response ? error.response.data : error.message);
+        // JavaScript에서 스택 트레이스를 출력하는 방법
+        console.error('마왕 점수 증가 중 오류 발생:', error);
         throw error;
       }
     },
-     async loadParticipants(_, { targetNo, mileNo }) {
-    try {
-      console.log("참가자 목록 서버로 들어갑니다. participants")
-      const response = await api.get(`/target/participants/${targetNo}`, {
-        params: { mileNo: mileNo }  // userNo와 mileNo를 쿼리 파라미터로 전달
-      });
-      console.log("reponse :",response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Error loading participants:', error);
-      throw error;
-    }
-  },
-  };
+};
   
   const getters = {  // 상태를 가져오는 게터
     getTogetherTargets: (state) => state.togetherTargets,
     getPersonalTargets: (state) => state.personalTargets,
     getAdminTargets: (state) => state.adminTargets,
-  };
+    getParticipantsData: (state) => (targetNo) => {
+      return state.participantsData[targetNo] || {};
+    },
+};
   
   
   export default {

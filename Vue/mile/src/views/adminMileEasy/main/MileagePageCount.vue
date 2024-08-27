@@ -166,7 +166,6 @@ export default {
         }
 
         const hitCounts = response.data.map((item) => item.hit_count);
-        console.log('마일리지 결과', hitCounts);
 
         return { hitCounts };
       } catch (error) {
@@ -188,7 +187,6 @@ export default {
       let minValue = hitCounts[0];
       let count = 0;
       for (let i = 0; i < hitCounts.length; i++) {
-        console.log(hitCounts[i], hitCounts[i]);
         if (hitCounts[i] === 0) {
           count = count + 1;
         }
@@ -212,17 +210,6 @@ export default {
         this.best = '-';
         this.worst = '-';
       }
-
-      console.log(
-        'Best:',
-        this.best,
-        'Worst:',
-        this.worst,
-        'Max Value:',
-        maxValue,
-        'Min Value:',
-        minValue
-      ); // 디버깅용 로그
     },
 
     renderChart2(counts, mileageLabel) {
@@ -230,7 +217,6 @@ export default {
       const ctx = document.getElementById(chartId);
 
       if (!ctx) {
-        console.error(`Canvas element with id '${chartId}' not found.`);
         return;
       }
 

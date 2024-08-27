@@ -1,5 +1,3 @@
-// src/store/modules/monthlyKing.js
-// import api from '@/api/axios';
 
 const state = {
   arrayMonthlyKing: [],

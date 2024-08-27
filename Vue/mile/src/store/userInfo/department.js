@@ -1,5 +1,3 @@
-// src/store/modules/department.js
-// import api from '@/api/axios';
 
 const state = {
   objectDepartment: null,

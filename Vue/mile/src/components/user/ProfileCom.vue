@@ -30,6 +30,7 @@
 
       <button
         v-if="loginInfo && loginInfo.job_no === '기획'"
+        마일리지
         class="btn-yellow KB_C2 my-3"
         @click="goToMile"
       >
@@ -151,7 +152,6 @@ export default {
           user_no: this.loginInfo.user_no,
         });
         this.badgeList = response.data;
-        console.log('배지 서비스:', this.badgeList); // 데이터 로그
       } catch (error) {
         console.error('배지 서비스 오류:', error); // 오류 로그
       }

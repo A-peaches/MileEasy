@@ -335,7 +335,6 @@ export default {
             },
           },
         });
-        console.log("Chart created for index:", index);
       } else {
         console.warn(
           `Canvas element with id ${chartId} not found or does not support getContext.`
@@ -343,7 +342,6 @@ export default {
       }
     },
     async renderCharts() {
-      console.log("Rendering charts...");
       for (let index = 0; index < this.favoriteList.length; index++) {
         const fav = this.favoriteList[index];
         const scoreObj = this.mileScores.find((m) => m.mile_no === fav.mile_no);
@@ -364,7 +362,6 @@ export default {
     },
   },
   async mounted() {
-    console.log("FavoriteCom mounted");
     const md = new MobileDetect(window.navigator.userAgent);
     this.isMobile = md.mobile() !== null;
 
@@ -378,7 +375,6 @@ export default {
         "mileScore/getMileScore",
         this.loginInfo.user_no
       );
-      console.log("mileScores after fetch:", this.mileScores);
       await this.renderCharts();
     }
   },

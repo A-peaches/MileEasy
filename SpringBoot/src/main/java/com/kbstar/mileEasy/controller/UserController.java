@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.replaceAll;
 
@@ -54,14 +55,13 @@ public class UserController {
     @GetMapping("/{user_no}")
     public User user_no(@PathVariable String user_no) {
         User user = GetUserInfoService.getUserById(user_no);
-        System.out.println(user);
         return user;
     }
 
     @GetMapping("/allUser")   //'http://localhost:8090/user/allUser'  /allUser 부분!
     public ArrayList<User> allUser() {
         ArrayList<User> users = GetUserInfoService.getAllUser(); //UserService의 getAllUser 실행
-        System.out.println(users);
+
         return users; //호출된 곳으로 다시 돌아감!!!
     }
 
@@ -91,7 +91,7 @@ public class UserController {
         User checkedUser = GetUserInfoService.checkedUser(user_no, user_pw);
         // 서비스 계층의 checkedUser 메서드를 호출하여 로그인 정보를 인증한다.
         // 메서드 결과 일치하는 사용자가 있으면 User 객체를 반환. 없으면 null을 반환.
-        System.out.println(checkedUser);
+
         if (checkedUser != null) {
 
             if(is_checked && checkedUser.isUser_is_admin()){ // 관리자 로그인 && 운영관리자일 때
@@ -160,8 +160,7 @@ public class UserController {
     @PostMapping("/levelChartData")
     public ArrayList<User> levelChartData(@RequestBody Map<String, String> requestBody) {
         String date = requestBody.get("date");
-        System.out.println("들어왔따!");
-        System.out.println(mileService.levelChartData(date));
+
         return mileService.levelChartData(date);
     }
 
@@ -209,7 +208,7 @@ public class UserController {
     @PostMapping("/requestListDelete")
     public void  requestListDelete(@RequestParam("mileage_request_no") String mileage_request_no) {
         // userNo를 사용하여 필요한 데이터 처리
-        System.out.println(mileage_request_no);
+
         requestService.requestListDelete(mileage_request_no);
     }
 
@@ -226,13 +225,12 @@ public class UserController {
     @GetMapping("/chatList")
     public ArrayList<Chat> chatList(){
 
-        System.out.println("chat입장");
         return chatService.chatList();
     }
 
     @PostMapping("/badgeList")
     public ArrayList<MonthlyKing> badgeList() {
-        System.out.println("배지배지배지");
+
         return monthlyKingService.badgeList();
 
     }
@@ -246,7 +244,7 @@ public class UserController {
     @PostMapping("/sendSms")
     public ResponseEntity<?> sendSms(@RequestBody SmsRequest request) {
         try {
-            System.out.println(request.getText() + "이것이 문자메시지");
+
             smsService.sendSms(request.getTo(), request.getText(), request.getMile());
             return ResponseEntity.ok().body("{\"success\":true}");
         } catch (Exception e) {
@@ -254,5 +252,34 @@ public class UserController {
                     .body("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
         }
     }
+
+    @PostMapping("/sendSmsAction")
+    public ResponseEntity<?> sendSmsAction(@RequestBody SmsRequest request) {
+        try {
+            // 요청으로 받은 수신자 목록 및 메시지 텍스트들
+            List<String> recipients = request.getTo();
+            List<String> messages = request.getTexts();
+
+            // 수신자와 메시지의 수가 일치하는지 확인
+            if (recipients.size() != messages.size()) {
+                return ResponseEntity.badRequest().body("{\"success\":false, \"message\":\"수신자 목록과 메시지 목록의 크기가 일치하지 않습니다.\"}");
+            }
+
+            // SMS 서비스 호출: 각 수신자에게 맞춤형 메시지를 발송
+            for (int i = 0; i < recipients.size(); i++) {
+                String recipient = recipients.get(i);
+                String messageText = messages.get(i);
+                smsService.sendSmsAction(recipient, messageText, request.getMile());
+            }
+
+            // 성공적인 처리 후 응답 반환
+            return ResponseEntity.ok().body("{\"success\":true}");
+        } catch (Exception e) {
+            // 오류 발생 시 예외 처리 및 500 응답 반환
+            return ResponseEntity.status(500).body("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
+
 
 }

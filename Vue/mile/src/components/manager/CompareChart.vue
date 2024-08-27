@@ -204,7 +204,6 @@ export default {
             },
           }
         );
-        console.log('마일리지', response.data);
         // 데이터가 없는 경우 기본값 반환
         return {
           thisYear: response.data.thisYear.length > 0 ? response.data.thisYear : this.getDefaultMonthlyData(),
@@ -232,7 +231,6 @@ export default {
             },
           }
         );
-        console.log('방문자수', response.data);
         // 데이터가 없는 경우 기본값 반환
         return {
           thisYear: response.data.thisYear.length > 0 ? response.data.thisYear : this.getDefaultMonthlyData(),

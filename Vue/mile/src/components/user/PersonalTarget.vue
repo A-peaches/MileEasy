@@ -48,7 +48,7 @@
     </div>
 
     <div class="row">
-      <div v-for="(targets, index) in filteredMileages" :key="targets.target_no" class="col-md-4 mb-3 fade-up-item">
+      <div v-for="(targets, index) in filteredMileages" :key="targets.target_no"  ref="fadeUpItems" class="col-md-4 mb-3 fade-up-item">
         <div class="p-3">
           <div
             :style="{
@@ -121,23 +121,24 @@
                   width: 100%;
                 "
               >
+              <div
+                class="progress"
+                role="progressbar"
+                aria-label="Animated striped example"
+                aria-valuenow="60"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="width: 80%; margin-right: 10px"
+              >
                 <div
-                  class="progress"
-                  role="progressbar"
-                  aria-label="Animated striped example"
-                  aria-valuenow="60"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  style="width: 80%; margin-right: 10px"
-                >
-                  <div
-                    class="progress-bar progress-bar-striped progress-bar-animated"
-                    :style="{
-                      width: calculateProgress(targets),
-                      backgroundColor: '#FB773C',
-                    }"
-                  ></div>
-                </div>
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  :style="{
+                   width: `${Math.min(targets.achievementRate, 100)}%`,  // % 기호 추가하여 정수에 퍼센트 단위 적용
+                    backgroundColor: '#FB773C',
+                  }"
+                ></div>
+              </div>
+
                 <span
                   style="
                     font-weight: bold;
@@ -147,7 +148,7 @@
                     margin-right: 10px;
                   "
                 >
-                  {{ calculateProgress(targets) }}</span
+                {{ Math.min(targets.achievementRate, 100) }} %</span
                 >
               </div>
               <span
@@ -163,7 +164,7 @@
             <div class="py-3">
               <span class="bold-x-lg" style="font-family: 'KB_C1'">
                 <span class="highlight-score">{{
-                  targets.totalMileScoreByMileNo
+                  targets.totalMileScoreByTargetNo || 0
                 }}</span>
                 / {{ targets.target_mileage }}</span
               >
@@ -205,12 +206,14 @@
               <Datepicker
                 v-model="startDate"
                 :format="formatDate"
+                :min-date="new Date()"
                 placeholder="시작일"
               />
               <span class="date-separator">~</span>
               <Datepicker
                 v-model="endDate"
                 :format="formatDate"
+                :min-date="startDate || new Date()"
                 placeholder="종료일"
               />
             </div>
@@ -277,7 +280,6 @@ export default {
       // 마일리지 카테고리 가져오기
       try {
         const response = await api.get('/notice/mileage');
-        console.log('fetchMileages 메소드 :', response.data); // 응답 데이터를 콘솔에 출력
         this.labels = response.data;
       } catch (error) {
         console.error(
@@ -318,7 +320,6 @@ export default {
         month: new Date().getMonth() + 1, //1~12월 범위를 맞추기 위해서
         achievementRate: 0, //목표 달성률
       };
-      console.log('target이 서버로 데이터 넘기는 것 :', target);
       try {
         await this.addPersonalTarget(target);
         this.closeModal();
@@ -331,24 +332,20 @@ export default {
       }
     },
     calculateProgress(target) {
-    // 종료된 목표는 고정된 진행률 반환 (목표 종료 시 프론트엔드 또는 서버에서 저장된 값)
+    // target 객체가 정의되지 않았거나 totalMileScoreByMileNo 속성이 없는 경우 기본값을 반환
+    if (!target || target.achievementRate === undefined || target.target_mileage === undefined) {
+      return '0%'; // 적절한 기본값 반환
+    }
+
+    // 상태가 종료("completed")일 경우 진행률 계산 중단
     if (this.getStatusText(target) === '종료') {
-        return target.achievementRate + '%';  // 종료 상태에서는 계산된 진행률 고정
+      return '0%'; // 종료된 경우 진행률을 100%로 고정
     }
 
-    // 목표 마일리지가 0이거나 없으면 진행률은 0%
-    if (!target.target_mileage || target.target_mileage === 0) {
-        return '0%';
-    }
-
-    // 달성한 마일리지 비율을 계산
+    // 정상적인 진행률 계산
     const progress = (target.totalMileScoreByMileNo / target.target_mileage) * 100;
-
-    // 목표 진행률을 업데이트
-    target.achievementRate = progress > 100 ? 100 : Math.round(progress);
-
-    return target.achievementRate + '%';
-},
+    return isNaN(progress) ? '0%' : `${progress.toFixed(2)}%`;
+  },
 
 
     getStatusClass(target) {
@@ -365,6 +362,12 @@ export default {
       }
     },
     getStatusText(target) {
+
+      // target 객체가 정의되었는지 확인하고, start_date와 end_date가 있는지 확인
+    if (!target || !target.start_date || !target.end_date) {
+      return '알 수 없음'; // 적절한 기본값 또는 에러 메시지
+    }
+    
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
@@ -418,7 +421,6 @@ export default {
     async loadUserParticipatedTargets() {
       try {
         const targetNos = this.adminTargets.map((target) => target.target_no);
-        console.log('5. Target numbers:', targetNos);
 
         for (const targetNo of targetNos) {
           const isParticipating = await this.checkParticipation(targetNo);
@@ -427,10 +429,6 @@ export default {
           }
         }
 
-        console.log(
-          '7. Updated userParticipatedTargets:',
-          this.userParticipatedTargets
-        );
       } catch (error) {
         console.error('Failed to load user participated targets:', error);
       } finally {
@@ -470,9 +468,10 @@ export default {
               willClose: () => {
                 document.body.style.paddingRight = '0px';
               },
-            });
+            }).then(() => {
+            window.location.reload(); // 페이지 새로고침 추가
+          });
           } catch (error) {
-            console.error('Error deleting target:', error);
             Swal.fire({
               title: '오류 발생',
               text: '삭제 중 오류가 발생했습니다. 다시 시도해 주세요.',
@@ -525,34 +524,34 @@ export default {
       });
     },
     applyFadeUpEffect() {
-      console.log("Applying fade-up effect");
-      const items = this.$el.querySelectorAll(".fade-up-item");
-      console.log(`Found ${items.length} items to animate`);
 
-      items.forEach((item, index) => {
-        item.style.setProperty("--index", index);
-        item.style.setProperty("z-index", items.length - index);
+    // $refs.fadeUpItems가 배열인지 확인
+    const items = this.$refs.fadeUpItems;
 
-        const baseDelay = 50;
-        const delay = baseDelay + 50 * index;
+    if (!items || items.length === 0) {
+      return;
+    }
 
-        setTimeout(() => {
-          item.classList.add("fade-up-active");
-        }, delay);
-      });
-    },
+
+    items.forEach((item, index) => {
+      item.style.setProperty("--index", index);
+      item.style.setProperty("z-index", items.length - index);
+
+      const baseDelay = 50;
+      const delay = baseDelay + 50 * index;
+
+      setTimeout(() => {
+        item.classList.add("fade-up-active");
+      }, delay);
+    });
   },
+},
 
   async created() {
-    console.log('targer loginInfo 이 찍히나요 ?:', this.loginInfo);
-    console.log('isLoggedIn:', this.isLoggedIn);
-    console.log('isChecked:', this.isChecked);
     this.isLoading = true;
     try {
       await this.fetchMileages();
-      await this.fetchPersonalTargets(this.loginInfo.user_no).then(() => {
-        console.log('Targets after fetch:', this.getPersonalTargets);
-      });
+      await this.fetchPersonalTargets(this.loginInfo.user_no);
     } catch (error) {
       console.error('Error initializing component:', error);
     } finally {
@@ -566,7 +565,7 @@ export default {
     ...mapGetters('target', ['getPersonalTargets']),
 
     adminTargets() {
-      return this.getPersonalTargets || []; // getTargets가 undefined일 경우 빈 배열 반환
+      return Array.isArray(this.getPersonalTargets) ? this.getPersonalTargets : [];
     },
     displayedTargets() {
       const filtered = this.filteredTargets(this.sortBy);
@@ -578,7 +577,6 @@ export default {
     },
     targets() {
       const targets = this.getPersonalTargets;
-      console.log('Targets:', targets);
       return Array.isArray(targets) ? targets : []; // 배열이 아니면 빈 배열을 반환
     },
 
@@ -600,13 +598,11 @@ export default {
 
       return sortedTargets.filter((mileage) => {
         if (!mileage || !mileage.end_date) {
-          console.warn('Skipping mileage due to missing endDate:', mileage);
           return false;
         }
 
         const endDate = new Date(mileage.end_date);
         if (isNaN(endDate.getTime())) {
-          console.warn('Invalid date format in endDate:', mileage.end_date);
           return false;
         }
 
@@ -625,7 +621,6 @@ export default {
       immediate: true,
       handler(newLoginInfo) {
         if (newLoginInfo && newLoginInfo.user_no) {
-          console.log('Calling getAdminTargets with user_no:', newLoginInfo.user_no); // 로그 추가
           this.fetchPersonalTargets(newLoginInfo.user_no).then(() => {
             this.isLoading = false;
             this.$nextTick(() => {

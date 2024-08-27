@@ -216,7 +216,6 @@ export default {
         }
       }catch(error){
         console.error('Error uploading document', error);
-        console.log('이건 에러 상태 response status:', error.response.status);
         if(error.response && error.response.status === 409){
           this.showAlert('중복된 파일명이 있습니다', 'info', '#');
         }else{
@@ -230,7 +229,6 @@ export default {
     addDeleteDocuArray(document){
       if(!this.deleteArray.includes(document)){
         this.deleteArray.push(document);
-        console.log(this.deleteArray);
       }else{
         this.deleteArray = this.deleteArray.filter(item => item !== document);
       }
@@ -239,11 +237,9 @@ export default {
       if(this.deleteArray!=null){
         const response = await this.deleteMileDocument(this.deleteArray);
         if(response && response.data.success){
-            console.log('마일리지 문서 파일 삭제 완료');
             this.showAlert('마일리지 문서가 삭제되었습니다', 'success', '#');
             this.deleteArray = [];
         }else{
-          console.log('마일리지 문서 파일 삭제 실패');
           this.showAlert('마일리지 문서 삭제가 실패했습니다', 'error', '#');
         }
       }

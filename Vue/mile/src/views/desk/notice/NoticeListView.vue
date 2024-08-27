@@ -4,8 +4,9 @@
       <h2 class="bold-x-lg mt-5 mb-4" style="font-family: KB_C3">공지사항</h2>
       <hr class="mx-auto title-line" />
       <div @click.stop="toggleCategory" class="QnA" ref="categoryButton">
-        <div class="category-button list-wrapper-category"> 
-          {{ selectedCategory === null ? '카테고리' : selectedCategory }}</div>
+        <div class="category-button list-wrapper-category">
+          {{ selectedCategory === null ? '카테고리' : selectedCategory }}
+        </div>
         <div class="dropdown-menu" v-if="showCategory" ref="dropdownMenu">
           <div class="menu-items">
             <a class="dropdown-item" @click="filterByCategory(null)">전체</a>
@@ -168,7 +169,7 @@ export default {
       ];
     },
     filteredNotices() {
-          let result = this.notices.map(notice => ({
+      let result = this.notices.map((notice) => ({
         ...notice,
         mile_name: notice.mile_name || '기타',
       }));
@@ -185,7 +186,7 @@ export default {
 
       // 카테고리로 필터링
       if (this.selectedCategory !== null) {
-        if (this.selectedCategory === "기타") {
+        if (this.selectedCategory === '기타') {
           result = result.filter(
             (notice) => !notice.mile_no || notice.mile_name === '기타'
           );
@@ -195,7 +196,6 @@ export default {
           );
         }
       }
-
 
       if (this.sortByViews) {
         result.sort(
@@ -384,22 +384,22 @@ export default {
       this.currentPage = 1;
     },
     filterByCategory(category) {
-    this.selectedCategory = category;
-    this.currentPage = 1;
-    if (category === '기타') {
-      this.filteredNotices = this.notices.filter(
-        notice => !notice.mile_no || notice.mile_name === '기타'
-      );
-    } else if (category === null) {
-      // 전체 항목을 표시
-      this.filteredNotices = this.notices;
-    } else {
-      // 특정 카테고리 필터링
-      this.filteredNotices = this.notices.filter(
-        notice => notice.mile_name === category
-      );
-    }
-  },
+      this.selectedCategory = category;
+      this.currentPage = 1;
+      if (category === '기타') {
+        this.filteredNotices = this.notices.filter(
+          (notice) => !notice.mile_no || notice.mile_name === '기타'
+        );
+      } else if (category === null) {
+        // 전체 항목을 표시
+        this.filteredNotices = this.notices;
+      } else {
+        // 특정 카테고리 필터링
+        this.filteredNotices = this.notices.filter(
+          (notice) => notice.mile_name === category
+        );
+      }
+    },
     refreshPage() {
       this.selectedCategory = null;
       this.searchQuery = '';
@@ -465,7 +465,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 4%;
+  margin-top: 0.5%;
 }
 
 .content {
@@ -509,7 +509,9 @@ export default {
 .category-button {
   background-color: #f9f9f9;
   border-radius: 25px;
-  padding: 12px 20px;
+  padding: 13px 0px 0px 0px;
+  width: 206.09px;
+  height: 58px;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: inline-block;
@@ -567,8 +569,8 @@ export default {
 .notice-count {
   margin-bottom: 10px;
   font-size: 19px;
-  font-family: "KB_C3", sans-serif;
-  text-align: left; 
+  font-family: 'KB_C3', sans-serif;
+  text-align: left;
   padding-left: 3%;
 }
 
@@ -959,6 +961,12 @@ export default {
     white-space: nowrap; /* 텍스트를 한 줄로 유지 */
     overflow: hidden; /* 넘치는 텍스트 숨기기 */
     text-overflow: ellipsis; /* 넘치는 텍스트를 '...'로 표시 */
+  }
+  .category-button {
+    width: 107.5px;
+    height: 48px;
+    font-size: 12pt !important;
+    padding: 13px 0px 0px 0px;
   }
 }
 </style>

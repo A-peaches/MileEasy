@@ -1,4 +1,4 @@
-// src/store/modules/user.js
+
 import api from '@/api/axios';
 
 const state = {
@@ -11,11 +11,7 @@ const mutations = {
   //setter 선언하는 장소
 
   setArrayUsers(state, payload) {
-    //②
-    //state : like this , payload : 그냥 매개변수이름 선생님이 그렇게 지어주심 <변경가능> )
-
     state.arrayUsers = payload;
-    //this arrayUsers = 매개변수(payload) 넣기
   },
   setObjectUser(state, payload) {
     state.objectUser = payload;

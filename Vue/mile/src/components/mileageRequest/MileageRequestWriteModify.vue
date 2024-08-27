@@ -139,9 +139,6 @@ export default {
       const mileage = mileageLabel.value.find(
         (item) => item.mile_no.toString() === mileNo.toString()
       );
-      console.log('mileNo:', mileNo);
-      console.log('mileageLabel:', mileageLabel.value);
-      console.log('mileage:', mileage);
       return mileage
         ? `현재 연간 최고 한도: ${mileage.mile_max || '0'}`
         : '마일리지 연간 최고 한도를 입력하세요.';
@@ -265,7 +262,6 @@ export default {
             mile_no: loginInfo.value.mile_no,
           },
         });
-        console.log('담당자 리스트:', response.data);
         if (response.data.length > 0) {
           rows.value = response.data.map((admin) => ({
             id: admin.user_no,

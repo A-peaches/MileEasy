@@ -1,14 +1,8 @@
 <template>
   <div class="cards page-back mx-auto">
-    <h2 class="bold-x-lg my-5" style="font-family: KB_C3">목표 관리</h2>
+    <h2 class="bold-x-lg my-5" style="font-family: KB_C3;">목표 관리</h2>
     
     <div class="menu-and-filters">
-      <!-- 탭 메뉴 -->
-      <div class="tab-menu">
-        <button @click="currentTab = 'all'" :class="{ active: currentTab === 'all' }">전체</button>
-        <button @click="currentTab = 'ongoing'" :class="{ active: currentTab === 'ongoing' }">진행 중</button>
-        <button @click="currentTab = 'completed'" :class="{ active: currentTab === 'completed' }">종료</button>
-      </div>
 
       <!-- 검색 필터 -->
       <div class="search-filters">
@@ -24,7 +18,7 @@
     </div>
 
     <div class="d-flex justify-content-end mr-5">
-      <div class="target" @click="openModal">+ 새로운 목표 📝</div>
+      <div class="target" @click="openModal"> 📝 목표 등록 </div>
     </div>
 
     <div v-if="filteredTargets.length > 0" class="goals-list">
@@ -32,28 +26,38 @@
         <div class="goal-info" @click="toggleExpand(index)">
           <span class="goal-date">📅 {{ target.start_date }} ~ {{ target.end_date }}</span>
           <span class="goal-mileage">🎯 {{ target.target_mileage }} 마일리지 목표</span>
-          <span class="goal-status">{{ getStatusText(target) }}</span>
-          <span class="goal-rate">✨ {{ target.targetRate }}% 달성</span>
-          <span class="dropdown" :class="{ expanded: expandedTargets.includes(target.target_no) }"></span>
+          <span class="goal-status" :class="{ 'status-completed': isCompleted(target),
+              'status-ongoing': isOngoing(target),'status-scheduled': isScheduled(target)}">
+            {{ getStatusText(target) }}
+          </span>
+          <span class="goal-rate">✨  
+            {{target.totalParticipants > 0 ? Math.round((target.achievedCount / target.totalParticipants) * 100) : 0}}%  달성
+          </span>
         </div>
         <div class="progress-container">
-          <div class="progress-bar" :style="{ width: target.targetRate + '%' }"></div>
+          <!-- <div class="progress-bar" :style="{ width: target.totalParticipants > 0 ? 
+            Math.round((target.achievedCount / target.totalParticipants) * 100) + '%' : '0%' }">
+          </div> -->
+          <div class="progress-bar" :style="{ width: animatedWidths[index] + '%' }"></div>
         </div>
         <div v-show="expandedTargets.includes(target.target_no)" class="goal-details">
-          <!-- 추가 상세 정보를 여기에 넣을 수 있습니다 -->
-           <div style="margin-top: 40px;">
-          <!-- 참가자 목록 -->
-            <div v-if="participants && participants.length > 0">
-              <div v-for="(participant, index) in participants" :key="index" class="participant-card">
-                <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
-                  직원 번호: {{ participant.user_no }}
-                </p>
-                <p style="font-size: 16px; font-family: 'KB_C2', sans-serif;">
-                  현재 마일리지 : {{ participant.current_mileage_score }}
-                  달성률: {{participant.achievementRate}}%
-                </p>
-              </div>
-            </div>
+          <div style="margin-top: 40px;">
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; margin-right: 70px;">참가자 {{ target.totalParticipants }} 명</span>
+            <i class="bi bi-person-fill-check" style=" color: #19c99b; font-size: 27px; margin-right: 10px;"></i>
+            <span style="font-size: 20px;font-family: 'KB_C2', sans-serif; color: #19c99b;">달성 </span>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #19c99b; margin-right: 70px;"> {{ target.achievedCount }} 명</span>
+            <i class="bi bi-person-fill-x" style="color:#cf2222; font-size: 27px; margin-right: 10px;"></i>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222;">미달성 </span>
+            <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222; margin-right: 70px;"> {{ target.notAchievedCount }} 명</span>
+            <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px; margin-top: 10px; margin-right: 10px;"></i>
+            <span v-if="isOngoing(target)" @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif;"> 문자 발송</span>
+
+            <!-- 진행 중이 아닐 때 "문자 발송 불가" 메시지 표시 -->
+            <span v-else style="font-size: 18px; font-family: 'KB_C2', sans-serif;">
+              문자발송 불가
+            </span>
+
+            <span class="loading-dots" v-if="loading[index]">{{ loadingText[index] }}</span>
           </div>
         </div>
       </div>
@@ -95,6 +99,8 @@
 import { mapActions, mapGetters } from 'vuex';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import api from "@/api/axios";
+
 
 export default {
   name: 'TargetMileageAdminView',
@@ -103,24 +109,42 @@ export default {
   },
   data() {
     return {
+      // // currentTab: 'all',
+      // totalParticipants: 0,  // 총 참가자 수
+      // achievedCount: 0,  // 달성한 사람 수
+      // notAchievedCount: 0,  // 미달성한 사람 수
+      // notAchievedPhones: [],  // 미달성한 사람의 전화번호
+      // rates: [],  // 각 타겟에 대한 달성률 배열
       isModalOpen: false,
       startDate: null,
       endDate: null,
       targetScore: 0,
       mile_name: '',
-      currentTab: 'all',
       searchStartDate: '',
       searchEndDate: '',
       searchStatus: '',
-      expandedTargets: [],
-      participants: [] // 참가자 데이터를 저장할 배열
+      expandedTargets: [], // 확장된 목표 목록 추적
+      loading: [],
+      loadingText: [], // 로딩 텍스트
+      loadingInterval: [], // 로딩 애니메이션 인터벌
+      animatedWidths: [], // 각 목표에 대한 애니메이션 너비를 저장하는 배열
     }
   },
   computed: {
     ...mapGetters('mile', ['getMileInfo', 'getArrayMiles']),
     ...mapGetters('login', ['getLoginInfo']),
     ...mapGetters('mileage', ['getTargets']),
+    ...mapGetters('target', ['getParticipantsData']),
 
+    // achievementRate() {
+    // if (this.totalParticipants > 0 && !isNaN(this.achievedCount) && !isNaN(this.totalParticipants)) {
+    //   return ((this.achievedCount / this.totalParticipants) * 100).toFixed(2);
+    // }
+    // return 0;  // 참가자 수가 0이거나 NaN일 때는 0%로 처리
+    // },
+    participantsData() {
+        return this.getParticipantsData(this.targetNo); // 예시로 현재 타겟 번호 사용
+    },
     targets() {
       return this.getTargets || [];
     },
@@ -142,30 +166,13 @@ export default {
           targetRate: target.achievementRate,
           startDate,
           endDate,
-          expanded: false
+          // expanded: false,
+          animatedWidth: 0, // 초기값은 0
         }
       });
     },
     filteredTargets() {
       let targets = this.formattedTargets;
-      
-      // 탭 필터링
-      if (this.currentTab === 'ongoing') {
-        targets = targets.filter(t => this.isOngoing(t) || this.isScheduled(t));
-      } else if (this.currentTab === 'completed') {
-        targets = targets.filter(t => this.isCompleted(t));
-      }
-
-       // 날짜 검색 수정
-       if (this.searchStartDate && this.searchEndDate) {
-        const startDate = new Date(this.searchStartDate);
-        const endDate = new Date(this.searchEndDate);
-        targets = targets.filter(t => {
-          const targetStart = new Date(t.start_date);
-          const targetEnd = new Date(t.end_date);
-          return targetStart >= startDate && targetEnd <= endDate;
-        });
-      }
 
       // 상태 검색
       if (this.searchStatus) {
@@ -177,13 +184,156 @@ export default {
         });
       }
 
-      return targets.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-    }
+       // 날짜 필터링
+       if (this.searchStartDate && this.searchEndDate) {
+        const startDate = new Date(this.searchStartDate);
+        const endDate = new Date(this.searchEndDate);
+        targets = targets.filter(t => {
+          const targetStart = new Date(t.start_date);
+          const targetEnd = new Date(t.end_date);
+          return targetStart >= startDate && targetEnd <= endDate;
+        });
+      }
+
+      return targets.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+    },
   },
   methods: {
     ...mapActions('mile', ['fetchMileInfo']),
     ...mapActions('mileage', ['addTarget', 'fetchMileTarget', 'targetDelete']),
+    // ...mapActions('target', ['loadParticipants']),
+
+    warningAlert(alret) {
+      this.$swal({
+        title: '경고',
+        text: alret,
+        icon: 'warning',
+        scrollbarPadding: false,
+      });
+    },
+    succesAlert() {
+      this.$swal({
+        title: "성공",
+        text: "메시지 발송이 완료되었습니다.",
+        icon: "success",
+        scrollbarPadding: false,
+      });
+    },
+   errorAlert(message) {
+    alert(`에러: ${message}`);
+    },
+
+   // startLoadingAnimation 메서드에 index 추가
+  startLoadingAnimation(index) {
+    let dots = '';
+    this.loading[index] = true; // 인덱스별로 로딩 시작
+    this.loadingInterval[index] = setInterval(() => {
+      if (dots.length < 3) {
+        dots += '.';
+      } else {
+        dots = '';
+      }
+      this.loadingText[index] = '중' + dots; // 인덱스에 맞게 loadingText 업데이트
+    }, 500); // 0.5초마다 점 추가
+  },
+
+
+ // AI 문구 생성 및 문자 발송 기능
+ async generateAIContent(target, index) {
+
+      try {
+        // 로딩 시작
+        this.startLoadingAnimation(index);
+
+        let notAchievedNames = target.not_achieved_names || '';
+        let notAchievedPhones = target.not_achieved_phones || '';
+
+        if (typeof notAchievedNames === 'string') {
+          notAchievedNames = notAchievedNames.split(',').map(name => name.trim()).filter(name => name.length > 0);
+        }
+
+        if (typeof notAchievedPhones === 'string') {
+          notAchievedPhones = notAchievedPhones.split(',').map(phone => phone.trim()).filter(phone => phone.length > 0);
+        }
+
+        if (notAchievedPhones.length === 0 || notAchievedNames.length === 0) {
+          this.loading[index] = false;
+          clearInterval(this.loadingInterval[index]);
+          this.loadingText[index] = ''; // 애니메이션 텍스트 초기화
+
+          this.warningAlert('발송할 대상이 없습니다.');
+          return;
+        }
+
+
+        // AI 문구 생성
+        const response = await api.post('bot/sms', null, {
+          params: {
+            prompt: `우리 회사 인사고과와 연결되는 마일리지 관리 사이트에서 ${target.mile_name} 마일리지에 관해서 홍보성 문자메시지를 만들어줘.` +
+              `마일리지가 ${target.end_date}까지 달성되지 않으면 마왕 점수를 획득할 수 없다는 소식도 알려줘.`+
+              '회사 이름은 안 밝히지 않고 100자 이내로 보내줘.'+
+              '마무리 멘트는 활기차게 도전해보자는 내용으로 !를 넣었으면 좋겠어' +
+              '일상생활 속에서 쓰지 않는 어려운 단어는 쓰지 말아줘'+
+              '${target.mile_name} 마일리지 종류에 따라 멘트를 정해줄게. ${target.mile_name}이 HRD 마일리지라면 동영상 시청을 하면서 마일리지를 쌓아보자는 멘트를 넣어줘.${target.mile_name}이 Monthly Best랑 Monthly Base랑 Best PG 랑 Best Branch랑 리그 테이블라면 직원들과의 힘을 합쳐서 열심히 마일리지를 쌓아보자는 말을 문구에 넣어줘. ${target.mile_name}이 HotTip라면 노하우를 직원들과 공유해봅시다라는 문구를 넣어줘. ${target.mile_name}이 소비자 지원라면 직원 칭찬이나 꿀Tip 참여,제도개선관련 의견 제시를 통해 마일리지를 쌓아봅시다 라는 문구를 넣어줘'
+          },
+        });
+
+        const aiMessage = response.data;
+
+       // 모든 수신자에게 동일한 AI 메시지 발송
+    const messages = notAchievedPhones.map((phone) => {
+      return {
+        to: phone,
+        text: aiMessage, // 동일한 AI 문구를 사용
+      };
+    });
+
+        await api.post('/user/sendSmsAction', {
+          to: messages.map(m => m.to),
+          texts: messages.map(m => m.text),
+          mile: target.mile_name
+        });
+
+          // 로딩 종료 후 애니메이션을 멈추고 알림 표시
+        this.loading[index] = false;
+        clearInterval(this.loadingInterval[index]);
+        this.loadingText[index] = ''; // 애니메이션 텍스트 초기화
+
+        this.succesAlert();
+      } catch (error) {
+        this.loading[index] = false;
+        clearInterval(this.loadingInterval[index]);
+        this.loadingText[index] = ''; // 애니메이션 텍스트 초기화
+
+        this.errorAlert(error.message || "문자 발송 중 오류가 발생했습니다.");
+      }
+    },
+    animateProgressBars() {
+    this.filteredTargets.forEach((target, index) => {
+      const finalWidth = target.totalParticipants > 0 
+        ? Math.round((target.achievedCount / target.totalParticipants) * 100)
+        : 0;
+
+      let currentWidth = 0;
+      this.animatedWidths[index] = currentWidth; // 애니메이션 초기화
+
+      const interval = setInterval(() => {
+        if (currentWidth < finalWidth) {
+          currentWidth += 1;
+          this.animatedWidths[index] = currentWidth; // 현재 너비 업데이트
+        } else {
+          clearInterval(interval);
+        }
+      }, 2); // 애니메이션 속도 (밀리초)
+    });
+  },
+  resetModalData() {
+    this.startDate = null;
+    this.endDate = null;
+    this.targetScore = 0;
+  },
     async addAction() {
+             
       const targetInfo = {
         mile_no: this.loginInfo.mile_no,
         user_no: this.loginInfo.user_no,
@@ -195,7 +345,10 @@ export default {
       const response = await this.addTarget(targetInfo);
 
       if(response && response.data.success){
-        this.showAlert('목표가 등록되었습니다', 'success', '#');
+        this.succesAlert('목표가 등록되었습니다', 'success', '#');
+        this.resetModalData(); // 데이터 초기화
+        this.closeModal(); // 목표가 성공적으로 등록된 후 모달 창을 닫습니다.
+        await this.refreshTargets(); // 목표 목록을 새로 고침
       }else{
         this.showAlert('목표 등록에 실패했습니다', 'fail', '#');
       }
@@ -206,20 +359,22 @@ export default {
     closeModal() {
       this.isModalOpen = false;
     },
-    showAlert(t, i, r) {
-      this.$swal({
-        title: t,
-        icon: i,
-        scrollbarPadding: false
-      }).then((result) => {
-        if(result.isConfirmed){
-          if(r == '#'){
-            location.reload();
-          }else{
-            this.$router.push(r);
-          }
-        }
-      })
+      showAlert(type, message, path = null) {
+    this.$swal({
+      icon: type,
+      title: message,
+      showConfirmButton: false,
+      timer: 1500
+    }).then(() => {
+      if (path) {
+        this.navigateTo(path);
+      }
+    });
+  },
+        navigateTo(path) {
+      if (path) {
+        this.$router.push(path);
+      }
     },
     async deleteTarget(target_no) {
       const response = await this.targetDelete(target_no);
@@ -261,28 +416,25 @@ export default {
     toggleExpand(index) {
     const targetId = this.filteredTargets[index].target_no;
     const expandedIndex = this.expandedTargets.indexOf(targetId);
+
     if (expandedIndex === -1) {
-      this.expandedTargets.push(targetId);
-      this.loadParticipants(targetId);  // 확장될 때만 참가자 데이터 로드
+      this.expandedTargets = [targetId];  // 다른 목표는 축소하고, 선택된 목표만 확장
     } else {
-      this.expandedTargets.splice(expandedIndex, 1);
+      this.expandedTargets.splice(expandedIndex, 1);  // 선택된 목표를 축소
+    }
+  },
+  async refreshTargets() {
+    const mile_no = this.loginInfo ? this.loginInfo.mile_no : null;
+    if (mile_no) {
+      try {
+        await this.fetchMileTarget(mile_no); // 서버에서 최신 목표 목록을 불러옴
+        this.animateProgressBars(); // 새로고침 후 애니메이션 갱신
+      } catch (error) {
+        console.error('목표 목록을 불러오는 중 오류가 발생했습니다:', error);
+      }
     }
   },
   
-  async loadParticipants(targetId) {
-  const mileNo = this.loginInfo.mile_no;  // 로그인 정보에서 mile_no 가져오기
-
-  try {
-    const response = await this.$store.dispatch('target/loadParticipants', {
-      targetNo: targetId,
-      mileNo: mileNo
-    });
-
-    this.participants = response;
-  } catch (error) {
-    console.error('참가자 로드 실패:', error);
-  }
-},
 
   },
   async created(){
@@ -303,6 +455,7 @@ export default {
     if (mile_no) {
       try {
         await this.fetchMileTarget(mile_no);
+        this.animateProgressBars(); // 페이지 로딩 후 애니메이션 시작
       } catch (error) {
         console.error('마일리지 목표 리스트를 가져오는 중 오류 발생:', error);
       }
@@ -339,8 +492,8 @@ export default {
   font-weight: bold;
   font-size: 15pt;
   font-family: 'KB_C3', sans-serif;
-  margin-bottom: 10px;
-  margin-right: 40px;
+  margin-bottom: 50px;
+  margin-right: 25px;
 }
 
 .mb-3 {
@@ -531,24 +684,58 @@ export default {
   cursor: pointer;
 }
 
-.goal-date, .goal-mileage, .goal-status, .goal-rate {
+.status-completed {
   font-family: 'KB_C2', sans-serif;
   font-size: 18px;
-  color: #4b4a4a;
+  /* font-weight: bold; */
+  color: #dc3545; /* 종료 - 빨간색 */
 }
+
+.status-ongoing {
+  color: #19c99b; /* 진행 중 - 초록색 */
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+}
+
+.status-scheduled {
+  color: #f0ad4e; /* 예정 - 주황색 (필요시 색상 변경 가능) */
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+}
+
 
 .goal-mileage {
   font-weight: bold;
   color: #333;
+  font-family: 'KB_C2', sans-serif;
+  flex: 0 0 190px; /* 고정 너비 설정 */
+  text-align: left; /* 왼쪽 정렬 */
+  font-size: 18px;
+}
+.goal-staus {
+  flex: 0 0 100px; /* 고정 너비 설정 */
+  text-align: left; /* 왼쪽 정렬 */
+  margin-right: auto; /* 오른쪽 여백을 자동으로 설정하여 왼쪽으로 밀기 */
+}
+.goal-date {
+  font-weight: bold;
+  color: #333;
+  font-family: 'KB_C2', sans-serif;
+  font-size: 15px;
 }
 
 .goal-rate {
   font-weight: bold;
   color: #4285f4;
+  font-family: 'KB_C2', sans-serif;
+  font-size: 18px;
+  text-align: left; /* 왼쪽 정렬 */
+  flex: 0 0 150px; /* 고정 너비 설정 */
+
 }
 
 .progress-container {
-  height: 8px;
+  height: 15px;
   background-color: #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
@@ -626,6 +813,9 @@ export default {
 
 .search-filters {
   display: flex;
+  font-family: 'KB_C2', sans-serif; /* 폰트 변경 */
+  font-size: 13pt ;
+  margin-bottom: -150px;
 }
 
 .search-filters input,
@@ -634,5 +824,13 @@ export default {
   padding: 5px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.loading-dots {
+  font-size: 18px;
+  text-align: center;
+  margin-top: 10px;
+  margin-left: 3px;
+  font-family: 'KB_C2', sans-serif;
 }
 </style>

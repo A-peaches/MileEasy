@@ -1,5 +1,3 @@
-// src/store/modules/level.js
-// import api from '@/api/axios';
 
 const state = {
   objectLevel: null,

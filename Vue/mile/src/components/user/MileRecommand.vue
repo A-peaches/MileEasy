@@ -54,31 +54,25 @@ export default {
       return this.images[randomIndex];
     },
     async getRecommand() {
-      console.log('Fetching recommand data...');
       try {
         const response = await api.get(
           `/mileage/getRecommand/${this.loginInfo.user_no}`
         );
         this.recommand = response.data;
-        console.log('Recommand data:', this.recommand);
         this.dataLoaded = true;
       } catch (error) {
-        console.error("Error fetching recommand data:", error);
         this.dataLoaded = true;
       }
     },
     checkLoginInfo() {
-      console.log('Checking login info...');
       if (this.loginInfo) {
         clearInterval(this.checkLoginInfoInterval);
-        console.log('Login info found:', this.loginInfo);
         this.getRecommand();
       }
     },
   },
   mounted() {
     this.randomImg = this.getRandomImg();
-    console.log('Component mounted, random image set:', this.randomImg);
 
     this.checkLoginInfoInterval = setInterval(() => {
       this.checkLoginInfo();

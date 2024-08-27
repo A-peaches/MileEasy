@@ -167,10 +167,8 @@ export default {
     async fetchRequestList() {
       try {
         const response = await api.post('/notice/mTipGuideList', null);
-        console.log('가져온 엔팀', response.data);
         this.mTipGuideList = response.data;
       } catch (error) {
-        console.error('문제', error);
         this.mTipGuideList = [];
       }
     },
@@ -208,8 +206,6 @@ export default {
 .notice-list {
   display: flex;
   flex-direction: column;
-  width: 1200px;
-  margin-left: 30px;
 }
 
 .pagination button {

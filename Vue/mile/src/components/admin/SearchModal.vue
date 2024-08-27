@@ -149,10 +149,8 @@ export default {
             },
           }
         );
-        console.log('담당자 리스트:', response.data);
         this.admins = response.data; // 기존 담당자 목록 업데이트
       } catch (error) {
-        console.error('Error fetching admin list:', error);
         this.admins = []; // 오류 처리
       }
     },
@@ -165,10 +163,8 @@ export default {
             params: {},
           }
         );
-        console.log('유저 리스트:', response.data);
         this.userList = response.data; // 유저 리스트 업데이트
       } catch (error) {
-        console.error('Error fetching user list:', error);
         this.userList = []; // 오류 처리
       }
     },
@@ -205,9 +201,6 @@ export default {
         ...this.admins.map((admin) => admin.user_no),
         ...this.newAdmins.map((admin) => admin.user_no),
       ];
-
-      // 최종 담당자 목록 콘솔에 출력
-      console.log('최종 담당자 목록 (user_no):', finalAdminList);
 
       const listAdminString = finalAdminList.join(',');
 
@@ -247,7 +240,6 @@ export default {
         this.admins = response.data; // 기존 담당자 목록 업데이트
         this.isSubmitted = false; // 제출 후 초기화
       } catch (error) {
-        console.error('Error fetching admin list:', error);
         this.admins = []; // 오류 처리
       }
     },

@@ -189,14 +189,14 @@ export default {
         });
 
         if (response.status === 200) {
-          this.showAlert('공지사항이 등록되었습니다.', 'success');
+          this.showAlert('M-Tip이 등록되었습니다.', 'success');
           this.$router.push('/M_TipListView');
         } else {
-          this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
+          this.showAlert('M-Tip 등록 중 오류가 발생했습니다.', 'error');
         }
       } catch (error) {
         console.error('Error submitting form:', error);
-        this.showAlert('공지사항 등록 중 오류가 발생했습니다.', 'error');
+        this.showAlert('M-Tip 등록 중 오류가 발생했습니다.', 'error');
       }
     },
     goBack() {

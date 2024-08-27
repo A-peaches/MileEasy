@@ -57,7 +57,6 @@ const actions = {
   },
   async downloadDocument(context, {document_file}){
     try{
-      console.log("문서 첨부파일 이름은: ",document_file);
       const response = await api.get(`/mileage/downloadDocument/${encodeURIComponent(document_file)}`,{
         responseType: 'blob' // 바이너리 데이터를 받는다. 
       });

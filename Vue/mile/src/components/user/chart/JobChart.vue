@@ -283,7 +283,6 @@ export default {
       try {
         await this.getMileJob(this.getLoginInfo.user_no);
         if (this.mileJobs) {
-          console.log("Fetched mileJobs:", this.mileJobs); // 데이터를 제대로 가져왔는지 확인하기 위해 로그 추가
           this.jobChartData = [
             this.mileJobs.job1,
             this.mileJobs.job2,

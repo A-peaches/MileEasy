@@ -1,5 +1,3 @@
-// src/store/modules/position.js
-// import api from '@/api/axios';
 
 const state = {
   objectPosition : null,
