@@ -65,10 +65,11 @@ export default {
       }
     },
     checkLoginInfo() {
-      if (this.loginInfo) {
-        clearInterval(this.checkLoginInfoInterval);
-        this.getRecommand();
-      }
+      if ( !this.getLoginInfo ||
+            this.getIsChecked === false ||
+            this.getLoginInfo.user_is_manager === false) {
+          window.location.href="/noAccess"
+        } 
     },
   },
   mounted() {
