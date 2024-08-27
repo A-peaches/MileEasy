@@ -146,6 +146,12 @@ const state = {  // 애플리케이션의 상태를 저장
     // 마왕 점수 상승 액션 추가
     async increaseMawangScore(_, { userNo, targetNo }) {
       try {
+        // 요청 시작 시 콘솔에 로그 출력
+        console.log('마왕 점수 증가 요청 시작');
+        console.log('요청 데이터:', {
+          user_no: userNo,
+          target_no: targetNo
+        });
         // POST 요청 시 데이터를 body에 넣어 전달
         const response = await api.post(`/target/increaseMawangScore`, {
           user_no: userNo,
@@ -153,8 +159,16 @@ const state = {  // 애플리케이션의 상태를 저장
         });
         console.log('마왕 점수 증가 성공:', response.data);
       } catch (error) {
-        // JavaScript에서 스택 트레이스를 출력하는 방법
+        // 오류 발생 시 콘솔에 요청 경로와 에러 정보 출력
         console.error('마왕 점수 증가 중 오류 발생:', error);
+        console.error('요청 경로:', '/target/increaseMawangScore');
+        console.error('요청 데이터:', {
+          user_no: userNo,
+          target_no: targetNo
+        });
+    
+        // 스택 트레이스 출력
+        console.error(error.stack);
         throw error;
       }
     },

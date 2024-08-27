@@ -349,11 +349,6 @@ export default {
       return '0%'; // 적절한 기본값 반환
     }
 
-    // 상태가 종료("completed")일 경우 진행률 계산 중단
-    if (this.getStatusText(target) === '종료') {
-      return '0%'; // 종료된 경우 진행률을 100%로 고정
-    }
-
     // 정상적인 진행률 계산
     const progress = (target.totalMileScoreByMileNo / target.target_mileage) * 100;
     return isNaN(progress) ? '0%' : `${progress.toFixed(2)}%`;
@@ -599,17 +594,19 @@ export default {
     displayedTargets: {
       handler(newTargets) {
         newTargets.forEach((target) => {
+          if (this.isLoggedIn()) {
           if (Math.min(target.achievementRate, 100) === 100 && this.getStatusText(target) !== '종료') {
-            this.$store.dispatch('target/increaseMawangScore', {
+            this.$store.dispatch('/target/increaseMawangScore', {
               targetNo: target.target_no,
               userNo: this.loginInfo.user_no,
             });
           }
-        });
-      },
-      deep: true,
+        }
+      });
     },
-  },
+  deep: true,
+},
+},
 };
 </script>
 
