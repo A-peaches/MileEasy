@@ -87,12 +87,9 @@ export default {
 
     handleDataLoaded(data) {
       this.mile_name = data;
-      console.log('Loaded data from child:', data);
     },
   },
   mounted() {
-    // mile_no를 사용할 수 있습니다.
-    console.log('Mile No:', this.mile_no);
   },
   computed: {
     ...mapGetters('login', ['getLoginInfo','getIsChecked']),

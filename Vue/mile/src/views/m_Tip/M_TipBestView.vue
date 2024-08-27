@@ -266,11 +266,9 @@ export default {
     },
 
     async fetchNotices() {
-      console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
         const response = await api.get('/mtip/PlusbestMtiplist');
         this.notices = response.data;
-        console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
         console.error(
           'Error fetching notices:',
@@ -281,7 +279,6 @@ export default {
     async fetchMileages() {
       try {
         const response = await api.get('/mtip/Mtipmileage');
-        console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
         console.error(
@@ -291,19 +288,15 @@ export default {
       }
     },
     async handleNoticeClick(notice) {
-      console.log('notice:', notice);
       if (this.isProcessing) return;
       this.isProcessing = true;
       try {
-        console.log('게시글 상세보기+조회수 메소드 도달', notice);
         // 조회수 증가 요청
         await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
 
         // 게시글 상세 정보 요청
         const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
         const noticeDetails = response.data;
-        console.log('Fetched notice details:', noticeDetails);
 
         // 조회수 업데이트
         notice.mtip_board_hit += 1;
@@ -320,7 +313,6 @@ export default {
           id: notice.mtip_board_no,
           notice: noticeToPass,
         });
-        console.log('MtipListView에서 넘기는 notice:', notice);
         this.$router.push({
           name: 'm_TipDetailView',
           params: { mtip_board_no: notice.mtip_board_no },
@@ -340,11 +332,9 @@ export default {
       return new Date(dateString).toLocaleDateString('ko-KR', options);
     },
     async fetchBestNotices() {
-      console.log('Best Mtiplist DB 메소드로 이동 ~ ');
       try {
         const response = await api.get('/mtip/PlusbestMtiplist');
         this.bestNotices = response.data;
-        console.log('Best Mtiplist 서버에서 가지고 온 값 :', this.bestNotices);
       } catch (error) {
         console.error(
           'Error fetching best notices:',
@@ -366,10 +356,6 @@ export default {
     },
   },
   mounted() {
-    console.log('loginInfo:', this.loginInfo);
-    console.log('isLoggedIn:', this.isLoggedIn);
-    console.log('isChecked:', this.isChecked);
-
     document.addEventListener('click', this.handleClickOutside);
 
     this.fetchNotices().then(() => {

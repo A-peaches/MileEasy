@@ -216,8 +216,6 @@ export default {
       });
 
       try {
-        console.log('Rendering PDF...');
-
         const pdf = new jsPDF({
           unit: 'px',
           format: [pcWidth, pcHeight],
@@ -278,14 +276,14 @@ export default {
     },
     async aitest() {
       try {
-        const response = await api.post('bot/chat', null, {
+        await api.post('bot/chat', null, {
           params: {
             prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
         });
-        console.log(response.data);
+     
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -293,14 +291,14 @@ export default {
 
     async airank() {
       try {
-        const response = await api.post('bot/chatRank', null, {
+        await api.post('bot/chatRank', null, {
           params: {
             prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
         });
-        console.log(response.data);
+      
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -308,28 +306,28 @@ export default {
 
     async aiCatch() {
       try {
-        const response = await api.post('bot/chatCatchup', null, {
+        await api.post('bot/chatCatchup', null, {
           params: {
             prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
         });
-        console.log(response.data);
+     
       } catch (error) {
         console.error('Error during API request:', error);
       }
     },
     async aiMile() {
       try {
-        const response = await api.post('bot/chatMile', null, {
+        await api.post('bot/chatMile', null, {
           params: {
             prompt: `이름: ${this.loginInfo.user_name}, 사번: ${this.loginInfo.user_no}`,
 
             user_no: this.loginInfo.user_no,
           },
         });
-        console.log(response.data);
+       
       } catch (error) {
         console.error('Error during API request:', error);
       }
@@ -445,7 +443,6 @@ export default {
     },
 
     createChart1() {
-      console.log('차트1', document.getElementById('myChart1'));
       let myChart1 = document.getElementById('myChart1');
       // const myChart1 = this.$refs.makeChart1;
       const ctx = myChart1.getContext('2d');
@@ -659,7 +656,6 @@ export default {
       this.avg_data = this.avg_score_json.map((item) => item.average_score);
       this.my_data = this.my_score_json.map((item) => item.total_score);
 
-      console.log();
       let data = {
         labels: this.label,
 

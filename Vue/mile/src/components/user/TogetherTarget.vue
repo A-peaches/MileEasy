@@ -435,6 +435,10 @@ export default {
         );
 
         if (typeof response === 'boolean') {
+          console.log(
+            `8. Checking participation for target ${targetNo}:`,
+            response
+          );
 
           // 타겟 번호별 참여 여부를 직접 할당
           this.isUserParticipated[targetNo] = response;
@@ -452,6 +456,7 @@ export default {
     async loadUserParticipatedTargets() {
       try {
         const targetNos = this.adminTargets.map((target) => target.target_no);
+        console.log('5. Target numbers:', targetNos);
 
         // 참여 여부 확인을 병렬로 처리
         const participationPromises = targetNos.map((targetNo) =>
@@ -464,6 +469,11 @@ export default {
 
         // 모든 요청이 완료될 때까지 대기
         await Promise.all(participationPromises);
+
+        console.log(
+          '7. Updated userParticipatedTargets:',
+          this.userParticipatedTargets
+        );
       } catch (error) {
         console.error('Failed to load user participated targets:', error);
       } finally {
@@ -503,10 +513,12 @@ export default {
     },
 
     handleClick(targetNo) {
+      console.log('Clicked:', targetNo);
       this.toggleDropdown(targetNo);
     },
 
     toggleDropdown(targetNo) {
+      console.log('Clicked:', targetNo);
       this.dropDownVisible[targetNo] = !this.dropDownVisible[targetNo];
     },
 
@@ -528,8 +540,9 @@ export default {
       return target.participants && target.participants.length > 0;
     },
     applyFadeUpEffect() {
-    const items = document.querySelectorAll('.fade-up-item');
-    items.forEach((item, index) => {
+  console.log("Applying fade-up effect");
+  const items = document.querySelectorAll('.fade-up-item');
+  items.forEach((item, index) => {
     const delay = 50 * index;
     setTimeout(() => {
       item.classList.add('fade-up-active');
@@ -539,6 +552,7 @@ export default {
   },
 
   async created() {
+    console.log('1. Component created');
     this.isLoading = true;
     try {
       await this.fetchMileages();
@@ -578,10 +592,14 @@ export default {
       immediate: true,
       handler(newLoginInfo) {
         if (newLoginInfo && newLoginInfo.user_no) {
+          console.log(
+            'Calling getAdminTargets with user_no:',
+            newLoginInfo.user_no
+          ); // 로그 추가
           this.fetchAdminTargets(newLoginInfo.user_no).then(() => {
-          this.isLoading = false;
-          this.$nextTick(() => {
-          this.applyFadeUpEffect();
+            this.isLoading = false;
+            this.$nextTick(() => {
+              this.applyFadeUpEffect();
             });
           });
         } else {
@@ -595,12 +613,12 @@ export default {
         this.applyFadeUpEffect();
       });
     },
-    
     displayedTargets: {
       handler(newTargets) {
         newTargets.forEach((target) => {
-          if (Math.min(target.achievementRate, 100) === 100 && this.getStatusText(target) !== '종료') {
-            this.$store.dispatch('target/increaseMawangScore', {
+          if (Math.min(target.achievementRate, 100) === 100) {
+            console.log('마왕 서버로 갑니다.:', target.target_no); // 로그 추가
+            this.$store.dispatch('/target/increaseMawangScore', {
               targetNo: target.target_no,
               userNo: this.loginInfo.user_no,
             });

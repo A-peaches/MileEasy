@@ -280,10 +280,10 @@ export default {
 
       if (result.isConfirmed) {
         try {
-          const response = await api.post('/user/requestListDelete', null, {
+          await api.post('/user/requestListDelete', null, {
             params: { mileage_request_no: mileage_request_no },
           });
-          console.log(response.data);
+        
           Swal.fire('삭제 완료', '요청이 삭제되었습니다.', 'success').then(
             () => {
               this.fetchRequestList(); // Call fetchRequestList to refresh data
