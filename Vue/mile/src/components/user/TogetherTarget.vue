@@ -453,6 +453,7 @@ export default {
     async loadUserParticipatedTargets() {
       try {
         const targetNos = this.adminTargets.map((target) => target.target_no);
+        console.log('5. Target numbers:', targetNos);
 
         // 참여 여부 확인을 병렬로 처리
         const participationPromises = targetNos.map((targetNo) =>
@@ -465,6 +466,11 @@ export default {
 
         // 모든 요청이 완료될 때까지 대기
         await Promise.all(participationPromises);
+
+        console.log(
+          '7. Updated userParticipatedTargets:',
+          this.userParticipatedTargets
+        );
       } catch (error) {
         console.error('Failed to load user participated targets:', error);
       } finally {
@@ -504,10 +510,12 @@ export default {
     },
 
     handleClick(targetNo) {
+      console.log('Clicked:', targetNo);
       this.toggleDropdown(targetNo);
     },
 
     toggleDropdown(targetNo) {
+      console.log('Clicked:', targetNo);
       this.dropDownVisible[targetNo] = !this.dropDownVisible[targetNo];
     },
 
@@ -540,6 +548,7 @@ export default {
   },
 
   async created() {
+    console.log('1. Component created');
     this.isLoading = true;
     try {
       await this.fetchMileages();
@@ -579,6 +588,10 @@ export default {
       immediate: true,
       handler(newLoginInfo) {
         if (newLoginInfo && newLoginInfo.user_no) {
+          console.log(
+            'Calling getAdminTargets with user_no:',
+            newLoginInfo.user_no
+          ); // 로그 추가
           this.fetchAdminTargets(newLoginInfo.user_no).then(() => {
             this.isLoading = false;
             this.$nextTick(() => {

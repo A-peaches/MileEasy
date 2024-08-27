@@ -78,20 +78,11 @@ export default {
   },
   watch: {
     $route: {
-      handler() {
-        // 라우트 변경 시 추가적인 작업을 수행할 수 있습니다.
-        console.log('Route changed');
-        // 예시로 로그인 상태와 관련된 정보 출력
-        console.log('isLoggedIn:', this.isLoggedIn);
-        console.log('loginInfo:', this.loginInfo);
-        console.log('isChecked:', this.isChecked);
-      },
       immediate: true, // 페이지 진입 시에도 즉시 실행되도록 설정
     },
   },
   methods: {
     scrollToTop() {
-      console.log('scrollToTop 실행');
       window.scrollTo({
         top: 0,
         behavior: 'smooth',

@@ -212,7 +212,6 @@ export default {
                 },
               }
             );
-            console.log('당담자', response.data);
             this.admins = response.data || [];
           } catch (error) {
             console.error('Error fetching admin list:', error);
@@ -227,8 +226,6 @@ export default {
                 (mileage) => mileage.mile_no === this.currentRequest.mile_no
               );
             }
-
-            console.log('마일마일', response.data);
           } catch (error) {
             console.error('Error fetching mileage labels:', error);
             this.mileageLabels = []; // 에러 발생 시 빈 배열 반환
@@ -327,7 +324,7 @@ export default {
       }
       try {
         // 쿼리 매개변수로 데이터 전송
-        const response = await api.post('/admin/newAdminList', null, {
+        await api.post('/admin/newAdminList', null, {
           params: {
             mile_no: this.currentRequest.mile_no,
             final_admin_list: this.manager,
@@ -336,7 +333,7 @@ export default {
             num: this.requestNo,
           },
         });
-        console.log(response.data);
+        
         Swal.fire({
           icon: 'success',
           title: '성공',

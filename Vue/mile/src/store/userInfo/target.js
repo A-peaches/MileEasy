@@ -86,7 +86,9 @@ const state = {  // 애플리케이션의 상태를 저장
     },
       async fetchAdminTargets({ commit }, userNo) {
         try {
+          console.log('관리자 목표설정 정보 불러오기.js 도착 !', userNo);
           const response = await api.get(`/target/admin/targets/${userNo}`);
+          console.log('관리자 목표설정 서버정보:', response.data); // 응답 데이터를 콘솔에 출력
           commit('setTargets', response.data);
           commit('SET_ADMIN_TARGETS', response.data); 
         } catch (error) {
@@ -96,6 +98,7 @@ const state = {  // 애플리케이션의 상태를 저장
       // 사용자가 참여한 모든 타겟의 번호를 가져오는 액션
       async checkParticipation(_, { targetNo, userNo }) {
         try {
+          console.log("joinTarget.js :", { targetNo, userNo });
           const response = await api.get(`/target/checkParticipation/${targetNo}/${userNo}`);
           return response.data;  // 참여 여부 반환
         } catch (error) {
@@ -108,6 +111,7 @@ const state = {  // 애플리케이션의 상태를 저장
       async joinTarget(_, { targetNo, userNo }) {
         try {
           const response = await api.post('/target/join', { targetNo, userNo });
+          console.log('API joinTarget response:', response.data);
           
           if (response.data && response.data.success) {
             return { success: true, message: response.data.message };
@@ -145,6 +149,7 @@ const state = {  // 애플리케이션의 상태를 저장
       },
     // 마왕 점수 상승 액션 추가
     async increaseMawangScore(_, { userNo, targetNo }) {
+      console.log("마왕 점수 userNo, targetNo :", userNo, targetNo);
       try {
         // POST 요청 시 데이터를 body에 넣어 전달
         const response = await api.post(`/target/increaseMawangScore`, {
@@ -158,6 +163,25 @@ const state = {  // 애플리케이션의 상태를 저장
         throw error;
       }
     },
+
+  // async loadParticipants({ commit }, { targetNo, mileNo }) {
+  //   try {
+  //       console.log("참가자 목록 서버로 들어갑니다. targetNo:", targetNo);
+  //       const response = await api.get(`/target/participants/${targetNo}`, {
+  //           params: { mileNo: mileNo}
+  //       });
+
+  //       console.log("참가자 데이터 응답:", response.data);
+
+  //       // 서버에서 받은 데이터 저장
+  //       commit('SET_PARTICIPANTS_DATA', { targetNo, data: response.data });
+        
+  //       return response.data;
+  //   } catch (error) {
+  //       console.error('참가자 로드 실패:', error);
+  //       throw error;
+  //   }
+  // },
 };
   
   const getters = {  // 상태를 가져오는 게터

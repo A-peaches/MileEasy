@@ -190,9 +190,7 @@ export default {
   watch: {
     comments: {
       deep: true,
-      handler() {
-        console.log('댓글이 업데이트되었습니다.');
-      },
+      
     },
   },
 
@@ -238,11 +236,10 @@ export default {
         mtip_reply_content: this.newComment.trim(),
       };
       try {
-        const response = await this.$store.dispatch(
+        await this.$store.dispatch(
           'mtipReply/addComment',
           commentData
         );
-        console.log('댓글 등록 응답:', response); // 추가된 로그
         this.newComment = '';
         // window.location.reload()
 
@@ -284,7 +281,6 @@ export default {
           'mtipReply/updateComment',
           commentData
         );
-        console.log('업데이트된 댓글:', updatedComment); // 추가된 로그
 
         // 서버에서 반환된 데이터로 댓글 내용 업데이트
         comment.mtip_reply_content =
