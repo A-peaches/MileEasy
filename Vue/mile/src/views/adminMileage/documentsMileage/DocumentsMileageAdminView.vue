@@ -267,7 +267,9 @@ export default {
       }
     },
     checkLoginInfo() {
-      if (!this.getLoginInfo || (this.getLoginInfo.user_is_manager == 1 && this.getIsChecked == false)) {
+      if ( !this.getLoginInfo ||
+            this.getIsChecked === false ||
+            this.getLoginInfo.user_is_manager === false) {
           window.location.href="/noAccess"
         } 
     },
