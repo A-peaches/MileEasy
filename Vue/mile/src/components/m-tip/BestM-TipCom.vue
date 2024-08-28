@@ -21,6 +21,7 @@
 
 <script>
 import api from '@/api/axios';
+import { mapGetters } from 'vuex'; // Vuex의 mapGetters를 사용합니다.
 
 export default {
   name: 'BestM-TipCom',
@@ -29,6 +30,9 @@ export default {
       bestNotices: [],
       isMobile: false
     };
+  },
+  computed: {
+    ...mapGetters('mtipBoard', ['isPostLiked']), // Vuex getter를 가져옵니다.
   },
   methods: {
     truncateTitle(title) {
@@ -75,12 +79,16 @@ export default {
         // 조회수 업데이트
         notice.mtip_board_hit += 1;
 
+        // 하트 여부를 추가합니다.
+        const isLiked = this.isPostLiked(this.loginInfo?.user_no, notice.mtip_board_no);
+
         const noticeToPass = {
           ...noticeDetails,
           mile_no: noticeDetails.mile_no,
           mile_name: noticeDetails.mile_name,
           file: noticeDetails.mtip_board_file || null,
           mtip_board_hit: notice.mtip_board_hit, // 업데이트된 조회수 사용
+          isLiked: isLiked // 하트 여부 추가
         };
 
         console.log('Navigating to noticeDetailView with notice:', {
@@ -90,7 +98,11 @@ export default {
 
         this.$router.push({
           name: 'm_TipDetailView',
-          params: { mtip_board_no: notice.mtip_board_no },
+          params: { 
+          mtip_board_no: notice.mtip_board_no,
+          notice: noticeToPass,
+          isLiked: isLiked  // 이 부분을 추가
+      },
         });
 
       } catch (error) {

@@ -169,6 +169,7 @@ async checkLikeStatus({ commit }, { mtip_board_no, user_no }) {
       return isLiked;
   } catch (error) {
       console.error('Error checking like status:', error);
+      return false;
   }
 },
 async fetchLikedPosts({ commit }, user_no) {

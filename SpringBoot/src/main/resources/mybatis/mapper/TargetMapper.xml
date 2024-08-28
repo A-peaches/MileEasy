@@ -21,66 +21,83 @@
                 ut.user_no,
                 ut.mile_no,
                 ut.start_date,
-                COALESCE(
-                        (SELECT mh.mile_history_date
-                         FROM mile_history mh
-                         WHERE mh.user_no = ut.user_no AND mh.mile_no = ut.mile_no
-                         ORDER BY ABS(DATEDIFF(mh.mile_history_date, ut.start_date))
-                        LIMIT 1),
-            (SELECT ms.mile_score_date
-             FROM mile_score ms
-             WHERE ms.user_no = ut.user_no AND ms.mile_no = ut.mile_no
-             ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
-             LIMIT 1),
-            ut.start_date
-        ) AS closest_date,
-                CASE
-                    WHEN (SELECT mh.mile_history_date
-                          FROM mile_history mh
-                          WHERE mh.user_no = ut.user_no AND mh.mile_no = ut.mile_no
-                          ORDER BY ABS(DATEDIFF(mh.mile_history_date, ut.start_date))
-                        LIMIT 1) <=
-                 (SELECT ms.mile_score_date
-                  FROM mile_score ms
-                  WHERE ms.user_no = ut.user_no AND ms.mile_no = ut.mile_no
-                  ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
-                  LIMIT 1)
+                -- mile_history에서 가장 가까운 날짜 가져오기
+                (SELECT mh.mile_history_date
+                 FROM mile_history mh
+                 WHERE mh.user_no = ut.user_no
+                   AND mh.mile_no = ut.mile_no
+                 ORDER BY ABS(DATEDIFF(mh.mile_history_date, ut.start_date))
+                    LIMIT 1) AS closest_mile_history_date,
+        -- mile_score에서 가장 가까운 날짜 가져오기
+        (SELECT ms.mile_score_date
+         FROM mile_score ms
+         WHERE ms.user_no = ut.user_no
+         AND ms.mile_no = ut.mile_no
+         ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
+         LIMIT 1) AS closest_mile_score_date
+        FROM user_target ut
+        WHERE ut.user_no = #{userNo}
+          AND ut.is_together = 0
+            ),
+            closest_points AS (
+        SELECT
+            cd.target_no,
+            cd.user_no,
+            cd.mile_no,
+            cd.closest_mile_history_date,
+            cd.closest_mile_score_date,
+            -- 가장 가까운 테이블을 선택
+            CASE
+            WHEN ABS(DATEDIFF(cd.closest_mile_history_date, cd.start_date)) <= ABS(DATEDIFF(cd.closest_mile_score_date, cd.start_date))
             THEN 'mile_history'
             ELSE 'mile_score'
-        END AS closest_table
-    FROM user_target ut
-    WHERE ut.user_no = #{userNo} AND ut.is_together = 0
-        ),
-        total_mile_history_score AS (
-        SELECT
-        cd.target_no,
-        COALESCE(
-        CASE
-        WHEN cd.closest_table = 'mile_history' THEN
-        (SELECT SUM(mh.mile_history_point)
-        FROM mile_history mh
-        WHERE mh.user_no = cd.user_no
-        AND mh.mile_no = cd.mile_no
-        AND mh.mile_history_date = cd.closest_date)
-        ELSE
-        (SELECT SUM(ms.mile_score_point)
-        FROM mile_score ms
-        WHERE ms.user_no = cd.user_no
-        AND ms.mile_no = cd.mile_no
-        AND ms.mile_score_date = cd.closest_date)
-        END, 0) AS totalMileHistoryScore
+            END AS closest_table,
+            -- 가장 가까운 날짜를 선택
+            CASE
+            WHEN ABS(DATEDIFF(cd.closest_mile_history_date, cd.start_date)) <= ABS(DATEDIFF(cd.closest_mile_score_date, cd.start_date))
+            THEN cd.closest_mile_history_date
+            ELSE cd.closest_mile_score_date
+            END AS closest_date
         FROM closest_date cd
-        ),
-        total_mile_score AS (
+            ),
+            total_mile_history_score AS (
         SELECT
-        ut.target_no,
-        COALESCE(SUM(ms.mile_score_point), 0) AS totalMileScore
+            cp.target_no,
+            cp.user_no,
+            cp.mile_no,
+            -- 가장 가까운 테이블에서 포인트 합산
+            COALESCE(
+            CASE
+            WHEN cp.closest_table = 'mile_history' THEN
+            (SELECT SUM(mh.mile_history_point)
+            FROM mile_history mh
+            WHERE mh.user_no = cp.user_no
+            AND mh.mile_no = cp.mile_no
+            AND mh.mile_history_date = cp.closest_date)
+            WHEN cp.closest_table = 'mile_score' THEN
+            (SELECT SUM(ms.mile_score_point)
+            FROM mile_score ms
+            WHERE ms.user_no = cp.user_no
+            AND ms.mile_no = cp.mile_no
+            AND ms.mile_score_date = cp.closest_date)
+            ELSE 0
+            END, 0
+            ) AS totalMileHistoryScore
+        FROM closest_points cp
+            ),
+            total_mile_score AS (
+        SELECT
+            ut.target_no,
+            -- mile_score 테이블에서 해당 user_no와 mile_no에 대한 모든 mile_score_point 합계를 계산
+            COALESCE(SUM(ms.mile_score_point), 0) AS totalMileScore
         FROM user_target ut
-        LEFT JOIN mile_score ms ON ut.user_no = ms.user_no AND ut.mile_no = ms.mile_no
+            LEFT JOIN mile_score ms
+        ON ut.user_no = ms.user_no
+            AND ut.mile_no = ms.mile_no
         WHERE ut.user_no = #{userNo}
-        AND ut.is_together = 0
+          AND ut.is_together = 0
         GROUP BY ut.target_no
-        )
+            )
         SELECT DISTINCT
             t.target_no,
             t.mile_no,
@@ -93,6 +110,7 @@
             m.mile_name,
             COALESCE(tmhs.totalMileHistoryScore, 0) AS totalMileHistoryScore,
             COALESCE(tms.totalMileScore, 0) AS totalMileScore,
+            -- 두 값의 차이를 계산한 후 이를 바탕으로 totalMileScoreByTargetNo 및 achievementRate 계산
             ABS(COALESCE(tms.totalMileScore, 0) - COALESCE(tmhs.totalMileHistoryScore, 0)) AS totalMileScoreByTargetNo,
             CASE
                 WHEN ut.target_mileage > 0 THEN
@@ -100,13 +118,18 @@
                 ELSE 0
                 END AS achievementRate
         FROM user_target ut
-                 LEFT JOIN total_mile_history_score tmhs ON tmhs.target_no = ut.target_no
-                 LEFT JOIN total_mile_score tms ON tms.target_no = ut.target_no
-                 LEFT JOIN target t ON t.target_no = ut.target_no
-                 LEFT JOIN mileage m ON t.mile_no = m.mile_no
+                 LEFT JOIN total_mile_history_score tmhs
+                           ON tmhs.target_no = ut.target_no
+                 LEFT JOIN total_mile_score tms
+                           ON tms.target_no = ut.target_no
+                 LEFT JOIN target t
+                           ON t.target_no = ut.target_no
+                 LEFT JOIN mileage m
+                           ON t.mile_no = m.mile_no
         WHERE ut.user_no = #{userNo}
           AND ut.is_together = 0
         ORDER BY t.start_date ASC;
+
         ]]>
 </select>
 

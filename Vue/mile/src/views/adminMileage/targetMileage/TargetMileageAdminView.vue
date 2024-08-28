@@ -50,13 +50,13 @@
             <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222;">미달성 </span>
             <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222; margin-right: 70px;"> {{ target.notAchievedCount }} 명</span>
             <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px; margin-top: 10px; margin-right: 10px;"></i>
-            <span v-if="isOngoing(target)" @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif;"> 문자 발송</span>
+            <span v-if="isOngoing(target)" @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif; margin-right: 70px;"> 문자 발송</span>
 
             <!-- 진행 중이 아닐 때 "문자 발송 불가" 메시지 표시 -->
-            <span v-else style="font-size: 18px; font-family: 'KB_C2', sans-serif;">
+            <span v-else style="font-size: 18px; font-family: 'KB_C2', sans-serif; margin-right: 70px;">
               문자발송 불가
             </span>
-
+            <span style="font-size: 18px; font-family: 'KB_C2', sans-serif; color: #cf2222; cursor: pointer;" @click="deleteTarget(target.target_no)" >삭제</span>
             <span class="loading-dots" v-if="loading[index]">{{ loadingText[index] }}</span>
           </div>
         </div>
@@ -78,9 +78,9 @@
         <div class="form-group">
           <label>목표 기간</label>
           <div class="date-range">
-            <Datepicker v-model="startDate" :format="formatDate" placeholder="시작일"></Datepicker>
+            <Datepicker v-model="startDate" :format="formatDate" placeholder="시작일" :minDate="new Date()" ></Datepicker>
             <span class="date-separator">~</span>
-            <Datepicker v-model="endDate" :format="formatDate" placeholder="종료일"></Datepicker>
+            <Datepicker v-model="endDate" :format="formatDate" placeholder="종료일" :minDate="new Date()" ></Datepicker>
           </div>
         </div>
         <div class="form-group">
@@ -219,6 +219,14 @@ export default {
         scrollbarPadding: false,
       });
     },
+    deleteAlert() {
+      this.$swal({
+        title: "성공",
+        text: "삭제가 완료되었습니다.",
+        icon: "success",
+        scrollbarPadding: false,
+      });
+    },
    errorAlert(message) {
     alert(`에러: ${message}`);
     },
@@ -273,8 +281,7 @@ export default {
               `마일리지가 ${target.end_date}까지 달성되지 않으면 마왕 점수를 획득할 수 없다는 소식도 알려줘.`+
               '회사 이름은 안 밝히지 않고 100자 이내로 보내줘.'+
               '마무리 멘트는 활기차게 도전해보자는 내용으로 !를 넣었으면 좋겠어' +
-              '일상생활 속에서 쓰지 않는 어려운 단어는 쓰지 말아줘'+
-              '${target.mile_name} 마일리지 종류에 따라 멘트를 정해줄게. ${target.mile_name}이 HRD 마일리지라면 동영상 시청을 하면서 마일리지를 쌓아보자는 멘트를 넣어줘.${target.mile_name}이 Monthly Best랑 Monthly Base랑 Best PG 랑 Best Branch랑 리그 테이블라면 직원들과의 힘을 합쳐서 열심히 마일리지를 쌓아보자는 말을 문구에 넣어줘. ${target.mile_name}이 HotTip라면 노하우를 직원들과 공유해봅시다라는 문구를 넣어줘. ${target.mile_name}이 소비자 지원라면 직원 칭찬이나 꿀Tip 참여,제도개선관련 의견 제시를 통해 마일리지를 쌓아봅시다 라는 문구를 넣어줘'
+              '일상생활 속에서 쓰지 않는 어려운 단어는 쓰지 말아줘'
           },
         });
 
@@ -350,7 +357,7 @@ export default {
         this.closeModal(); // 목표가 성공적으로 등록된 후 모달 창을 닫습니다.
         await this.refreshTargets(); // 목표 목록을 새로 고침
       }else{
-        this.showAlert('목표 등록에 실패했습니다', 'fail', '#');
+        this.errorAlert('목표 등록에 실패했습니다', 'fail', '#');
       }
     },
     openModal() {
@@ -377,12 +384,16 @@ export default {
       }
     },
     async deleteTarget(target_no) {
+      console.log("target_no::",target_no);
       const response = await this.targetDelete(target_no);
 
+      window.location.reload();
       if(response && response.data.success){
-        this.showAlert('목표가 삭제되었습니다', 'success', '#');
+        this.deleteAlert();
+       // 삭제가 성공적으로 완료되면 페이지 새로고침
+       window.location.reload();
       }else{
-        this.showAlert('목표 삭제에 실패했습니다', 'fail', '#');
+        this.errorAlert('목표 삭제에 실패했습니다', 'fail', '#');
       }
     },
     formatDate(date) {
@@ -514,6 +525,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 .modal-content {
