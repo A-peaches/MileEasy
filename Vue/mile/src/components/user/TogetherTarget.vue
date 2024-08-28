@@ -1,5 +1,9 @@
 <template>
   <div>
+          <!-- 로딩 중일 때 -->
+    <div v-if="isLoading" style="font-size: 20px; text-align: center; margin-top: 20px;">
+      <i class="bi bi-arrow-clockwise"></i> 로딩 중...
+    </div>
     <div
       class="d-flex justify-content-start align-items-center mb-5"
       style="margin-left: 5%"
@@ -130,9 +134,7 @@
                         color: #8c8c8c;
                       "
                     ></i>
-                    <span style="margin-right: 25px">{{
-                      target.participantCount
-                    }}</span>
+                    <span style="margin-right: 25px">{{target.participantCount}}</span>
                   </div>
                   <!-- 드롭다운 메뉴 -->
                   <div
@@ -149,15 +151,29 @@
                     </p>
                   </div>
                 </div>
-                <button
-                  v-else
-                  @click="joinTarget(target.target_no)"
-                  class="join-button"
-                  :disabled="getStatusText(target) !== '진행중'"
-                >
-                  참여하기 >
-                </button>
-              </div>
+                <!-- 사용자가 참여하지 않았을 경우 -->
+  <button
+    v-else-if="getStatusText(target) === '진행중'"
+    @click="joinTarget(target.target_no)"
+    class="join-button"
+  >
+    참여하기 >
+  </button>
+  <button
+    v-else-if="getStatusText(target) === '예정'"
+    class="join-button"
+    disabled
+  >
+    참가하기
+  </button>
+  <button
+    v-else-if="getStatusText(target) === '종료'"
+    class="join-button"
+    disabled
+  >
+    미참여
+  </button>
+  </div>
             </div>
             <div
               class="py-3"
@@ -242,9 +258,6 @@
         </div>
       </div>
     </div>
-    <div v-else style="font-size: 20px">
-      <i class="bi bi-arrow-clockwise"></i> 로딩 중...
-    </div>
   </div>
 </template>
 
@@ -261,7 +274,7 @@ export default {
       sortBy: 'notjoin',
       isUserParticipated: {}, // 참여 여부를 저장하는 객체 추가
       userParticipatedTargets: JSON.parse(
-        localStorage.getItem('userParticipatedTargets') || '[]'
+      localStorage.getItem('userParticipatedTargets') || '[]'
       ),
       isLoading: true,
       dropDownVisible: {},

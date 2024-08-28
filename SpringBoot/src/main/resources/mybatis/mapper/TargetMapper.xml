@@ -21,23 +21,20 @@
                 ut.user_no,
                 ut.mile_no,
                 ut.start_date,
-                ut.end_date,
                 -- mile_history에서 가장 가까운 날짜 가져오기
                 (SELECT mh.mile_history_date
                  FROM mile_history mh
                  WHERE mh.user_no = ut.user_no
                    AND mh.mile_no = ut.mile_no
-                   AND mh.mile_history_date <= ut.end_date -- 종료일 이전까지만 고려
                  ORDER BY ABS(DATEDIFF(mh.mile_history_date, ut.start_date))
                     LIMIT 1) AS closest_mile_history_date,
-                -- mile_score에서 가장 가까운 날짜 가져오기
-                (SELECT ms.mile_score_date
-                 FROM mile_score ms
-                 WHERE ms.user_no = ut.user_no
-                   AND ms.mile_no = ut.mile_no
-                   AND ms.mile_score_date <= ut.end_date -- 종료일 이전까지만 고려
-                 ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
-                 LIMIT 1) AS closest_mile_score_date
+        -- mile_score에서 가장 가까운 날짜 가져오기
+        (SELECT ms.mile_score_date
+         FROM mile_score ms
+         WHERE ms.user_no = ut.user_no
+         AND ms.mile_no = ut.mile_no
+         ORDER BY ABS(DATEDIFF(ms.mile_score_date, ut.start_date))
+         LIMIT 1) AS closest_mile_score_date
         FROM user_target ut
         WHERE ut.user_no = #{userNo}
           AND ut.is_together = 0
@@ -49,7 +46,6 @@
             cd.mile_no,
             cd.closest_mile_history_date,
             cd.closest_mile_score_date,
-            cd.end_date,
             -- 가장 가까운 테이블을 선택
             CASE
             WHEN ABS(DATEDIFF(cd.closest_mile_history_date, cd.start_date)) <= ABS(DATEDIFF(cd.closest_mile_score_date, cd.start_date))
@@ -100,7 +96,6 @@
             AND ut.mile_no = ms.mile_no
         WHERE ut.user_no = #{userNo}
           AND ut.is_together = 0
-          AND ms.mile_score_date <= ut.end_date -- 종료일 이전까지만 고려
         GROUP BY ut.target_no
             )
         SELECT DISTINCT
@@ -113,16 +108,8 @@
             t.is_together,
             t.is_manager_plan,
             m.mile_name,
-            -- 종료일이 현재 날짜보다 이전일 경우 계산된 값만 반환
-            CASE
-                WHEN t.end_date < CURDATE() THEN COALESCE(tmhs.totalMileHistoryScore, 0)
-                ELSE COALESCE(tmhs.totalMileHistoryScore, 0)
-                END AS totalMileHistoryScore,
-            -- 종료일이 현재 날짜보다 이전일 경우 계산된 값만 반환
-            CASE
-                WHEN t.end_date < CURDATE() THEN COALESCE(tms.totalMileScore, 0)
-                ELSE COALESCE(tms.totalMileScore, 0)
-                END AS totalMileScore,
+            COALESCE(tmhs.totalMileHistoryScore, 0) AS totalMileHistoryScore,
+            COALESCE(tms.totalMileScore, 0) AS totalMileScore,
             -- 두 값의 차이를 계산한 후 이를 바탕으로 totalMileScoreByTargetNo 및 achievementRate 계산
             ABS(COALESCE(tms.totalMileScore, 0) - COALESCE(tmhs.totalMileHistoryScore, 0)) AS totalMileScoreByTargetNo,
             CASE

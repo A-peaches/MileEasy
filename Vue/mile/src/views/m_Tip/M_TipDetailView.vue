@@ -122,7 +122,7 @@
 
 <script>
 import api from '@/api/axios';
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex';
 import Swal from 'sweetalert2';
 import UserComment from '@/components/m-tip/UserComment';
 import mtipReply from '@/store/mtip/mtipReply';
@@ -138,6 +138,7 @@ export default {
       isLoading: true,
       isNoticeLoaded: false,
       comments: [], // comments를 초기화
+      localIsLiked: false,
     };
   },
   watch: {
@@ -162,6 +163,7 @@ export default {
       'unlikePost',
       'checkLikeStatus',
     ]),
+    ...mapMutations('mtipBoard', ['SET_LIKE_STATUS']),
 
     async toggleLike() {
       console.log('여기까지오긴옴');
@@ -185,11 +187,7 @@ export default {
 
         console.log('서버에서 받은 좋아요 상태:', result);
 
-        // 좋아요 상태 업데이트
-        await this.$store.dispatch('mtipBoard/checkLikeStatus', {
-          mtip_board_no: this.notice.mtip_board_no,
-          user_no: this.loginInfo.user_no,
-        });
+        await this.updateLikeStatus(this.notice.mtip_board_no);
 
         // 서버에서 받아온 좋아요 수를 직접 설정
         if (result !== -1) {
@@ -454,13 +452,31 @@ export default {
     async fetchNoticeDetail(id) {
       this.isLoading = true;
       this.isNoticeLoaded = false;
-      await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
-
-      const likedPosts = JSON.parse(localStorage.getItem('likedPosts')) || {};
-      this.isLiked = likedPosts[this.notice.mtip_board_no] || false;
-
-      this.isLoading = false;
-      this.isNoticeLoaded = true;
+      try {
+        await this.$store.dispatch('mtipBoard/fetchNoticeDetail', id);
+        await this.updateLikeStatus(id);
+        this.isLoading = false;
+        this.isNoticeLoaded = true;
+      } catch (error) {
+        console.error('Error fetching notice detail:', error);
+        this.isLoading = false;
+      }
+    },
+    async updateLikeStatus(noticeId) {
+      if (this.loginInfo && this.loginInfo.user_no) {
+        const likeStatus = await this.checkLikeStatus({
+          mtip_board_no: noticeId,
+          user_no: this.loginInfo.user_no
+        });
+        this.localIsLiked = likeStatus;
+        this.SET_LIKE_STATUS({
+          user_no: this.loginInfo.user_no,
+          mtip_board_no: noticeId,
+          isLiked: likeStatus
+        });
+        localStorage.setItem(`likeStatus_${noticeId}`, JSON.stringify(likeStatus));
+        console.log('Updated like status:', likeStatus);
+      }
     },
   },
   computed: {
@@ -486,18 +502,22 @@ export default {
       return this.$route.params.notice.mtip_board_no;
     },
     isLiked() {
-      return this.$store.getters['mtipBoard/isPostLiked'](
-        this.loginInfo.user_no,
-        this.notice.mtip_board_no
-      );
+      return this.localIsLiked;
     },
   },
-  mounted() {
+  async mounted() {
     const noticeId = this.$route.params.mtip_board_no;
     if (noticeId) {
-      this.fetchNoticeDetail(noticeId);
-      this.$store.commit('mtipReply/CLEAR_COMMENTS'); // 댓글 초기화
-      this.$store.dispatch('mtipReply/fetchComments', noticeId);
+      await this.fetchNoticeDetail(noticeId);
+      this.$store.commit('mtipReply/CLEAR_COMMENTS');
+      await this.$store.dispatch('mtipReply/fetchComments', noticeId);
+
+      // 로컬 스토리지에서 좋아요 상태 확인
+      const storedLikeStatus = localStorage.getItem(`likeStatus_${noticeId}`);
+      if (storedLikeStatus !== null) {
+        this.localIsLiked = JSON.parse(storedLikeStatus);
+        console.log('Loaded like status from localStorage:', this.localIsLiked);
+      }
     }
   },
 };
