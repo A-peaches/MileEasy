@@ -536,28 +536,31 @@ export default {
         },
       });
     },
-    applyFadeUpEffect() {
+   applyFadeUpEffect() {
+  const items = this.$refs.fadeUpItems;
 
-    // $refs.fadeUpItems가 배열인지 확인
-    const items = this.$refs.fadeUpItems;
+  if (!items || items.length === 0) {
+    return;
+  }
 
-    if (!items || items.length === 0) {
-      return;
-    }
+  const rowSize = 3; // 한 행에 표시되는 아이템 수
+  
+  items.forEach((item, index) => {
+    const row = Math.floor(index / rowSize);
+    const col = index % rowSize;
+    
+    item.style.setProperty("--row", row);
+    item.style.setProperty("--col", col);
+    
+    const delay = (row * rowSize + col) * 100; // 지연 시간 계산
 
-
-    items.forEach((item, index) => {
-      item.style.setProperty("--index", index);
-      item.style.setProperty("z-index", items.length - index);
-
-      const baseDelay = 50;
-      const delay = baseDelay + 50 * index;
-
-      setTimeout(() => {
-        item.classList.add("fade-up-active");
-      }, delay);
-    });
-  },
+    item.style.transitionDelay = `${delay}ms`;
+    
+    setTimeout(() => {
+      item.classList.add("fade-up-active");
+    }, 50); // 약간의 초기 지연을 추가하여 애니메이션이 부드럽게 시작되도록 함
+  });
+},
 },
 
   async created() {
