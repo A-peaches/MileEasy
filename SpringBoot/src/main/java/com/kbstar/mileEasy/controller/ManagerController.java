@@ -98,17 +98,25 @@ public class ManagerController {
         return mileageTargets;
     }
 
-    // targetDelete 마일리지 목표 삭제하기
     @GetMapping("/targetDelete/{target_no}")
-    public ResponseEntity<?> targetDelete(@PathVariable String target_no) {
-        int result = managerService.deleteTarget(Integer.parseInt(target_no));
+    public ResponseEntity<?> targetDelete(@PathVariable int target_no) {
+        // 1. 먼저 user_target에서 삭제
+        int userTargetDeleteResult = managerService.deleteUserTarget(target_no);
 
-        if (result > 0) {
-            return ResponseEntity.ok().body("{\"success\":true}");
+        if (userTargetDeleteResult >= 0) { // 0 이상일 때 처리
+            // 2. 그 다음 target에서 삭제
+            int targetDeleteResult = managerService.deleteTarget(target_no);
+
+            if (targetDeleteResult > 0) {
+                return ResponseEntity.ok().body("{\"success\":true}");
+            } else {
+                return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Failed to delete target.\"}");
+            }
         } else {
-            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"fail delete detail\"}");
+            return ResponseEntity.status(400).body("{\"success\":false, \"message\":\"Failed to delete user target.\"}");
         }
     }
+
 
     // 마일리지 상세내용 가져오기
     @GetMapping("/mileDetail/{mile_no}")
