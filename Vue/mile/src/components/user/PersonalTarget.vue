@@ -537,27 +537,27 @@ export default {
       });
     },
     applyFadeUpEffect() {
+  const items = this.$refs.fadeUpItems;
 
-    // $refs.fadeUpItems가 배열인지 확인
-    const items = this.$refs.fadeUpItems;
+  if (!items || items.length === 0) {
+    return;
+  }
 
-    if (!items || items.length === 0) {
-      return;
-    }
+  items.forEach((item, index) => {
+    // 역순 인덱스 계산
+    const reverseIndex = items.length - 1 - index;
+    
+    item.style.setProperty("--index", reverseIndex);
+    item.style.setProperty("z-index", index + 1);
 
+    const baseDelay = 50;
+    const delay = baseDelay + 50 * reverseIndex;
 
-    items.forEach((item, index) => {
-      item.style.setProperty("--index", index);
-      item.style.setProperty("z-index", items.length - index);
-
-      const baseDelay = 50;
-      const delay = baseDelay + 50 * index;
-
-      setTimeout(() => {
-        item.classList.add("fade-up-active");
-      }, delay);
-    });
-  },
+    setTimeout(() => {
+      item.classList.add("fade-up-active");
+    }, delay);
+  });
+},
 },
 
   async created() {
