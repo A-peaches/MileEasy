@@ -50,14 +50,14 @@
             <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222;">미달성 </span>
             <span style="font-size: 20px; font-family: 'KB_C2', sans-serif; color: #cf2222; margin-right: 70px;"> {{ target.notAchievedCount }} 명</span>
             <i class="bi bi-envelope-check-fill" style="color: #8c8c8c; font-size: 27px; margin-top: 10px; margin-right: 10px;"></i>
-            <span v-if="isOngoing(target)" @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif; margin-right: 70px;"> 문자 발송</span>
+            <span v-if="isOngoing(target)" @click="generateAIContent(target, index)"  style="cursor: pointer; font-size: 18px; font-family: 'KB_C2', sans-serif; "> 문자 발송</span>
 
             <!-- 진행 중이 아닐 때 "문자 발송 불가" 메시지 표시 -->
             <span v-else style="font-size: 18px; font-family: 'KB_C2', sans-serif; margin-right: 70px;">
               문자발송 불가
             </span>
-            <span style="font-size: 18px; font-family: 'KB_C2', sans-serif; color: #cf2222; cursor: pointer;" @click="deleteTarget(target.target_no)" >삭제</span>
             <span class="loading-dots" v-if="loading[index]">{{ loadingText[index] }}</span>
+            <span style="font-size: 18px; font-family: 'KB_C2', sans-serif; color: #cf2222; cursor: pointer; margin-left: 70px;" @click="deleteTarget(target.target_no)" >삭제</span>
           </div>
         </div>
       </div>
