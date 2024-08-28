@@ -74,9 +74,7 @@ export default {
     },
     toggleHelpPopover(event) {
       event.stopPropagation();
-      console.log('toggleHelpPopover 클릭');
       this.showHelpPopover = !this.showHelpPopover;
-      console.log('showHelpPopover:', this.showHelpPopover);
       if (this.showHelpPopover) {
         document.addEventListener('click', this.handleClickOutside);
       } else {
@@ -84,13 +82,11 @@ export default {
       }
     },
     handleClickOutside(event) {
-      console.log('handleClickOutside 실행');
       if (
         this.$refs.helpPopover &&
         !this.$refs.helpPopover.contains(event.target) &&
         !this.$refs.helpIcon.contains(event.target)
       ) {
-        console.log('팝오버 닫기');
         this.showHelpPopover = false;
         document.removeEventListener('click', this.handleClickOutside);
       }

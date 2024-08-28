@@ -62,8 +62,9 @@
     <div v-if="!isLoading" class="row">
       <div
         v-for="(target, index) in displayedTargets"
-        :key="target.target_no" 
-        class="col-md-4 mb-3 fade-up-item">
+        :key="target.target_no"
+        class="col-md-4 mb-3 fade-up-item"
+      >
         <div class="p-3">
           <div
             :style="{
@@ -213,7 +214,7 @@
                   <div
                     class="progress-bar progress-bar-striped progress-bar-animated"
                     :style="{
-                       width: getAchievementRate(target),
+                      width: getAchievementRate(target),
                       backgroundColor: '#FB773C',
                     }"
                   ></div>
@@ -227,7 +228,7 @@
                     margin-right: 10px;
                   "
                 >
-                {{ getAchievementRate(target) }}</span
+                  {{ getAchievementRate(target) }}</span
                 >
               </div>
               <span
@@ -323,38 +324,35 @@ export default {
         return 'ongoing';
       }
     },
-     // 서버에서 이미 achievementRate를 받아온 경우 그대로 사용
+    // 서버에서 이미 achievementRate를 받아온 경우 그대로 사용
     getAchievementRate(target) {
-    // 미참여 상태일 때는 0%로 처리
-    if (!this.isUserParticipating(target.target_no)) {
-      return '0%'; // 미참여 시 0%로 설정
-    }
+      // 미참여 상태일 때는 0%로 처리
+      if (!this.isUserParticipating(target.target_no)) {
+        return '0%'; // 미참여 시 0%로 설정
+      }
 
-    // 서버에서 받은 achievementRate 사용
-    return `${Math.min(target.achievementRate, 100)}%`; // 100%를 초과하지 않게 처리
-  },
-  // 미참여 상태일 때는 0점으로 설정
-  getScore(target) {
-    if (!this.isUserParticipating(target.target_no)) {
-      return 0; // 미참여 시 0점으로 설정
-    }
+      // 서버에서 받은 achievementRate 사용
+      return `${Math.min(target.achievementRate, 100)}%`; // 100%를 초과하지 않게 처리
+    },
+    // 미참여 상태일 때는 0점으로 설정
+    getScore(target) {
+      if (!this.isUserParticipating(target.target_no)) {
+        return 0; // 미참여 시 0점으로 설정
+      }
 
-    // 서버에서 받은 totalMileScore 사용
-    return target.totalMileScoreByTargetNo || 0;
-  },
-
-    // 달성률 계산을 종료 상태에 따라 처리
-    // getDisplayableAchievementRate(target) {
-    //   const status = this.getStatusText(target);
-    //   // 종료된 목표는 달성률을 그대로 반환
-    //   if (status === '종료') {
-    //     return `${Math.min(target.achievementRate, 100)}%`; // 종료 상태에서 달성률 고정
-    //   }
-    //   // 진행 중인 경우도 달성률 반환 (이미 서버에서 계산된 값)
-    //   return `${Math.min(target.achievementRate, 100)}%`;
-    // },
+      // 서버에서 받은 totalMileScore 사용
+      return target.totalMileScoreByTargetNo || 0;
+    },
 
     calculateProgress(target) {
+      // target 객체가 정의되지 않았거나 totalMileScoreByMileNo 속성이 없는 경우 기본값을 반환
+      if (
+        !target ||
+        target.achievementRate === undefined ||
+        target.target_mileage === undefined
+      ) {
+        return '0%'; // 적절한 기본값 반환
+      }
 
       
     // target 객체가 정의되지 않았거나 totalMileScoreByMileNo 속성이 없는 경우 기본값을 반환
@@ -367,13 +365,11 @@ export default {
     return isNaN(progress) ? '0%' : `${progress.toFixed(2)}%`;
   },
 
-
-
     getStatusText(target) {
-       // target 객체가 정의되었는지 확인하고, start_date와 end_date가 있는지 확인
-    if (!target || !target.start_date || !target.end_date) {
-      return '알 수 없음'; // 적절한 기본값 또는 에러 메시지
-    }
+      // target 객체가 정의되었는지 확인하고, start_date와 end_date가 있는지 확인
+      if (!target || !target.start_date || !target.end_date) {
+        return '알 수 없음'; // 적절한 기본값 또는 에러 메시지
+      }
       const currentDate = new Date();
       const startDate = new Date(target.start_date);
       const endDate = new Date(target.end_date);
@@ -443,7 +439,6 @@ export default {
         );
 
         if (typeof response === 'boolean') {
-
           // 타겟 번호별 참여 여부를 직접 할당
           this.isUserParticipated[targetNo] = response;
 
@@ -460,6 +455,7 @@ export default {
     async loadUserParticipatedTargets() {
       try {
         const targetNos = this.adminTargets.map((target) => target.target_no);
+        console.log('5. Target numbers:', targetNos);
 
         // 참여 여부 확인을 병렬로 처리
         const participationPromises = targetNos.map((targetNo) =>
@@ -472,6 +468,11 @@ export default {
 
         // 모든 요청이 완료될 때까지 대기
         await Promise.all(participationPromises);
+
+        console.log(
+          '7. Updated userParticipatedTargets:',
+          this.userParticipatedTargets
+        );
       } catch (error) {
         console.error('Failed to load user participated targets:', error);
       } finally {
@@ -511,10 +512,12 @@ export default {
     },
 
     handleClick(targetNo) {
+      console.log('Clicked:', targetNo);
       this.toggleDropdown(targetNo);
     },
 
     toggleDropdown(targetNo) {
+      console.log('Clicked:', targetNo);
       this.dropDownVisible[targetNo] = !this.dropDownVisible[targetNo];
     },
 
@@ -536,17 +539,18 @@ export default {
       return target.participants && target.participants.length > 0;
     },
     applyFadeUpEffect() {
-    const items = document.querySelectorAll('.fade-up-item');
-    items.forEach((item, index) => {
-    const delay = 50 * index;
-    setTimeout(() => {
-      item.classList.add('fade-up-active');
-    }, delay);
-  });
-},
+      const items = document.querySelectorAll('.fade-up-item');
+      items.forEach((item, index) => {
+        const delay = 50 * index;
+        setTimeout(() => {
+          item.classList.add('fade-up-active');
+        }, delay);
+      });
+    },
   },
 
   async created() {
+    console.log('1. Component created');
     this.isLoading = true;
     try {
       await this.fetchMileages();
@@ -574,9 +578,9 @@ export default {
     },
     // 사용자가 참여하지 않은 경우 기본값 반환
     displayedTargets() {
-    const filtered = this.filteredTargets(this.sortBy);
-    return this.sortTargets(filtered);
-  },
+      const filtered = this.filteredTargets(this.sortBy);
+      return this.sortTargets(filtered);
+    },
     totalTargetsCount() {
       return this.adminTargets.length;
     },
@@ -586,10 +590,14 @@ export default {
       immediate: true,
       handler(newLoginInfo) {
         if (newLoginInfo && newLoginInfo.user_no) {
+          console.log(
+            'Calling getAdminTargets with user_no:',
+            newLoginInfo.user_no
+          ); // 로그 추가
           this.fetchAdminTargets(newLoginInfo.user_no).then(() => {
-          this.isLoading = false;
-          this.$nextTick(() => {
-          this.applyFadeUpEffect();
+            this.isLoading = false;
+            this.$nextTick(() => {
+              this.applyFadeUpEffect();
             });
           });
         } else {
@@ -603,7 +611,7 @@ export default {
         this.applyFadeUpEffect();
       });
     },
-    
+
     displayedTargets: {
       handler(newTargets) {
         newTargets.forEach((target) => {
@@ -855,16 +863,16 @@ export default {
   .p-3 {
     padding: 0rem !important;
   }
- 
+
   .py-3 {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
     margin-top: 5px;
   }
-  .target-box{
-        width: 100%;
-        height: 220px;
-    }
+  .target-box {
+    width: 100%;
+    height: 220px;
+  }
 }
 
 @media (max-width: 800px) {
@@ -897,13 +905,13 @@ export default {
   .p-3 {
     padding: 0rem !important;
   }
-  
+
   .py-3 {
     padding-top: 0rem !important;
     padding-bottom: 0rem !important;
     margin-top: 5px;
   }
-  
+
   .target-box {
     height: 220px;
   }

@@ -156,8 +156,6 @@ export default {
             group_no: this.getLoginInfo.group_no
           }
         });
-        
-        console.log(response.data, '그룹데이터');
         this.groupList = response.data;
       } catch (error) {
         console.error('데이터 불러오기 실패:', error);

@@ -408,7 +408,6 @@ export default {
       return diffDays <= 7;
     },
     formatDate(dateString) {
-      console.log('Formatting date:', dateString);
       if (!dateString) return 'Date not available';
 
       const date = new Date(dateString);
@@ -429,7 +428,6 @@ export default {
 
     async downloadFile() {
       try {
-        console.log('글쓰기 상세보기 fileName :', this.notice.mtip_board_file);
         const fileName = encodeURIComponent(this.notice.mtip_board_file);
         const response = await api({
           url: `/mtip/downloadGuide/${fileName}`,
@@ -486,7 +484,6 @@ export default {
     ...mapState('mtipBoard', ['likedPosts']),
 
     notice() {
-      console.log('여기여기', this.getNotice);
       return this.getNotice || null;
     },
     loginInfo() {

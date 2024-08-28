@@ -300,7 +300,6 @@ export default {
         const response = await api.get(
           '/notice/mileage'
         );
-        console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
         console.error(

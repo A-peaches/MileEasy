@@ -138,7 +138,7 @@ export default {
             `/myMile/loadBadgeData/${this.getLoginInfo.user_no}`
           );
           this.badgeData = response.data;
-          console.log(this.badgeData);
+          
         } catch (error) {
           console.error("배지 데이터 로드 실패:", error);
         }

@@ -352,12 +352,10 @@ export default {
     },
   },
   watch: {
-    mileScores(newMileScores) {
-      console.log("mileScores updated:", newMileScores);
+    mileScores() {
       this.renderCharts();
     },
-    favoriteList(newFavoriteList) {
-      console.log("favoriteList updated:", newFavoriteList);
+    favoriteList() {
       this.renderCharts();
     },
   },
@@ -387,7 +385,6 @@ export default {
     }
   },
   created() {
-    console.log("FavoriteCom created");
   },
 };
 </script>

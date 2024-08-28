@@ -19,37 +19,43 @@ import java.util.stream.Collectors;
 @RequestMapping("/target")
 public class TargetController {
 
-        @Autowired
-        TargetService targetService;
+    @Autowired
+    TargetService targetService;
 
-        //개인형 목표 추가하기
-        @PostMapping("/create")
-        public void createTarget(@RequestBody Target target) {
-            targetService.addTarget(target);
-         }
-        //개인형 목표 불러오기
-        @GetMapping("/user/{userNo}")
-        public List<Target> getTarget(@PathVariable String userNo) {
-            return targetService.getTargetByUserNo(userNo);
-        }
+    //개인형 목표 추가하기
+    @PostMapping("/create")
+    public void createTarget(@RequestBody Target target) {
+        System.out.println("target created 메소드 도착 ! " + target);
+        targetService.addTarget(target);
+        System.out.print("target:"+target);
+    }
+    //개인형 목표 불러오기
+    @GetMapping("/user/{userNo}")
+    public List<Target> getTarget(@PathVariable String userNo) {
+        System.out.print("target getTarget 메소드 도착 ! ");
+        return targetService.getTargetByUserNo(userNo);
+    }
 
-        // 참여형 목표 불러오기
-        @GetMapping("/admin/targets/{userNo}")
-        public List<Target> getAdminTargets(@PathVariable String userNo) {
-            return targetService.getAdminTargets(userNo);
-        }
+    // 참여형 목표 불러오기
+    @GetMapping("/admin/targets/{userNo}")
+    public List<Target> getAdminTargets(@PathVariable String userNo) {
+        System.out.println("Admin targets !");
+        return targetService.getAdminTargets(userNo);
+    }
 
-        // 특정 타겟에 대해 사용자가 참여했는지 여부 확인
-        @GetMapping("/checkParticipation/{targetNo}/{userNo}")
-        public ResponseEntity<Boolean> checkUserParticipation(@PathVariable int targetNo, @PathVariable String userNo) {
-            boolean isParticipating = targetService.isUserParticipating(targetNo, userNo);
-            return ResponseEntity.ok(isParticipating);
-        }
+    // 특정 타겟에 대해 사용자가 참여했는지 여부 확인
+    @GetMapping("/checkParticipation/{targetNo}/{userNo}")
+    public ResponseEntity<Boolean> checkUserParticipation(@PathVariable int targetNo, @PathVariable String userNo) {
+        boolean isParticipating = targetService.isUserParticipating(targetNo, userNo);
+        return ResponseEntity.ok(isParticipating);
+    }
 
     //참여형 참여하기 버튼
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> joinTarget(@RequestBody Map<String, Object> requestBody) {
         try {
+            System.out.println("join 메소드 도착 !");
+            System.out.println("Received Request Body: " + requestBody);
 
             if (!requestBody.containsKey("targetNo") || !requestBody.containsKey("userNo")) {
                 return ResponseEntity.badRequest().body(Map.of("success", false, "message", "필수 파라미터가 누락되었습니다."));
@@ -97,7 +103,7 @@ public class TargetController {
         try {
             // 요청 본문에서 user_no 및 target_no를 가져옴
             String userNo = (String) requestBody.get("user_no");
-            int targetNo = Integer.parseInt(requestBody.get("target_no").toString());
+            int targetNo = (int) requestBody.get("target_no");
 
             System.out.println("마왕 점수 업그레이드: " + userNo + ", Target No: " + targetNo);
 
@@ -144,5 +150,12 @@ public class TargetController {
 
         return ResponseEntity.ok(Collections.singletonList(response));
     }
+
+//    // 관리자에 해당하는 프로모션 참가자 데이터 조회
+//    @GetMapping("/participantsData")
+//    public ResponseEntity<List<Map<String, Object>>> getPromotionParticipantsData(@RequestParam("user_no") String userNo) {
+//        List<Map<String, Object>> participantsData = targetService.getPromotionParticipantsData(userNo);
+//        return ResponseEntity.ok(participantsData);
+//    }
 
 }

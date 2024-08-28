@@ -113,9 +113,7 @@ export default {
       el.style.setProperty("--index", index);
     },
     applyFadeUpEffect() {
-      console.log("Applying fade-up effect");
       const items = this.$el.querySelectorAll(".fade-up-item");
-      console.log(`Found ${items.length} items to animate`);
 
       items.forEach((item, index) => {
         item.style.setProperty("--index", index);
@@ -131,9 +129,7 @@ export default {
     },
     toggleHelpPopover(event) {
       event.stopPropagation();
-      console.log("toggleHelpPopover 클릭");
       this.showHelpPopover = !this.showHelpPopover;
-      console.log("showHelpPopover:", this.showHelpPopover);
       if (this.showHelpPopover) {
         document.addEventListener("click", this.handleClickOutside);
       } else {
@@ -141,13 +137,11 @@ export default {
       }
     },
     handleClickOutside(event) {
-      console.log("handleClickOutside 실행");
       if (
         this.$refs.helpPopover &&
         !this.$refs.helpPopover.contains(event.target) &&
         !this.$refs.helpIcon.contains(event.target)
       ) {
-        console.log("팝오버 닫기");
         this.showHelpPopover = false;
         document.removeEventListener("click", this.handleClickOutside);
       }

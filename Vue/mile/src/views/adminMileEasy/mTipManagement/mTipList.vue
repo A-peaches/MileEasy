@@ -49,7 +49,7 @@
     </button>
   </div>
 
-  <div class="notice-list" style="margin-left: 30px">
+  <div class="notice-list">
     <div v-if="paginatedNotices.length">
       <div
         class="input-base list-wrapper"
@@ -279,14 +279,12 @@ export default {
       }
     },
     async fetchNotices() {
-      console.log('게시글 list 서버 메소드로 이동 ~ '); // 이 로그가 출력되는지 확인합니다.
       try {
         const response = await api.get('/mtip/MtiplistComplain');
         this.notices = response.data.map((notice) => ({
           ...notice,
           liked: notice.liked || false, // 서버에서 좋아요 여부를 전달해줬을 경우
         }));
-        console.log('list 서버에서 가지고 온 값 :', this.notices);
       } catch (error) {
         console.error(
           'Error fetching notices:',
@@ -297,7 +295,6 @@ export default {
     async fetchMileages() {
       try {
         const response = await api.get('/mtip/Mtipmileage');
-        console.log('Fetched mileages:', response.data);
         this.mileages = response.data;
       } catch (error) {
         console.error(
@@ -307,18 +304,15 @@ export default {
       }
     },
     async handleNoticeClick(notice) {
-      console.log('notice:', notice);
       if (this.isProcessing) return;
       this.isProcessing = true;
       try {
-        console.log('게시글 상세보기+조회수 메소드 도달', notice);
 
         // 조회수 증가 요청
         await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
 
         // 게시글 상세 정보 요청
         const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-        console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response);
         const noticeDetails = response.data;
 
         // 좋아요 상태 확인 요청
@@ -355,47 +349,6 @@ export default {
         this.isProcessing = false;
       }
     },
-
-    //     async handleNoticeClick(notice) {
-    //     console.log("notice:", notice);
-    //     if (this.isProcessing) return;
-    //     this.isProcessing = true;
-    //     try {
-    //     console.log("게시글 상세보기+조회수 메소드 도달", notice);
-    //     // 조회수 증가 요청
-    //     await api.get(`/mtip/MtipViews/${notice.mtip_board_no}`);
-
-    //     // 게시글 상세 정보 요청
-    //     const response = await api.get(`/mtip/details/${notice.mtip_board_no}`);
-    //     console.log('게시글 상세보기 서버에서 가지고 온 데이터:', response); // 응답이 정상적으로 오는지 확인
-    //     const noticeDetails = response.data;
-    //     console.log('Fetched notice details:', noticeDetails);
-
-    //     // 조회수 업데이트
-    //     notice.mtip_board_hit += 1;
-
-    //     const noticeToPass = {
-    //       ...noticeDetails,
-    //       mile_no: noticeDetails.mile_no,
-    //       mile_name: noticeDetails.mile_name,
-    //       file: noticeDetails.mtip_board_file || null,
-    //       mtip_board_hit: notice.mtip_board_hit // 업데이트된 조회수 사용
-    //     };
-
-    //     console.log('Navigating to noticeDetailView with notice:', {
-    //       id: notice.mtip_board_no,
-    //       notice: noticeToPass
-    //     });
-    //     console.log("MtipListView에서 넘기는 notice:", notice);
-    //     this.$router.push({ name: 'm_TipDetailView', params: { mtip_board_no: notice.mtip_board_no } });
-
-    //   } catch (error) {
-    //     console.error('Error fetching notice details:', error.response ? error.response.data : error.message);
-    //   } finally {
-    //     this.isProcessing = false;
-    //   }
-    // },
-
     formatDate(dateString) {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString('ko-KR', options);
@@ -421,10 +374,6 @@ export default {
     },
   },
   mounted() {
-    console.log('loginInfo:', this.loginInfo);
-    console.log('isLoggedIn:', this.isLoggedIn);
-    console.log('isChecked:', this.isChecked);
-
     document.addEventListener('click', this.handleClickOutside);
 
     this.fetchNotices();
@@ -658,7 +607,6 @@ h2::after {
   line-height: 65px; /* 세로 정렬 */
   font-size: 20px;
   margin-bottom: 20px; /*글 목록 사이 공간*/
-  width: 1200px;
 }
 
 .list-wrapper:hover {

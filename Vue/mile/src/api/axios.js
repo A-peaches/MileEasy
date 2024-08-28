@@ -10,8 +10,6 @@ const getNextApiUrl = () => {
   return apiUrls[currentApiUrlIndex];
 };
 
-console.log('Available API URLs:', apiUrls);
-
 const instance = axios.create({
   baseURL: apiUrls[currentApiUrlIndex],
 });
