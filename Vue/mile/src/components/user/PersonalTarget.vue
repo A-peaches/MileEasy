@@ -130,10 +130,10 @@
                 aria-valuemax="100"
                 style="width: 80%; margin-right: 10px"
               >
-                <div
+              <div
                   class="progress-bar progress-bar-striped progress-bar-animated"
                   :style="{
-                   width: `${Math.min(targets.achievementRate, 100)}%`,  // % 기호 추가하여 정수에 퍼센트 단위 적용
+                    width: `${getAchievementRate(targets)}%`,  // getAchievementRate 메서드로 달성률 계산
                     backgroundColor: '#FB773C',
                   }"
                 ></div>
@@ -148,7 +148,7 @@
                     margin-right: 10px;
                   "
                 >
-                {{ Math.min(targets.achievementRate, 100) }} %</span
+                {{ getAchievementRate(targets) }} %</span
                 >
               </div>
               <span
@@ -164,7 +164,7 @@
             <div class="py-3">
               <span class="bold-x-lg" style="font-family: 'KB_C1'">
                 <span class="highlight-score">{{
-                  targets.totalMileScoreByTargetNo || 0
+                   getMileageScore(targets)
                 }}</span>
                 / {{ targets.target_mileage }}</span
               >
@@ -338,7 +338,7 @@ export default {
     }
 
     // 상태가 종료("completed")일 경우 진행률 계산 중단
-    if (this.getStatusText(target) === '종료') {
+    if (this.getStatusText(target) === '예정' ) {
       return '0%'; // 종료된 경우 진행률을 100%로 고정
     }
 
@@ -381,6 +381,19 @@ export default {
      return '진행중';
    }
  },
+    getMileageScore(target) {
+      if (this.getStatusText(target) === '예정') {
+        return 0; // 상태가 '예정'일 경우 마일리지 점수 0
+      }
+      return target.totalMileScoreByTargetNo || 0;
+    },
+    getAchievementRate(target) {
+    if (this.getStatusText(target) === '예정') {
+      return 0; // 상태가 '예정'일 경우 달성률 0
+    }
+    return Math.min(target.achievementRate, 100);
+    },
+
     sortTargets(targets) {
       return targets.sort((a, b) => {
         const statusA = this.getStatusText(a);

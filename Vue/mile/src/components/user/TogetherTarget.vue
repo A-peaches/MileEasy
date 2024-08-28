@@ -1,5 +1,9 @@
 <template>
   <div>
+          <!-- 로딩 중일 때 -->
+    <div v-if="isLoading" style="font-size: 20px; text-align: center; margin-top: 20px;">
+      <i class="bi bi-arrow-clockwise"></i> 로딩 중...
+    </div>
     <div
       class="d-flex justify-content-start align-items-center mb-5"
       style="margin-left: 5%"
@@ -131,9 +135,7 @@
                         color: #8c8c8c;
                       "
                     ></i>
-                    <span style="margin-right: 25px">{{
-                      target.participantCount
-                    }}</span>
+                    <span style="margin-right: 25px">{{target.participantCount}}</span>
                   </div>
                   <!-- 드롭다운 메뉴 -->
                   <div
@@ -150,15 +152,29 @@
                     </p>
                   </div>
                 </div>
-                <button
-                  v-else
-                  @click="joinTarget(target.target_no)"
-                  class="join-button"
-                  :disabled="getStatusText(target) !== '진행중'"
-                >
-                  참여하기 >
-                </button>
-              </div>
+                <!-- 사용자가 참여하지 않았을 경우 -->
+  <button
+    v-else-if="getStatusText(target) === '진행중'"
+    @click="joinTarget(target.target_no)"
+    class="join-button"
+  >
+    참여하기 >
+  </button>
+  <button
+    v-else-if="getStatusText(target) === '예정'"
+    class="join-button"
+    disabled
+  >
+    참가하기
+  </button>
+  <button
+    v-else-if="getStatusText(target) === '종료'"
+    class="join-button"
+    disabled
+  >
+    미참여
+  </button>
+  </div>
             </div>
             <div
               class="py-3"
@@ -243,9 +259,6 @@
         </div>
       </div>
     </div>
-    <div v-else style="font-size: 20px">
-      <i class="bi bi-arrow-clockwise"></i> 로딩 중...
-    </div>
   </div>
 </template>
 
@@ -262,7 +275,7 @@ export default {
       sortBy: 'notjoin',
       isUserParticipated: {}, // 참여 여부를 저장하는 객체 추가
       userParticipatedTargets: JSON.parse(
-        localStorage.getItem('userParticipatedTargets') || '[]'
+      localStorage.getItem('userParticipatedTargets') || '[]'
       ),
       isLoading: true,
       dropDownVisible: {},
@@ -331,17 +344,6 @@ export default {
       return target.totalMileScoreByTargetNo || 0;
     },
 
-    // 달성률 계산을 종료 상태에 따라 처리
-    // getDisplayableAchievementRate(target) {
-    //   const status = this.getStatusText(target);
-    //   // 종료된 목표는 달성률을 그대로 반환
-    //   if (status === '종료') {
-    //     return `${Math.min(target.achievementRate, 100)}%`; // 종료 상태에서 달성률 고정
-    //   }
-    //   // 진행 중인 경우도 달성률 반환 (이미 서버에서 계산된 값)
-    //   return `${Math.min(target.achievementRate, 100)}%`;
-    // },
-
     calculateProgress(target) {
       // target 객체가 정의되지 않았거나 totalMileScoreByMileNo 속성이 없는 경우 기본값을 반환
       if (
@@ -352,16 +354,16 @@ export default {
         return '0%'; // 적절한 기본값 반환
       }
 
-      // 상태가 종료("completed")일 경우 진행률 계산 중단
-      if (this.getStatusText(target) === '종료') {
-        return '0%'; // 종료된 경우 진행률을 100%로 고정
-      }
+      
+    // target 객체가 정의되지 않았거나 totalMileScoreByMileNo 속성이 없는 경우 기본값을 반환
+    if (!target || target.achievementRate === undefined || target.target_mileage === undefined) {
+      return '0%'; // 적절한 기본값 반환
+    }
 
-      // 정상적인 진행률 계산
-      const progress =
-        (target.totalMileScoreByMileNo / target.target_mileage) * 100;
-      return isNaN(progress) ? '0%' : `${progress.toFixed(2)}%`;
-    },
+    // 정상적인 진행률 계산
+    const progress = (target.totalMileScoreByMileNo / target.target_mileage) * 100;
+    return isNaN(progress) ? '0%' : `${progress.toFixed(2)}%`;
+  },
 
     getStatusText(target) {
       // target 객체가 정의되었는지 확인하고, start_date와 end_date가 있는지 확인
@@ -613,20 +615,19 @@ export default {
     displayedTargets: {
       handler(newTargets) {
         newTargets.forEach((target) => {
-          if (
-            Math.min(target.achievementRate, 100) === 100 &&
-            this.getStatusText(target) !== '종료'
-          ) {
+          if (this.isLoggedIn()) {
+          if (Math.min(target.achievementRate, 100) === 100 && this.getStatusText(target) !== '종료') {
             this.$store.dispatch('/target/increaseMawangScore', {
               targetNo: target.target_no,
               userNo: this.loginInfo.user_no,
             });
           }
-        });
-      },
-      deep: true,
+        }
+      });
     },
-  },
+  deep: true,
+},
+},
 };
 </script>
 
