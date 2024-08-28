@@ -219,6 +219,14 @@ export default {
         scrollbarPadding: false,
       });
     },
+    targetAlert() {
+      this.$swal({
+        title: "성공",
+        text: "새로운 목표가 등록되었습니다.",
+        icon: "success",
+        scrollbarPadding: false,
+      });
+    },
     deleteAlert() {
       this.$swal({
         title: "성공",
@@ -352,7 +360,7 @@ export default {
       const response = await this.addTarget(targetInfo);
 
       if(response && response.data.success){
-        this.succesAlert('목표가 등록되었습니다', 'success', '#');
+        this.targetAlert();
         this.resetModalData(); // 데이터 초기화
         this.closeModal(); // 목표가 성공적으로 등록된 후 모달 창을 닫습니다.
         await this.refreshTargets(); // 목표 목록을 새로 고침
