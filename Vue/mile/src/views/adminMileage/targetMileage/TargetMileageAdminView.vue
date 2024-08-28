@@ -78,9 +78,9 @@
         <div class="form-group">
           <label>목표 기간</label>
           <div class="date-range">
-            <Datepicker v-model="startDate" :format="formatDate" placeholder="시작일" ></Datepicker>
+            <Datepicker v-model="startDate" :format="formatDate" placeholder="시작일" :minDate="new Date()"></Datepicker>
             <span class="date-separator">~</span>
-            <Datepicker v-model="endDate" :format="formatDate" placeholder="종료일" ></Datepicker>
+            <Datepicker v-model="endDate" :format="formatDate" placeholder="종료일" :minDate="new Date()"></Datepicker>
           </div>
         </div>
         <div class="form-group">
