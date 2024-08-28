@@ -7,17 +7,16 @@
       class="card shadow-sm mb-4 fade-in"
       style="background-color: #f5f5f5; border: #f5f5f5"
     >
-      <div class="card-body text-start card-ml">
+      <div class="card-body text-start card-ml pl-5">
         <h5 class="text-emphasis text-start">
           <i class="bi bi-info-circle-fill"></i> 유의 사항
         </h5>
-        <span class="ml-5" style="font-size: 13pt">
+        <span  style="font-size: 13pt">
           본 서비스는 직원들의 마일리지에 대한 관심을 높이고, 관련 혜택을
-          적극적으로 알리기 위해 제작되었습니다. 마일리지 홍보 이외의 목적으
-          <span class="ml-5">로는 사용이 제한됩니다.</span>
+          적극적으로 알리기 위해 제작되었습니다. 마일리지 홍보 이외의 목적으로는 사용이 제한됩니다.
           <br />
         </span>
-        <span class="ml-5">
+        <span >
           <strong class="text-red"
             >(일일 최대 발송 가능 횟수 : 1회 / 주중 최대 발송 가능 횟수 :
             3회)</strong
@@ -340,7 +339,8 @@ export default {
         return;
       }
 
-      
+
+    
       try {
         let receiversPhone = this.receivers.map((r) => r.user_tel);
         const response = await api.post("/user/sendSms", {

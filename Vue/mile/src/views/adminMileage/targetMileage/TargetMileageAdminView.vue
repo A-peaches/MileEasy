@@ -18,7 +18,7 @@
     </div>
 
     <div class="d-flex justify-content-end mr-5">
-      <div class="target" @click="openModal"> 📝 목표 등록 </div>
+      <div class="target" @click="openModal" style="cursor:pointer"> 📝 목표 등록 </div>
     </div>
 
     <div v-if="filteredTargets.length > 0" class="goals-list">
@@ -397,7 +397,7 @@ export default {
 
       window.location.reload();
       if(response && response.data.success){
-        this.deleteAlert();
+        // this.deleteAlert();
        // 삭제가 성공적으로 완료되면 페이지 새로고침
        window.location.reload();
       }else{
